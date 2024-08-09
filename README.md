@@ -2,7 +2,7 @@
 A Modular, Hierarchical Music Sequencer
  
 By Sean Luke (sean@cs.gmu.edu)  
-With Help from Filippo Carnovalini (filippo.carnovalini@gmail.com)  
+With Help from Filippo Carnovalini (filippo.carnovalini@vub.be)  
 Copyright 2024 by Sean Luke and George Mason University
 
 Related projects:  
