@@ -560,7 +560,6 @@ public class MotifList extends JPanel
         finally { lock.unlock(); }
 
         motifuis.add(motifui);
-        sequi.setMotifUI(motifui);
 
         MotifListButton button = new MotifListButton(sequi, motifui, null);
         button.setDropTarget(new DropTarget(this, buildDropTargetListener()));
@@ -575,6 +574,7 @@ public class MotifList extends JPanel
             {
             setRoot(0);
             }
+        sequi.setMotifUI(motifui);
         }
         
     public void moveButton(MotifListButton button, int at)

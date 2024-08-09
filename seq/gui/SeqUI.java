@@ -975,10 +975,13 @@ public class SeqUI extends JPanel
         if (motifui != null) add(motifui, BorderLayout.CENTER);
         MotifListButton button = motifui.getPrimaryButton();
         if (button != null) getMotifList().select(button, updateStacks);
+        motifui.uiWasSet();
+
+		// This must be AFTER uiWasSet(), which calls build() and thus builds the menu...
         if (motifUIMenu != null) menubar.remove(motifUIMenu);
         motifUIMenu = motifui.getMenu();
         if (motifUIMenu != null) menubar.add(motifUIMenu);
-        motifui.uiWasSet();
+
         motifui.rebuildInspectors(rebuildInspectorsCount);
         revalidate(); 
         repaint(); 

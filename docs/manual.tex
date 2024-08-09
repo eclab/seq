@@ -236,8 +236,9 @@ George Mason University}
 \\
 \\
 \\
-\large\rm {\bf Manual Version 2}\\
-\large\rm  July 2024\\
+\large\rm {\bf Seq Version 1}\\
+\large\rm {\bf Manual Version 1.1}\\
+\large\rm  August 2024\\
 
 \vspace{5in}
 \noindent\Large\bf Where to Obtain Seq\\
@@ -435,6 +436,10 @@ We'll discuss the Root Arguments later in Section~\ref{parameters}.  However we 
 The MIDI Menu is where you set up MIDI to play and record.  First, you with {\bf Set MIDI Devices}, you can set up to 16 {\bf Outputs} and up to four {\bf Inputs}.  Each Input or Output is a combination of a MIDI Device and a Channel.  Once you have set up an input or output. it appears as an option in the features of Motifs which input or output MIDI.  Inputs and Outputs are saved to preferences so you don't have to set them up each time.  You can reset from preferences by pressing the {\bf Reload} button in the setup window.
 
 You can also {\bf Panic}.  This sends an {\bf All Sounds Off} and an {\bf All Notes Off} to every setup device in order to quiet MIDI devices with stuck notes.
+
+Finally, you can {\bf Log MIDI} to a file.  If you start this, then the next time you press Play, Seq will start copying all of its MIDI output to a MIDI file of your choosing.  The copying stops when you press Stop.  At present, if you have multiple devices, their MIDI data is merged and logged to the same file (but different channels stay separate).  
+
+Note that some DAWs (ahem, Ableton) cannot load multichannel MIDI data -- they'll just glom it together into a single channel blob.  You probably don't want that.  Seq offers you the option of writing separate files, one for each channel.
 
 \subsection{The Current Motif Display\quad (and the optional Per-Motif Menu)}
 
