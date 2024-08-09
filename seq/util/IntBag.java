@@ -276,6 +276,7 @@ public class IntBag implements java.io.Serializable, Cloneable
         }
     
     /** Shuffles (randomizes the order of) the IntBag */
+/*
     public void shuffle(ec.util.MersenneTwisterFast random)
         {
         // teeny bit faster
@@ -292,6 +293,7 @@ public class IntBag implements java.io.Serializable, Cloneable
             objs[rand] = obj;
             }
         }
+*/
     
     /** Reverses order of the elements in the IntBag */
     public void reverse()
