@@ -26,7 +26,7 @@ This is an early release of Seq, and it's got lots of wires sticking out here an
 
 ## Resources
 
-* Seq has an [initial, rudimentary manual](https://cs.gmu.edu/~eclab/projects/seq/seq) which explains the basics of using it.
+* Seq has an [initial, rudimentary manual](https://cs.gmu.edu/~eclab/projects/seq/seq.pdf) which explains the basics of using it.
 
 * Interested in helping out on Seq?  Get ahold of us!
 
