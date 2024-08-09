@@ -1,0 +1,1228 @@
+package seq.gui;
+
+import seq.engine.*;
+import seq.util.*;
+import java.io.*;
+import java.util.zip.*;
+import java.awt.*;
+import javax.swing.border.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.util.concurrent.locks.*;
+import java.util.*;
+import javax.sound.midi.*;
+import com.formdev.flatlaf.*;
+import org.json.*;
+
+
+/***
+    SEQUI is the topmost GUI object for Seq.  It contains a MOTIFLIST, which is
+    a list of available Motifs (at left), and a MOTIFUI at center representing the
+    currently-edited Motif.
+*/
+
+public class SeqUI extends JPanel
+    {       
+    /*  
+        private static class MyEventQueue extends EventQueue {
+        public void postEvent(AWTEvent theEvent) {
+        System.out.println("Event Posted " + theEvent);
+        super.postEvent(theEvent);
+        }
+        }
+    
+        static
+        {
+        Toolkit.getDefaultToolkit().getSystemEventQueue().push(new MyEventQueue()); 
+        }
+    */
+
+    /** Seq Patches end with this extension. */
+    public static String PATCH_EXTENSION = ".seq";
+    
+    public static String MIDI_EXTENSION = ".mid";
+
+    // Seq Menu Bar
+    JMenuBar menubar;
+    // The menu dedicated for Motifs, if any
+    JMenu motifUIMenu = null;
+    // The seq duh
+    Seq seq;
+    // The MotifList at left
+    MotifList list;
+    // The container holding thelist
+    JPanel listContainer;
+    // The main MotifUI being displayed
+    MotifUI motifui = null;
+    // The transport above the MotifList.  This is the Play/Stop/Record/Pause buttons plus the clock options
+    Transport transport;
+    // Root's parameter settings.  This is below the clock options
+    RootParameterList rootParameterList;
+    // The window
+    JFrame frame;
+    // Is the selected motif always the root?
+    boolean selectedFrameIsRoot;
+    boolean smallButtons;
+    
+    JMenuItem undoItem;
+    JMenuItem redoItem;
+    JMenuItem pushItem;
+    JMenuItem logItem;
+    
+    int rebuildInspectorsCount = 0;
+    
+    public SeqUI(Seq seq)
+        {
+        reset(seq);
+        }
+    
+    public void clearUndo()
+        {
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            seq.clearUndo();
+            }
+        finally { lock.unlock(); }
+        undoItem.setEnabled(false);
+        redoItem.setEnabled(false);
+        }
+    
+    public void updateUndoMenus()
+        {
+        SwingUtilities.invokeLater(new Runnable()
+            {
+            public void run()
+                {
+                boolean canUndo = false;
+                boolean canRedo = false;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    canUndo = seq.canUndo(); 
+                    canRedo = seq.canRedo(); 
+                    }
+                finally { lock.unlock(); }
+                undoItem.setEnabled(canUndo);
+                redoItem.setEnabled(canRedo);
+                }
+            });
+        }
+        
+    public void push()
+        {
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            { 
+            seq.push(motifui.getMotif()); 
+            }
+        finally { lock.unlock(); }
+        }
+
+    public void doUndo()
+        {
+        boolean canUndo = false;
+        boolean canRedo = false;
+        if (this.seq != null) this.seq.stop();
+        Motif display = null;
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            display = seq.undo(motifui.getMotif());
+            if (display == null) return;  // failed to undo
+            canUndo = seq.canUndo(); 
+            canRedo = seq.canRedo(); 
+            }
+        finally { lock.unlock(); }
+        reset(seq);
+        setMotifUI(list.getMotifUIFor(display));
+        list.setRoot(list.getMotifUIFor(seq.getData()));
+        }
+ 
+    public void doRedo()
+        {
+        if (this.seq != null) this.seq.stop();
+        Motif display = null;
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            display = seq.redo(motifui.getMotif());
+            if (display == null) return;  // failed to redo
+            }
+        finally { lock.unlock(); }
+        reset(seq);
+        setMotifUI(list.getMotifUIFor(display));
+        list.setRoot(list.getMotifUIFor(seq.getData()));
+        }
+   
+    public boolean getSelectedFrameIsRoot() { return selectedFrameIsRoot; }
+        
+    /* Resets the Seq to a pristine state and clears out the SeqUI. */
+    void reset(Seq seq)
+        {
+        removeAll();
+        smallButtons = Prefs.getLastBoolean("SmallMotifButtons", false);        // must be before MotifList
+        list = new MotifList(seq, this);
+
+        ReentrantLock lock = null;
+        lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            seq.stop();                     // for good measure
+            seq.resetPlayingClips();        // because this might not happen in stop if we're already stopped
+
+            this.seq = seq;
+            for(int i = 0; i < seq.getOuts().length; i++)
+            	seq.getOut(i).setSeq(seq);
+        
+            // we have to build the lower motifuis first so the higher level ones
+            // can add them into themselves.  To do this we get a list sorted
+            // with the lower ones first
+            
+            ArrayList<Motif> topologicallySortedMotifs = Motif.topologicalSort(seq.getMotifs());
+            Collections.reverse(topologicallySortedMotifs);
+            HashMap<Motif, MotifUI> map = new HashMap<>();
+            
+            for(Motif motif : topologicallySortedMotifs)
+                {
+                if (!(motif instanceof seq.motif.blank.Blank))
+                    {
+                    //System.err.println("Mapping " + motif + " -> " + motifui);
+                    MotifUI motifui = list.buildMotifUIFor(motif);
+                    map.put(motif, motifui);
+                    //list.doAddSimple(motifui);
+                    }
+                }
+                
+            // Now we want to reorganize the list in the original order.
+            list.removeAll();
+
+            for(Motif motif : seq.getMotifs())
+                {
+                //System.err.println("Trying to get " + motif + " -> " + map.get(motif));
+                list.doAddSimple(map.get(motif));
+                }
+            }
+        finally
+            {
+            if (lock != null) lock.unlock();
+            }
+        list.revalidate();
+        list.repaint();
+        
+        setLayout(new BorderLayout());
+        listContainer = new JPanel();
+        listContainer.setLayout(new BorderLayout());
+        listContainer.add(list, BorderLayout.CENTER);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        transport = new Transport(seq, this);
+        panel.add(transport, BorderLayout.NORTH);
+        rootParameterList = new RootParameterList(seq);
+        panel.add(rootParameterList, BorderLayout.CENTER);
+        listContainer.add(panel, BorderLayout.NORTH);
+        add(listContainer, BorderLayout.WEST);
+                
+        // at this point, the motifuis have all been created but added to the list in reverse order
+        //list.reverse();
+        }
+    
+    /** This must be called very early on, probably the very first thing you do. */
+    public static void setupGUI()
+        {
+        // We want a nice Mac environment
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("apple.awt.application.name", "Seq");
+        FlatLightLaf.setup();
+        }
+        
+    /** Returns a string which guarantees that the given filename ends with the given ending. */   
+    public static String ensureFileEndsWith(String filename, String ending)
+        {
+        // do we end with the string?
+        if (filename.regionMatches(false,filename.length()-ending.length(),ending,0,ending.length()))
+            return filename;
+        else return filename + ending;
+        }
+        
+    /* Makes a new document. */
+    public void doNew()
+        {
+        Seq s;
+        try
+            {
+            clearUndo();
+
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try 
+                { 
+                this.seq.stop();
+                this.seq.shutdown();            // kills timer in old sequence
+                }
+            finally { lock.unlock(); }
+
+            reset(new Seq(seq));
+
+            list.removeAll();  // delete old ones
+
+            seq.setFile(null);
+            frame.setTitle("Untitled");
+            // We'll start with a blank step sequence
+            seq.motif.stepsequence.StepSequence ss = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
+            seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, SeqUI.this, ss);
+            addMotifUI(ssui);
+            list.setRoot(ssui.getPrimaryButton());
+            revalidate();
+            repaint();
+            }
+        catch (Exception ex)
+            {
+            ex.printStackTrace();
+            showSimpleError("Error Creating New Sequence", "An error occurred creating the new sequence.");
+            }
+        }
+    
+    /* Saves the sequence to an existing file. */
+    void doSave()
+        {
+        if (seq.getFile() == null) { doSaveAs(); return; }
+        
+        // Inform MotifUIs so they can update stuff to save out
+        for(MotifUI ui : list.getMotifUIs())
+            {
+            ui.isSaving();
+            }
+
+        PrintWriter p = null;
+        try
+            {
+            p = new PrintWriter(new GZIPOutputStream(new FileOutputStream(seq.getFile())));
+            if (seq != null) seq.stop();
+            p.println(seq.save(true));          // we just print the JSONObject
+            p.flush();
+            p.close();
+            }
+        catch (Exception ex)
+            {
+            ex.printStackTrace();
+            showSimpleError("Error Saving File", "An error occurred saving the sequence " + seq.getFile());
+            }
+        finally
+            {
+            try { if (p != null) p.close(); } catch (Exception ex) { }
+            }
+        }
+
+    /* Pops up the save dialog. */
+    void doSaveAs()
+        {
+        FileDialog fd = new FileDialog(getFrame(), "Save Sequence As...", FileDialog.SAVE);
+                
+        disableMenuBar();
+        fd.setVisible(true);
+        enableMenuBar();
+                
+        File f = null; // make compiler happy
+
+        if (fd.getFile() != null)
+            {
+            // Inform MotifUIs so they can update stuff to save out
+            for(MotifUI ui : list.getMotifUIs())
+                {
+                ui.isSaving();
+                }
+
+            PrintWriter p = null;
+            try
+                {
+                f = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), PATCH_EXTENSION));
+                seq.setFile(new File(fd.getDirectory(), fd.getFile()));
+                frame.setTitle(fd.getFile());
+                                
+                p = new PrintWriter(new GZIPOutputStream(new FileOutputStream(f)));
+                if (seq != null) seq.stop();
+                p.println(seq.save(true));          // we just print the JSONObject
+                p.flush();
+                p.close();
+                }
+            catch (Exception ex)
+                {
+                ex.printStackTrace();
+                showSimpleError("Error Saving File", "An error occurred saving the sequence " + f);
+                }
+            finally
+                {
+                try { if (p != null) p.close(); } catch (Exception ex) { }
+                }
+            }
+        }
+        
+    File logFile = null;
+    Sequence[] logs = null;
+    
+    void doLog()
+    	{
+    	if (logFile != null)
+    		{
+            // clean up
+            logItem.setText("Log MIDI ...");
+	       	logFile = null;
+        	logs = null;
+			ReentrantLock lock = seq.getLock();
+			lock.lock();
+			try 
+				{ 
+				seq.setTracks(null);
+				}
+			finally { lock.unlock(); }
+    		}
+    	else
+    		{	
+			if (seq != null) seq.stop();
+
+			boolean multi = showSimpleConfirm("Log MIDI ...", "Some DAWs (like Ableton) cannot properly load\na MIDI file with more than one channel.\n\nBreak out individual channels to separate MIDI files?",
+				"Break Out", "Keep One File");
+
+			FileDialog fd = new FileDialog(getFrame(), "Log MIDI ...", FileDialog.SAVE);
+				
+			disableMenuBar();
+			fd.setVisible(true);
+			enableMenuBar();
+				
+			if (fd.getFile() != null)
+				{
+				try
+					{
+					logFile = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), MIDI_EXTENSION));
+					logs = new Sequence[Seq.NUM_OUTS];
+					Track[] tracks = new Track[Seq.NUM_OUTS];
+					if (multi) 
+						{
+						for(int i = 0; i < tracks.length; i++) 
+							{
+							logs[i] = new Sequence(Sequence.PPQ, Seq.PPQ);
+							tracks[i] = logs[i].createTrack();
+							}
+						}
+					else
+						{
+						logs[0] = new Sequence(Sequence.PPQ, Seq.PPQ);
+						tracks[0] = logs[0].createTrack();
+						}
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try 
+						{
+						seq.setTracks(tracks);
+						}
+					finally { lock.unlock(); }
+					logItem.setText("Stop Logging");
+					}
+				catch (Exception ex)
+					{
+					logItem.setText("Log MIDI ...");
+					ex.printStackTrace();
+					showSimpleError("Error Creating Log", "An error occurred logging MIDI.");
+				
+					// clean up
+					logFile = null;
+					logs = null;
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try 
+						{ 
+						seq.setTracks(null);
+						}
+					finally { lock.unlock(); }
+					}
+				}
+			else
+				{
+				// cancelled, clean up
+				logItem.setText("Log MIDI ...");
+				logFile = null;
+				logs = null;
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try 
+					{ 
+					seq.setTracks(null);
+					}
+				finally { lock.unlock(); }
+				}
+			}
+    	}
+
+
+
+    /* Pops up the export dialog. */
+    void doExportRoot()
+        {
+        FileDialog fd = new FileDialog(getFrame(), "Export Rooted Sequence As...", FileDialog.SAVE);
+                
+        disableMenuBar();
+        fd.setVisible(true);
+        enableMenuBar();
+                
+        File f = null; // make compiler happy
+
+        if (fd.getFile() != null)
+            {
+            // Inform MotifUIs so they can update stuff to save out
+            for(MotifUI ui : list.getMotifUIs())
+                {
+                ui.isSaving();
+                }
+
+            PrintWriter p = null;
+            try
+                {
+                f = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), PATCH_EXTENSION));
+                seq.setFile(new File(fd.getDirectory(), fd.getFile()));
+                frame.setTitle(fd.getFile());
+                                
+                p = new PrintWriter(new GZIPOutputStream(new FileOutputStream(f)));
+                if (seq != null) seq.stop();
+                p.println(seq.save(false));          // we just print the JSONObject
+                p.flush();
+                p.close();
+                }
+            catch (Exception ex)
+                {
+                ex.printStackTrace();
+                showSimpleError("Error Saving File", "An error occurred saving the sequence " + f);
+                }
+            finally
+                {
+                try { if (p != null) p.close(); } catch (Exception ex) { }
+                }
+            }
+        }
+                
+    /* Pops up the open (load) dialog, returning a new Seq resulting from loading. */
+    void doLoad()
+        {
+        FileDialog fd = new FileDialog((JFrame)getFrame(), "Load Sequence...", FileDialog.LOAD);
+        fd.setFilenameFilter(new FilenameFilter()
+            {
+            public boolean accept(File dir, String name)
+                {
+                return ensureFileEndsWith(name, PATCH_EXTENSION).equals(name);
+                }
+            });
+
+        disableMenuBar();
+        fd.setVisible(true);
+        enableMenuBar();
+                
+        if (fd.getFile() != null)
+            {
+            GZIPInputStream stream = null;
+            try
+                {
+                clearUndo();
+                Seq newSeq = Seq.load(seq, new JSONObject(new JSONTokener(stream = new GZIPInputStream(new FileInputStream(fd.getDirectory()+fd.getFile())))));
+                newSeq.setFile(new File(fd.getDirectory(), fd.getFile()));
+                frame.setTitle(fd.getFile());
+
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    this.seq.stop();
+                    this.seq.shutdown();            // kills timer in old sequence
+                    }
+                finally { lock.unlock(); }
+
+                list.removeAll();  // delete old ones
+
+                seq = newSeq;                                
+                reset(seq);
+
+                MotifUI motifui = list.getMotifUIFor(seq.getData());
+                list.setRoot(motifui);
+                list.select(list.getRoot());
+                setMotifUI(motifui);
+                revalidate();
+                repaint();
+                }
+            catch (Exception ex)
+                {
+                ex.printStackTrace();
+                showSimpleError("Error Loading Sequence", "An error occurred loading the sequence " + fd.getFile());
+                }
+            finally
+                {
+                try { stream.close(); } catch (Exception ex) { }
+                }
+            }
+        }
+                
+    /* Pops up the open (load) dialog, returning a new Seq resulting from loading. */
+    void doMerge()
+        {
+        FileDialog fd = new FileDialog((JFrame)getFrame(), "Merge Sequence...", FileDialog.LOAD);
+        fd.setFilenameFilter(new FilenameFilter()
+            {
+            public boolean accept(File dir, String name)
+                {
+                return ensureFileEndsWith(name, PATCH_EXTENSION).equals(name);
+                }
+            });
+
+        disableMenuBar();
+        fd.setVisible(true);
+        enableMenuBar();
+                
+        if (fd.getFile() != null)
+            {
+            GZIPInputStream stream = null;
+            try
+                {
+                Seq newSeq = Seq.load(seq, new JSONObject(new JSONTokener(stream = new GZIPInputStream(new FileInputStream(fd.getDirectory()+fd.getFile())))));
+                clearUndo();
+
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    seq.stop();
+                    }
+                finally { lock.unlock(); }
+
+                list.removeAll();  // delete old ones
+
+                // now merge
+                seq.merge(newSeq.getMotifs());
+                reset(seq);
+
+                MotifUI motifui = list.getMotifUIFor(seq.getData());
+                list.setRoot(motifui);
+                list.select(list.getRoot());
+                setMotifUI(motifui);
+                revalidate();
+                repaint();
+                }
+            catch (Exception ex)
+                {
+                ex.printStackTrace();
+                showSimpleError("Error Mergine Sequence", "An error occurred merging the sequence " + fd.getFile());
+                }
+            finally
+                {
+                try { stream.close(); } catch (Exception ex) { }
+                }
+            }
+        }
+
+    /** Call this immediately after you create the SeqUI JFrame to prepare the menu. */
+    public void setupMenu(JFrame frame)
+        {
+        this.frame = frame;
+        
+        menubar = new JMenuBar();
+        frame.setJMenuBar(menubar);
+
+        // File Menu
+        JMenu fileMenu = new JMenu("File");
+        menubar.add(fileMenu);
+        JMenuItem newItem = new JMenuItem("New Sequence");
+        newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        fileMenu.add(newItem);
+        newItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doNew();
+                }
+            });
+        fileMenu.addSeparator();
+        JMenuItem openItem = new JMenuItem("Load Sequence...");
+        openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        fileMenu.add(openItem);
+        openItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doLoad();
+                }
+            });
+
+        JMenuItem mergeItem = new JMenuItem("Merge Sequence...");
+        fileMenu.add(mergeItem);
+        mergeItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doMerge();
+                }
+            });
+
+        fileMenu.addSeparator();
+        JMenuItem saveItem = new JMenuItem("Save Sequence");
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        fileMenu.add(saveItem);
+        saveItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doSave();
+                }
+            });
+                
+        JMenuItem saveAsItem = new JMenuItem("Save Sequence As...");
+        saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()  | InputEvent.SHIFT_MASK));
+        fileMenu.add(saveAsItem);
+        saveAsItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doSaveAs();
+                }
+            });
+
+        JMenuItem exportRootItem = new JMenuItem("Export Root As...");
+        fileMenu.add(exportRootItem);
+        exportRootItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doExportRoot();
+                }
+            });
+          
+        // Edit Menu
+        JMenu editMenu = new JMenu("Edit");
+        menubar.add(editMenu);
+        undoItem = new JMenuItem("Undo");
+        undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        undoItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doUndo();
+                }
+            });
+        undoItem.setEnabled(false);
+        editMenu.add(undoItem);
+        redoItem = new JMenuItem("Redo");
+        redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        redoItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRedo();
+                }
+            });
+        redoItem.setEnabled(false);
+        editMenu.add(redoItem);
+        pushItem = new JMenuItem("Checkpoint");
+        pushItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        editMenu.add(pushItem);
+        pushItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                push();
+                }
+            });
+                
+        // MIDI Menu
+        JMenu midiMenu = new JMenu("MIDI");
+        menubar.add(midiMenu);
+        JMenuItem midiItem = new JMenuItem("Set MIDI Devices");
+        midiMenu.add(midiItem);
+        midiItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                boolean stopped = false;
+
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { stopped = seq.isStopped(); }
+                finally { lock.unlock(); }
+        
+                if (!stopped)
+                    {
+                    if (showSimpleConfirm("Stop Before Setting Setting MIDI Devices?", "The sequence must be stopped before setting setting MIDI Devices.", "Stop and Set", "Cancel"))
+                        {
+                        lock.lock();
+                        try { seq.stop(); }
+                        finally { lock.unlock(); }
+                        stopped = true;
+                        }
+                    }
+
+                Midi midi = seq.getMIDI();
+                Midi.Tuple old = seq.getMIDITuple();
+                Midi.Tuple tuple = midi.getNewTuple(old, SeqUI.this, seq, "Set MIDI Devices", seq.getIns());
+                if (tuple != Midi.CANCELLED)
+                    {
+                    lock.lock();
+                    try
+                        {
+                        seq.setMIDITuple(tuple);
+                        incrementRebuildInspectorsCount();
+                        }
+                    finally
+                        {
+                        lock.unlock();
+                        }
+                    }
+                }
+            });
+
+        JMenuItem panic = new JMenuItem("Panic");
+        midiMenu.add(panic);
+        panic.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    seq.sendPanic();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                }
+            });
+
+        midiMenu.addSeparator();
+        logItem = new JMenuItem("Log MIDI ...");
+        midiMenu.add(logItem);
+        logItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doLog();
+                }
+            });
+          
+        // Motif Menu
+        JMenu motifMenu = new JMenu("Motif");
+        menubar.add(motifMenu);
+        JMenuItem rootItem = new JMenuItem("Make Root");
+        rootItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        motifMenu.add(rootItem);
+        rootItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                getMotifList().doRoot();
+                }
+            });
+
+        JCheckBoxMenuItem selectedRootItem = new JCheckBoxMenuItem("Set Root When Selecting");
+        selectedFrameIsRoot = Prefs.getLastBoolean("SelectedFrameIsRoot", false);
+        selectedRootItem.setSelected(selectedFrameIsRoot);
+        motifMenu.add(selectedRootItem);
+        selectedRootItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                selectedFrameIsRoot = selectedRootItem.isSelected();
+                Prefs.setLastBoolean("SelectedFrameIsRoot", selectedFrameIsRoot);
+                }
+            });
+        
+
+        motifMenu.addSeparator();
+
+        JMenuItem sortItem = new JMenuItem("Sort Motifs");
+        motifMenu.add(sortItem);
+        sortItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                push();
+                getMotifList().sort();
+                }
+            });
+            
+        JCheckBoxMenuItem smallButtonsItem = new JCheckBoxMenuItem("Small Motif Buttons");
+        motifMenu.add(smallButtonsItem);
+        smallButtonsItem.setSelected(smallButtons);
+        smallButtonsItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                getMotifList().setCompressed(smallButtons = smallButtonsItem.isSelected());
+                Prefs.setLastBoolean("SmallMotifButtons", smallButtons);
+                }
+            });
+        }
+        
+    public boolean getSmallButtons() { return smallButtons; }
+    
+    public void incrementRebuildInspectorsCount() { motifui.rebuildInspectors(++rebuildInspectorsCount);        }
+        
+    /** Returns the window. */
+    public JFrame getFrame() { return frame; }
+    
+    /** Returns the Seq */
+    public Seq getSeq() { return seq; }
+        
+    /** Returns the MotifList */
+    public MotifList getMotifList() { return list; }     
+
+    // How often we update the window, in ms
+    static final long UPDATE_INTERVAL = 1000 / 50;
+    // The last timestep, in ms, when we updated the window
+    long lastUpdate = 0;
+    
+    /** Updates and redraws the MotifList and the current Motif.  Only does so if the last time
+        this method was called was earlier than UPDATE_INTERVAL ago, or if definitely is true. */
+    public void redraw(boolean definitely) 
+        { 
+        long time = System.currentTimeMillis();
+        if (definitely || time < lastUpdate || time - lastUpdate > UPDATE_INTERVAL)     // time to update
+            {
+            lastUpdate = time;
+            _redraw();
+            }
+        }
+    
+    /** This is used exclusively by Seq */
+    public void message(String title, String message)
+        {
+        javax.swing.SwingUtilities.invokeLater(new Runnable()
+            {
+            public void run()
+                {
+                showSimpleError(SeqUI.this, title, message);
+                }
+            });
+        }
+
+    /** This is used exclusively by Seq */
+    public void setCountIn(int val, boolean recording)
+        {
+        javax.swing.SwingUtilities.invokeLater(new Runnable()
+            {
+            public void run()
+                {
+                transport.setCountIn(val, recording);
+                }
+            });
+        }
+        
+
+    void _redraw()
+        {
+        //HashSet<Motif> playingMotifs = new HashSet<>();
+        //ArrayList<Clip> playingClips = seq.getPlayingClips();
+        int time = 0;
+                
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            time = seq.getTime();
+            //for(Clip clip : playingClips)
+            //    {
+            //    playingMotifs.add(clip.getMotif());
+            //    }
+            }
+        finally
+            {
+            lock.unlock();
+            }
+                        
+        //for(MotifUI ui : list.getMotifUIs())
+        //    {
+        //    ui.setPlaying(playingMotifs.contains(ui.getMotif()));
+        //    }
+
+        for(MotifUI ui : list.getMotifUIs())
+            {
+            ui.updateText();
+            }
+
+        if (motifui != null) 
+            {
+            motifui.redraw();
+            }
+        
+        if (transport != null) transport.updateClock(time);
+        }
+                
+    /** Sets the current MotifUI and selects its button in the MotifList */
+    public void setMotifUI(MotifUI motifui) 
+        { 
+        setMotifUI(motifui, true);
+        }
+
+
+    public void setMotifUI(MotifUI motifui, boolean updateStacks) 
+        { 
+        if (this.motifui != null) this.motifui.uiWasUnset();
+        if (this.motifui != null) remove(this.motifui);
+        this.motifui = motifui; 
+        if (motifui != null) add(motifui, BorderLayout.CENTER);
+        MotifListButton button = motifui.getPrimaryButton();
+        if (button != null) getMotifList().select(button, updateStacks);
+        if (motifUIMenu != null) menubar.remove(motifUIMenu);
+        motifUIMenu = motifui.getMenu();
+        if (motifUIMenu != null) menubar.add(motifUIMenu);
+        motifui.uiWasSet();
+        motifui.rebuildInspectors(rebuildInspectorsCount);
+        revalidate(); 
+        repaint(); 
+        }
+
+    /** Returns the current MotifUI */
+    public MotifUI getMotifUI() { return motifui; }     
+    
+    /** Adds the given MotifUI to the MotifList and selects it. */
+    public void addMotifUI(MotifUI ui)
+        {
+        list.doAdd(ui, false);
+        //setMotifUI(ui);                       // doAdd already sets it
+        }
+        
+    public void showMotifUI(MotifUI ui)
+        {
+        setMotifUI(ui);
+        list.scrollTo(ui);
+        }
+
+
+    ArrayList<JMenuItem> disabledMenus = null;
+    int disableCount;
+    /** Disables the menu bar.  disableMenuBar() and enableMenuBar() work in tandem to work around
+        a goofy bug in OS X: you can't disable the menu bar and reenable it: it won't reenable
+        unless the application loses focus and regains it, and even then sometimes it won't work.
+        These functions work properly however.  You want to disable and enable the menu bar because
+        in OS X the menu bar still functions even when in a modal dialog!  Bad OS X Java errors.
+    */
+    public void disableMenuBar()
+        {
+        if (disabledMenus == null)
+            {
+            disabledMenus = new ArrayList<JMenuItem>();
+            disableCount = 0;
+            JFrame ancestor = ((JFrame)(SwingUtilities.getWindowAncestor(this)));
+            if (ancestor == null) return;
+            JMenuBar bar = ancestor.getJMenuBar();
+            if (bar == null) return;
+            for(int i = 0; i < bar.getMenuCount(); i++)
+                {
+                JMenu menu = bar.getMenu(i);
+                if (menu != null)
+                    {
+                    for(int j = 0; j < menu.getItemCount(); j++)
+                        {
+                        JMenuItem item = menu.getItem(j);
+                        if (item != null && item.isEnabled())
+                            {
+                            disabledMenus.add(item);
+                            item.setEnabled(false);
+                            }
+                        }
+                    }
+                }
+            }
+        else
+            {
+            disableCount++;
+            return;
+            }
+        }       
+        
+    /** Enables the menu bar.  disableMenuBar() and enableMenuBar() work in tandem to work around
+        a goofy bug in OS X: you can't disable the menu bar and reenable it: it won't reenable
+        unless the application loses focus and regains it, and even then sometimes it won't work.
+        These functions work properly however.  You want to disable and enable the menu bar because
+        in OS X the menu bar still functions even when in a modal dialog!  Bad OS X Java errors.
+    */
+    public void enableMenuBar()
+        {
+        if (disabledMenus == null) return;
+        if (disableCount == 0)
+            {
+            for(int i = 0; i < disabledMenus.size(); i++)
+                {
+                disabledMenus.get(i).setEnabled(true);
+                }
+            disabledMenus = null;
+            }
+        else
+            {
+            disableCount--;
+            }
+        }       
+        
+    /** Called when we we have stopped.  This allows armed Motif UIs to revise themselves. */
+    public void stopped() 
+        {
+        for(MotifUI motifui : list.getMotifUIs())
+            {
+            motifui.stopped();
+            } 
+        
+        // Write out sequence log
+        if (logs != null)
+        	{
+        	try
+        		{
+        		Track[] tracks = seq.getTracks();
+        		if (tracks[1] != null) // multi
+        			{
+        			for(int i = 0; i < Seq.NUM_OUTS; i++)
+        				{
+        				if (seq.isValidTrack(i))
+        					{
+	        				File file = new File(logFile.getCanonicalPath() + "." + (i + 1) + ".mid");
+    	    				javax.sound.midi.MidiSystem.write(logs[i], 1, file);
+        					}
+        				}
+        			}
+        		else
+        			{
+    	    		javax.sound.midi.MidiSystem.write(logs[0], 1, logFile);
+    	    		}
+        	}
+        catch (IOException ex)
+        	{
+        	ex.printStackTrace();
+                showSimpleError("Error Creating Log", "An error occurred logging MIDI.");
+        	}
+        	logs = null;
+        	logFile = null;
+        	}
+        }
+
+
+    /** Display a simple (OK / Cancel) confirmation message.  Return the result (ok = true, cancel = false). */
+    public boolean showSimpleConfirm(String title, String message)
+        {
+        disableMenuBar();
+        boolean ret = (JOptionPane.showConfirmDialog(SeqUI.this, message, title,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null) == JOptionPane.OK_OPTION);
+        enableMenuBar();
+        return ret;
+        }
+        
+    /** Display a simple (OK-OPTION / Cancel) confirmation message.  Return the result (okoption = true, cancel = false). */
+    public boolean showSimpleConfirm(String title, String message, String okOption)
+        {
+        disableMenuBar();
+        int ret = JOptionPane.showOptionDialog(SeqUI.this, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+            new String[] { okOption, "Cancel" } , okOption);
+        enableMenuBar();
+        return (ret == 0);
+        }
+
+    public boolean showSimpleConfirm(String title, String message, String okOption, String cancelOption)
+        {
+        disableMenuBar();
+        int ret = JOptionPane.showOptionDialog(SeqUI.this, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+            new String[] { okOption, cancelOption } , okOption);
+        enableMenuBar();
+        return (ret == 0);
+        }
+        
+    boolean inSimpleError;
+
+    /** Display a simple error message. */
+    public void showSimpleError(String title, String message)
+        {
+        showSimpleError(this, title, message);
+        }
+
+    /** Display a simple error message. */
+    public void showSimpleError(JComponent parent, String title, String message)
+        {
+        // A Bug in OS X (perhaps others?) Java causes multiple copies of the same Menu event to be issued
+        // if we're popping up a dialog box in response, and if the Menu event is caused by command-key which includes
+        // a modifier such as shift.  To get around it, we're just blocking multiple recursive message dialogs here.
+        
+        if (inSimpleError) return;
+        inSimpleError = true;
+        disableMenuBar();
+        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
+        enableMenuBar();
+        inSimpleError = false;
+        }
+
+    /** Display a simple error message. */
+    public void showSimpleError(JComponent parent, String title, String message, JComponent extra)
+        {
+        // A Bug in OS X (perhaps others?) Java causes multiple copies of the same Menu event to be issued
+        // if we're popping up a dialog box in response, and if the Menu event is caused by command-key which includes
+        // a modifier such as shift.  To get around it, we're just blocking multiple recursive message dialogs here.
+        
+        if (inSimpleError) return;
+        inSimpleError = true;
+        disableMenuBar();
+
+        JPanel panel = new JPanel();        
+        panel.setLayout(new BorderLayout());
+        panel.add(new JLabel(message), BorderLayout.NORTH);
+
+        JPanel inside = new JPanel();        
+        inside.setLayout(new BorderLayout());
+        inside.add(extra, BorderLayout.NORTH);
+        
+        JScrollPane pane = new JScrollPane(inside);
+        pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        pane.setPreferredSize(new Dimension(30, 64));
+        panel.add(pane, BorderLayout.CENTER);
+        
+        JOptionPane.showMessageDialog(parent, panel, title, JOptionPane.ERROR_MESSAGE);
+        enableMenuBar();
+        inSimpleError = false;
+        }
+
+
+    // TESTING
+    public static void main(String[] args) throws Exception
+        {
+        // Set up Menu and FlatLAF
+        SeqUI.setupGUI();
+        
+        // Set up Seq
+        Seq seq = new Seq();            // starts timer running
+        seq.setupForMIDI(); // SeqUI.class, args, 1, 1);   // sets up MIDI in and out
+//        seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
+
+        // Build GUI
+        SeqUI ui = new SeqUI(seq);
+        
+        seq.motif.stepsequence.StepSequence dSeq = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
+        seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, dSeq);
+
+//        seq.motif.notes.Notes dSeq = new seq.motif.notes.Notes(seq);
+//        seq.motif.notes.gui.NotesUI ssui = new seq.motif.notes.gui.NotesUI(seq, ui, dSeq);
+
+        // Build Clip Tree
+        seq.setData(dSeq);
+
+        seq.sequi = ui;
+        JFrame frame = new JFrame();
+        frame.setTitle("Untitled");
+        ui.setupMenu(frame);
+        ui.addMotifUI(ssui);
+        frame.getContentPane().add(ui);
+        frame.pack();
+        frame.setVisible(true);
+                
+        seq.reset();
+        ssui.revise();
+        }
+    }

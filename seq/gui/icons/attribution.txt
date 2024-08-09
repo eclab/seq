@@ -1,0 +1,45 @@
+Seq uses at least the following icons, to which we are indebted.
+
+<a href="https://www.flaticon.com/free-icons/delay" title="delay icons">Delay icons created by HEA POH LIN - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/split" title="split icons">Split icons created by Rahul Kaklotar - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/join" title="join icons">Join icons created by Rahul Kaklotar - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/parallel" title="parallel icons">Parallel icons created by mavadee - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/finish" title="finish icons">Finish icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/lifecycle" title="lifecycle icons">Lifecycle icons created by Iconjam - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/waterfall" title="waterfall icons">Waterfall icons created by Iconjam - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/random" title="random icons">Random icons created by Buandesign - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/random" title="random icons">Random icons created by Pixel perfect - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/mute" title="mute icons">Mute icons created by Pixel perfect - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/silence" title="silence icons">Silence icons created by HideMaru - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/pause" title="pause icons">Pause icons created by Pixel perfect - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/recurrent" title="recurrent icons">Recurrent icons created by Rakib Hassan Rahim - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/left-arrow" title="left arrow icons">Left arrow icons created by NajmunNahar - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/zoom-out" title="zoom out icons">Zoom out icons created by Gregor Cresnar - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/zoom-out" title="zoom in icons">Zoom in icons created by Gregor Cresnar - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/mathematics" title="mathematics icons">Mathematics icons created by Angelo Troiano - Flaticon</a>
+
+
+<a href="https://www.flaticon.com/free-icons/flowchart" title="flowchart icons">Flowchart icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/drum-machine" title="drum machine icons">Drum machine icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/hierarchy" title="hierarchy icons">Hierarchy icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/parallel" title="parallel icons">Parallel icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/parallel" title="parallel icons">Parallel icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/parallel" title="parallel icons">Parallel icons created by mavadee - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/neural-network" title="neural network icons">Neural network icons created by Vectors Tank - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/mixer" title="mixer icons">Mixer icons created by Victoruler - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/process" title="process icons">Process icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/parallel" title="parallel icons">Parallel icons created by Pixel perfect - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/random" title="random icons">Random icons created by Pixel perfect - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/music" title="music icons">Music icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/flowchart" title="flowchart icons">Flowchart icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/chip" title="chip icons">Chip icons created by Dimitry Miroliubov - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/hierarchy" title="hierarchy icons">Hierarchy icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/transition" title="transition icons">Transition icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/chance" title="chance icons">Chance icons created by Vectors Tank - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/random" title="random icons">Random icons created by Uniconlabs - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/parallel" title="parallel icons">Parallel icons created by Pixel perfect - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/choice" title="choice icons">Choice icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/flowchart" title="flowchart icons">Flowchart icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/strategic-plan" title="strategic plan icons">Strategic plan icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/flowchart" title="flowchart icons">Flowchart icons created by Khoirul Huda - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/chord" title="chord icons">Chord icons created by Royyan Wijaya - Flaticon</a>

@@ -1,0 +1,82 @@
+package seq.engine;
+
+import seq.util.*;
+import java.util.*;
+import javax.sound.midi.*;
+
+/**
+   A convenience wrapper for a given input MIDI device in the Seq's Midi.Tuple.
+   In has a channel, which can be Midi.Tuple.IN_CHANNEL_OMNI (0).  
+   When incoming messages arrive they are stored in the in, and can
+   then can be retrieved and cleared via the getMessages() method, which
+   is threadsafe.
+**/
+
+public class In implements Receiver
+    {
+    private static final long serialVersionUID = 1;
+
+    // Returned by default when there are no messages, rather than building new empty arrays each time.
+    static final MidiMessage[] EMPTY = new MidiMessage[0];
+    // Message mailbox
+    ArrayList<MidiMessage> messages = new ArrayList<>();
+    // The tuple's device wrapper
+    Midi.MidiDeviceWrapper wrapper;
+    // The tuple's channel
+    int channel;
+    MidiMessage[] latestMessages = EMPTY;
+    
+    /** WARNING this will throw an exception if the tuple has not yet been set up */
+    public In(Seq seq, int index)
+        {
+        wrapper = seq.tuple.inWrap[index];
+        channel = seq.tuple.inChannel[index];
+        if (wrapper != null) wrapper.addToTransmitter(this);
+        }
+
+    public Midi.MidiDeviceWrapper getWrapper() { return wrapper; }
+    public void setWrapper(Midi.MidiDeviceWrapper wrapper) { this.wrapper = wrapper; }
+        
+    /** Returns the channel */
+    public int getChannel() { return channel; }
+        
+    /** Closes the In (required because In is a Receiver, but this method does nothing) */
+    public void close() { }     // we don't care
+        
+    /** Receives the given message and adds it to the mailbox. */
+    public void send(MidiMessage message, long timestamp)
+        {
+        synchronized(this)
+            {
+            messages.add(message);
+            }
+        }
+        
+    /** Returns all current messages in the mailbox.  The mailbox will be cleared and
+        updated each time the sequencer steps. */
+    public MidiMessage[] getMessages()
+        {
+        return latestMessages;
+        }
+    
+    // Pulls all current messages in the mailbox into latestMessages, then clears the mailbox.
+    void pullMessages()
+        {
+        synchronized(this)
+            {
+            if (messages.isEmpty()) 
+                {
+                latestMessages = EMPTY;
+                }
+            latestMessages = ((MidiMessage[])(messages.toArray(EMPTY)));
+            messages.clear();
+            }
+        }
+    
+    public String toString()
+        {
+        if (wrapper == null) return "None";
+        return (channel == 0 ? "Omni" : ("Ch " + channel)) + " " + wrapper.toString();
+        //return ("<html><font size='-2'>" + (channel == 0 ? "Omni" : ("Channel " + channel)) + "<br>" + wrapper.toString() + "</font></html>");
+        }
+    }
