@@ -1,4 +1,4 @@
-JAVACFLAGS = 
+JAVACFLAGS = -cp "./libraries/*"
 JAVAC = javac ${JAVACFLAGS}
 FLAGS = -g -Xlint:deprecation
 
@@ -54,8 +54,8 @@ jar: all
 	touch /tmp/manifest.add
 	rm /tmp/manifest.add
 	echo "Main-Class: seq.gui.SeqUI" > /tmp/manifest.add
-	cd seq/libraries ; jar -xvf coremidi4j-1.6.jar ; jar -xvf json.jar ; jar -xvf flatlaf-3.3-20231031.152110-17.jar
-	mv seq/libraries/META-INF . ; mv seq/libraries/uk . ; mv seq/libraries/com . ; mv seq/libraries/org . 
+	cd libraries ; jar -xvf coremidi4j-1.6.jar ; jar -xvf json.jar ; jar -xvf flatlaf-3.4.1.jar
+	mv libraries/META-INF . ; mv libraries/uk . ; mv libraries/com . ; mv libraries/org . 
 	jar -cvfm install/seq.jar /tmp/manifest.add `find seq -name "*.class"` `find seq -name "*.html"` `find seq -name "*.png"` `find seq -name "*.jpg"` uk/ META-INF/ org/ com/ 
 	echo jar -cvfm install/seq.jar `find seq -name "*.class"` `find seq -name "*.html"` `find seq -name "*.png"` `find seq -name "*.jpg"` uk/ META-INF/ org/ com/ 
 	rm -rf uk META-INF com org module-info.class
