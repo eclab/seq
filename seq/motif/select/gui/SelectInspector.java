@@ -29,10 +29,10 @@ public class SelectInspector extends WidgetList
     JCheckBox playFirst;
     //JCheckBox immediate;
     JCheckBox cut;
-    JButton release;
+    //JButton release;
     JButton finish;
-    SmallDial[] dials = new SmallDial[Motif.NUM_PARAMETERS];
-    JComboBox dialIn;
+    //SmallDial[] dials = new SmallDial[Motif.NUM_PARAMETERS];
+    //JComboBox dialIn;
     
     public SelectInspector(Seq seq, Select select, SelectUI selectui)
         {
@@ -167,6 +167,7 @@ public class SelectInspector extends WidgetList
                     }
                 });
 
+/*
             for(int i = 0; i < 8; i++)
                 {
                 final int _i = i;
@@ -193,8 +194,9 @@ public class SelectInspector extends WidgetList
                         }
                     };
                 }
+*/
 
-
+/*
             dialIn = new JComboBox(ins);
             dialIn.setSelectedIndex(select.getCCIn());
             dialIn.addActionListener(new ActionListener()
@@ -208,10 +210,12 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+*/
                         
             }
         finally { lock.unlock(); }
 
+/*
         release = new JButton("All Off");
         release.addActionListener(new ActionListener()
             {
@@ -231,7 +235,8 @@ public class SelectInspector extends WidgetList
                 finally { lock.unlock(); }                              
                 }
             });
-                        
+*/
+   
         finish = new JButton("Finish");
         finish.addActionListener(new ActionListener()
             {
@@ -253,21 +258,22 @@ public class SelectInspector extends WidgetList
             });
 
         Box actions = new Box(BoxLayout.X_AXIS);
-        actions.add(release);
+        //actions.add(release);
         actions.add(finish);
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(actions, BorderLayout.WEST);
         
+        /*
         Box dialBox = new Box(BoxLayout.X_AXIS);
         dialBox.add(new WidgetList(new String[] { "Param 1", "Param 2", "Param 3", "Param 4", },
                 new JComponent[] { dials[0].getLabelledDial("127"), dials[1].getLabelledDial("127"), dials[2].getLabelledDial("127"), dials[3].getLabelledDial("127"), }));
         dialBox.createHorizontalStrut(16); 
         dialBox.add(new WidgetList(new String[] { "Param 5", "Param 6", "Param 7", "Param 8", },
                 new JComponent[] { dials[4].getLabelledDial("127"), dials[5].getLabelledDial("127"), dials[6].getLabelledDial("127"), dials[7].getLabelledDial("127"), }));
-                        
+         */               
 
-        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Control In", "Control Out", "Quantization", "Auto-Play First", "Cut Notes",  "Param CCs In", "Param CCs" }, 
+        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Control In", "Control Out", "Quantization", "Auto-Play First", "Cut Notes", }, //  "Param CCs In", "Param CCs" }, 
             new JComponent[] 
                 {
                 panel,
@@ -279,8 +285,8 @@ public class SelectInspector extends WidgetList
                 playFirst,
                 //immediate,
                 cut,
-                dialIn,
-                dialBox,
+                //dialIn,
+                //dialBox,
                 });
 
         remove(result);

@@ -445,10 +445,12 @@ public class SelectClip extends Clip
                     {
                     doRelease();
                     }
+                /*
                 else if (select.getIn() == select.getCCIn())
                     {
                     processCCIn((ShortMessage)messages[i], select);
                     }
+                */
                 }
             else if (isNoteOn(messages[i]))
                 {
@@ -490,6 +492,7 @@ public class SelectClip extends Clip
         
 
 
+/*
 
     // The last CC parameter received
     int lastCC = -1;
@@ -546,7 +549,7 @@ public class SelectClip extends Clip
                 }
             }
         }
-    
+    */
     
     
     //// PROCESSING DIFFERENT MODES
@@ -557,7 +560,7 @@ public class SelectClip extends Clip
         getChildrenFromMIDI(next, repeating ? remove : null);
         getChildrenFromUI(next, repeating ? remove : null);
 
-        processCCIn();
+//        processCCIn();
         if (select.getQuantization() == Select.QUANTIZATION_NONE)
             {
             if (shouldRelease) release();
@@ -722,7 +725,7 @@ public class SelectClip extends Clip
         // Load into next and remove all the new children being added and removed
         getChildrenFromMIDI(next, repeating ? remove : null);
         getChildrenFromUI(next, repeating ? remove : null);
-        processCCIn();
+//        processCCIn();
 
         // If the user asked to release or finish, and we're in immediate mode, do so now
         if (select.getQuantization() == Select.QUANTIZATION_NONE)

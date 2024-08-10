@@ -224,6 +224,9 @@ public class SelectUI extends MotifUI
                 };
             p.setHorizontalAlignment(JLabel.CENTER);
             p.setBorder(BorderFactory.createMatteBorder(0,0,0,1,HEADER_LINE_COLOR));
+            verticalHeader.add(p);
+            
+            /*
             Box box = new Box(BoxLayout.X_AXIS);
             box.add(box.createHorizontalStrut(4));
             box.add(new Dial(0.5)
@@ -232,6 +235,7 @@ public class SelectUI extends MotifUI
                 });
             box.add(p);
             verticalHeader.add(box);
+            */
             }
         }
                 

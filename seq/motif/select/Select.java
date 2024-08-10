@@ -156,12 +156,14 @@ public class Select extends Motif
     public static final int MODE_MULTI_ONE_SHOT = 2;
     public static final int MODE_MULTI_REPEATING = 3;
 
+    /*
     int[] cc = new int[NUM_PARAMETERS];
     public int getCC(int index) { return cc[index]; }
     public void setCC(int index, int val) { cc[index] = val; }
-
+	*/
+	
     int in = 0;
-    int ccIn = 0;
+    //int ccIn = 0;
     int out = 0;
     int startNote = DEFAULT_START_NOTE;
     
@@ -203,11 +205,11 @@ public class Select extends Motif
         presently. */
     public void setQuantization(int val) { quantization = val; }
     
-    /** Return the index in the Seq's In array for the In used to set parameters. */
-    public int getCCIn() { return ccIn; }
+    /* Return the index in the Seq's In array for the In used to set parameters. */
+    //public int getCCIn() { return ccIn; }
     
-    /** Set the index in the Seq's In array for the In used to set parameters. */
-    public void setCCIn(int val) { ccIn = val; Prefs.setLastControlDevice(0, val, "seq.motif.select.Select"); }
+    /* Set the index in the Seq's In array for the In used to set parameters. */
+    //public void setCCIn(int val) { ccIn = val; Prefs.setLastControlDevice(0, val, "seq.motif.select.Select"); }
 
     /** Return the index in the Seq's In array for the In used to read MIDI notes for triggering. */
     public int getIn() { return in; }
@@ -269,7 +271,7 @@ public class Select extends Motif
         // Load devices. Note I'm not using setOut(...) etc. which would write the device to prefs
         out = (Prefs.getLastOutDevice(0, "seq.motif.select.Select"));
         in = (Prefs.getLastInDevice(0, "seq.motif.select.Select"));
-        ccIn = (Prefs.getLastControlDevice(0, "seq.motif.select.Select"));
+        //ccIn = (Prefs.getLastControlDevice(0, "seq.motif.select.Select"));
         }
                 
     public Clip buildClip(Clip parent)
@@ -290,11 +292,13 @@ public class Select extends Motif
         setCut(from.optBoolean("cut", false));
         setStartNote(from.optInt("startnote", DEFAULT_START_NOTE));
         setIn(from.optInt("in", 0));
+        /*
         JSONArray param = from.getJSONArray("cc");
         for(int i = 0; i < NUM_PARAMETERS; i++)
             {
             setCC(i, param.getInt(i));
             }
+        */
         }
         
     public void save(JSONObject to) throws JSONException
@@ -305,12 +309,14 @@ public class Select extends Motif
         to.put("cut", getCut());
         to.put("startnote", getStartNote());
         to.put("in", getIn());
+        /*
         JSONArray cc = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
             {
             cc.put(getCC(i));
             }
         to.put("cc", cc);
+        */
         }
 
     static int counter = 1;
