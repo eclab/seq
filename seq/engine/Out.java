@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.engine;
 
 import seq.util.*;
@@ -91,8 +96,8 @@ public class Out
         
         
     boolean sendMIDI(MidiMessage message)
-    	{
-    	Receiver receiver = null;
+        {
+        Receiver receiver = null;
         //Receiver receiver = seq.emitter;
         Midi.Tuple tuple = seq.tuple;
         if (receiver == null)
@@ -102,45 +107,45 @@ public class Out
             if (wrapper == null) return false;
             receiver = wrapper.getReceiver();
             }
-		receiver.send(message, -1L); 
-		javax.sound.midi.Track[] tracks = seq.getTracks();
-		if (tracks != null)
-			{
-			if (tracks[1] != null) 	// it's multi
-				{
-				tracks[index].add(new javax.sound.midi.MidiEvent(message, seq.getTime()));
-				seq.setValidTrack(index, true);
-				}
-			else
-				{
-				tracks[0].add(new javax.sound.midi.MidiEvent(message, seq.getTime()));
-				}
-			}
+        receiver.send(message, -1L); 
+        javax.sound.midi.Track[] tracks = seq.getTracks();
+        if (tracks != null)
+            {
+            if (tracks[1] != null)  // it's multi
+                {
+                tracks[index].add(new javax.sound.midi.MidiEvent(message, seq.getTime()));
+                seq.setValidTrack(index, true);
+                }
+            else
+                {
+                tracks[0].add(new javax.sound.midi.MidiEvent(message, seq.getTime()));
+                }
+            }
         return true;
-    	}
-    	
+        }
+        
     // Send a one-byte message
     boolean send(int command)
         {
         try 
-        	{ 
-        return sendMIDI(new ShortMessage(command));
-        	}
+            { 
+            return sendMIDI(new ShortMessage(command));
+            }
         catch (InvalidMidiDataException ex) { return false; }
 
 /*
-        Receiver receiver = seq.emitter;
-        Midi.Tuple tuple = seq.tuple;
-        if (receiver == null)
-            {
-            if (tuple == null) return false;
-            Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
-            if (wrapper == null) return false;
-            receiver = wrapper.getReceiver();
-            }
-        try { receiver.send(new ShortMessage(command), -1L); }
-        catch (InvalidMidiDataException ex) { return false; }
-        return true;
+  Receiver receiver = seq.emitter;
+  Midi.Tuple tuple = seq.tuple;
+  if (receiver == null)
+  {
+  if (tuple == null) return false;
+  Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+  if (wrapper == null) return false;
+  receiver = wrapper.getReceiver();
+  }
+  try { receiver.send(new ShortMessage(command), -1L); }
+  catch (InvalidMidiDataException ex) { return false; }
+  return true;
 */
         }
 
@@ -148,24 +153,24 @@ public class Out
     boolean sendToChannel(int command, int data, int channel)
         {
         try 
-        	{ 
-        return sendMIDI(new ShortMessage(command, channel - 1, data));
-        	}
+            { 
+            return sendMIDI(new ShortMessage(command, channel - 1, data));
+            }
         catch (InvalidMidiDataException ex) { return false; }
 
 /*
-        Receiver receiver = seq.emitter;
-        Midi.Tuple tuple = seq.tuple;
-        if (receiver == null)
-            {
-            if (tuple == null) return false;
-            Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
-            if (wrapper == null) return false;
-            receiver = wrapper.getReceiver();
-            }
-        try { receiver.send(new ShortMessage(command, channel - 1, data), -1L); } 
-        catch (InvalidMidiDataException ex) { return false; }
-        return true;
+  Receiver receiver = seq.emitter;
+  Midi.Tuple tuple = seq.tuple;
+  if (receiver == null)
+  {
+  if (tuple == null) return false;
+  Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+  if (wrapper == null) return false;
+  receiver = wrapper.getReceiver();
+  }
+  try { receiver.send(new ShortMessage(command, channel - 1, data), -1L); } 
+  catch (InvalidMidiDataException ex) { return false; }
+  return true;
 */
         }
 
@@ -173,24 +178,24 @@ public class Out
     boolean sendToChannel(int command, int data1, int data2, int channel)
         {
         try 
-        	{ 
-        return sendMIDI(new ShortMessage(command, channel - 1, data1, data2));
-        	}
+            { 
+            return sendMIDI(new ShortMessage(command, channel - 1, data1, data2));
+            }
         catch (InvalidMidiDataException ex) { return false; }
 
 /*
-        Receiver receiver = seq.emitter;
-        Midi.Tuple tuple = seq.tuple;
-        if (receiver == null)
-            {
-            if (tuple == null) return false;
-            Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
-            if (wrapper == null) return false;
-            receiver = wrapper.getReceiver();
-            }
-        try { receiver.send(new ShortMessage(command, channel - 1, data1, data2), -1L); }
-        catch (InvalidMidiDataException ex) { return false; }
-        return true;
+  Receiver receiver = seq.emitter;
+  Midi.Tuple tuple = seq.tuple;
+  if (receiver == null)
+  {
+  if (tuple == null) return false;
+  Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+  if (wrapper == null) return false;
+  receiver = wrapper.getReceiver();
+  }
+  try { receiver.send(new ShortMessage(command, channel - 1, data1, data2), -1L); }
+  catch (InvalidMidiDataException ex) { return false; }
+  return true;
 */
         }
 
@@ -212,24 +217,24 @@ public class Out
     public boolean sysex(byte[] sysex)
         {
         try 
-        	{ 
-        return sendMIDI(new SysexMessage(sysex, sysex.length));
-        	}
+            { 
+            return sendMIDI(new SysexMessage(sysex, sysex.length));
+            }
         catch (InvalidMidiDataException ex) { return false; }
 
         /*
-        Receiver receiver = seq.emitter;
-        Midi.Tuple tuple = seq.tuple;
-        if (receiver == null)
-            {
-            if (tuple == null) return false;
-            Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
-            if (wrapper == null) return false;
-            receiver = wrapper.getReceiver();
-            }
-        try { receiver.send(new SysexMessage(sysex, sysex.length), -1L); }
-        catch (InvalidMidiDataException ex) { return false; }
-        return true;
+          Receiver receiver = seq.emitter;
+          Midi.Tuple tuple = seq.tuple;
+          if (receiver == null)
+          {
+          if (tuple == null) return false;
+          Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+          if (wrapper == null) return false;
+          receiver = wrapper.getReceiver();
+          }
+          try { receiver.send(new SysexMessage(sysex, sysex.length), -1L); }
+          catch (InvalidMidiDataException ex) { return false; }
+          return true;
         */
         }
     

@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.motif.automaton;
 
 import seq.engine.*;
@@ -674,7 +679,7 @@ public class Automaton extends Motif
 //                System.err.println("--- Changing child " + motifnode.child + " -> " + map2.get(motifnode.child));
                 motifnode.child = map2.get(motifnode.child);
                 }
-            }        	
+            }           
 
         return other;
         }

@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.motif.series.gui;
 
 import seq.motif.series.*;
@@ -418,7 +423,7 @@ public class SeriesChildInspector extends WidgetList
                 if (seq == null) return;
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
-                try { getData().setStart(start.isSelected(), series); }		// FIXME: is this the series or the child I should be passing in?
+                try { getData().setStart(start.isSelected(), series); }         // FIXME: is this the series or the child I should be passing in?
                 finally { lock.unlock(); }                              
                 }
             });

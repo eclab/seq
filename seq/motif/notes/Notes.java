@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.motif.notes;
 
 import seq.engine.*;
@@ -234,14 +239,14 @@ public class Notes extends Motif
     int maxNoteOffPosition = 0;
     // Do I play out notes as I am recording them?
     boolean echo = true;
-	
-	
-	public static final int NO_MIDI_PARAMETER = 0;
-	public static final int BEND = 1;
-	public static final int CC_7 = 2;
-	public static final int CC_14 = 3;
-	public static final int NRPN = 4;
-	public static final int RPN = 5;
+        
+        
+    public static final int NO_MIDI_PARAMETER = 0;
+    public static final int BEND = 1;
+    public static final int CC_7 = 2;
+    public static final int CC_14 = 3;
+    public static final int NRPN = 4;
+    public static final int RPN = 5;
     int[] midiParameterType = new int[NUM_PARAMETERS];
     int[] midiParameterMSB = new int[NUM_PARAMETERS];
     int[] midiParameterLSB = new int[NUM_PARAMETERS];
@@ -956,22 +961,22 @@ public class Notes extends Motif
         setIn(obj.optInt("in", 0));
         JSONArray typeArray = obj.optJSONArray("mtype");
         if (typeArray != null)
-        	{
-			for(int i = 0; i < NUM_PARAMETERS; i++)
-				{
-				midiParameterType[i] = typeArray.optInt(i, 0);
-				}
-			JSONArray msbArray = obj.getJSONArray("msb");
-			for(int i = 0; i < NUM_PARAMETERS; i++)
-				{
-				midiParameterMSB[i] = msbArray.optInt(i, 0);
-				}
-			JSONArray lsbArray = obj.getJSONArray("lsb");
-			for(int i = 0; i < NUM_PARAMETERS; i++)
-				{
-				midiParameterLSB[i] = lsbArray.optInt(i, 0);
-        		}
-        	}
+            {
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                midiParameterType[i] = typeArray.optInt(i, 0);
+                }
+            JSONArray msbArray = obj.getJSONArray("msb");
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                midiParameterMSB[i] = msbArray.optInt(i, 0);
+                }
+            JSONArray lsbArray = obj.getJSONArray("lsb");
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                midiParameterLSB[i] = lsbArray.optInt(i, 0);
+                }
+            }
         JSONArray eventsArray = obj.getJSONArray("events");
         events = new ArrayList<Event>();
         for(int i = 0; i < eventsArray.length(); i++)
@@ -988,21 +993,21 @@ public class Notes extends Motif
         obj.put("in", getIn());
         JSONArray typeArray = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
-        	{
-        	typeArray.put(i, midiParameterType[i]);
-        	}
+            {
+            typeArray.put(i, midiParameterType[i]);
+            }
         obj.put("mtype", typeArray);
         JSONArray msbArray = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
-        	{
-        	msbArray.put(i, midiParameterMSB[i]);
-        	}
+            {
+            msbArray.put(i, midiParameterMSB[i]);
+            }
         obj.put("msb", msbArray);
         JSONArray lsbArray = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
-        	{
-        	lsbArray.put(i, midiParameterLSB[i]);
-        	}
+            {
+            lsbArray.put(i, midiParameterLSB[i]);
+            }
         obj.put("lsb", lsbArray);
         JSONArray eventsArray = new JSONArray();
         for(Event event : events)

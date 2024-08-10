@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.motif.stepsequence.gui;
 
 import seq.motif.stepsequence.*;
@@ -47,9 +52,9 @@ public class StepSequenceUI extends MotifUI
         
     public void markAllDirty() { allDirty = true; }
     public void markDirty(StepUI step)
-    	{
-    	if (!allDirty) dirtySteps.add(step);
-    	}
+        {
+        if (!allDirty) dirtySteps.add(step);
+        }
     public void clearAllDirty() { allDirty = false; dirtySteps.clear(); updating = false; }
     public boolean isDirty(StepUI step) { return allDirty || dirtySteps.contains(step);  }
     public boolean isUpdating() { return updating; }
@@ -58,17 +63,17 @@ public class StepSequenceUI extends MotifUI
     int[] currentSteps = null;
     
     protected void paintComponent(Graphics g)
-    	{
-    	if (allDirty)
-    		{
-    		super.paintComponent(g);
-    		}
-    	else
-    		{
-    		// do NOT paint component, it'll wipe the component entirely
-    		}
-    	}
-    	
+        {
+        if (allDirty)
+            {
+            super.paintComponent(g);
+            }
+        else
+            {
+            // do NOT paint component, it'll wipe the component entirely
+            }
+        }
+        
     public void updateSizes()
         {
         // First get all the sizes
@@ -225,67 +230,67 @@ public class StepSequenceUI extends MotifUI
     
     
           
-        public void updateDirty()
-        	{
+    public void updateDirty()
+        {
         updating = true;
-        	StepSequenceClip clip = ((StepSequenceClip)(getDisplayClip()));
+        StepSequenceClip clip = ((StepSequenceClip)(getDisplayClip()));
         if (clip != null)
-        	{
-        	int numTracks = 0;
-			ReentrantLock lock = seq.getLock();
-			lock.lock();
-			try 
-				{
-				// Determine the current and previous steps
-			 	numTracks = ss.getNumTracks();
-				if (currentSteps == null || currentSteps.length != numTracks)
-					{
-					// Gotta rebuild current steps, there are no last steps
-					currentSteps = new int[numTracks];
-					for(int i = 0; i < numTracks; i++)
-						{
-						currentSteps[i] = clip.getCurrentStep(i);
-						}
-					lastSteps = null;		// they're invalid
-					}
-				else
-					{
-					// move over the current steps to last steps and reload
-					if (lastSteps == null || lastSteps.length != numTracks)
-						{
-						lastSteps = new int[numTracks];
-						}
-					for(int i = 0; i < numTracks; i++)
-						{
-						lastSteps[i] = currentSteps[i];
-						currentSteps[i] = clip.getCurrentStep(i);
-						}
-					}
-				}
-			finally { lock.unlock(); }
-				
-			// Now, who's dirty?
-			if (lastSteps == null)
-				markAllDirty();
-			else
-				{
-				for(int i = 0; i < numTracks; i++)
-					{
-					if (lastSteps[i] != currentSteps[i]) // it's changed
-						{
-						TrackUI trackui = getTrack(i);
-						markDirty(trackui.getStep(lastSteps[i]));
-						markDirty(trackui.getStep(currentSteps[i]));
-						}
-					}
-				}
-			}
-		else
-			{
-			// uhm, invalid clip I guess, mark us as fully dirty
-			allDirty = true;
-			}
-		}
+            {
+            int numTracks = 0;
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try 
+                {
+                // Determine the current and previous steps
+                numTracks = ss.getNumTracks();
+                if (currentSteps == null || currentSteps.length != numTracks)
+                    {
+                    // Gotta rebuild current steps, there are no last steps
+                    currentSteps = new int[numTracks];
+                    for(int i = 0; i < numTracks; i++)
+                        {
+                        currentSteps[i] = clip.getCurrentStep(i);
+                        }
+                    lastSteps = null;               // they're invalid
+                    }
+                else
+                    {
+                    // move over the current steps to last steps and reload
+                    if (lastSteps == null || lastSteps.length != numTracks)
+                        {
+                        lastSteps = new int[numTracks];
+                        }
+                    for(int i = 0; i < numTracks; i++)
+                        {
+                        lastSteps[i] = currentSteps[i];
+                        currentSteps[i] = clip.getCurrentStep(i);
+                        }
+                    }
+                }
+            finally { lock.unlock(); }
+                                
+            // Now, who's dirty?
+            if (lastSteps == null)
+                markAllDirty();
+            else
+                {
+                for(int i = 0; i < numTracks; i++)
+                    {
+                    if (lastSteps[i] != currentSteps[i]) // it's changed
+                        {
+                        TrackUI trackui = getTrack(i);
+                        markDirty(trackui.getStep(lastSteps[i]));
+                        markDirty(trackui.getStep(currentSteps[i]));
+                        }
+                    }
+                }
+            }
+        else
+            {
+            // uhm, invalid clip I guess, mark us as fully dirty
+            allDirty = true;
+            }
+        }
 
     public void buildPrimary(JScrollPane scroll)
         {
@@ -299,17 +304,17 @@ public class StepSequenceUI extends MotifUI
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
                 /*
-                seq.getLock().lock();
-                // We're locking on everything, which should be faster than individual locks for the steps
-                try
-                    {
-                    super.paint(_g);
-                    }
-                finally
-                    {
-                    seq.getLock().unlock();
-                    }
-                g.setRenderingHints(oldHints);
+                  seq.getLock().lock();
+                  // We're locking on everything, which should be faster than individual locks for the steps
+                  try
+                  {
+                  super.paint(_g);
+                  }
+                  finally
+                  {
+                  seq.getLock().unlock();
+                  }
+                  g.setRenderingHints(oldHints);
                 */
                 super.paint(_g);
                 clearAllDirty();

@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.motif.notes.gui;
 
 import seq.motif.notes.*;
@@ -192,26 +197,26 @@ public class NotesUI extends MotifUI
         }
         
     /*
-    public static final int NEAREST_32_TRIPLETS = 0;
-    public static final int NEAREST_32 = 1;
-    public static final int NEAREST_16_TRIPLETS = 2;
-    public static final int NEAREST_16 = 3;
-    public static final int NEAREST_8_TRIPLETS = 4;
-    public static final int NEAREST_8 = 5;
-    public static final int NEAREST_4_TRIPLETS = 6;
-    public static final int NEAREST_4 = 7;
+      public static final int NEAREST_32_TRIPLETS = 0;
+      public static final int NEAREST_32 = 1;
+      public static final int NEAREST_16_TRIPLETS = 2;
+      public static final int NEAREST_16 = 3;
+      public static final int NEAREST_8_TRIPLETS = 4;
+      public static final int NEAREST_8 = 5;
+      public static final int NEAREST_4_TRIPLETS = 6;
+      public static final int NEAREST_4 = 7;
     */
     
     public static final int[] quantizeDivisors = { 
-    	Seq.PPQ / 12,		// 32 Triplet
-    	Seq.PPQ / 8,		// 32
-    	Seq.PPQ / 6,		// 16 Triplet
-    	Seq.PPQ / 4,		// 16
-    	Seq.PPQ / 3,		// 8 Triplet
-    	Seq.PPQ / 2,		// 8
-    	(Seq.PPQ * 2) / 3,	// 4 Triplet
-    	Seq.PPQ 			// 4
-    	};
+        Seq.PPQ / 12,           // 32 Triplet
+        Seq.PPQ / 8,            // 32
+        Seq.PPQ / 6,            // 16 Triplet
+        Seq.PPQ / 4,            // 16
+        Seq.PPQ / 3,            // 8 Triplet
+        Seq.PPQ / 2,            // 8
+        (Seq.PPQ * 2) / 3,      // 4 Triplet
+        Seq.PPQ                         // 4
+        };
     
     public void doQuantize()
         {

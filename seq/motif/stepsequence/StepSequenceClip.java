@@ -5,6 +5,11 @@ import java.util.*;
 import javax.sound.midi.*;
 import java.util.concurrent.*;
 
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 public class StepSequenceClip extends Clip
     {
     private static final long serialVersionUID = 1;

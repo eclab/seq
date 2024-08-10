@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.gui;
 
 import seq.engine.*;
@@ -180,7 +185,7 @@ public class SeqUI extends JPanel
 
             this.seq = seq;
             for(int i = 0; i < seq.getOuts().length; i++)
-            	seq.getOut(i).setSeq(seq);
+                seq.getOut(i).setSeq(seq);
         
             // we have to build the lower motifuis first so the higher level ones
             // can add them into themselves.  To do this we get a list sorted
@@ -370,97 +375,97 @@ public class SeqUI extends JPanel
     Sequence[] logs = null;
     
     void doLog()
-    	{
-    	if (logFile != null)
-    		{
+        {
+        if (logFile != null)
+            {
             // clean up
             logItem.setText("Log MIDI ...");
-	       	logFile = null;
-        	logs = null;
-			ReentrantLock lock = seq.getLock();
-			lock.lock();
-			try 
-				{ 
-				seq.setTracks(null);
-				}
-			finally { lock.unlock(); }
-    		}
-    	else
-    		{	
-			if (seq != null) seq.stop();
+            logFile = null;
+            logs = null;
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try 
+                { 
+                seq.setTracks(null);
+                }
+            finally { lock.unlock(); }
+            }
+        else
+            {       
+            if (seq != null) seq.stop();
 
-			boolean multi = showSimpleConfirm("Log MIDI ...", "Some DAWs (like Ableton) cannot properly load\na MIDI file with more than one channel.\n\nBreak out individual channels to separate MIDI files?",
-				"Break Out", "Keep One File");
+            boolean multi = showSimpleConfirm("Log MIDI ...", "Some DAWs (like Ableton) cannot properly load\na MIDI file with more than one channel.\n\nBreak out individual channels to separate MIDI files?",
+                "Break Out", "Keep One File");
 
-			FileDialog fd = new FileDialog(getFrame(), "Log MIDI ...", FileDialog.SAVE);
-				
-			disableMenuBar();
-			fd.setVisible(true);
-			enableMenuBar();
-				
-			if (fd.getFile() != null)
-				{
-				try
-					{
-					logFile = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), MIDI_EXTENSION));
-					logs = new Sequence[Seq.NUM_OUTS];
-					Track[] tracks = new Track[Seq.NUM_OUTS];
-					if (multi) 
-						{
-						for(int i = 0; i < tracks.length; i++) 
-							{
-							logs[i] = new Sequence(Sequence.PPQ, Seq.PPQ);
-							tracks[i] = logs[i].createTrack();
-							}
-						}
-					else
-						{
-						logs[0] = new Sequence(Sequence.PPQ, Seq.PPQ);
-						tracks[0] = logs[0].createTrack();
-						}
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try 
-						{
-						seq.setTracks(tracks);
-						}
-					finally { lock.unlock(); }
-					logItem.setText("Stop Logging");
-					}
-				catch (Exception ex)
-					{
-					logItem.setText("Log MIDI ...");
-					ex.printStackTrace();
-					showSimpleError("Error Creating Log", "An error occurred logging MIDI.");
-				
-					// clean up
-					logFile = null;
-					logs = null;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try 
-						{ 
-						seq.setTracks(null);
-						}
-					finally { lock.unlock(); }
-					}
-				}
-			else
-				{
-				// cancelled, clean up
-				logItem.setText("Log MIDI ...");
-				logFile = null;
-				logs = null;
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try 
-					{ 
-					seq.setTracks(null);
-					}
-				finally { lock.unlock(); }
-				}
-			}
-    	}
+            FileDialog fd = new FileDialog(getFrame(), "Log MIDI ...", FileDialog.SAVE);
+                                
+            disableMenuBar();
+            fd.setVisible(true);
+            enableMenuBar();
+                                
+            if (fd.getFile() != null)
+                {
+                try
+                    {
+                    logFile = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), MIDI_EXTENSION));
+                    logs = new Sequence[Seq.NUM_OUTS];
+                    Track[] tracks = new Track[Seq.NUM_OUTS];
+                    if (multi) 
+                        {
+                        for(int i = 0; i < tracks.length; i++) 
+                            {
+                            logs[i] = new Sequence(Sequence.PPQ, Seq.PPQ);
+                            tracks[i] = logs[i].createTrack();
+                            }
+                        }
+                    else
+                        {
+                        logs[0] = new Sequence(Sequence.PPQ, Seq.PPQ);
+                        tracks[0] = logs[0].createTrack();
+                        }
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        {
+                        seq.setTracks(tracks);
+                        }
+                    finally { lock.unlock(); }
+                    logItem.setText("Stop Logging");
+                    }
+                catch (Exception ex)
+                    {
+                    logItem.setText("Log MIDI ...");
+                    ex.printStackTrace();
+                    showSimpleError("Error Creating Log", "An error occurred logging MIDI.");
+                                
+                    // clean up
+                    logFile = null;
+                    logs = null;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        { 
+                        seq.setTracks(null);
+                        }
+                    finally { lock.unlock(); }
+                    }
+                }
+            else
+                {
+                // cancelled, clean up
+                logItem.setText("Log MIDI ...");
+                logFile = null;
+                logs = null;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    seq.setTracks(null);
+                    }
+                finally { lock.unlock(); }
+                }
+            }
+        }
 
 
 
@@ -977,7 +982,7 @@ public class SeqUI extends JPanel
         if (button != null) getMotifList().select(button, updateStacks);
         motifui.uiWasSet();
 
-		// This must be AFTER uiWasSet(), which calls build() and thus builds the menu...
+        // This must be AFTER uiWasSet(), which calls build() and thus builds the menu...
         if (motifUIMenu != null) menubar.remove(motifUIMenu);
         motifUIMenu = motifui.getMenu();
         if (motifUIMenu != null) menubar.add(motifUIMenu);
@@ -1079,34 +1084,34 @@ public class SeqUI extends JPanel
         
         // Write out sequence log
         if (logs != null)
-        	{
-        	try
-        		{
-        		Track[] tracks = seq.getTracks();
-        		if (tracks[1] != null) // multi
-        			{
-        			for(int i = 0; i < Seq.NUM_OUTS; i++)
-        				{
-        				if (seq.isValidTrack(i))
-        					{
-	        				File file = new File(logFile.getCanonicalPath() + "." + (i + 1) + ".mid");
-    	    				javax.sound.midi.MidiSystem.write(logs[i], 1, file);
-        					}
-        				}
-        			}
-        		else
-        			{
-    	    		javax.sound.midi.MidiSystem.write(logs[0], 1, logFile);
-    	    		}
-        	}
-        catch (IOException ex)
-        	{
-        	ex.printStackTrace();
+            {
+            try
+                {
+                Track[] tracks = seq.getTracks();
+                if (tracks[1] != null) // multi
+                    {
+                    for(int i = 0; i < Seq.NUM_OUTS; i++)
+                        {
+                        if (seq.isValidTrack(i))
+                            {
+                            File file = new File(logFile.getCanonicalPath() + "." + (i + 1) + ".mid");
+                            javax.sound.midi.MidiSystem.write(logs[i], 1, file);
+                            }
+                        }
+                    }
+                else
+                    {
+                    javax.sound.midi.MidiSystem.write(logs[0], 1, logFile);
+                    }
+                }
+            catch (IOException ex)
+                {
+                ex.printStackTrace();
                 showSimpleError("Error Creating Log", "An error occurred logging MIDI.");
-        	}
-        	logs = null;
-        	logFile = null;
-        	}
+                }
+            logs = null;
+            logFile = null;
+            }
         }
 
 

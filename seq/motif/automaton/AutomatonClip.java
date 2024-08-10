@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.motif.automaton;
 
 import seq.engine.*;
@@ -64,19 +69,19 @@ public class AutomatonClip extends Clip
                 }
             if (thread.node instanceof Automaton.Chord){
                 Automaton.Chord achord = (Automaton.Chord) thread.node;
-                {
+                    {
                     int release = achord.getRelease();
                     int out = achord.getMIDIOut();
                     for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
-                    {
+                        {
                         int pitch = thread.notes[i];
                         if (pitch != Automaton.Chord.NO_NOTE)
-                        {
+                            {
                             noteOff(out, pitch, release);
-                        }
+                            }
                         thread.notes[i] = Automaton.Chord.NO_NOTE;
+                        }
                     }
-                }
                 }
             }
         for(AutomatonThread thread : processed)
@@ -88,19 +93,19 @@ public class AutomatonClip extends Clip
 
             if (thread.node instanceof Automaton.Chord){
                 Automaton.Chord achord = (Automaton.Chord) thread.node;
-                {
+                    {
                     int release = achord.getRelease();
                     int out = achord.getMIDIOut();
                     for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
-                    {
+                        {
                         int pitch = thread.notes[i];
                         if (pitch != Automaton.Chord.NO_NOTE)
-                        {
+                            {
                             noteOff(out, pitch, release);
-                        }
+                            }
                         thread.notes[i] = Automaton.Chord.NO_NOTE;
+                        }
                     }
-                }
                 }
             }
         }

@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.engine;
 
 import seq.util.*;
@@ -222,7 +227,7 @@ public abstract class Motif implements Cloneable
         uniqueID = getNextUniqueID();
         }
 
-	public Seq getSeq() { return seq; }
+    public Seq getSeq() { return seq; }
     public int getUniqueID() { return uniqueID; }
     public void incrementPlayCount() { playCount++; }
     public void decrementPlayCount() { playCount = Math.max(0, playCount - 1); }

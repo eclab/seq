@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.motif.stepsequence.gui;
 
 import seq.motif.stepsequence.*;
@@ -127,17 +132,17 @@ public class StepUI extends JPanel
         {
         // First, do I paint myself?
         // If I'm not updating then I definitely need to repaint, it's probably a scroll
-       /*
-       	boolean needToRepaint =
-       	 (!ssui.isUpdating() ||
-       		// Next, if I'm locally dirty, definitely need to repaint
-       		dirty ||
-       		// Next, if I'm in the dirty list, need to repaint
-       		ssui.isDirty(this));
-       	*/
-       	boolean needToRepaint = true;		// for the moment, sigh.  Repainting dirty is not working right now...
-       		
-       	if (!needToRepaint) return;
+        /*
+          boolean needToRepaint =
+          (!ssui.isUpdating() ||
+          // Next, if I'm locally dirty, definitely need to repaint
+          dirty ||
+          // Next, if I'm in the dirty list, need to repaint
+          ssui.isDirty(this));
+        */
+        boolean needToRepaint = true;           // for the moment, sigh.  Repainting dirty is not working right now...
+                
+        if (!needToRepaint) return;
         dirty = false;
         
         /// WARNING: NO LOCK.  This is because StepSequenceUI.Paint() locks for us
@@ -146,25 +151,25 @@ public class StepUI extends JPanel
                 
         super.paintComponent(_g);
 
-		// Get data
-		boolean on = false;
-		int finalVelocity = 0;
-		boolean iAmCurrentStep = false;
-		
+        // Get data
+        boolean on = false;
+        int finalVelocity = 0;
+        boolean iAmCurrentStep = false;
+                
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
             { 
-	        if (trackNum >= ss.getNumTracks() || stepNum >= ss.getNumSteps(trackNum))
-    	        {
-        	    // uh oh
-            	return;
-            	}
-			on = ss.isOn(trackNum, stepNum);
-			finalVelocity = ss.getFinalVelocity(trackNum, stepNum);
-			StepSequenceClip clip = (StepSequenceClip)(ssui.getDisplayClip());		// already locks :-(
-			iAmCurrentStep = (clip != null && clip.getCurrentStep(trackNum) == stepNum);
-			}
+            if (trackNum >= ss.getNumTracks() || stepNum >= ss.getNumSteps(trackNum))
+                {
+                // uh oh
+                return;
+                }
+            on = ss.isOn(trackNum, stepNum);
+            finalVelocity = ss.getFinalVelocity(trackNum, stepNum);
+            StepSequenceClip clip = (StepSequenceClip)(ssui.getDisplayClip());              // already locks :-(
+            iAmCurrentStep = (clip != null && clip.getCurrentStep(trackNum) == stepNum);
+            }
         finally { lock.unlock(); }
 
         Graphics2D g = (Graphics2D) _g;

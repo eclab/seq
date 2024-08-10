@@ -1,3 +1,8 @@
+/* 
+   Copyright 2024 by Sean Luke and George Mason University
+   Licensed under Apache 2.0
+*/
+
 package seq.engine;
 
 import javax.swing.*;
@@ -48,7 +53,7 @@ public class Seq
     // The timer lock.  This lock must be acquired in order to manipulate the data stored in clip or clip.motif
     
     Track[] tracks = null;
-	boolean[] validTracks = null;
+    boolean[] validTracks = null;
     public Track[] getTracks() { return tracks; }
     public void setTracks(Track[] val) { tracks = val; if (val != null) validTracks = new boolean[val.length]; }
     public boolean isValidTrack(int track) { return validTracks[track]; }
@@ -391,8 +396,8 @@ public class Seq
         this();
         outs = old.outs;
         ins = old.ins;
-		outNames = old.outNames;
-		inNames = old.inNames;
+        outNames = old.outNames;
+        inNames = old.inNames;
         sequi = old.sequi;
         listeners.addAll(old.listeners);
         this.tuple = old.tuple;
@@ -1338,171 +1343,171 @@ public class Seq
                    
     /** Convenience method to set up the sequencer to use the SeqSynth as output.  
         Don't use this for the time being. */
-   /* public void setupForSynth(Class mainClass, Synth synth, String[] args, int numMIDIInput, int numMIDIOutput, boolean includesInput) 
-        {
-        lock.lock();
-        try
-            {
-            outs = new Out[numMIDIOutput];
-            ins = new In[numMIDIInput];
-            midi = new Midi(numMIDIOutput, numMIDIInput);
-            javax.sound.sampled.Mixer.Info[] mixers = synth.getSupportedMixers();
-            javax.sound.sampled.Mixer.Info[] inputs = synth.getSupportedInputs();
+    /* public void setupForSynth(Class mainClass, Synth synth, String[] args, int numMIDIInput, int numMIDIOutput, boolean includesInput) 
+       {
+       lock.lock();
+       try
+       {
+       outs = new Out[numMIDIOutput];
+       ins = new In[numMIDIInput];
+       midi = new Midi(numMIDIOutput, numMIDIInput);
+       javax.sound.sampled.Mixer.Info[] mixers = synth.getSupportedMixers();
+       javax.sound.sampled.Mixer.Info[] inputs = synth.getSupportedInputs();
 
-            if (args.length == 0) 
-                {
-                showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                System.exit(0);
-                }
-            else if (args.length == (numMIDIInput * 2 + numMIDIOutput * 2 + (includesInput ? 1 : 0) + 1))
-                {
-                int pos = 0;
+       if (args.length == 0) 
+       {
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(0);
+       }
+       else if (args.length == (numMIDIInput * 2 + numMIDIOutput * 2 + (includesInput ? 1 : 0) + 1))
+       {
+       int pos = 0;
 
-                ArrayList<Midi.MidiDeviceWrapper> out = midi.getOutDevices();
-                int[] outChannels = new int[numMIDIOutput];
-                Midi.MidiDeviceWrapper[] outWrappers = new Midi.MidiDeviceWrapper[numMIDIOutput];
+       ArrayList<Midi.MidiDeviceWrapper> out = midi.getOutDevices();
+       int[] outChannels = new int[numMIDIOutput];
+       Midi.MidiDeviceWrapper[] outWrappers = new Midi.MidiDeviceWrapper[numMIDIOutput];
             
-                for(int i = 0; i < numMIDIOutput; i++)
-                    {
-                    int x = getInt(args[pos++]);
-                    if (x >= 0 && x < out.size()) 
-                        {
-                        outWrappers[i] = (out.get(x));
-                        }
-                    else 
-                        {
-                        System.err.println("Invalid MIDI number " + x + "\n");
-                        showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                        System.exit(1);
-                        }
-                    x = getInt(args[pos++]);
-                    if (x >= 1 && x <= 16)
-                        {
-                        outChannels[i] = x;
-                        }
-                    else
-                        {
-                        System.err.println("Invalid MIDI channel " + x + "\n");
-                        showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                        System.exit(1);
-                        }                                       
-                    outs[i] = new Out(this, i);
-                    System.err.println("Out MIDI " + i + ": " + outWrappers[i] + "Channel: " + outChannels[i]);
-                    }
+       for(int i = 0; i < numMIDIOutput; i++)
+       {
+       int x = getInt(args[pos++]);
+       if (x >= 0 && x < out.size()) 
+       {
+       outWrappers[i] = (out.get(x));
+       }
+       else 
+       {
+       System.err.println("Invalid MIDI number " + x + "\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(1);
+       }
+       x = getInt(args[pos++]);
+       if (x >= 1 && x <= 16)
+       {
+       outChannels[i] = x;
+       }
+       else
+       {
+       System.err.println("Invalid MIDI channel " + x + "\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(1);
+       }                                       
+       outs[i] = new Out(this, i);
+       System.err.println("Out MIDI " + i + ": " + outWrappers[i] + "Channel: " + outChannels[i]);
+       }
 
-                ArrayList<Midi.MidiDeviceWrapper> in = midi.getInDevices();
-                int[] inChannels = new int[numMIDIInput];
-                Midi.MidiDeviceWrapper[] inWrappers = new Midi.MidiDeviceWrapper[numMIDIInput];
-                ins = new In[numMIDIInput];
+       ArrayList<Midi.MidiDeviceWrapper> in = midi.getInDevices();
+       int[] inChannels = new int[numMIDIInput];
+       Midi.MidiDeviceWrapper[] inWrappers = new Midi.MidiDeviceWrapper[numMIDIInput];
+       ins = new In[numMIDIInput];
             
-                for(int i = 0; i < numMIDIInput; i++)
-                    {
-                    int x = getInt(args[pos++]);
-                    if (x >= 0 && x < in.size()) 
-                        {
-                        inWrappers[i] = (in.get(x));
-                        }
-                    else 
-                        {
-                        System.err.println("Invalid MIDI number " + x + "\n");
-                        showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                        System.exit(1);
-                        }
-                    x = getInt(args[pos++]);
-                    if (x >= 1 && x <= 16)
-                        {
-                        inChannels[i] = x;
-                        }
-                    else
-                        {
-                        System.err.println("Invalid MIDI channel " + x + "\n");
-                        showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                        System.exit(1);
-                        }                                       
-                    System.err.println("In MIDI " + i + ": " + inWrappers[i] + "Channel: " + inChannels[i]);
-                    }
+       for(int i = 0; i < numMIDIInput; i++)
+       {
+       int x = getInt(args[pos++]);
+       if (x >= 0 && x < in.size()) 
+       {
+       inWrappers[i] = (in.get(x));
+       }
+       else 
+       {
+       System.err.println("Invalid MIDI number " + x + "\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(1);
+       }
+       x = getInt(args[pos++]);
+       if (x >= 1 && x <= 16)
+       {
+       inChannels[i] = x;
+       }
+       else
+       {
+       System.err.println("Invalid MIDI channel " + x + "\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(1);
+       }                                       
+       System.err.println("In MIDI " + i + ": " + inWrappers[i] + "Channel: " + inChannels[i]);
+       }
                 
-                tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels);
-                // ins have to be set up after the tuple
-                for(int i = 0; i < numMIDIInput; i++)
-                    {
-                    ins[i] = new In(this, i);
-                    }
+       tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels);
+       // ins have to be set up after the tuple
+       for(int i = 0; i < numMIDIInput; i++)
+       {
+       ins[i] = new In(this, i);
+       }
 
-                if (mixers == null)
-                    {
-                    System.err.println("No output found which supports the desired sampling rate and bit depth\n");
-                    showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                    System.exit(1);
-                    }
-                else
-                    {
-                    int x = getInt(args[pos++]);
-                    if (x >= 0 && x < mixers.length)
-                        {
-                        synth.setMixer(mixers[x]);
-                        System.err.println("Output Audio: " + mixers[x].getName());  
+       if (mixers == null)
+       {
+       System.err.println("No output found which supports the desired sampling rate and bit depth\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(1);
+       }
+       else
+       {
+       int x = getInt(args[pos++]);
+       if (x >= 0 && x < mixers.length)
+       {
+       synth.setMixer(mixers[x]);
+       System.err.println("Output Audio: " + mixers[x].getName());  
                                         
-                        if (includesInput)
-                            {
-                            if (inputs == null)
-                                {
-                                System.err.println("No input found which supports the desired sampling rate and bit depth\n");
-                                showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, inputs, inputs, includesInput, true);
-                                System.exit(1);
-                                }
-                            else
-                                {
-                                x = getInt(args[pos++]);
-                                if (x >= 0 && x < inputs.length)
-                                    {
-                                    synth.setInput(inputs[x]);
-                                    System.err.println("Input Audio: " + inputs[x].getName());
-                                    }
-                                }  
-                            } 
-                        }
-                    else
-                        {
-                        System.err.println("Invalid Audio number " + x + "\n");
-                        showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                        System.exit(1);
-                        }
-                    }                             
+       if (includesInput)
+       {
+       if (inputs == null)
+       {
+       System.err.println("No input found which supports the desired sampling rate and bit depth\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, inputs, inputs, includesInput, true);
+       System.exit(1);
+       }
+       else
+       {
+       x = getInt(args[pos++]);
+       if (x >= 0 && x < inputs.length)
+       {
+       synth.setInput(inputs[x]);
+       System.err.println("Input Audio: " + inputs[x].getName());
+       }
+       }  
+       } 
+       }
+       else
+       {
+       System.err.println("Invalid Audio number " + x + "\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(1);
+       }
+       }                             
 
-                synth.setMidi(emitter);
-                synth.setIncludesInput(includesInput);
-                synth.setup();
+       synth.setMidi(emitter);
+       synth.setIncludesInput(includesInput);
+       synth.setup();
 
-                /// FIXME: synth.shutdown isn't synchronized with this
-                Thread thread = new Thread(new Runnable()
-                    {
-                    public void run()
-                        {
-                        synth.go();
-                        }
-                    });
-                thread.setName("Seq Synthesizer");
-                thread.setDaemon(true);
-                thread.start();
-                }
-            else
-                {
-                System.err.println("Invalid argument format\n");
-                showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
-                System.exit(1);
-                }
+       /// FIXME: synth.shutdown isn't synchronized with this
+       Thread thread = new Thread(new Runnable()
+       {
+       public void run()
+       {
+       synth.go();
+       }
+       });
+       thread.setName("Seq Synthesizer");
+       thread.setDaemon(true);
+       thread.start();
+       }
+       else
+       {
+       System.err.println("Invalid argument format\n");
+       showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, mixers, inputs, includesInput, true);
+       System.exit(1);
+       }
         
-            System.err.println("Should not be reachable -- WARNING");
-            System.exit(1);
-            }
-        finally
-            {
-            lock.unlock();  
-            }
-        }
-	*/
-	
+       System.err.println("Should not be reachable -- WARNING");
+       System.exit(1);
+       }
+       finally
+       {
+       lock.unlock();  
+       }
+       }
+    */
+        
     public void setupForMIDI()
         {
         lock.lock();
