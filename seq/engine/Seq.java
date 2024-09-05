@@ -1340,7 +1340,20 @@ public class Seq
         }
 
 
-                   
+    public void fireMIDIIn()
+    	{
+    	SwingUtilities.invokeLater(new Runnable()
+    		{
+    		public void run()
+    			{
+    			if (sequi != null)
+    				{
+	    			sequi.getTransport().fireMIDIIn();
+    				}
+    			}
+    		});
+    	}
+    	         
     /** Convenience method to set up the sequencer to use the SeqSynth as output.  
         Don't use this for the time being. */
     /* public void setupForSynth(Class mainClass, Synth synth, String[] args, int numMIDIInput, int numMIDIOutput, boolean includesInput) 

@@ -19,12 +19,15 @@ public class Transport extends JPanel implements SeqListener
     {
     public static final int ICON_WIDTH = 20;
     public static final int INSET_SIZE = 5;
+    public static final int MIDI_IN_DISPLAY_TIME = 100;
     
     JButton playButton;
     JButton stopButton;
     JButton pauseButton;
     JButton recordButton;
     JToggleButton loopButton;
+    JLabel midiInLabel;
+    javax.swing.Timer midiInTimer;
     Box playBox;
     Seq seq;
     SeqUI sequi;
@@ -51,6 +54,8 @@ public class Transport extends JPanel implements SeqListener
     static ImageIcon releasing = buildIcon("icons/releasing2.png");
     static ImageIcon looping = buildIcon("icons/loopon.png");
     static ImageIcon notLooping = buildIcon("icons/loop.png");
+    static ImageIcon midiIn = buildIcon("icons/MidiIn.png");
+    static ImageIcon midiInOff = buildIcon("icons/MidiInOff.png");
 
     public static ImageIcon buildIcon(String file)
         {
@@ -82,6 +87,8 @@ public class Transport extends JPanel implements SeqListener
         loopButton = new JToggleButton(notLooping); 
         loopButton.setSelectedIcon(looping);
         loopButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
+        midiInLabel = new JLabel();
+        midiInLabel.setIcon(midiInOff);
         playBox = new Box(BoxLayout.X_AXIS);
         playBox.add(recordButton);
         playBox.add(playButton);
@@ -91,9 +98,13 @@ public class Transport extends JPanel implements SeqListener
         setLayout(new BorderLayout());
         add(playBox, BorderLayout.NORTH);
         
+        JPanel pane = new JPanel();
+        pane.setLayout(new BorderLayout());
         time = new JLabel("0:0:0:0");
-        add(time, BorderLayout.CENTER);
-
+        pane.add(midiInLabel, BorderLayout.WEST);
+        pane.add(time, BorderLayout.CENTER);
+		add(pane, BorderLayout.CENTER);
+		
         loopButton.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent e) 
@@ -232,6 +243,11 @@ public class Transport extends JPanel implements SeqListener
                         
         DisclosurePanel dp = new DisclosurePanel("Clock Options", options);
         add(dp, BorderLayout.SOUTH);
+        
+        midiInTimer = new javax.swing.Timer(MIDI_IN_DISPLAY_TIME, new ActionListener()
+        	{
+        	public void actionPerformed(ActionEvent e) { midiInLabel.setIcon(midiInOff); midiInTimer.stop(); }
+        	});
         } 
         
     public void updateClock(int val)
@@ -427,5 +443,12 @@ public class Transport extends JPanel implements SeqListener
             lock.unlock();
             }
         }
+
+	public void fireMIDIIn()
+		{
+		midiInLabel.setIcon(midiIn);
+		midiInTimer.stop();
+		midiInTimer.start();
+		}
 
     }

@@ -77,6 +77,8 @@ public class SeqUI extends JPanel
     
     int rebuildInspectorsCount = 0;
     
+    public Transport getTransport() { return transport; }
+    
     public SeqUI(Seq seq)
         {
         reset(seq);
