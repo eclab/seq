@@ -75,7 +75,8 @@ public class ParallelClip extends Clip
             {
             for(Node node : nodes)
                 {
-                node.clip.rebuild(motif);
+                if (node.clip != null) node.clip.rebuild(motif);
+                else System.err.println("Warning: ParallelClip node " + node + " has no clip");
                 }
             }
         }

@@ -107,7 +107,8 @@ public class SelectClip extends Clip
                 {
                 if (node != null)
                     {
-                    node.clip.rebuild(motif);
+                    if (node.clip != null) node.clip.rebuild(motif);
+                	else System.err.println("Warning: SelectClip node " + node + " has no clip");
                     }
                 }
             }
