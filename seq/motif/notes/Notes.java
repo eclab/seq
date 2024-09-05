@@ -387,6 +387,51 @@ public class Notes extends Motif
         recomputeAncestorLengths();
         return cut;
         }
+
+    /** Removes elements by index, not by time */
+    public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeAftertouch)
+		{
+        if (events.size() == 0) return new ArrayList<Event>();
+        else return filter(0, events.size() - 1, removeNotes, removeBend, removeCC, removeAftertouch);
+		}
+		
+    /** Removes elements by index, not by time */
+    public ArrayList<Event> filter(int startIndex, int endIndex, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeAftertouch)        // endIndex is inclusive
+        {
+        ArrayList<Event> newEvents = new ArrayList<Event>();
+        ArrayList<Event> cut = new ArrayList<Event>();
+        for(int i = 0; i < startIndex; i++)
+            {
+            Event event = events.get(i);
+            newEvents.add(event);
+            }
+        for(int i = startIndex; i <= endIndex; i++)
+            {
+            Event event = events.get(i);
+            if (
+            	(event instanceof Note && removeNotes) ||
+            	(event instanceof Bend && removeBend) ||
+            	(event instanceof CC && removeCC) ||
+            	(event instanceof Aftertouch && removeAftertouch))            
+            		{
+            		cut.add(event);
+            		}
+            else	
+            		{
+           			newEvents.add(event);
+            		}
+            }
+        for(int i = endIndex + 1; i < events.size(); i++)
+            {
+            Event event = events.get(i);
+            newEvents.add(event);
+            }
+        events = newEvents;
+        computeMaxTime();
+        recomputeLength();
+        recomputeAncestorLengths();
+        return cut;
+        }
     
     public ArrayList<Event> cut(int start, int end, boolean allowStartOverlaps, boolean allowEndOverlaps)
         {

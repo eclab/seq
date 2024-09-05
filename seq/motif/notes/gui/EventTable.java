@@ -152,7 +152,7 @@ public class EventTable extends JPanel
         {
         clearSelection();
 
-        Object[][] obj = new Object[events.size()][5];
+        Object[][] obj = new Object[events.size()][6];
         int pos = 0;
                 
         int _beatsPerBar = 0;

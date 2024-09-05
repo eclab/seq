@@ -45,6 +45,9 @@ public class Out
         sysex(new byte[] { (byte)0xF0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x00, 0x7F, (byte)0xF7 });        
         }
     
+    public void setName(String val) { seq.tuple.outName[index] = val; }
+    public String getName() { return seq.tuple.outName[index]; }
+    
     public String toString()
         {
         //MidiEmitter emitter = seq.emitter;
@@ -53,6 +56,10 @@ public class Out
         if (tuple == null) return "Tuple not set up?";
         Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
         if (wrapper == null) return "None";
+        if (getName() != null && getName().trim().length() > 0)
+        	{
+	        return ("Ch " + tuple.outChannel[index] + " " + getName().trim());
+        	}
         return ("Ch " + tuple.outChannel[index] + " " + wrapper.toString());
         //return ("<html><font size='-2'>Channel " + tuple.outChannel[index] + "<br>" + wrapper.toString() + "</font></html>");
         }

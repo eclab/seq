@@ -1521,9 +1521,11 @@ public class Seq
             int[] outChannels = new int[NUM_OUTS];
             int[] inChannels = new int[NUM_INS];
             Midi.MidiDeviceWrapper[] inWrappers = new Midi.MidiDeviceWrapper[NUM_INS];
+            String[] inNames = new String[NUM_INS];
+            String[] outNames = new String[NUM_OUTS];
             
             // Initially all NULL.  We gotta set this up with something smarter
-            tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels);
+            tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, inNames, outNames);
 
             for(int i = 0; i < NUM_OUTS; i++)
                 {
@@ -1626,7 +1628,10 @@ public class Seq
                     System.err.println("In MIDI " + i + ": " + inWrappers[i] + "Channel: " + inChannels[i]);
                     }
                         
-                tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels);
+            String[] inNames = new String[NUM_INS];
+            String[] outNames = new String[NUM_OUTS];
+
+                tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, inNames, outNames);
                 // ins have to be set up after the tuple
                 for(int i = 0; i < numMIDIInput; i++)
                     {

@@ -178,6 +178,16 @@ public class NotesUI extends MotifUI
             });
         menu.add(delete);
 
+        JMenuItem filter = new JMenuItem("Filter...");
+        filter.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doFilter();
+                }
+            });
+        menu.add(filter);
+
         JMenuItem insert = new JMenuItem("Add Note");
         insert.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         insert.addActionListener(new ActionListener()
@@ -550,6 +560,77 @@ public class NotesUI extends MotifUI
             reloadTable();
             }
         }
+
+    public void doFilter()
+        {
+        JCheckBox range = new JCheckBox("");
+
+        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
+        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        boolean hasRange = false;
+                
+        if (min >= 0)
+            {
+            range.setSelected(Prefs.getLastBoolean("FilterRange", true));
+            hasRange = true;
+            }
+        else
+            {
+            range.setSelected(false);
+            range.setEnabled(false);
+            }
+        String[] names = { "Filter Selection Only", "Remove Notes", "Remove Bend", "Remove CC", "Remove Aftertouch" };
+        JCheckBox removeNotes = new JCheckBox("");
+        JCheckBox removeBend = new JCheckBox("");
+        JCheckBox removeCC = new JCheckBox("");
+        JCheckBox removeAftertouch = new JCheckBox("");
+
+        removeNotes.setSelected(Prefs.getLastBoolean("FilterRemoveNotes", false));
+        removeBend.setSelected(Prefs.getLastBoolean("FilterRemoveBend", false));
+        removeCC.setSelected(Prefs.getLastBoolean("FilterRemoveCC", false));
+        removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveAftertouch", false));
+        
+        JComponent[] components = new JComponent[] { range, removeNotes, removeBend, removeCC, removeAftertouch};
+        int result = Dialogs.showMultiOption(this, names, components, new String[] {  "Filter", "Cancel" }, 0, "Filter", "Enter Filter Settings");
+        
+        if (result == 0)
+            {
+            seq.push();
+            boolean _range = range.isSelected();
+            boolean _removeNotes = removeNotes.isSelected();
+            boolean _removeBend = removeBend.isSelected();
+            boolean _removeCC = removeCC.isSelected();
+            boolean _removeAftertouch = removeAftertouch.isSelected();
+        
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            boolean stopped;
+            try
+                {
+                if (_range)
+                    {
+                    notes.filter(min, max, _removeNotes, _removeBend, _removeCC, _removeAftertouch);
+                    }
+                else
+                    {
+                    notes.filter(_removeNotes, _removeBend, _removeCC, _removeAftertouch);
+                    }
+                }
+            finally
+                {
+                lock.unlock();
+                }
+        
+            Prefs.setLastBoolean("FilterRemoveNotes", _removeNotes);
+            Prefs.setLastBoolean("FilterRemoveBend", _removeBend);
+            Prefs.setLastBoolean("FilterRemoveCC", _removeCC);
+            Prefs.setLastBoolean("FilterRemoveAftertouch", _removeAftertouch);
+            if (hasRange) Prefs.setLastBoolean("FilterRange", _range);
+
+            reloadTable();
+            }
+        }
+
 
     public void doTrimTime()
         {

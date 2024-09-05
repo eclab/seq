@@ -491,18 +491,24 @@ public class Midi
         public MidiDeviceWrapper[] outWrap;
         /** The channel to send voiced messages to on the output. */
         public int[] outChannel;
+        /** Nicknames for outs */
+        public String[] outName;
                 
         /** The current keyboard/controller input device's wrapper */
         public MidiDeviceWrapper[] inWrap;
         /** The channel to receive voiced messages from on the keyboard/controller input. */
         public int[] inChannel;
+        /** Nicknames for ins */
+        public String[] inName;
         /** The actual receivers */
         public Receiver[] inReceiver;
         
-        public Tuple(MidiDeviceWrapper[] inWrap, int[] inChannel, MidiDeviceWrapper[] outWrap, int[] outChannel)
+        public Tuple(MidiDeviceWrapper[] inWrap, int[] inChannel, MidiDeviceWrapper[] outWrap, int[] outChannel, String[] inName, String[] outName)
             {
             this.inWrap = inWrap;
             this.outWrap = outWrap;
+            this.inName = inName;
+            this.outName = outName;
             this.inChannel = inChannel;
             this.outChannel = outChannel;
             this.inReceiver = new Receiver[inWrap.length];
@@ -527,6 +533,9 @@ public class Midi
                 }
                 
             inReceiver = new Receiver[numInDevices];
+
+			outName = new String[numOutDevices];
+            inName = new String[numInDevices];
             }
                     
         public void close()
@@ -688,6 +697,46 @@ public class Midi
                 else 
                     inChannelsCombo[i].setSelectedIndex(0);
                 }
+                
+    		StringField[] outNicknames = new StringField[numOutDevices];
+    		for(int i = 0; i < outNicknames.length; i++)
+    			{
+    			outNicknames[i] = new StringField("");
+    			String nick = null;
+    			if (old != null) nick = old.outName[i];
+    			if (nick == null || nick.trim().length() == 0)
+    				{
+    				String str = Prefs.getLastTupleOutName(i);
+    				if (str != null && str.trim().length() > 0)
+    					{
+    					outNicknames[i].setValue(str.trim());
+    					}
+    				}
+    			else
+    				{
+    				outNicknames[i].setValue(nick.trim());
+    				}
+    			}
+
+   		StringField[] inNicknames = new StringField[numInDevices];
+    		for(int i = 0; i < inNicknames.length; i++)
+    			{
+    			inNicknames[i] = new StringField("");
+    			String nick = null;
+    			if (old != null) nick = old.inName[i];
+    			if (nick == null || nick.trim().length() == 0)
+    				{
+    				String str = Prefs.getLastTupleInName(i);
+    				if (str != null && str.trim().length() > 0)
+    					{
+    					inNicknames[i].setValue(str.trim());
+    					}
+    				}
+    			else
+    				{
+    				inNicknames[i].setValue(nick.trim());
+    				}
+    			}
 
             Dialogs.disableMenuBar(parent);
             
@@ -700,6 +749,8 @@ public class Midi
                 box.add(outCombo[i]);
                 box.add(new JLabel("    Channel "));
                 box.add(outChannelsCombo[i]);
+                box.add(new JLabel("    Nickname " ));
+                box.add(outNicknames[i]);
                 components[i] = box;
                 }
                 
@@ -714,6 +765,8 @@ public class Midi
                 box.add(inCombo[i]);
                 box.add(new JLabel("    Channel "));
                 box.add(inChannelsCombo[i]);
+                box.add(new JLabel("    Nickname " ));
+                box.add(inNicknames[i]);
                 components[i + numOutDevices + 1] = box;
                 }
             
@@ -734,6 +787,14 @@ public class Midi
                     for(int i = 0; i < numOutDevices; i++)
                         {
                         tuple.outChannel[i] = outChannelsCombo[i].getSelectedIndex() + 1;
+                        String str = outNicknames[i].getText();
+                        if (str != null) 
+                        	{
+                        	str = str.trim();
+                        	if (str.length() == 0) str = null;
+                        	}
+                        tuple.outName[i] = str;
+                        	
                         if (outCombo[i].getSelectedItem() instanceof String)    // "None"
                             {
                             tuple.outWrap[i] = null;
@@ -747,6 +808,14 @@ public class Midi
                     for(int i = 0; i < numInDevices; i++)
                         {
                         tuple.inChannel[i] = inChannelsCombo[i].getSelectedIndex();
+                        String str = inNicknames[i].getText();
+                        if (str != null) 
+                        	{
+                        	str = str.trim();
+                        	if (str.length() == 0) str = null;
+                        	}
+                        tuple.inName[i] = str;
+
                         if (inCombo[i].getSelectedItem() instanceof String)     // "None"
                             {
                             tuple.inWrap[i] = null;
@@ -782,6 +851,7 @@ public class Midi
                         else
                             Prefs.setLastTupleOut(i, tuple.outWrap[i].toString());
                         Prefs.setLastTupleOutChannel(i, tuple.outChannel[i]);
+                        Prefs.setLastTupleOutName(i, tuple.outName[i] == null ? "" : tuple.outName[i].trim());
                         }
                                                 
                     for(int i = 0; i < numInDevices; i++)
@@ -791,6 +861,7 @@ public class Midi
                         else
                             Prefs.setLastTupleIn(i, tuple.inWrap[i].toString());
                         Prefs.setLastTupleInChannel(i, tuple.inChannel[i]);
+                        Prefs.setLastTupleInName(i, tuple.inName[i] == null ? "" : tuple.inName[i].trim());
                         }
 
                     Dialogs.enableMenuBar();

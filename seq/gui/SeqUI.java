@@ -805,6 +805,7 @@ public class SeqUI extends JPanel
                     }
                 }
             });
+        panic.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
         midiMenu.addSeparator();
         logItem = new JMenuItem("Log MIDI ...");

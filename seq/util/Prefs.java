@@ -344,5 +344,31 @@ public class Prefs
         return _default;
         }
 
+    public static void setLastTupleOutName(int index, String name)
+        {
+        setLastX(name == null ? "" : name.trim(), "LastTupleOutName" + index);
+        }
+
+    public static String getLastTupleOutName(int index)
+        {
+        String s = getLastX("LastTupleOutName" + index);
+        if (s == null) return null;
+        if (s.trim().length() == 0) return null;
+        return s.trim();
+        }
+
+    public static void setLastTupleInName(int index, String name)
+        {
+        setLastX(name == null ? "" : name.trim(), "LastTupleInName" + index);
+        }
+
+    public static String getLastTupleInName(int index)
+        {
+        String s = getLastX("LastTupleInName" + index);
+        if (s == null) return null;
+        if (s.trim().length() == 0) return null;
+        return s.trim();
+        }
+
     }
 
