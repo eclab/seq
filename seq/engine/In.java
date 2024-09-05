@@ -64,6 +64,7 @@ public class In implements Receiver
             {
             messages.add(message);
             }
+        if (!Clip.isNoteOff(message)) seq.fireMIDIIn();
         }
         
     /** Returns all current messages in the mailbox.  The mailbox will be cleared and
@@ -92,9 +93,9 @@ public class In implements Receiver
         if (wrapper == null) return "None";
         if (getName() != null && getName().trim().length() > 0)
         	{
-	        return (channel == 0 ? "Omni" : ("Ch " + channel)) + " " + getName().trim();
+	        return (channel == 0 ? "O" : ("Ch " + channel)) + " " + getName().trim();
         	}
-        return (channel == 0 ? "Omni" : ("Ch " + channel)) + " " + wrapper.toString();
-        //return ("<html><font size='-2'>" + (channel == 0 ? "Omni" : ("Channel " + channel)) + "<br>" + wrapper.toString() + "</font></html>");
+        return (channel == 0 ? "O" : ("Ch " + channel)) + " " + wrapper.toString();
+        //return ("<html><font size='-2'>" + (channel == 0 ? "O" : ("Channel " + channel)) + "<br>" + wrapper.toString() + "</font></html>");
         }
     }

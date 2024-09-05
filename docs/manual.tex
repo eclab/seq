@@ -427,7 +427,9 @@ When you start playing the sequence, play commences with the {\bf Root Motif}.  
 
 Recording only has an effect on certain Motifs, such as the {\bf Notes} motif, when they are armed.  Otherwise it acts just like playing for all other Motifs.
 
-Below the Transport buttons is the {\bf Clock}, which shows the current play time in (right to left) ticks (192 ticks per beat), beats, measures, and parts (256 measures per part).  Below the clock are two expandable regions: the {\bf Clock Options} and the {\bf Root Arguments}.  The Clock Options include the tempo, whether the clock is Internal or External, the number of beats per measure, the metronome toggle, whether the metronome plays a count-in for recording, playing, or both, and the metronome volume.
+Below the Transport buttons is the {\bf Clock}, which shows the current play time in (right to left) ticks (192 ticks per beat), beats, measures, and parts (256 measures per part).  To the left of the clock is a small dot.  This dot will light up momentarily when Seq receives MIDI information (other than Note Off) from any of its currently registered devices and channels.
+
+Below the clock are two expandable regions: the {\bf Clock Options} and the {\bf Root Arguments}.  The Clock Options include the tempo, whether the clock is Internal or External, the number of beats per measure, the metronome toggle, whether the metronome plays a count-in for recording, playing, or both, and the metronome volume.
 
 We'll discuss the Root Arguments later in Section~\ref{parameters}.  However we mention one item here: the {\bf Random Seed}.  This is the seed of the random number generator used by Seq when playing, and the generator is always reset to that seed each time we play again.  That way the sequence will always be deterministic.  The seed is saved with the Sequence when you write it to a file, but new Sequences get new random seeds. You can always change this seed to cause the sequence's random choices to be different.
 
