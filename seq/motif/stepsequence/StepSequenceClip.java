@@ -130,6 +130,7 @@ public class StepSequenceClip extends Clip
         {
         super.reset();
         iteration = 0;
+        System.err.println("Resetting at " + seq.getTime());
         }
     
     /// Ultimately this should be called if we change the number or ordering

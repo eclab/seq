@@ -301,10 +301,9 @@ public class AutomatonClip extends Clip
         public Automaton.Node getNode() { return node; }
         public void setNode(Automaton.Node n) 
             { 
-            Automaton.Node old = node; 
+            visited.add(node); 
+            this.notifyNode(n, node);
             node = n; 
-            visited.add(n); 
-            this.notifyNode(node, old);
                         
             if (child != null)
                 {
@@ -599,7 +598,7 @@ public class AutomatonClip extends Clip
             {
             return true;    // we are DONE
             }
-                        
+        
         while(!unprocessed.isEmpty())
             {
             AutomatonThread thread = unprocessed.get(unprocessed.size() - 1);       // last one
@@ -619,7 +618,7 @@ public class AutomatonClip extends Clip
                     // Stay where we are
                     moveThread();
                     }
-                else if (thread.shouldRepeat()) // REPEATING
+                else if (thread.shouldRepeat()) 	// REPEATING
                     {
                     // Stay where we are, but reset
                     thread.child.release();
@@ -643,10 +642,10 @@ public class AutomatonClip extends Clip
                 else    // we're going somewhere new
                     {
                     thread.setNode(next);
-                    if (next instanceof Automaton.MotifNode ||
-                        next instanceof Automaton.Chord ||
-                            (next instanceof Automaton.Delay &&
-                            ((Automaton.Delay)next).getDelay() > 0))
+                    if (anode instanceof Automaton.MotifNode ||
+                        anode instanceof Automaton.Chord ||
+                            (anode instanceof Automaton.Delay &&
+                            ((Automaton.Delay)anode).getDelay() > 0))
                         {
                         moveThread();
                         }
@@ -662,17 +661,20 @@ public class AutomatonClip extends Clip
                         Automaton.Node n = nodes[i];
                         @SuppressWarnings("unchecked")
                             AutomatonThread newthread = new AutomatonThread(n, (HashSet<Automaton.Node>)(thread.getVisited().clone()));
+                        System.err.println("Contains " + n + " ? " + newthread.contains(n));
                         if (n instanceof Automaton.MotifNode ||
                             newthread.contains(n) ||                                // it's a cycle
                             next instanceof Automaton.Chord ||
                                 (n instanceof Automaton.Delay &&
                                 ((Automaton.Delay)n).getDelay() > 0))
                             {
+                            System.err.println("Node processed " + n);
                             // put new thread on processed
                             processed.add(newthread);
                             }
                         else
                             {
+                            System.err.println("Node unprocessed " + n);
                             // put new thread on unprocessed
                             unprocessed.add(newthread);
                             }
