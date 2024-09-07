@@ -11,93 +11,97 @@ import java.util.concurrent.*;
 import org.json.*;
 import seq.util.Prefs;
 
-/**
-   <ArrayList of Nodes> list of NODES
-   Stack of UNPROCESSED THREADS
-   Stack of PROCESSED THREADS
 
-   A special single NODE, returned by process(), is called UNFINISHED.  It is not in the LIST and is just a marker
+//   <ArrayList of Nodes> list of NODES
+//   Stack of UNPROCESSED THREADS
+//   Stack of PROCESSED THREADS
+//
+//   A special single NODE, returned by process(), is called UNFINISHED.  It is not in the LIST and is just a marker
+//
+//   A NODE can be
+//   	A MOTIF node: when PROCESSED, it returns a node, which could be UNFINISHED, or none.  Motif nodes can repeat.
+//
+//		Or an Action Node of some sort.  Action Nodes include
+//   		FORK: when PROCESSED, it returns a list of follow-on nodes
+//			CHORD: when PROCESSED, it returns  node, which could be UNFINISHED, or none
+//				Note: CHORD cannot have a zero delay.  It plays a chord.
+//   		RANDOM: when PROCESSED, it returns at most one randomly-chosen node
+//   		ITERATION: when PROCESSED, it returns at most one new node
+//   		DELAY: when PROCESSED, it returns a node, which could be UNFINISHED, or none
+//   			Note: a DELAY can have zero delay and serve as a stub
+//   		FINISH: when PROCESSED, it raises the finished flag in the clip and returns at most one node
+//   		JOIN: when NOTIFIED, increments ONE WAITING.
+//   				when PROCESSED, if ONE WAITING >= 2, set ONE WAITING to ONE_WAITING - 2, returns a node or none; else returns UNFINISHED
+//
+//   Each NODE has the following methods
+//   	resetRepeats()          // called at thread.process()
+//   	continueRepeats()       // revises repeats and returns true if we should continue
+//   	numOutgoingPositions()
+//   	addIncoming(Node)       // Node can be added multiple times
+//   	attachOutgoing(Node, int position)              // Can be added only once
+//   	removeIncoming(Node)    // Node can be added multiple times
+//   	removeAllIncomign(Node) // Node can be added multiple times
+//   	removeOutgoing(Node, int position)
+//   	getIncoming()
+//   	<Node> getOutgoing(int position)
+//
+//   NOTE: a NODE can only be attached ONCE to a given outgoing slot.  Is this a weakness?
+//   NOTIFY(thread, previous node (or null))         // lets the node know that the thread is set to it
+//
+//   A THREAD has a HashSet<Node>
+//   	clear() -> clears the hash set
+//   	setNode(Node) sets the current node and adds the OLD NODE to the hash set if there is one.
+//			Also calls node.NOTIFY(thread, previous node)
+//   	contains(Node) -> checks the hash set
+//   	getSet() -> returns a copy of the hash set
+//   	<ArrayList of Nodes> process() -> processes the node as described above
+//		Constructor:
+//        
+//   Procedure RESET()
+//   	Clear Processed and (for good measure) Unprocessed threads
+//  	Clear Join counts
+//   	Resets finished
+//   	For each NODE in the list
+//   		node.reset()                            // reset counters etc.
+//   	thread <- new Thread(0);
+//   	num threads = 1;
+//        
+//   Procedure STEP:
+//   	Swap Processed and Unprocessed threads (all threads are now on Unprocessed)
+//   	For each Unprocessed thread
+//   		thread.clear()
+//   	Repeat until Unprocessed threads is empty
+//   		thread <- first thread in UNPROCESSED
+//   		// Check for finished
+//   		<ArrayList of Nodes> nodes <- thread.process()  // provides list of follow-on nodes
+//   		if (nodes is empty or all its nodes are null) 
+//   			remove thread from UNPROCESSED          // now dead
+//   			numthreads--;
+//   		else            // one or more nodes
+//   			next <- first element of nodes
+//   			if (next is UNFINISHED)
+//   				move thread from UNPROCESSED to PROCESSED
+//   			else if next is Motif Node and we should continue repeats(next)
+//   				move thread from UNPROCESSED to PROCESSED
+//   			else if (thread.contains(next))                 // cycle, we've been here before
+//   				thread.setNode(next)                            // Must be AFTER checking if it contains the element
+//   				move thread from UNPROCESSED to PROCESSED
+//   			else 
+//   				thread.setNode(next)                            // Must be AFTER checking if it contains the element
+//  		if (next is a MOTIF or if element is a DELAY of length > 0)
+//   			move thread from UNPROCESSED to PROCESSED
+//   		// else we stay on the stack and continue to transition
+//   		for(n in remaining nodes)
+//   		if num threads is not exceeded
+//   		newthread <- new Thread(n, thread.getSet())             // Could still have cycles at least this time around
+//   		num threads++;
+//   if (n is a MOTIF 
+//   or if element is a DELAY of length > 0 
+//   or if newthread.contains(n))                            // cycle
+//   put new thread on PROCESSED
+//   else
+//   put new thread on UNPROCESSED
 
-   A NODE can be
-   A MOTIF node: when PROCESSED, it returns a node, which could be UNFINISHED, or none.  Motif nodes can repeat.
-   Or an Action Node of some sort.  Action Nodes include
-   FORK: when PROCESSED, it returns a list of follow-on nodes
-   RANDOM: when PROCESSED, it returns at most one randomly-chosen node
-   ITERATION: when PROCESSED, it returns at most one new node
-   DELAY: when PROCESSED, it returns a node, which could be UNFINISHED, or none
-   Note: a DELAY can have zero delay and serve as a stub
-   FINISH: when PROCESSED, it raises the finished flag in the clip and returns at most one node
-   JOIN: when NOTIFIED, increments ONE WAITING.
-   JOIN: when PROCESSED, if ONE WAITING >= 2, set ONE WAITING to ONE_WAITING - 2, returns a node or none; else returns UNFINISHED
-
-   Each NODE has the following methods
-   resetRepeats()          // called at thread.process()
-   continueRepeats()       // revises repeats and returns true if we should continue
-   numOutgoingPositions()
-   addIncoming(Node)       // Node can be added multiple times
-   attachOutgoing(Node, int position)              // Can be added only once
-   removeIncoming(Node)    // Node can be added multiple times
-   removeAllIncomign(Node) // Node can be added multiple times
-   removeOutgoing(Node, int position)
-   getIncoming()
-   <Node> getOutgoing(int position)
-
-   NOTE: a NODE can only be attached ONCE to a given outgoing slot.  Is this a weakness?
-   NOTIFY(thread, previous node (or null))         // lets the node know that the thread is set to it
-
-   A THREAD has a HashSet<Node>
-   clear() -> clears the hash set
-   setNode(Node) sets the current node and adds to the hash set.  Also calls node.NOTIFY(thread, previous node)
-   contains(Node) -> checks the hash set
-   getSet() -> returns a copy of the hash set
-   <ArrayList of Nodes> process() -> processes the node as described above
-        
-   Procedure RESET()
-   Clear Processed and (for good measure) Unprocessed threads
-   Clear Join counts
-   Resets finished
-   For each NODE in the list
-   node.reset()                            // reset counters etc.
-   thread <- new Thread(0);
-   num threads = 1;
-        
-   Procedure STEP:
-   Swap Processed and Unprocessed threads (all threads are now on Unprocessed)
-   For each Unprocessed thread
-   thread.clear()
-   Repeat until Unprocessed threads is empty
-   thread <- first thread in UNPROCESSED
-   // Check for finished
-   <ArrayList of Nodes> nodes <- thread.process()  // provides list of follow-on nodes
-   if (nodes is empty or all its nodes are null) 
-   remove thread from UNPROCESSED          // now dead
-   numthreads--;
-   else            // one or more nodes
-   next <- first element of nodes
-   if (next is UNFINISHED)
-   move thread from UNPROCESSED to PROCESSED
-   else if next is Motif Node and we should continue repeats(next)
-   move thread from UNPROCESSED to PROCESSED
-   else if (thread.contains(next))                 // cycle, we've been here before
-   thread.setNode(next)                            // Must be AFTER checking if it contains the element
-   move thread from UNPROCESSED to PROCESSED
-   else 
-   thread.setNode(next)                            // Must be AFTER checking if it contains the element
-   if (next is a MOTIF or if element is a DELAY of length > 0)
-   move thread from UNPROCESSED to PROCESSED
-   // else we stay on the stack and continue to transition
-   for(n in remaining nodes)
-   if num threads is not exceeded
-   newthread <- new Thread(n, thread.getSet())             // Could still have cycles at least this time around
-   num threads++;
-   if (n is a MOTIF 
-   or if element is a DELAY of length > 0 
-   or if newthread.contains(n))                            // cycle
-   put new thread on PROCESSED
-   else
-   put new thread on UNPROCESSED
-
-**/
 
 
 

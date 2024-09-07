@@ -301,7 +301,7 @@ public class AutomatonClip extends Clip
         public Automaton.Node getNode() { return node; }
         public void setNode(Automaton.Node n) 
             { 
-            visited.add(node); 
+            if (node != null) visited.add(node); 
             this.notifyNode(n, node);
             node = n; 
                         
@@ -625,10 +625,11 @@ public class AutomatonClip extends Clip
                     thread.child.loop();
                     moveThread();
                     }
-                else if (thread.contains(next))
+                else if (thread.contains(next) || next == anode)
                     {
                     // This is a cycle, we've been here before.  Stay at 'next'.
                     // 'next' should NEVER be a MotifNode or a Delay with delay > 0.
+/*
                     if (next instanceof Automaton.MotifNode ||
                         next instanceof Automaton.Chord ||
                             (next instanceof Automaton.Delay &&
@@ -636,6 +637,7 @@ public class AutomatonClip extends Clip
                         {
                         System.err.println("ERROR: cycling in a node: " + next);
                         }
+*/
                     thread.setNode(next);
                     moveThread();
                     }
@@ -664,7 +666,8 @@ public class AutomatonClip extends Clip
                         System.err.println("Contains " + n + " ? " + newthread.contains(n));
                         if (n instanceof Automaton.MotifNode ||
                             newthread.contains(n) ||                                // it's a cycle
-                            next instanceof Automaton.Chord ||
+                            n == anode ||											// it's a cycle
+                            n instanceof Automaton.Chord ||
                                 (n instanceof Automaton.Delay &&
                                 ((Automaton.Delay)n).getDelay() > 0))
                             {
