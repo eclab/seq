@@ -353,10 +353,12 @@ public class AutomatonClip extends Clip
                                         
                 if (child.advance())    // all done
                     {
+                    System.err.println(getPosition() );
                     // FIXME: is the +1 right?  I think it is?
-                    if ((child.getPosition() + 1) % Automaton.MotifNode.QUANTIZATIONS[((Automaton.MotifNode)node).getQuantization()] == 0)
+                    if ((getPosition() + 1) % Automaton.MotifNode.QUANTIZATIONS[((Automaton.MotifNode)node).getQuantization()] == 0)
                         {
                         // we're just before a quantization boundary, time to transition!
+                    	System.err.println(Automaton.MotifNode.QUANTIZATIONS[((Automaton.MotifNode)node).getQuantization()]);
                         return node.selectOut();
                         }
                     else 
@@ -664,11 +666,12 @@ public class AutomatonClip extends Clip
                         @SuppressWarnings("unchecked")
                             AutomatonThread newthread = new AutomatonThread(n, (HashSet<Automaton.Node>)(thread.getVisited().clone()));
                         System.err.println("Contains " + n + " ? " + newthread.contains(n));
-                        if (n instanceof Automaton.MotifNode ||
+                        if (//n instanceof Automaton.MotifNode ||
                             newthread.contains(n) ||                                // it's a cycle
-                            n == anode ||											// we do n == anode because anode hasn't been processed yet and may not be in visited list
-                            n instanceof Automaton.Chord ||
-                            (n instanceof Automaton.Delay && ((Automaton.Delay)n).getDelay() > 0))
+                            n == anode //||											// we do n == anode because anode hasn't been processed yet and may not be in visited list
+                            //n instanceof Automaton.Chord ||
+                            //(n instanceof Automaton.Delay && ((Automaton.Delay)n).getDelay() > 0))
+                            )
                             {
                             System.err.println("Node processed " + n);
                             // put new thread on processed
