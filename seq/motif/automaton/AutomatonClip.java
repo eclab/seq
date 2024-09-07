@@ -625,7 +625,7 @@ public class AutomatonClip extends Clip
                     thread.child.loop();
                     moveThread();
                     }
-                else if (thread.contains(next) || next == anode)
+                else if (thread.contains(next) || next == anode)			// we do next == anode because anode hasn't been processed yet and may not be in visited list
                     {
                     // This is a cycle, we've been here before.  Stay at 'next'.
                     // 'next' should NEVER be a MotifNode or a Delay with delay > 0.
@@ -666,10 +666,9 @@ public class AutomatonClip extends Clip
                         System.err.println("Contains " + n + " ? " + newthread.contains(n));
                         if (n instanceof Automaton.MotifNode ||
                             newthread.contains(n) ||                                // it's a cycle
-                            n == anode ||											// it's a cycle
+                            n == anode ||											// we do n == anode because anode hasn't been processed yet and may not be in visited list
                             n instanceof Automaton.Chord ||
-                                (n instanceof Automaton.Delay &&
-                                ((Automaton.Delay)n).getDelay() > 0))
+                            (n instanceof Automaton.Delay && ((Automaton.Delay)n).getDelay() > 0))
                             {
                             System.err.println("Node processed " + n);
                             // put new thread on processed
