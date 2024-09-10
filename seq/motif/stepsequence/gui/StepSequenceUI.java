@@ -359,6 +359,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         addButton.getButton().setPreferredSize(new Dimension(24, 24));
+        	addButton.setToolTipText("Add new track");
 
         PushButton removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
             {
@@ -368,6 +369,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
+        	removeButton.setToolTipText("Delete selected track");
 
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
@@ -377,6 +379,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        	copyButton.setToolTipText("Copy selected track");
 
 
         PushButton zoomInButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/zoomin.png")))
@@ -387,6 +390,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         zoomInButton.getButton().setPreferredSize(new Dimension(24, 24));
+        	zoomInButton.setToolTipText("Zoom in");
 
         PushButton zoomOutButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/zoomout.png")))
             {
@@ -396,7 +400,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         zoomOutButton.getButton().setPreferredSize(new Dimension(24, 24));
-
+        	zoomOutButton.setToolTipText("Zoom out");
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
@@ -464,6 +468,7 @@ public class StepSequenceUI extends MotifUI
             TrackHeader h = t.getHeader();
             h.updateHandle();                       
             trackHeaders.add(h);
+            t.updateLength();
             }
         updateSizes();
         getPrimaryScroll().revalidate();
