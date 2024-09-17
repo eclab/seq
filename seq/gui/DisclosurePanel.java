@@ -42,6 +42,7 @@ public class DisclosurePanel extends JPanel
     
     public JComponent getParentComponent() { return parentComponent; }
     public void setParentComponent(JComponent comp) { parentComponent = comp; }
+    public void setToolTipText(String text) { abridgedComponent.setToolTipText(text); disclosureToggle.setToolTipText(text); /* super.setToolTipText(text);*/ }
     
     public DisclosurePanel(String abridgedText, JComponent disclosedComponent)
         {

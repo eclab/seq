@@ -80,7 +80,7 @@ public class SeriesClip extends Clip
             for(Node node : nodes)
                 {
                 if (node.clip != null) 
-                	node.clip.rebuild(motif);
+                    node.clip.rebuild(motif);
                 else System.err.println("Warning: SeriesClip node " + node + " has no clip");
                 }
             }
@@ -520,8 +520,6 @@ public class SeriesClip extends Clip
             note = data.adjustNote(note);
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-            vel *= getCorrectedValueDouble(data.getGain(), Series.Data.MAX_GAIN);
-            if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
             super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
             }
         else System.err.println("SeriesClip.scheduleNoteOff: playingIndex was " + playingIndex);

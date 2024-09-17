@@ -57,6 +57,7 @@ public abstract class Motif implements Cloneable
         /// -1: bound to random
         /// -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
         /// FIXME: Maybe a MIDI CC or something later?
+        /// The default value is the parent parameter of the same number
         public static final double PARAMETER_RANDOM = -1;
         double[] parameters = new double[NUM_PARAMETERS];
 
@@ -109,7 +110,11 @@ public abstract class Motif implements Cloneable
 
         public Child(Motif motif, Motif parent) 
             { 
-            for(int i = 0; i < parameters.length; i++) parameters[i] = 0.0;  // PARAMETER_UNBOUND; 
+            for(int i = 0; i < parameters.length; i++) 
+                {
+                parameters[i] = -(2 + i);       // Parent parameter value
+                //parameters[i] = 0.0;  // PARAMETER_UNBOUND; 
+                }
             this.motif = motif; 
             data = parent.buildData(motif);
             }
@@ -210,8 +215,6 @@ public abstract class Motif implements Cloneable
     ArrayList<Motif> parents = new ArrayList<>();
     // Is this Motif armed for recording?
     boolean armed = false;
-    // What is the length of this Motif?  It can be a value 0...(Integer.MAX_VALUE) or INFINITY or UNKNOWN.  It may not be 0.  Set this in during recomputeLength()
-    protected int length = 1;
     int id;             // temporary only
     // The current Motif version, so clips can stay in sync when playing or recording
     int version;
@@ -333,15 +336,6 @@ public abstract class Motif implements Cloneable
             }
         }
         
-
-    ///// LENGTH INFORMATION
-    ///// Motifs, for the time being, can have a known length.
-
-    /** Returns the length, which is a value 1...(Integer.MAX_VALUE) or INFINITY or UNKNOWN.  It may not be 0.  */
-    public int getLength() { return length; }
-    
-    /** Recompute the length. */
-    public abstract void recomputeLength();             // set the length variable
                     
     /// Any clip which is currently playing the Motif.  There could be multiple such clips,
     /// but only one will be stored here.
@@ -614,8 +608,6 @@ public abstract class Motif implements Cloneable
         children.add(child); 
         // Add me as a parent
         child.getMotif().addParent(this);
-        recomputeLength();
-        recomputeAncestorLengths(); 
         incrementVersion();
         }
         
@@ -633,8 +625,6 @@ public abstract class Motif implements Cloneable
 
         // Add me as a parent
         motif.addParent(this);
-        recomputeLength();
-        recomputeAncestorLengths(); 
         incrementVersion();
         return oldChild;
         }
@@ -647,8 +637,6 @@ public abstract class Motif implements Cloneable
         Child oldChild = children.get(to);
         Child child = new Child(children.get(from), this);
         children.set(to, child);
-        recomputeLength();
-        recomputeAncestorLengths(); 
         incrementVersion();
         return oldChild;
         }
@@ -663,9 +651,7 @@ public abstract class Motif implements Cloneable
         if (from < toBefore) 
             toBefore--;       // it was shifted down
         children.add(toBefore, child);
-        recomputeLength();
         incrementVersion();
-        recomputeAncestorLengths(); 
         }
 
     /** Swaps two children.  Marks the Motif as dirty so it must update its lengths etc. 
@@ -677,9 +663,7 @@ public abstract class Motif implements Cloneable
         Child _to = children.get(to);
         children.set(to, _from);
         children.set(from, _to);
-        recomputeLength();
         incrementVersion();
-        recomputeAncestorLengths(); 
         }
 
     /** Removes a child.  Marks the Motif as dirty so it must update its lengths etc. 
@@ -692,9 +676,7 @@ public abstract class Motif implements Cloneable
             // Remove me as a parent
             child.getMotif().removeParent(this);
             }
-        recomputeLength();
         incrementVersion();
-        recomputeAncestorLengths(); 
         return child; 
         }
                         
@@ -751,21 +733,6 @@ public abstract class Motif implements Cloneable
         { 
         parents.remove(parent);
         }
-        
-    // Informs all parents that they may need to update their lengths 
-    public void recomputeAncestorLengths() 
-        {
-        // Get parents
-        ArrayList<Motif> ancestors = getAncestors();
-        // Sort
-        ancestors = topologicalSort(ancestors);
-        // Reverse -- do children first
-        Collections.reverse(ancestors);
-        // recompute lengths bottom up
-        for(Motif ancestor : ancestors)
-            ancestor.recomputeLength();
-        }
-        
         
     /** Removes a motif everywhere it appears in its parent and children, in preparation for deleting it. */
     public void disconnect() 

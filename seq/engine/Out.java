@@ -57,9 +57,9 @@ public class Out
         Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
         if (wrapper == null) return "None";
         if (getName() != null && getName().trim().length() > 0)
-        	{
-	        return ("Ch " + tuple.outChannel[index] + " " + getName().trim());
-        	}
+            {
+            return ("Ch " + tuple.outChannel[index] + " " + getName().trim());
+            }
         return ("Ch " + tuple.outChannel[index] + " " + wrapper.toString());
         //return ("<html><font size='-2'>Channel " + tuple.outChannel[index] + "<br>" + wrapper.toString() + "</font></html>");
         }

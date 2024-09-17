@@ -137,7 +137,7 @@ public class Series extends Motif
         int transpose = MAX_TRANSPOSE;                                        // ranges 0 ... MAX_TRANSPOSE * 2 inclusive, representing -MAX_TRANSPOSE ... MAX_TRANSPOSE
         double gain = 1;
         int out = DISABLED;
-        int length = DISABLED;
+        //int length = DISABLED;
         double[] weights = new double[0];
         int endingQuantization = QUANTIZATION_NONE;
         boolean start = false;    
@@ -394,7 +394,7 @@ public class Series extends Motif
         to.put("tran", d.transpose);
         to.put("gain", d.gain);
         to.put("out", d.out);
-        to.put("len", d.length);
+        //to.put("len", d.length);
         to.put("start", d.start);
         JSONArray w = new JSONArray();
         for(int j = 0; j < d.weights.length; j++)
@@ -416,7 +416,7 @@ public class Series extends Motif
         d.rate = from.optDouble("rate", 1.0);
         d.gain = from.optDouble("gain", 1.0);
         d.out = from.optInt("out", 0);
-        d.length = from.optInt("len");
+        //d.length = from.optInt("len");
         JSONArray w = from.getJSONArray("weight");
         d.weights = new double[w.length()];
         d.endingQuantization = from.getInt("equant");
@@ -454,8 +454,6 @@ public class Series extends Motif
     public void setMode(int val) 
         { 
         mode = val; 
-        recomputeLength(); 
-        recomputeAncestorLengths();
         }
 
     public void add(Motif motif, int repeatAtLeast, double repeatProbability)
@@ -465,36 +463,6 @@ public class Series extends Motif
         data.repeatAtLeast = repeatAtLeast;
         data.repeatProbability = repeatProbability;
         } 
-
-    public void recomputeLength()
-        {
-        if (mode != MODE_SERIES && getChildren().size() > 0)
-            {
-            length = UNKNOWN;
-            }
-        else
-            {
-            length = 1;
-            for(Child child : getChildren())
-                {
-                Motif motif = child.getMotif();
-
-                int childLength = motif.getLength();
-                if (childLength == INFINITY) { length = INFINITY; return; }             // all done
-                if (childLength == UNKNOWN) { length = UNKNOWN; return; }               // all done
-                        
-                Data data = (Data)(child.getData());
-                length += childLength * (int)(data.repeatAtLeast);
-
-                double repeatProbability = data.repeatProbability;
-                if (repeatProbability > 0)                  // we have a probabilistic node, so we could go forever
-                    {
-                    length = UNKNOWN;
-                    return;
-                    }
-                }
-            }
-        }
         
     public void save(JSONObject to) throws JSONException 
         {

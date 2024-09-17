@@ -104,12 +104,12 @@ public class ArgumentList extends JPanel
                     else if (param == Motif.Child.PARAMETER_RANDOM)         // -1
                         {
                         initialValue = 0;
-                        initialDefault = 1;
+                        initialDefault = 0;  // "Rand"
                         }
                     else if (param < Motif.Child.PARAMETER_RANDOM)          // <= -2 Bound to a parent parameter
                         {
                         initialValue = 0;
-                        initialDefault = -((int)param) - 1;
+                        initialDefault = -(int)(param - Motif.Child.PARAMETER_RANDOM);
                         }
                     else
                         {
@@ -119,7 +119,7 @@ public class ArgumentList extends JPanel
                         }
                     }
                                 
-                dials[i] = new SmallDial(initialValue, initialDefault, /*i < 2 ? RANDOM_DEFAULTS :*/ defaults)
+                dials[i] = new SmallDial(initialValue, initialDefault, defaults)
                     {
                     protected String map(double val) { return String.format("%.4f", val); }
                                         
@@ -161,7 +161,7 @@ public class ArgumentList extends JPanel
                                 if (d == Motif.Child.PARAMETER_RANDOM) return 0;        // "Random"
                                 else if (d < Motif.Child.PARAMETER_RANDOM)
                                     {
-                                    return (-(int)(d - (Motif.Child.PARAMETER_RANDOM - 1)));        // parameters range 0...n
+                                    return (-(int)(d - Motif.Child.PARAMETER_RANDOM));        // parameters range 1...n
                                     }
                                 else return SmallDial.NO_DEFAULT;
                                 }
@@ -171,7 +171,7 @@ public class ArgumentList extends JPanel
                                 if (d == Motif.Child.PARAMETER_RANDOM) return 0;        // "Random"
                                 else if (d < Motif.Child.PARAMETER_RANDOM)
                                     {
-                                    return (-(int)(d - (Motif.Child.PARAMETER_RANDOM - 1)));        // parameters range 0...n
+                                    return (-(int)(d - Motif.Child.PARAMETER_RANDOM));        // parameters range 1...n
                                     }
                                 else return SmallDial.NO_DEFAULT;
                                 }
@@ -185,7 +185,7 @@ public class ArgumentList extends JPanel
                                 if (d == Motif.Child.PARAMETER_RANDOM) return 0;        // "Random"
                                 else if (d < Motif.Child.PARAMETER_RANDOM)
                                     {
-                                    return (-(int)(d - (Motif.Child.PARAMETER_RANDOM - 1)));        // parameters range 0...n
+                                    return (-(int)(d - Motif.Child.PARAMETER_RANDOM));        // parameters range 1...n
                                     }
                                 else return SmallDial.NO_DEFAULT;
                                 }
@@ -208,7 +208,7 @@ public class ArgumentList extends JPanel
                                     }
                                 else if (val > 0)
                                     {
-                                    child.setRandomMin((-val) + (Motif.Child.PARAMETER_RANDOM - 1));
+                                    child.setRandomMin((-val) + Motif.Child.PARAMETER_RANDOM);
                                     }
                                 else
                                     {
@@ -224,7 +224,7 @@ public class ArgumentList extends JPanel
                                     }
                                 else if (val > 0)
                                     {
-                                    child.setRandomMax((-val) + (Motif.Child.PARAMETER_RANDOM - 1));
+                                    child.setRandomMax((-val) + Motif.Child.PARAMETER_RANDOM);
                                     }
                                 else
                                     {
@@ -246,7 +246,7 @@ public class ArgumentList extends JPanel
                                     }
                                 else if (val > 0)
                                     {
-                                    child.setParameter(_i - 2, (-val) + (Motif.Child.PARAMETER_RANDOM - 1));
+                                    child.setParameter(_i - 2, (-val) + Motif.Child.PARAMETER_RANDOM);
                                     }
                                 else
                                     {

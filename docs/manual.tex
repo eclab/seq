@@ -572,6 +572,8 @@ Aftertouch events each have a {\bf Pitch} and a {\bf Value}.
 
 \paragraph{Recording Notes} To record notes, first make sure that its {\bf MIDI In} is set to your device.  Then {\bf Arm} the Notes in its Inspector, press Record in Seq, and record in some notes.  You'll find it easier if you turned on the Metronome.  If you select {\bf Echo} in the Inspector, then all events received via the MIDI In will be echoed out the MIDI Out: you probably would want that.  Remember that if your Notes motif is not a descendant of the Root, it will never be reached to do Recording.
 
+When recording, you can filter out CC, Pitch Bend, and Aftertouch in real-time: just uncheck the {\bf Record Bend}, {\bf Record CC}, or {\bf Record Aftertouch} checkboxes as appropriate.  Edisyn will store these in its Preferences and configure them this way next time as well.
+
 \paragraph{The Notes Menu} Notes has a number of items under its menu:
 
 \begin{itemize}
@@ -758,9 +760,9 @@ Edge are connected by dragging from an endpoint to a start point.  You can delet
 
 \paragraph{Playing}
 
-The Automaton is capable of playing multiple things at one time.  The process of playing a single item is called a {\bf Thread}.   In a Thread, a single Node is playing, and when it finished playing, it passes playing on to another Node, or if it passes to nothing, the Thread is terminated.  Threads operate independently.  There can be no more than 8 Threads playing at one time.  Normally Threads are created automatically, but you can manually start a Thread on any Node by selecting the Node and clicking the {\bf Start Thread} button (if there are already 8 active threads, this button does nothing).
+The Automaton is capable of playing multiple things at one time.  The process of playing a single item is called a {\bf Thread}.   In a Thread, a single Node is playing, and when it finished playing, it passes playing on to another Node, or if it passes to nothing, the Thread is terminated.  Threads operate independently.  There can be no more than 8 Threads playing at one time.  Normally Threads are created automatically, but you can manually start a Thread on any Node by selecting the Node and selecting {\bf Launch Thread at Node} in the {\bf Automaton} menu (if there are already 8 active threads, selecting this menu item does nothing).
 
-One Node is designated the {\bf Start Node}.  At present it's colored ugly Lime Green.  When the Automaton is started, it initiates a single Thread, playing the Start Node.  You can designate the Start Node by selecting it and then clicking on the {\bf Start Node} button in the Inspector, or selecting {\bf Make Start Node} in the {\bf Automaton} menu.
+One Node is designated the {\bf Start Node}.  At present it's colored ugly Lime Green.  When the Automaton is started, it initiates a single Thread, playing the Start Node.  You can designate the Start Node by selecting it and then selecting {\bf Make Start Node} in the {\bf Automaton} menu.
 
 When a Node has finished playing, it will select one of its endpoints, and its Thread will start playing whatever is connected to that endpoint via an Edge.  If nothing is connected, then nothing new will play and the Thread will terminate.  If all Threads have terminated, then the Automaton itself will Finish: there's nothing left to play!
 
@@ -947,7 +949,7 @@ Now, Parameters are real-valued numbers from 0.0 to 1.0, but perhaps the feature
 
 In a Child Inspector, you can often set the {\bf arguments} of the Child.  These are the values which are passed into the Child's parameters by its parent when the Child is played.    You can set them to fixed values (like 0.2314), which will in turn change any of the Child's features that have been bound to those particular parameters.
 
-But arguments can also {\it themselves be bound} to the parent's parameters.  For example, you could bind Argument 4 of a child of a Series to Parameter 5 of the Series itself.  This means that when the musician changes Parameter 5 of the Series, then Argument 4 of the Child is also changed, and thus the feature of the Child is changed as well!  Thus parameter values can be passed down from parent to child to grandchild etc.
+But arguments can also {\it themselves be bound} to the parent's parameters.  For example, you could bind Argument 4 of a child of a Series to Parameter 5 of the Series itself.  This means that when the musician changes Parameter 5 of the Series, then Argument 4 of the Child is also changed, and thus the feature of the Child is changed as well!  Thus parameter values can be passed down from parent to child to grandchild etc.  In fact, that's the default settings of arguments: they're just bound to the parent arguments of the same number.
 
 \paragraph{A Warning about Child Arguments}
 

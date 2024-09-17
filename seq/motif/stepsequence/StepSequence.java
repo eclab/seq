@@ -232,9 +232,7 @@ public class StepSequence extends Motif
             } 
         incrementVersion();
         }
-    
-    public void recomputeLength() { }
-    
+        
     void copyTrack(int from, int to)
         {
         on[to] = copy(on[from]);
@@ -354,16 +352,25 @@ public class StepSequence extends Motif
         setup(lengths, steps);
         }
 
+    int steps = DEFAULT_NUM_STEPS;
+        
     public int getLengthInSteps()
         {
         // Length is in PPQ.  We assume that we are in 16th notes
-        return length * 4 / Seq.PPQ;
+        // return length * 4 / Seq.PPQ;
+        return steps;
+        }
+        
+    public int getLength()
+        {
+        return steps * Seq.PPQ / 4;
         }
                 
     public void setLengthInSteps(int steps)
         {
         // Length is in PPQ.  We assume that we are in 16th notes
-        length = steps / 4 * Seq.PPQ;
+        // length = steps / 4 * Seq.PPQ;
+        this.steps = steps;
         }
                 
     public int getNumTracks() { return velocities.length; }
@@ -490,7 +497,6 @@ public class StepSequence extends Motif
         System.arraycopy(notes[track], 0, newNotes, 0, Math.min(notes[track].length, newNotes.length));
         notes[track] = newNotes;
 
-        recomputeAncestorLengths(); 
         incrementVersion();
         }
         

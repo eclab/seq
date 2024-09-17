@@ -23,6 +23,13 @@ public abstract class SmallDial extends JPanel
     {
     private static final long serialVersionUID = 1;
 
+    public void setToolTipText(String text) 
+        { 
+        //super.setToolTipText(text); 
+        if (title != null) title.setToolTipText(text);
+        if (data != null) data.setToolTipText(text);
+        }
+
     public static final int NO_DEFAULT = Dial.NO_DEFAULT;
     public static final int DEFAULT = Dial.DEFAULT;
     // The dial width
@@ -180,6 +187,9 @@ public abstract class SmallDial extends JPanel
         panel.add(this, BorderLayout.CENTER);
         panel.add(this.title, BorderLayout.NORTH);
         panel.add(data, BorderLayout.SOUTH);
+        data.setToolTipText(getToolTipText());
+        this.title.setToolTipText(getToolTipText());
+        panel.setToolTipText(getToolTipText());
         return panel;
         }
 
@@ -220,6 +230,10 @@ public abstract class SmallDial extends JPanel
         subpanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
         panel.add(subpanel, BorderLayout.CENTER);
         superpanel.add(panel, BorderLayout.NORTH);
+        panel.setToolTipText(getToolTipText());
+        superpanel.setToolTipText(getToolTipText());
+        data.setToolTipText(getToolTipText());
+        this.title.setToolTipText(getToolTipText());
         return superpanel;
         }
         
@@ -254,6 +268,9 @@ public abstract class SmallDial extends JPanel
         subpanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         panel.add(subpanel, BorderLayout.CENTER);
         superpanel.add(panel, BorderLayout.NORTH);
+        panel.setToolTipText(getToolTipText());
+        superpanel.setToolTipText(getToolTipText());
+        data.setToolTipText(getToolTipText());
         return superpanel;
         }
         

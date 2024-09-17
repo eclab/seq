@@ -21,8 +21,8 @@ public class In implements Receiver
     {
     private static final long serialVersionUID = 1;
 
-	Seq seq;
-	int index;
+    Seq seq;
+    int index;
     // Returned by default when there are no messages, rather than building new empty arrays each time.
     static final MidiMessage[] EMPTY = new MidiMessage[0];
     // Message mailbox
@@ -92,9 +92,9 @@ public class In implements Receiver
         {
         if (wrapper == null) return "None";
         if (getName() != null && getName().trim().length() > 0)
-        	{
-	        return (channel == 0 ? "O" : ("Ch " + channel)) + " " + getName().trim();
-        	}
+            {
+            return (channel == 0 ? "O" : ("Ch " + channel)) + " " + getName().trim();
+            }
         return (channel == 0 ? "O" : ("Ch " + channel)) + " " + wrapper.toString();
         //return ("<html><font size='-2'>" + (channel == 0 ? "O" : ("Channel " + channel)) + "<br>" + wrapper.toString() + "</font></html>");
         }

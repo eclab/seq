@@ -286,6 +286,7 @@ public class MotifList extends JPanel
         addButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/plus.png")), items);
         addButton.setPopsUpAbove(true);
         addButton.getButton().setPreferredSize(new Dimension(24, 24));
+        addButton.setToolTipText("Add new motif");
 
         removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
             {
@@ -295,7 +296,8 @@ public class MotifList extends JPanel
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
-                
+        removeButton.setToolTipText("Delete current motif");
+
         backButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/backward.png")))
             {
             public void perform()
@@ -304,6 +306,7 @@ public class MotifList extends JPanel
                 }
             };
         backButton.getButton().setPreferredSize(new Dimension(24, 24));
+        backButton.setToolTipText("Back up to previous motif");
 
         forwardButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/forward.png")))
             {
@@ -313,6 +316,7 @@ public class MotifList extends JPanel
                 }
             };
         forwardButton.getButton().setPreferredSize(new Dimension(24, 24));
+        forwardButton.setToolTipText("Return to motif");
 
         copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
@@ -322,6 +326,7 @@ public class MotifList extends JPanel
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        copyButton.setToolTipText("Copy current motif");
 
 /*
   rootButton = new PushButton("Root")

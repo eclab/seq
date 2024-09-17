@@ -127,6 +127,23 @@ public class AutomatonUI extends MotifUI
                 }
             });
         menu.add(load);
+        JMenuItem launch = new JMenuItem("Launch Thread at Node");
+        launch.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent e)
+                {
+                AutomatonButton button = getSelectedButton();
+                if (button == null) return;                             // FIXME: maybe popup a warning dialog?
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    launchThread(button.getNode());
+                    }
+                finally { lock.unlock(); }                              
+                }
+            });
+        menu.add(launch);
         }
                 
     public JMenu getMenu()
@@ -281,6 +298,8 @@ public class AutomatonUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
+        removeButton.setToolTipText("Remove selected motif from automaton");
+
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
             public void perform()
@@ -289,6 +308,7 @@ public class AutomatonUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        copyButton.setToolTipText("Copy selected motif in automaton");
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());

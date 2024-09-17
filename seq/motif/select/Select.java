@@ -157,11 +157,11 @@ public class Select extends Motif
     public static final int MODE_MULTI_REPEATING = 3;
 
     /*
-    int[] cc = new int[NUM_PARAMETERS];
-    public int getCC(int index) { return cc[index]; }
-    public void setCC(int index, int val) { cc[index] = val; }
-	*/
-	
+      int[] cc = new int[NUM_PARAMETERS];
+      public int getCC(int index) { return cc[index]; }
+      public void setCC(int index, int val) { cc[index] = val; }
+    */
+        
     int in = 0;
     //int ccIn = 0;
     int out = 0;
@@ -279,11 +279,6 @@ public class Select extends Motif
         return new SelectClip(seq, this, parent);
         }
     
-    public void recomputeLength()
-        {
-        length = UNKNOWN;
-        }
-
     public void load(JSONObject from) throws JSONException
         {
         setPlayFirst(from.optBoolean("playfirst", true));
@@ -293,11 +288,11 @@ public class Select extends Motif
         setStartNote(from.optInt("startnote", DEFAULT_START_NOTE));
         setIn(from.optInt("in", 0));
         /*
-        JSONArray param = from.getJSONArray("cc");
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            setCC(i, param.getInt(i));
-            }
+          JSONArray param = from.getJSONArray("cc");
+          for(int i = 0; i < NUM_PARAMETERS; i++)
+          {
+          setCC(i, param.getInt(i));
+          }
         */
         }
         
@@ -310,12 +305,12 @@ public class Select extends Motif
         to.put("startnote", getStartNote());
         to.put("in", getIn());
         /*
-        JSONArray cc = new JSONArray();
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            cc.put(getCC(i));
-            }
-        to.put("cc", cc);
+          JSONArray cc = new JSONArray();
+          for(int i = 0; i < NUM_PARAMETERS; i++)
+          {
+          cc.put(getCC(i));
+          }
+          to.put("cc", cc);
         */
         }
 

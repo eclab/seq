@@ -227,14 +227,14 @@ public class SelectUI extends MotifUI
             verticalHeader.add(p);
             
             /*
-            Box box = new Box(BoxLayout.X_AXIS);
-            box.add(box.createHorizontalStrut(4));
-            box.add(new Dial(0.5)
-                {
-                public double getValue() { return 0.5; }
-                });
-            box.add(p);
-            verticalHeader.add(box);
+              Box box = new Box(BoxLayout.X_AXIS);
+              box.add(box.createHorizontalStrut(4));
+              box.add(new Dial(0.5)
+              {
+              public double getValue() { return 0.5; }
+              });
+              box.add(p);
+              verticalHeader.add(box);
             */
             }
         }
@@ -249,6 +249,8 @@ public class SelectUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
+        removeButton.setToolTipText("Remove selected motif from select grid");
+
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
             public void perform()
@@ -257,6 +259,7 @@ public class SelectUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        copyButton.setToolTipText("Copy selected motif in select grid");
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());

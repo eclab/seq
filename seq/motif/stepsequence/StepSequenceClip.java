@@ -345,12 +345,16 @@ public class StepSequenceClip extends Clip
 
                 if ((flam == 0 && remainder == 0) || (flam > 0 && remainder % StepSequence.FLAMS[flam] == 0)) // time to play a note!
                     {
-                    if(remainder == 0) {
+                    if (remainder == 0) 
+                        {
                         // check if I need to play (only at beginning of step, the following flams -if any- must happen iff first happens)
                         boolean play = dSeq.playNow(invNumTracks, track, step, (iteration == 0 ? 0 : iteration - 1));
-                        if (play) {
+                        if (play) 
+                            {
                             trackPlaying[track] = true;
-                            } else {
+                            } 
+                        else 
+                            {
                             trackPlaying[track] = false;
                             continue;
                             }
@@ -371,6 +375,7 @@ public class StepSequenceClip extends Clip
                     }
                 }
             }
+        if (pos >= len - 1) System.err.println("Done at " + seq.getTime());
         return (pos >= len - 1);
         }
 

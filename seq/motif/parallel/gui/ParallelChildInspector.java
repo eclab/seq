@@ -635,7 +635,7 @@ public class ParallelChildInspector extends WidgetList
         fineDelayPanel.add(fineDelayPresets, BorderLayout.EAST);       
 
 
-        JPanel result = build(new String[] { "Nickname", "Coarse Delay", "Fine Delay", "Probability", "End Quantization", "Rate", "Transpose", "Gain", "Out", "Override" }, 
+        JPanel result = build(new String[] { "Nickname", "Coarse Delay", "Fine Delay", "Probability", "End Quantization", "Override", "MIDI Changes", "Rate", "Transpose", "Gain", "Out" }, 
             new JComponent[] 
                 {
                 name,
@@ -643,12 +643,13 @@ public class ParallelChildInspector extends WidgetList
                 fineDelayPanel,
                 probability.getLabelledDial("0.0000"),
                 quantization,
+                override,
+                null,                           // separator
                 ratePanel,
                 transpose.getLabelledDial("-24"),
                 //gain.getLabelledDial("0.0000"),
                 gainPanel,
                 out,
-                override
                 });
 
         // the widgetlist is added SOUTH -- we need to change that to CENTER

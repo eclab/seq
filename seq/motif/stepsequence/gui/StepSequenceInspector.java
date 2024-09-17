@@ -64,7 +64,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
                         
-            numBeats = new SmallDial(-1)                // (StepSequence.DEFAULT_LENGTH_IN_STEPS - 1) / 127)
+            numBeats = new SmallDial(-1)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127) + 1);  }
                 public double getValue() 

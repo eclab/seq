@@ -431,8 +431,6 @@ public class ParallelClip extends Clip
             note += getCorrectedValueInt(data.getTranspose(), Parallel.Data.MAX_TRANSPOSE * 2) - Parallel.Data.MAX_TRANSPOSE;
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-            vel *= getCorrectedValueDouble(data.getGain(), Parallel.Data.MAX_GAIN);
-            if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
             super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
             }
         else System.err.println("ParallelClip.scheduleNoteOff: current was " + current);

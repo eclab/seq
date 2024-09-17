@@ -1341,19 +1341,19 @@ public class Seq
 
 
     public void fireMIDIIn()
-    	{
-    	SwingUtilities.invokeLater(new Runnable()
-    		{
-    		public void run()
-    			{
-    			if (sequi != null)
-    				{
-	    			sequi.getTransport().fireMIDIIn();
-    				}
-    			}
-    		});
-    	}
-    	         
+        {
+        SwingUtilities.invokeLater(new Runnable()
+            {
+            public void run()
+                {
+                if (sequi != null)
+                    {
+                    sequi.getTransport().fireMIDIIn();
+                    }
+                }
+            });
+        }
+                 
     /** Convenience method to set up the sequencer to use the SeqSynth as output.  
         Don't use this for the time being. */
     /* public void setupForSynth(Class mainClass, Synth synth, String[] args, int numMIDIInput, int numMIDIOutput, boolean includesInput) 
@@ -1641,8 +1641,8 @@ public class Seq
                     System.err.println("In MIDI " + i + ": " + inWrappers[i] + "Channel: " + inChannels[i]);
                     }
                         
-            String[] inNames = new String[NUM_INS];
-            String[] outNames = new String[NUM_OUTS];
+                String[] inNames = new String[NUM_INS];
+                String[] outNames = new String[NUM_OUTS];
 
                 tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, inNames, outNames);
                 // ins have to be set up after the tuple

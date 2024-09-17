@@ -108,7 +108,7 @@ public class SelectClip extends Clip
                 if (node != null)
                     {
                     if (node.clip != null) node.clip.rebuild(motif);
-                	else System.err.println("Warning: SelectClip node " + node + " has no clip");
+                    else System.err.println("Warning: SelectClip node " + node + " has no clip");
                     }
                 }
             }
@@ -447,10 +447,10 @@ public class SelectClip extends Clip
                     doRelease();
                     }
                 /*
-                else if (select.getIn() == select.getCCIn())
-                    {
-                    processCCIn((ShortMessage)messages[i], select);
-                    }
+                  else if (select.getIn() == select.getCCIn())
+                  {
+                  processCCIn((ShortMessage)messages[i], select);
+                  }
                 */
                 }
             else if (isNoteOn(messages[i]))
@@ -495,62 +495,62 @@ public class SelectClip extends Clip
 
 /*
 
-    // The last CC parameter received
-    int lastCC = -1;
-    // The motif parameter corresponding to the last CC parameter
-    int lastParam = -1;
+// The last CC parameter received
+int lastCC = -1;
+// The motif parameter corresponding to the last CC parameter
+int lastParam = -1;
         
-    // Processes the given CC message
-    void processCCIn(ShortMessage ccMessage, Select select)
-        {
-        int cc = ccMessage.getData1();
-        // First a little caching
-        if (lastCC == cc)
-            {
-            double data = ccMessage.getData2() / 127.0;
-            for (SelectClip.Node node : playing)
-                {
-                node.clip.setParameterValue(lastParam, data);
-                }
-            }
-        else
-            {
-            // This is probably faster than hashing as there's only 8 parameters
-            for(int j = 0; j < Motif.NUM_PARAMETERS; j++)
-                {
-                if (select.getCC(j) == cc) // got it
-                    {
-                    lastCC = cc;
-                    lastParam = j;
-                    double data = ccMessage.getData2() / 127.0;
-                    for (SelectClip.Node node : playing)
-                        {
-                        node.clip.setParameterValue(lastParam, data);
-                        }
-                    }
-                }
-            }
-        }
+// Processes the given CC message
+void processCCIn(ShortMessage ccMessage, Select select)
+{
+int cc = ccMessage.getData1();
+// First a little caching
+if (lastCC == cc)
+{
+double data = ccMessage.getData2() / 127.0;
+for (SelectClip.Node node : playing)
+{
+node.clip.setParameterValue(lastParam, data);
+}
+}
+else
+{
+// This is probably faster than hashing as there's only 8 parameters
+for(int j = 0; j < Motif.NUM_PARAMETERS; j++)
+{
+if (select.getCC(j) == cc) // got it
+{
+lastCC = cc;
+lastParam = j;
+double data = ccMessage.getData2() / 127.0;
+for (SelectClip.Node node : playing)
+{
+node.clip.setParameterValue(lastParam, data);
+}
+}
+}
+}
+}
         
-    // Processes all CC messages
-    void processCCIn()
-        {
-        Select select = (Select) getMotif();
-        if (select.getPlayingClip() != this) return;            // These messages are not for me
-        if (select.getIn() != select.getCCIn()) // not already processed in getChildrenFromMIDI
-            {
-            In in = seq.getIn(select.getIn());
-            MidiMessage[] messages = in.getMessages();
-            for(int i = messages.length - 1; i >= 0; i--)
-                {
-                if (isCC(messages[i]))
-                    {
-                    processCCIn((ShortMessage)messages[i], select);
-                    }
-                }
-            }
-        }
-    */
+// Processes all CC messages
+void processCCIn()
+{
+Select select = (Select) getMotif();
+if (select.getPlayingClip() != this) return;            // These messages are not for me
+if (select.getIn() != select.getCCIn()) // not already processed in getChildrenFromMIDI
+{
+In in = seq.getIn(select.getIn());
+MidiMessage[] messages = in.getMessages();
+for(int i = messages.length - 1; i >= 0; i--)
+{
+if (isCC(messages[i]))
+{
+processCCIn((ShortMessage)messages[i], select);
+}
+}
+}
+}
+*/
     
     
     //// PROCESSING DIFFERENT MODES
@@ -963,8 +963,6 @@ public class SelectClip extends Clip
             note += getCorrectedValueInt(data.getTranspose(), Select.Data.MAX_TRANSPOSE * 2) - Select.Data.MAX_TRANSPOSE;
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-            vel *= getCorrectedValueDouble(data.getGain(), Select.Data.MAX_GAIN);
-            if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
             super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
             }
         else System.err.println("SelectClip.scheduleNoteOff: current was " + current);

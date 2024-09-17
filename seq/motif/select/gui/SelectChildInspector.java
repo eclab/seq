@@ -259,10 +259,11 @@ public class SelectChildInspector extends WidgetList
         ratePanel.add(rate.getLabelledDial("0.0000"), BorderLayout.CENTER);   // so it stretches
         ratePanel.add(ratePresets, BorderLayout.EAST);       
 
-        JPanel result = build(new String[] { "Nickname", "Rate", "Transpose", "Gain", "Out"  }, 
+        JPanel result = build(new String[] { "Nickname", "MIDI Changes", "Rate", "Transpose", "Gain", "Out"  }, 
             new JComponent[] 
                 {
                 name,
+                null,                           // separator
                 ratePanel,
                 transpose.getLabelledDial("-24"),
                 gain.getLabelledDial("0.0000"),

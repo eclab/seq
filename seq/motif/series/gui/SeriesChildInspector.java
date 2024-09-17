@@ -205,7 +205,7 @@ public class SeriesChildInspector extends WidgetList
                 
             repeatPanel = new JPanel();
             repeatPanel.setLayout(new BorderLayout());
-            repeatPanel.add(repeats.getLabelledDial("128"), BorderLayout.WEST);
+            repeatPanel.add(repeats.getLabelledDial("128"), BorderLayout.CENTER );
             repeatPanel.add(untilTrigger, BorderLayout.EAST);
 
             quantization = new JComboBox(QUANTIZATIONS);
@@ -470,7 +470,7 @@ public class SeriesChildInspector extends WidgetList
         ratePanel.add(rate.getLabelledDial("0.0000"), BorderLayout.CENTER);   // so it stretches
         ratePanel.add(ratePresets, BorderLayout.EAST); 
 
-        JPanel result = build(new String[] { "Nickname", "Fixed Repeats", "Repeat Probability", "End Quantization", "Rate", "Transpose", "Restrict", "Gain", "Out", "Start Here" }, 
+        JPanel result = build(new String[] { "Nickname", "Fixed Repeats", "Repeat Probability", "End Quantization", "Start Here", "MIDI Changes", "Rate", "Transpose", "Restrict", "Gain", "Out"}, 
             new JComponent[] 
                 {
                 name,
@@ -478,15 +478,16 @@ public class SeriesChildInspector extends WidgetList
                 repeatPanel,
                 probability.getLabelledDial("0.0000"),
                 quantization,
+                start,
+                null,                   // Separator
                 ratePanel,
                 transpose.getLabelledDial("-24"),
                 scaleAndRoot,
                 gain.getLabelledDial("0.0000"),
                 out,
-                start,
                 });
 
-        // the widgetlist is added SOUTH -- we need to change that to CENTER
+        // the widgetlist is added NORTH -- we need to change that to CENTER
         remove(result);
         add(result, BorderLayout.CENTER);
                 

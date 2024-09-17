@@ -234,6 +234,8 @@ public class MacroUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
+        removeButton.setToolTipText("Remove selected motif from macro list");
+
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
             public void perform()
@@ -242,6 +244,7 @@ public class MacroUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        copyButton.setToolTipText("Copy selected motif in macro list");
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());

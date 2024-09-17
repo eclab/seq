@@ -41,12 +41,28 @@ public class WidgetList extends JPanel
             c.weightx = 0;
             c.weighty = 1;
             c.insets = new Insets(2, 2, 2, 2);
-            panel.add(this.labels[i] = new JLabel(labels[i] + " ", SwingConstants.RIGHT), c);
+            
+            if (widgets[i] == null)
+                {
+                panel.add(this.labels[i] = new JLabel("<html><i><font size=-4><br></font>" + labels[i] + "</i> ", SwingConstants.RIGHT), c);
+                }
+            else
+                {
+                panel.add(this.labels[i] = new JLabel(labels[i] + " ", SwingConstants.RIGHT), c);
+                }
                 
             c.gridx = 1;
             c.anchor = GridBagConstraints.LINE_START;
             c.weightx = 1;
-            panel.add(widgets[i], c);
+            
+            if (widgets[i] == null)
+                {
+                panel.add(new JPanel());
+                }
+            else
+                {
+                panel.add(widgets[i], c);
+                }
             }
         
         setLayout(new BorderLayout());

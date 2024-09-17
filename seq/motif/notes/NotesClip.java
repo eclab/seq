@@ -78,27 +78,30 @@ public class NotesClip extends Clip
     public void reset()  
         {
         super.reset();
-        moveRecording();                // also calls updateIndex()
+        moveRecording();                // also calls updateIndex() if nonempty
+        updateIndex();
         }
         
     void moveRecording()
         {
         // Move the recorded notes over 
         Notes notes = (Notes) getMotif();
-        ArrayList<Notes.Event> recording = notes.getLastRecording();
-        if (recording != null) 
+        ArrayList<Notes.Event> recording = notes.getRecording();
+        if (!recording.isEmpty())
             {
-            setDidRecord(true);
             notes.setEvents(recording);
+            notes.clearRecording();
+            updateIndex();
+            setDidRecord(true);
             }
-        notes.clearRecordings();
-        updateIndex();
+        else setDidRecord(false);
         }
 
     public void terminate()  
         {
         super.terminate();
         moveRecording();
+        updateIndex();
         }
         
     public void clear()
@@ -210,7 +213,7 @@ public class NotesClip extends Clip
             if (getPosition() == 0) // this is the first step, we have to clear out existing notes first
                 {
                 clear();        // just in case?
-                ArrayList<Notes.Event> r = notes.getLastRecording();
+                ArrayList<Notes.Event> r = notes.getRecording();
                 if (r != null) r.clear();       // just in case?
                 }
                 
@@ -221,9 +224,7 @@ public class NotesClip extends Clip
                 }
             else
                 {
-                ArrayList<Notes.Event> recording = notes.getLastRecording();
-                if (recording == null) // gotta make one
-                    recording = notes.pushNewRecording();
+                ArrayList<Notes.Event> recording = notes.getRecording();
                 int channel = in.getChannel();
                 MidiMessage[] messages = in.getMessages();
                 for(int i = 0; i < messages.length; i++)
@@ -301,6 +302,7 @@ public class NotesClip extends Clip
             }
         else
             {
+            System.err.println("Process " + pos);
             ArrayList<Notes.Event> playing = notes.events;
             int size = playing.size();
             
@@ -316,6 +318,7 @@ public class NotesClip extends Clip
                     Notes.Note note = (Notes.Note)event;
                     if (note.velocity > 0)
                         {
+                        System.err.println("NOTE ON " + out + " " + note.pitch + " " + note.velocity);
                         noteOn(out, note.pitch, note.velocity);
                         // NOTE: We have to schedule the note off, rather than turn it off at a later time,
                         // because the musician could change the transpose before the note was turned off

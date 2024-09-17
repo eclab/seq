@@ -77,7 +77,7 @@ public class AutomatonClip extends Clip
                         int pitch = thread.notes[i];
                         if (pitch != Automaton.Chord.NO_NOTE)
                             {
-                            noteOff(out, pitch, release);
+                            super.noteOff(out, pitch, release);
                             }
                         thread.notes[i] = Automaton.Chord.NO_NOTE;
                         }
@@ -101,7 +101,7 @@ public class AutomatonClip extends Clip
                         int pitch = thread.notes[i];
                         if (pitch != Automaton.Chord.NO_NOTE)
                             {
-                            noteOff(out, pitch, release);
+                            super.noteOff(out, pitch, release);
                             }
                         thread.notes[i] = Automaton.Chord.NO_NOTE;
                         }
@@ -203,6 +203,9 @@ public class AutomatonClip extends Clip
     public final static Automaton.Node[] UNFINISHED_AUTOMATON_NODE = { null };
     boolean finished = false;
         
+
+    // Set temporarily so the MIDI methods know what node is sending MIDI right now
+    Automaton.MotifNode currentNode = null; 
         
     /// This is NOT static, and I think that's okay?  FIXME
     public class AutomatonThread
@@ -248,6 +251,10 @@ public class AutomatonClip extends Clip
                 }
             return iterate;
             }
+            
+        // Rates
+        double cumulativeRate = 0.0;
+        int lastPos = 0;
 
         // DELAY COUNTS
         // Delays are per thread.
@@ -265,13 +272,13 @@ public class AutomatonClip extends Clip
                 Automaton.MotifNode mnode = (Automaton.MotifNode)node;
                 if (mnode.getRepeatUntilTrigger())
                     {
-                    shouldResetTriggers = true;             // we have multiple thread so we can't check and reset now, just check, then reset everyone later after process()
+                    shouldResetTriggers = true;             // we have multiple threads so we can't check and reset now, just check, then reset everyone later after process()
                     return !isTriggered(TRIGGER_PARAMETER);
                     }
-                else if (repeatCount >= mnode.getRepeats())
+                else if (repeatCount >= getCorrectedValueInt(mnode.getRepeats(), Automaton.MotifNode.MAX_REPEATS))
                     {
                     java.util.Random random = ThreadLocalRandom.current();
-                    double prob = mnode.getRepeatProbability();
+                    double prob = getCorrectedValueDouble(mnode.getRepeatProbability(), 1.0);
                     if (prob == 0) 
                         {
                         return false;
@@ -336,23 +343,45 @@ public class AutomatonClip extends Clip
             resetTriggers();
             loadParameterValues(clip, node.child);
             clip.reset();
+            cumulativeRate = 0.0;
+            lastPos = -1;
             }
 
         int[] notes = new int[Automaton.Chord.MAX_NOTES];
                 
-        public Automaton.Node[] process()
+                
+        public boolean advance(Automaton.MotifNode node, Clip child, double rate)
+            {
+            loadParameterValues(child, node.child);                                     // this is done every time it's advanced
+                                   
+            if (rate == 1.0) return child.advance();
+            else
+                {
+                boolean result = false;
+                cumulativeRate += rate;
+                for( /* Empty */ ; lastPos < cumulativeRate; lastPos++)
+                    {
+                    result = result || child.advance();
+                    }
+                return result;
+                }
+            }
+        
+        public Automaton.Node[] processThread()
             {
             if (node instanceof Automaton.MotifNode)
                 {
+                Automaton.MotifNode motifnode = (Automaton.MotifNode)node;
                 if (child == null)
                     {
-                    Automaton.MotifNode motifnode = (Automaton.MotifNode)node;
                     child = makeClip(motifnode.getMotif());
                     reset(motifnode, child);
                     }
-                                        
-                if (child.advance())    // all done
+                    
+                currentNode = motifnode;                 
+                if (advance(motifnode, child, getCorrectedValueDouble(motifnode.getRate(), Automaton.MotifNode.MAX_RATE)))    // all done
                     {
+                    currentNode = null;
                     // FIXME: is the +1 right?  I think it is?
                     if ((getPosition() + 1) % Automaton.MotifNode.QUANTIZATIONS[((Automaton.MotifNode)node).getQuantization()] == 0)
                         {
@@ -366,6 +395,7 @@ public class AutomatonClip extends Clip
                     }
                 else                                    // not done yet
                     {
+                    currentNode = null;
                     return UNFINISHED_AUTOMATON_NODE;
                     }
                 }
@@ -411,7 +441,7 @@ public class AutomatonClip extends Clip
                         int pitch = achord.getNote(i);
                         if (pitch != Automaton.Chord.NO_NOTE)
                             {
-                            noteOn(out, pitch, velocity);
+                            AutomatonClip.super.noteOn(out, pitch, velocity);
                             }
                         notes[i] = pitch;
                         }
@@ -426,7 +456,7 @@ public class AutomatonClip extends Clip
                         int pitch = notes[i];
                         if (pitch != Automaton.Chord.NO_NOTE)
                             {
-                            noteOff(out, pitch, release);
+                            AutomatonClip.super.noteOff(out, pitch, release);
                             }
                         notes[i] = Automaton.Chord.NO_NOTE;
                         }
@@ -457,7 +487,7 @@ public class AutomatonClip extends Clip
                 }
             else // Must be UNFINISHED, which cannot be right
                 {
-                System.err.println("INTERNAL ERROR: in AutomatonThread.process(), node is " + node + " which should not happen.");
+                System.err.println("INTERNAL ERROR: in AutomatonThread.processThread(), node is " + node + " which should not happen.");
                 return EMPTY_AUTOMATON_NODE;
                 }
             }
@@ -481,7 +511,7 @@ public class AutomatonClip extends Clip
                         int time = (int)(delayCount + 1 - d * timeOn);          // FIXME, is this right?
                         if (time >= 0)
                             {
-                            scheduleNoteOff(out, pitch, release, time);
+                            AutomatonClip.super.scheduleNoteOff(out, pitch, release, time);
                             }
                         }
                     notes[i] = Automaton.Chord.NO_NOTE;
@@ -503,7 +533,7 @@ public class AutomatonClip extends Clip
                     int pitch = notes[i];
                     if (pitch != Automaton.Chord.NO_NOTE)
                         {
-                        noteOff(out, pitch, release);
+                        AutomatonClip.super.noteOff(out, pitch, release);
                         }
                     notes[i] = Automaton.Chord.NO_NOTE;
                     }
@@ -603,7 +633,7 @@ public class AutomatonClip extends Clip
             {
             AutomatonThread thread = unprocessed.get(unprocessed.size() - 1);       // last one
             Automaton.Node anode = thread.getNode();
-            Automaton.Node[] nodes = thread.process();
+            Automaton.Node[] nodes = thread.processThread();
             if (nodes.length == 0)
                 {
                 thread.setNode(null);
@@ -618,25 +648,25 @@ public class AutomatonClip extends Clip
                     // Stay where we are
                     moveThread();
                     }
-                else if (thread.shouldRepeat()) 	// REPEATING
+                else if (thread.shouldRepeat())         // REPEATING
                     {
                     // Stay where we are, but reset
                     thread.child.release();
                     thread.child.loop();
                     moveThread();
                     }
-                else if (thread.contains(next) || next == anode)			// we do next == anode because anode hasn't been processed yet and may not be in visited list
+                else if (next == anode || thread.contains(next))                        // we do next == anode because anode may not yet be in visited list
                     {
                     // This is a cycle, we've been here before.  Stay at 'next'.
                     // 'next' should NEVER be a MotifNode or a Delay with delay > 0.
 /*
-                    if (next instanceof Automaton.MotifNode ||
-                        next instanceof Automaton.Chord ||
-                            (next instanceof Automaton.Delay &&
-                            ((Automaton.Delay)next).getDelay() > 0))
-                        {
-                        System.err.println("ERROR: cycling in a node: " + next);
-                        }
+  if (next instanceof Automaton.MotifNode ||
+  next instanceof Automaton.Chord ||
+  (next instanceof Automaton.Delay &&
+  ((Automaton.Delay)next).getDelay() > 0))
+  {
+  System.err.println("ERROR: cycling in a node: " + next);
+  }
 */
                     thread.setNode(next);
                     moveThread();
@@ -665,10 +695,10 @@ public class AutomatonClip extends Clip
                             AutomatonThread newthread = new AutomatonThread(n, (HashSet<Automaton.Node>)(thread.getVisited().clone()));
                         System.err.println("Contains " + n + " ? " + newthread.contains(n));
                         if (//n instanceof Automaton.MotifNode ||
-                            newthread.contains(n) ||                                // it's a cycle
-                            n == anode //||											// we do n == anode because anode hasn't been processed yet and may not be in visited list
                             //n instanceof Automaton.Chord ||
-                            //(n instanceof Automaton.Delay && ((Automaton.Delay)n).getDelay() > 0))
+                            //(n instanceof Automaton.Delay && ((Automaton.Delay)n).getDelay() > 0) ||
+                            n == anode ||                                                                                       // it's a cycle.  We do n == anode because anode may not yet be in visited list
+                            newthread.contains(n)                                       // it's a cycle
                             )
                             {
                             System.err.println("Node processed " + n);
@@ -712,7 +742,57 @@ public class AutomatonClip extends Clip
         processed.add(new AutomatonThread(node));
         }
 
-
+    public boolean noteOn(int out, int note, double vel) 
+        {
+        if (currentNode != null)
+            {
+            if (currentNode.getOutMIDI() != Automaton.MotifNode.DISABLED)
+                {
+                out = currentNode.getOutMIDI();
+                }
+            note += getCorrectedValueInt(currentNode.getTranspose(), Automaton.MotifNode.MAX_TRANSPOSE * 2) - Automaton.MotifNode.MAX_TRANSPOSE;
+            //note = currentNode.adjustNote(note);
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            vel *= getCorrectedValueDouble(currentNode.getGain(), Automaton.MotifNode.MAX_GAIN);
+            if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
+            }
+        return super.noteOn(out, note, vel);
+        }
+        
+    public boolean noteOff(int out, int note, double vel) 
+        {
+        if (currentNode != null)
+            {
+            if (currentNode.getOutMIDI() != Automaton.MotifNode.DISABLED)
+                {
+                out = currentNode.getOutMIDI();
+                }
+            note += getCorrectedValueInt(currentNode.getTranspose(), Automaton.MotifNode.MAX_TRANSPOSE * 2) - Automaton.MotifNode.MAX_TRANSPOSE;
+            //note = currentNode.adjustNote(note);
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            }
+        return super.noteOff(out, note, vel);
+        }
+        
+    public void scheduleNoteOff(int out, int note, double vel, int time) 
+        {
+        if (currentNode != null)
+            {
+            if (currentNode.getOutMIDI() != Automaton.MotifNode.DISABLED)
+                {
+                out = currentNode.getOutMIDI();
+                }
+            note += getCorrectedValueInt(currentNode.getTranspose(), Automaton.MotifNode.MAX_TRANSPOSE * 2) - Automaton.MotifNode.MAX_TRANSPOSE;
+            //note = currentNode.adjustNote(note);
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(currentNode.getRate())));
+            }
+        else System.err.println("SeriesClip.scheduleNoteOff: currentNode is null");
+        }
+        
 
     // TESTING
     public static void main(String[] args) throws Exception

@@ -24,8 +24,6 @@ public class Blank extends Motif
 
     String was = "";
         
-    public void recomputeLength() { } 
-
     public String getWas() { return was; }
     public void setWas(String val) { was = val; }
     public void setWasToClass(Class val) 
@@ -48,7 +46,6 @@ public class Blank extends Motif
     public Blank(Seq seq)
         {
         super(seq);
-        length = 1;
         }
                 
     public Clip buildClip(Clip parent)

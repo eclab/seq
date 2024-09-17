@@ -52,7 +52,8 @@ public class PushButton extends JPanel
             button.getAccessibleContext().setAccessibleName(text.replaceAll("<.*?>", ""));
             }
         }
-        
+    
+    public void setToolTipText(String text) { button.setToolTipText(text); }
     public boolean getPopsUpAbove() { return popsUpAbove; }
     public void setPopsUpAbove(boolean val) { popsUpAbove = val; }
     

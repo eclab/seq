@@ -50,12 +50,11 @@ import seq.util.Prefs;
 //
 //   A THREAD has a HashSet<Node>
 //   	clear() -> clears the hash set
-//   	setNode(Node) sets the current node and adds the OLD NODE to the hash set if there is one.
+//   	setNode(Node) sets the current node and adds the OLD CURRENT NODE to the hash set if there is one.
 //			Also calls node.NOTIFY(thread, previous node)
 //   	contains(Node) -> checks the hash set
 //   	getSet() -> returns a copy of the hash set
 //   	<ArrayList of Nodes> process() -> processes the node as described above
-//		Constructor:
 //        
 //   Procedure RESET()
 //   	Clear Processed and (for good measure) Unprocessed threads
@@ -79,30 +78,32 @@ import seq.util.Prefs;
 //   			numthreads--;
 //   		else            // one or more nodes
 //   			next <- first element of nodes
-//   			if (next is UNFINISHED)
+//   			if (next is UNFINISHED)								// current node is not finished yet
 //   				move thread from UNPROCESSED to PROCESSED
-//   			else if next is Motif Node and we should continue repeats(next)
+//   			else if we should continue repeats(next)
+//					let next know that we're going to loop it
 //   				move thread from UNPROCESSED to PROCESSED
-//   			else if (thread.contains(next))                 // cycle, we've been here before
+//   			else if (thread.contains(next) || next == current node) // cycle, we've been here before
 //   				thread.setNode(next)                            // Must be AFTER checking if it contains the element
 //   				move thread from UNPROCESSED to PROCESSED
-//   			else 
+//				else
 //   				thread.setNode(next)                            // Must be AFTER checking if it contains the element
-//  		if (next is a MOTIF or if element is a DELAY of length > 0)
-//   			move thread from UNPROCESSED to PROCESSED
+//  				if (current node is a MOTIF or a DELAY of length > 0 or a CHORD)
+//   					move thread from UNPROCESSED to PROCESSED
 //   		// else we stay on the stack and continue to transition
 //   		for(n in remaining nodes)
-//   		if num threads is not exceeded
-//   		newthread <- new Thread(n, thread.getSet())             // Could still have cycles at least this time around
-//   		num threads++;
-//   if (n is a MOTIF 
-//   or if element is a DELAY of length > 0 
-//   or if newthread.contains(n))                            // cycle
-//   put new thread on PROCESSED
-//   else
-//   put new thread on UNPROCESSED
-
-
+//   			if numthreads does not exceed max yet
+//   				newthread <- new Thread(n, thread.getSet())             // Could still have cycles at least this time around
+//   				numthreads++;
+//   			if (newthread.contains(n)
+//					or n == current node)       // cycle
+//   					put new thread on PROCESSED
+//   			else
+//   					put new thread on UNPROCESSED
+//
+// In general, when we start a thread, it is put on UNPROCESSED, and its initial set node is neither processed nor visited.
+// When we process a thread, we process its currently set node, then set the next node, and repeat this until we have processed a non-zero-time node.
+// At this point, the current set node is neither processed nor visited either.
 
 
 public class Automaton extends Motif
@@ -558,6 +559,30 @@ public class Automaton extends Motif
         public static final int QUANTIZATION_FOUR_QUARTERS = 3;
         public static final int[] QUANTIZATIONS = { 1,  Seq.PPQ / 4, Seq.PPQ, Seq.PPQ * 4 };
     
+    public static final int MAX_REPEATS = 64;
+        public static final int MAX_TRANSPOSE = 24;
+        public static final double MAX_GAIN = 4.0;
+        public static final double MAX_RATE = 16.0;
+        public static final double DEFAULT_RATE = 1.0;
+        public static final int DISABLED = -1;
+
+        public int transpose = MAX_TRANSPOSE;                                   // ranges 0 ... MAX_TRANSPOSE * 2 inclusive, representing -MAX_TRANSPOSE ... MAX_TRANSPOSE
+        public double rate = 1;
+        public double gain = 1;
+        public int outMIDI = DISABLED;		// It's called outMIDI so as not to be confused with Node.out
+
+        public void setTranspose(int transpose) { this.transpose = transpose; }
+        public int getTranspose() { return transpose; }
+
+        public void setGain(double gain) { this.gain = gain; }
+        public double getGain() { return gain; }
+
+        public void setOutMIDI(int out) { this.outMIDI = out; }
+        public int getOutMIDI() { return outMIDI; }
+        
+        public double getRate() { return rate; }
+        public void setRate(double val) { rate = val; }
+        
         // Should the selected child delay to a quantization boundary?
         int quantization = QUANTIZATION_SIXTEENTH;
         public int repeats = 0;
@@ -581,6 +606,11 @@ public class Automaton extends Motif
             motifNode.repeatUntilTrigger = other.repeatUntilTrigger;
             // keep the child
             motifNode.child = other.child;
+            motifNode.rate = other.rate;
+            motifNode.transpose = other.transpose;
+            motifNode.gain = other.gain;
+            motifNode.out = other.out;
+            
             return motifNode;
             }
         public Node copy() { return new MotifNode(child).copyFrom(this); } 
@@ -592,6 +622,10 @@ public class Automaton extends Motif
             to.put("prob", repeatProbability); 
             to.put("trig", repeatUntilTrigger);
             to.put("quant", quantization);
+        	to.put("rate", rate);
+        	to.put("tran", transpose);
+        	to.put("gain", gain);
+        	to.put("outm", outMIDI);
             super.save(to, automaton); 
             }
         public void loadFinal(JSONObject from, Automaton automaton) throws JSONException 
@@ -601,11 +635,15 @@ public class Automaton extends Motif
             repeatProbability = from.optDouble("prob", 0.0);
             repeatUntilTrigger = from.optBoolean("trig", false);
             quantization = from.optInt("quant", QUANTIZATION_SIXTEENTH);
+        transpose = from.optInt("tran", 0);
+        rate = from.optDouble("rate", 1.0);
+        gain = from.optDouble("gain", 1.0);
+        outMIDI = from.optInt("outm", 0);
             super.loadFinal(from, automaton); 
             }
-        public void setRepeats(int val) { repeats = Math.max(0, val); }
+        public void setRepeats(int val) { repeats = val; }
         public int getRepeats() { return repeats; }
-        public void setRepeatProbability(double val) { repeatProbability = Math.min(1, Math.max(0, val)); }
+        public void setRepeatProbability(double val) { repeatProbability = val;  }
         public double getRepeatProbability() { return repeatProbability; }
         public void setRepeatUntilTrigger(boolean val) { repeatUntilTrigger = val; }
         public boolean getRepeatUntilTrigger() { return repeatUntilTrigger; }
@@ -629,6 +667,7 @@ public class Automaton extends Motif
                 }
             return name;
             }
+
         }
 
     public Motif copy()
@@ -834,13 +873,6 @@ public class Automaton extends Motif
             MotifNode removedMotifNode = (MotifNode) removedNode;
             removeChild(removedMotifNode.child);
             }
-        }
-
-// we're not calculating this right now
-
-    public void recomputeLength() 
-        {
-        length = UNKNOWN; 
         }
 
     public void save(JSONObject to) throws JSONException 

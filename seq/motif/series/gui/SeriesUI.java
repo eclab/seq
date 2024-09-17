@@ -110,6 +110,8 @@ public class SeriesUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
+        removeButton.setToolTipText("Remove selected motif from series list");
+
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
             public void perform()
@@ -118,6 +120,7 @@ public class SeriesUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        copyButton.setToolTipText("Copy selected motif in series list");
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());

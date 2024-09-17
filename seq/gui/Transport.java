@@ -67,28 +67,45 @@ public class Transport extends JPanel implements SeqListener
         {
         this.seq = seq;
         this.sequi = sequi;
-                
+        rebuildTransport();
+        }
+    
+    public void rebuildTransport()
+    	{
+    	removeAll();
+    	
         playButton = new JButton(notPlaying); 
         playButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doPlay(); } });
         playButton.setSelectedIcon(playing);
         playButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
+        playButton.setToolTipText("Begin playing the sequence");
         stopButton = new JButton(stopped); 
         stopButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doStop(); } });
         stopButton.setSelectedIcon(stopped);
         stopButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
+        stopButton.setToolTipText("Stop the sequence");
         pauseButton = new JButton(notPaused); 
         pauseButton.setSelectedIcon(paused);
         pauseButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doPause(); } });
         pauseButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
+        pauseButton.setToolTipText("Pause / unpause the sequence");
         recordButton = new JButton(notRecording); 
         recordButton.setSelectedIcon(recording);
         recordButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doRecord(); } });
         recordButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
+        recordButton.setToolTipText("Begin playing the sequence while recording armed elements");
         loopButton = new JToggleButton(notLooping); 
         loopButton.setSelectedIcon(looping);
         loopButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
+        loopButton.setToolTipText("Set the sequence to loop on playing");
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try { loopButton.setSelected(seq.isLooping()); }
+		finally { lock.unlock(); }
+
         midiInLabel = new JLabel();
         midiInLabel.setIcon(midiInOff);
+        midiInLabel.setToolTipText("MIDI input indicator");
         playBox = new Box(BoxLayout.X_AXIS);
         playBox.add(recordButton);
         playBox.add(playButton);
@@ -101,10 +118,11 @@ public class Transport extends JPanel implements SeqListener
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout());
         time = new JLabel("0:0:0:0");
+        time.setToolTipText("Current time in Parts : Bars : Beats : Ticks\n\nThere are " + Seq.PPQ + " Ticks per Beat\nYou can set the Beats per Bar in the Clock Options\nThere are " + Seq.NUM_BARS_PER_PART + " Bars per Part\nThere are up to 256 Parts");
         pane.add(midiInLabel, BorderLayout.WEST);
         pane.add(time, BorderLayout.CENTER);
-		add(pane, BorderLayout.CENTER);
-		
+        add(pane, BorderLayout.CENTER);
+                
         loopButton.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent e) 
@@ -116,7 +134,7 @@ public class Transport extends JPanel implements SeqListener
                 }
             }); 
 
-        ReentrantLock lock = seq.getLock();
+        lock = seq.getLock();
         lock.lock();
         try
             {
@@ -141,6 +159,7 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }
                     }
                 };
+            bpm.setToolTipText("Sequencer tempo in Beats Per Minute.");
                 
             clock = new JComboBox(CLOCK_STRINGS);
             clock.setSelectedIndex(seq.getClock());
@@ -155,7 +174,8 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
- 
+            clock.setToolTipText("Options for emitting MIDI Clock to outputs.");
+
             beatsPerBar = new SmallDial((seq.getBar() - 1) / 15.0)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 15) + 1); }
@@ -175,6 +195,7 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }
                     }
                 };
+            beatsPerBar.setToolTipText("Number of beats in a measure.");
                 
             countIn = new JComboBox(COUNT_IN_STRINGS);
             countIn.setSelectedIndex(seq.getCountInMode());
@@ -189,7 +210,7 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
- 
+            countIn.setToolTipText("Whether one bar's worth of count-in metronome beats should play before the sequencer starts playing and/or recording.");
 
             metronome = new JCheckBox();
             metronome.setSelected(seq.getMetronome());
@@ -204,6 +225,7 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
+            metronome.setToolTipText("Whether a metronome beat should play as the sequencer is running.");
 
             beepVolume = new SmallDial(seq.getBeepVolume())
                 {
@@ -223,6 +245,7 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }
                     }
                 };
+            beepVolume.setToolTipText("Volume of the metronome and count-in beeps, if any.");
 
             }
         finally
@@ -245,9 +268,9 @@ public class Transport extends JPanel implements SeqListener
         add(dp, BorderLayout.SOUTH);
         
         midiInTimer = new javax.swing.Timer(MIDI_IN_DISPLAY_TIME, new ActionListener()
-        	{
-        	public void actionPerformed(ActionEvent e) { midiInLabel.setIcon(midiInOff); midiInTimer.stop(); }
-        	});
+            {
+            public void actionPerformed(ActionEvent e) { midiInLabel.setIcon(midiInOff); midiInTimer.stop(); }
+            });
         } 
         
     public void updateClock(int val)
@@ -444,11 +467,11 @@ public class Transport extends JPanel implements SeqListener
             }
         }
 
-	public void fireMIDIIn()
-		{
-		midiInLabel.setIcon(midiIn);
-		midiInTimer.stop();
-		midiInTimer.start();
-		}
+    public void fireMIDIIn()
+        {
+        midiInLabel.setIcon(midiIn);
+        midiInTimer.stop();
+        midiInTimer.start();
+        }
 
     }

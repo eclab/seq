@@ -21,11 +21,6 @@ public class Macro extends Motif
         
     public int getNumMacroChildren() { return macroChildren.size(); }
             
-    public void recomputeLength() 
-        {
-        this.length = macroRoot.getLength(); 
-        }
-    
     public void setMacroRoot(Motif macroRoot) 
         { 
         this.macroRoot = macroRoot; 

@@ -114,6 +114,8 @@ public class ParallelUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
+        removeButton.setToolTipText("Remove selected motif from parallel list");
+
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
             public void perform()
@@ -122,6 +124,7 @@ public class ParallelUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        copyButton.setToolTipText("Copy selected motif in parallel list");
 
 
         JPanel console = new JPanel();

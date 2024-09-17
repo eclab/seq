@@ -59,13 +59,16 @@ public class AutomatonInspector extends WidgetList
         finally { lock.unlock(); }
 
 
-        build(new String[] { "Name" }, 
+        JPanel result = build(new String[] { "Name" }, 
             new JComponent[] 
                 {
                 name,
                 });
         
-        add(new DefaultParameterList(seq, automatonui), BorderLayout.SOUTH);
+        remove(result);
+        add(result, BorderLayout.CENTER);               // re-add it as center
+
+        add(new DefaultParameterList(seq, automatonui), BorderLayout.NORTH);
         }
                 
     public void revise()

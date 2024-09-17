@@ -22,9 +22,9 @@ public class Silence extends Motif
     {
     private static final long serialVersionUID = 1;
 
+    int length = 1;
     public int getLength() { return length; }
     public void setLength(int val) { length = (val < 1 ? 1 : val); }
-    public void recomputeLength() { } 
 
     /*
       String was = "";
@@ -51,7 +51,6 @@ public class Silence extends Motif
     public Silence(Seq seq)
         {
         super(seq);
-        length = 1;
         }
                 
     public Clip buildClip(Clip parent)

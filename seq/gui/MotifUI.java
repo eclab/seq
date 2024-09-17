@@ -105,6 +105,7 @@ public abstract class MotifUI extends JPanel
         finally { lock.unlock(); }
         
         text = new JTextArea(txt);
+        text.setToolTipText("Text notes about this motif");
         text.setLineWrap(true);
         text.setWrapStyleWord(true);
         JScrollPane textScroll = new JScrollPane(text);

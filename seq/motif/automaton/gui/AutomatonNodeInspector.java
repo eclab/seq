@@ -18,9 +18,12 @@ public class AutomatonNodeInspector extends WidgetList
     {
     public static final String[] QUANTIZATIONS = { "None", "16th Note", "Quarter Note", "Measure" };
     public static final int MAX_ITERATIONS = 64;
-    public static final int MAX_REPEATS = 64;
     public static final int MAX_JOINS = 8;                      // this should be >= 2 and <= Automaton.MAX_THREADS
     
+    public static final double MAX_RATE_LOG = Math.log(Automaton.MotifNode.MAX_RATE);
+    public static final String[] RATE_OPTIONS = ParallelChildInspector.RATE_OPTIONS; 
+    public static final double[] RATES = ParallelChildInspector.RATES;
+
     public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
     Seq seq;
@@ -58,7 +61,30 @@ public class AutomatonNodeInspector extends WidgetList
     SmallDial pitch2;
     SmallDial pitch3;
     SmallDial pitch4;
-            
+    SmallDial transpose;
+    SmallDial gain;
+    SmallDial rate;
+    PushButton ratePresets;
+    JComboBox out;
+                
+    String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
+    public void buildDefaults(Motif parent)
+        {
+        defaults[0] = "Rand";
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            String name = parent.getParameterName(i);
+            if (name == null || name.length() == 0)
+                {
+                defaults[1 + i] = "Param " + (i + 1);
+                }
+            else
+                {
+                defaults[1 + i] = "" + (i + 1) + ": " + name;
+                }
+            }
+        }
+
     public AutomatonNodeInspector(Seq seq, final Automaton automaton, final MotifButton button, AutomatonUI owner, Automaton.Node node)
         {
         this.seq = seq;
@@ -69,6 +95,8 @@ public class AutomatonNodeInspector extends WidgetList
                 
         String[] strs = null;
         JComponent[] comps = null;
+
+        buildDefaults(owner.getMotif());
 
         if (node != null)
             {
@@ -134,28 +162,29 @@ public class AutomatonNodeInspector extends WidgetList
                         }
                     });
 
-                launch = new JButton("New Thread");
-                launch.addActionListener(new ActionListener()
-                    {
-                    public void actionPerformed(ActionEvent e)
-                        {
-                        if (seq == null) return;
-                        ReentrantLock lock = seq.getLock();
-                        lock.lock();
-                        try 
-                            { 
-                            owner.launchThread(node);
-                            }
-                        finally { lock.unlock(); }                              
-                        }
-                    });
+/*
+  launch = new JButton("New Thread");
+  launch.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try 
+  { 
+  owner.launchThread(node);
+  }
+  finally { lock.unlock(); }                              
+  }
+  });
 
-                Box actions = new Box(BoxLayout.X_AXIS);
-                actions.add(launch);
-                JPanel panel = new JPanel();
-                panel.setLayout(new BorderLayout());
-                panel.add(actions, BorderLayout.WEST);
-
+  Box actions = new Box(BoxLayout.X_AXIS);
+  actions.add(launch);
+  JPanel panel = new JPanel();
+  panel.setLayout(new BorderLayout());
+  panel.add(actions, BorderLayout.WEST);
+*/
 
                 if (node instanceof Automaton.Delay)
                     {
@@ -168,13 +197,11 @@ public class AutomatonNodeInspector extends WidgetList
                             ndelay.setDelay(time);
                             }
                         };
-                    strs = new String[] { "Type", "Nickname", "Actions", "Start Node", "Delay" };
+                    strs = new String[] { "Type", "Nickname", "Delay" };
                     comps = new JComponent[] 
                         {
                         new JLabel("Delay"),
                         name,
-                        actions,
-                        start,
                         delay,
                         };
                     }
@@ -353,7 +380,7 @@ public class AutomatonNodeInspector extends WidgetList
                         {
                         outs[i] = "" + (i + 1) + ": " + seqOuts[i].toString();
                         }
-                    JComboBox out = new JComboBox(outs);
+                    out = new JComboBox(outs);
                     out.setSelectedIndex(nchord.getMIDIOut());
                     out.addActionListener(new ActionListener()
                         {
@@ -366,13 +393,11 @@ public class AutomatonNodeInspector extends WidgetList
                             finally { lock.unlock(); }
                             }
                         });
-                    strs = new String[] { "Type", "Nickname", "Actions", "Start Node", "Out" , "Length", "Gate %", "Velocity", "Release", "Pitch 1", "Pitch 2", "Pitch 3", "Pitch 4"  };
+                    strs = new String[] { "Type", "Nickname", "Out" , "Length", "Gate %", "Velocity", "Release", "Pitch 1", "Pitch 2", "Pitch 3", "Pitch 4"  };
                     comps = new JComponent[] 
                         {
                         new JLabel("Chord"),
                         name,
-                        actions,
-                        start,
                         out,
                         delay,
                         gate.getLabelledDial("0.0000"),
@@ -410,20 +435,16 @@ public class AutomatonNodeInspector extends WidgetList
                                 }
                             };
                         }
-                    strs = new String[4 + aux.length];
-                    comps = new JComponent[4 + aux.length];
+                    strs = new String[2 + aux.length];
+                    comps = new JComponent[2 + aux.length];
                     strs[0] = "Type";
                     strs[1] = "Nickname";
-                    strs[2] = "Actions";
-                    strs[3] = "Start Node";
                     comps[0] = new JLabel("Random");
                     comps[1] = name;
-                    comps[2] = actions;
-                    comps[3] = start;
                     for(int i = 0; i < aux.length; i++)
                         {
-                        strs[i + 4] = "Weight " + (i + 1);
-                        comps[i + 4] = aux[i].getLabelledDial("0.0000");
+                        strs[i + 2] = "Weight " + (i + 1);
+                        comps[i + 2] = aux[i].getLabelledDial("0.0000");
                         } 
                     }
                 else if (node instanceof Automaton.Iterate)
@@ -472,22 +493,18 @@ public class AutomatonNodeInspector extends WidgetList
                             }
                         });
 
-                    strs = new String[5 + aux.length];
-                    comps = new JComponent[5 + aux.length];
+                    strs = new String[3 + aux.length];
+                    comps = new JComponent[3 + aux.length];
                     strs[0] = "Type";
                     strs[1] = "Nickname";
-                    strs[2] = "Actions";
-                    strs[3] = "Loop";
-                    strs[4] = "Start Node";
+                    strs[2] = "Loop";
                     comps[0] = new JLabel("Iterate");
                     comps[1] = name;
-                    comps[2] = actions;
-                    comps[3] = loop;
-                    comps[4] = start;
+                    comps[2] = loop;
                     for(int i = 0; i < aux.length; i++)
                         {
-                        strs[i + 5] = "Iterations " + (i + 1);
-                        comps[i + 5] = aux[i].getLabelledDial("88");
+                        strs[i + 3] = "Iterations " + (i + 1);
+                        comps[i + 3] = aux[i].getLabelledDial("88");
                         } 
                     }
                 else if (node instanceof Automaton.Join)
@@ -514,27 +531,26 @@ public class AutomatonNodeInspector extends WidgetList
                             finally { lock.unlock(); }
                             }
                         };
-                    strs = new String[] { "Type", "Nickname", "Actions", "Start Node", "Threads" };
+                    strs = new String[] { "Type", "Nickname", "Threads" };
                     comps = new JComponent[] 
                         {
                         new JLabel("Join"),
                         name,
-                        actions,
-                        start,
                         join.getLabelledDial("8"),
                         };
                     }
                 else if (node instanceof Automaton.MotifNode)
                     {
-                    final Automaton.MotifNode nmotifnode = (Automaton.MotifNode)node;
-                    repeats = new SmallDial(nmotifnode.getRepeats() / (double)MAX_REPEATS)
+                    final Automaton.MotifNode motifnode = (Automaton.MotifNode)node;
+                    
+                    repeats = new SmallDial(motifnode.getRepeats() / (double)Automaton.MotifNode.MAX_REPEATS, defaults)
                         {
-                        protected String map(double val) { return "" + (int)(val * MAX_REPEATS); }
+                        protected String map(double val) { return "" + (int)(val * Automaton.MotifNode.MAX_REPEATS); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { return nmotifnode.getRepeats() / (double)MAX_REPEATS; }
+                            try { return motifnode.getRepeats() / (double)Automaton.MotifNode.MAX_REPEATS; }
                             finally { lock.unlock(); }
                             }
                         public void setValue(double val) 
@@ -542,12 +558,27 @@ public class AutomatonNodeInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { nmotifnode.setRepeats((int)(val * MAX_REPEATS));  }
+                            try { motifnode.setRepeats((int)(val * Automaton.MotifNode.MAX_REPEATS));  }
+                            finally { lock.unlock(); }
+                            }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) motifnode.setRepeats(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = motifnode.getRepeats(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
                             finally { lock.unlock(); }
                             }
                         };
                     untilTrigger = new JCheckBox("Until Trigger " + ((AutomatonClip.TRIGGER_PARAMETER) + 1));
-                    untilTrigger.setSelected(nmotifnode.getRepeatUntilTrigger());
+                    untilTrigger.setSelected(motifnode.getRepeatUntilTrigger());
                     untilTrigger.addActionListener(new ActionListener()
                         {
                         public void actionPerformed(ActionEvent e)
@@ -555,24 +586,24 @@ public class AutomatonNodeInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { nmotifnode.setRepeatUntilTrigger(untilTrigger.isSelected()); }
+                            try { motifnode.setRepeatUntilTrigger(untilTrigger.isSelected()); }
                             finally { lock.unlock(); }                              
                             }
                         });
                                 
                     repeatPanel = new JPanel();
                     repeatPanel.setLayout(new BorderLayout());
-                    repeatPanel.add(repeats.getLabelledDial("128"), BorderLayout.WEST);
+                    repeatPanel.add(repeats.getLabelledDial("128"), BorderLayout.CENTER);
                     repeatPanel.add(untilTrigger, BorderLayout.EAST);
 
-                    repeatProbability = new SmallDial(nmotifnode.getRepeatProbability())
+                    repeatProbability = new SmallDial(motifnode.getRepeatProbability(), defaults)
                         {
                         protected String map(double val) { return String.format("%.4f", val); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { return nmotifnode.getRepeatProbability(); }
+                            try { return motifnode.getRepeatProbability(); }
                             finally { lock.unlock(); }
                             }
                         public void setValue(double val) 
@@ -580,12 +611,27 @@ public class AutomatonNodeInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { nmotifnode.setRepeatProbability(val);  }
+                            try { motifnode.setRepeatProbability(val);  }
+                            finally { lock.unlock(); }
+                            }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) motifnode.setRepeatProbability(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = motifnode.getRepeatProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
                             finally { lock.unlock(); }
                             }
                         };
                     quantization = new JComboBox(QUANTIZATIONS);
-                    quantization.setSelectedIndex(nmotifnode.getQuantization());
+                    quantization.setSelectedIndex(motifnode.getQuantization());
                     quantization.addActionListener(new ActionListener()
                         {
                         public void actionPerformed(ActionEvent e)
@@ -593,27 +639,191 @@ public class AutomatonNodeInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { nmotifnode.setQuantization(quantization.getSelectedIndex()); }
+                            try { motifnode.setQuantization(quantization.getSelectedIndex()); }
                             finally { lock.unlock(); }                              
                             }
                         });
 
-                    strs = new String[] { "Type", "Nickname", "Actions", "Start Node", "Initial Repeats", "Repeat Probability", "Quantization" };
+                    // This requires some explanation.  We are mapping the values we receive (0...1) in the Dial
+                    // into values 0.0625...16 using an exponential mapping.  However we also store negative values for
+                    // defaults.  This causes problems when we're queried for our value, but we're currently negative so
+                    // we compute the log of a negative value.  So instead here, in the initialization and in getValue(),
+                    // we return DEFAULT_RATE instead.   This issue doesn't come up when just doing 0...1 as normal.
+                    double d = motifnode.getRate(); 
+                    if (d < 0) d = Automaton.MotifNode.DEFAULT_RATE;
+                    rate = new SmallDial((Math.log(d) + MAX_RATE_LOG) / MAX_RATE_LOG / 2.0, defaults)
+                        {
+                        protected String map(double val) 
+                            {
+                            double d = Math.exp(val * 2 * MAX_RATE_LOG - MAX_RATE_LOG);
+                            return super.map(d);
+                            }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double d = motifnode.getRate(); if (d < 0) return Automaton.MotifNode.DEFAULT_RATE; else return (Math.log(d) + MAX_RATE_LOG) / MAX_RATE_LOG / 2.0;}
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { motifnode.setRate(Math.exp(val * 2 * MAX_RATE_LOG - MAX_RATE_LOG));}
+                            finally { lock.unlock(); }
+                            }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) motifnode.setRate(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+    
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = motifnode.getRate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
+                        };
+                
+                    ratePresets = new PushButton("Presets...", RATE_OPTIONS)
+                        {
+                        public void perform(int val)
+                            {
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { motifnode.setRate(ParallelChildInspector.getRate(AutomatonNodeInspector.this, val));}
+                            finally { lock.unlock(); }
+                            rate.redraw();
+                            }
+                        };
+
+                    transpose = new SmallDial(motifnode.getTranspose() / (double)Automaton.MotifNode.MAX_TRANSPOSE / 2.0, defaults)
+                        {
+                        protected String map(double val) { return String.valueOf((int)(val * 2 * Automaton.MotifNode.MAX_TRANSPOSE) - Automaton.MotifNode.MAX_TRANSPOSE); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double d = motifnode.getTranspose();  if (d < 0) return 0;  else return d / (double)Automaton.MotifNode.MAX_TRANSPOSE / 2.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { motifnode.setTranspose((int)(val * 2 * Automaton.MotifNode.MAX_TRANSPOSE)); }
+                            finally { lock.unlock(); }
+                            }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) motifnode.setTranspose(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+    
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = motifnode.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
+                        };
+
+                    gain = new SmallDial(motifnode.getGain() / Automaton.MotifNode.MAX_GAIN, defaults)
+                        {
+                        protected String map(double val) { return super.map(val * Automaton.MotifNode.MAX_GAIN); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return motifnode.getGain() / Automaton.MotifNode.MAX_GAIN; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { motifnode.setGain(val * Automaton.MotifNode.MAX_GAIN); }
+                            finally { lock.unlock(); }
+                            }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) motifnode.setGain(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = motifnode.getGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
+                        };
+
+                    Out[] seqOuts = seq.getOuts();
+                    String[] outs = new String[seqOuts.length + 1];
+                    outs[0] = "<html><i>Don't Change</i></html>";
+                    for(int i = 0; i < seqOuts.length; i++)
+                        {
+                        // We have to make these strings unique, or else the combo box doesn't give the right selected index, Java bug
+                        outs[i+1] = "" + (i+1) + ": " + seqOuts[i].toString();
+                        }
+                
+                    out = new JComboBox(outs);
+                    out.setMaximumRowCount(outs.length);
+                    out.setSelectedIndex(motifnode.getOutMIDI() + 1);
+                    out.addActionListener(new ActionListener()
+                        {
+                        public void actionPerformed(ActionEvent e)
+                            {
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { motifnode.setOutMIDI(out.getSelectedIndex() - 1); }              // -1 is DISABLED
+                            finally { lock.unlock(); }                              
+                            }
+                        });            
+
+                    JPanel ratePanel = new JPanel();
+                    ratePanel.setLayout(new BorderLayout());
+                    ratePanel.add(rate.getLabelledDial("0.0000"), BorderLayout.CENTER);   // so it stretches
+                    ratePanel.add(ratePresets, BorderLayout.EAST); 
+
+                
+                    strs = new String[] { "Type", "Nickname", "Initial Repeats", "Repeat Probability", "Quantization", "MIDI Changes", "Rate", "Transpose",  "Gain", "Out" };
                     comps = new JComponent[] 
                         {
-                        new JLabel(nmotifnode.getMotif().getName()),
+                        new JLabel(motifnode.getMotif().getName()),
                         name,
-                        actions,
-                        start,
                         repeatPanel,
                         //repeats.getLabelledDial("88"),
                         repeatProbability.getLabelledDial("0.0000"),
-                        quantization
+                        quantization,
+                        null,                   // Separator
+                        ratePanel,
+                        transpose.getLabelledDial("-24"),
+                        gain.getLabelledDial("0.0000"),
+                        out,
                         };
                     }
                 else
                     {
-                    strs = new String[] { "Type", "Nickname", "Actions", "Start Node" };
+                    strs = new String[] { "Type", "Nickname" };
                     comps = new JComponent[] 
                         {
                         new JLabel((node instanceof Automaton.Fork ? "Fork" :
@@ -621,13 +831,18 @@ public class AutomatonNodeInspector extends WidgetList
                                         node instanceof Automaton.Finished ? "Finished" : 
                                         "Unknown"))),
                         name,
-                        actions,
-                        start,
                         };
                     }
                 }
             finally { lock.unlock(); }
-            build(strs, comps);
+            JPanel result = build(strs, comps);
+
+            if (node instanceof Automaton.MotifNode)
+                {
+                remove(result);
+                add(result, BorderLayout.CENTER);
+                add(new ArgumentList(seq, ((Automaton.MotifNode)node).getChild(), owner.getMotif()), BorderLayout.NORTH);
+                }
             }
         }
                 

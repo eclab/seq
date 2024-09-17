@@ -232,7 +232,10 @@ public class Notes extends Motif
         }
         
     ArrayList<Event> events = new ArrayList<>();                // FIXME maybe this should be a list of lists to allow for fragmentation
-    ArrayList<ArrayList<Event>> recording = new ArrayList<>();                // FIXME maybe this should be a list of lists to allow for fragmentation
+    ArrayList<Event> recording = new ArrayList<>();
+    boolean recordBend;
+    boolean recordCC;
+    boolean recordAftertouch;
     int out;
     int in;
     int maxNoteOnPosition = 0;
@@ -258,6 +261,15 @@ public class Notes extends Motif
     public int getMIDIParameterLSB(int param) { return midiParameterLSB[param]; }
     public void setMIDIParameterLSB(int param, int val) { midiParameterLSB[param] = val; }
     
+    public boolean getRecordBend() { return recordBend; }
+    public void setRecordBend(boolean val) { recordBend = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordbend", val); }
+
+    public boolean getRecordCC() { return recordCC; }
+    public void setRecordCC(boolean val) { recordCC = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordcc", val); }
+
+    public boolean getRecordAftertouch() { return recordAftertouch; }
+    public void setRecordAftertouch(boolean val) { recordAftertouch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordaftertouch", val); }
+
     public int getOut() { return out; }
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.notes.Notes"); }
 
@@ -273,7 +285,7 @@ public class Notes extends Motif
         other.events = new ArrayList();
         for(Event event : events)
             other.events.add(event.copy());
-        recording = new ArrayList();
+        clearRecording();
         return other;
         }
         
@@ -284,35 +296,28 @@ public class Notes extends Motif
         // Load devices. Note I'm not using setOut(...) etc. which would write the device to prefs
         out = (Prefs.getLastOutDevice(0, "seq.motif.notes.Notes"));
         in = (Prefs.getLastInDevice(0, "seq.motif.notes.Notes"));
+        recordBend = Prefs.getLastBoolean("seq.motif.notes.Notes.recordbend", true); 
+        recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
+        recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
         for(int i = 0; i < NUM_PARAMETERS; i++) { midiParameterType[i] = NO_MIDI_PARAMETER; }
         }
 
     public ArrayList<Event> getEvents() { return events; }
     public void setEvents(ArrayList<Event> val) 
-        { 
+        {
         events = val; 
         computeMaxTime();         
-        recomputeLength();
-        recomputeAncestorLengths(); 
         }
         
 
-    public void clearRecordings()
+    public void clearRecording()
         {
-        recording = new ArrayList<ArrayList<Event>>();
+        recording = new ArrayList<Event>();
         }
 
-    public ArrayList<Event> getLastRecording()
+    public ArrayList<Event> getRecording()
         {
-        if (recording.isEmpty()) return null;
-        return recording.get(recording.size() - 1);
-        }
-
-    public ArrayList<Event> pushNewRecording()
-        {
-        ArrayList<Event> r = new ArrayList<>();
-        recording.add(r);
-        return r;
+        return recording;
         }
 
     public void setArmed(boolean val) 
@@ -325,12 +330,12 @@ public class Notes extends Motif
         if (!wasArmed && isArmed)
             {
             // clear recorded notes
-            clearRecordings();
+            clearRecording();
             }
         else if (wasArmed && !isArmed)
             {
             // clear recorded notes
-            clearRecordings();
+            clearRecording();
             }
         }
         
@@ -383,18 +388,16 @@ public class Notes extends Motif
             }
         events = newEvents;
         computeMaxTime();
-        recomputeLength();
-        recomputeAncestorLengths();
         return cut;
         }
 
     /** Removes elements by index, not by time */
     public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeAftertouch)
-		{
+        {
         if (events.size() == 0) return new ArrayList<Event>();
         else return filter(0, events.size() - 1, removeNotes, removeBend, removeCC, removeAftertouch);
-		}
-		
+        }
+                
     /** Removes elements by index, not by time */
     public ArrayList<Event> filter(int startIndex, int endIndex, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeAftertouch)        // endIndex is inclusive
         {
@@ -409,17 +412,17 @@ public class Notes extends Motif
             {
             Event event = events.get(i);
             if (
-            	(event instanceof Note && removeNotes) ||
-            	(event instanceof Bend && removeBend) ||
-            	(event instanceof CC && removeCC) ||
-            	(event instanceof Aftertouch && removeAftertouch))            
-            		{
-            		cut.add(event);
-            		}
-            else	
-            		{
-           			newEvents.add(event);
-            		}
+                (event instanceof Note && removeNotes) ||
+                (event instanceof Bend && removeBend) ||
+                (event instanceof CC && removeCC) ||
+                (event instanceof Aftertouch && removeAftertouch))            
+                {
+                cut.add(event);
+                }
+            else        
+                {
+                newEvents.add(event);
+                }
             }
         for(int i = endIndex + 1; i < events.size(); i++)
             {
@@ -428,8 +431,6 @@ public class Notes extends Motif
             }
         events = newEvents;
         computeMaxTime();
-        recomputeLength();
-        recomputeAncestorLengths();
         return cut;
         }
     
@@ -463,8 +464,6 @@ public class Notes extends Motif
             }
         events = newEvents;
         computeMaxTime(); 
-        recomputeLength();
-        recomputeAncestorLengths(); 
         return cut;
         }
 
@@ -496,8 +495,6 @@ public class Notes extends Motif
                 }
             }
         computeMaxTime(); 
-        recomputeLength();
-        recomputeAncestorLengths(); 
         return copy;
         }
 
@@ -540,8 +537,6 @@ public class Notes extends Motif
                 }
             }
         computeMaxTime(); 
-        recomputeLength();
-        recomputeAncestorLengths(); 
         events = newEvents;
         }
 
@@ -596,8 +591,6 @@ public class Notes extends Motif
         
         sortEvents(events);
         computeMaxTime(); 
-        recomputeLength();
-        recomputeAncestorLengths(); 
         return true;
         }
 
@@ -628,8 +621,6 @@ public class Notes extends Motif
         
         sortEvents(events);
         computeMaxTime(); 
-        recomputeLength();
-        recomputeAncestorLengths(); 
         }
 
     public void transpose(int by)
@@ -640,7 +631,6 @@ public class Notes extends Motif
 
     public void transpose(int from, int to, int by)
         {
-        System.err.println(by);
         if (from > to) { int temp = to; to = from; from = temp; }
  
         if (by == 0) return;
@@ -668,20 +658,6 @@ public class Notes extends Motif
             }
         }
                         
-    public void recomputeLength() 
-        { 
-        if (events.isEmpty()) return;
-        
-        int start = Integer.MAX_VALUE;
-        int end = 0;
-        for(Event event : events)
-            {
-            if (start > event.when) start = event.when;
-            if (end < event.when + event.length) end = event.when + event.length;
-            }
-        length = end - start;
-        }
-
     public Clip buildClip(Clip parent)
         {
         return new NotesClip(seq, this, parent);
@@ -698,7 +674,7 @@ public class Notes extends Motif
         int resolution = sequence.getResolution();
                 
         Notes.Note[] recordedNoteOn = new Notes.Note[128];
-        ArrayList<Notes.Event> recording = new ArrayList<>();  
+        ArrayList<Notes.Event> readEvents = new ArrayList<>();  
 
         // FIXME: At present we only load a single track
         for(int i = 0; i < tracks[0].size(); i++)
@@ -716,7 +692,7 @@ public class Notes extends Motif
                     Notes.Note noteOn = new Notes.Note(pitch,
                         shortmessage.getData2(),
                         pos, 1);             // gotta have something for length
-                    recording.add(noteOn);
+                    readEvents.add(noteOn);
                     recordedNoteOn[pitch] = noteOn;
                     }
                 else if (Clip.isNoteOff(shortmessage))
@@ -732,40 +708,40 @@ public class Notes extends Motif
                         recordedNoteOn[pitch] = null;
                         }
                     }
-                else if (Clip.isPitchBend(shortmessage))
+                else if (Clip.isPitchBend(shortmessage) && getRecordBend())
                     {
                     int lsb = shortmessage.getData1();
                     int msb = shortmessage.getData2();
 
                     Notes.Bend bend = new Notes.Bend(msb * 128 + lsb - 8192, pos);
-                    recording.add(bend);
+                    readEvents.add(bend);
                     }
-                else if (Clip.isCC(shortmessage))
+                else if (Clip.isCC(shortmessage) && getRecordCC())
                     {
                     int parameter = shortmessage.getData1();
                     int value = shortmessage.getData2();
 
                     Notes.CC cc = new Notes.CC(parameter, value, pos);
-                    recording.add(cc);
+                    readEvents.add(cc);
                     }
-                else if (Clip.isChannelAftertouch(shortmessage))
+                else if (Clip.isChannelAftertouch(shortmessage) && getRecordAftertouch())
                     {
                     int value = shortmessage.getData1();
 
                     Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos);
-                    recording.add(aftertouch);
+                    readEvents.add(aftertouch);
                     }
-                else if (Clip.isPolyphonicAftertouch(shortmessage))
+                else if (Clip.isPolyphonicAftertouch(shortmessage) && recordAftertouch)
                     {
                     int pitch = shortmessage.getData1();
                     int value = shortmessage.getData2();
 
                     Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos);
-                    recording.add(aftertouch);
+                    readEvents.add(aftertouch);
                     }
                 }
             }
-        events = recording;
+        events = readEvents;
         computeMaxTime();
         } 
         
@@ -832,8 +808,6 @@ public class Notes extends Motif
             }
         sortEvents(events);
         computeMaxTime(); 
-        recomputeLength();
-        recomputeAncestorLengths(); 
         }
 
     int getRandomTimeNoise(Random random, double max)
@@ -885,8 +859,6 @@ public class Notes extends Motif
             }
         sortEvents(events);     
         computeMaxTime(); 
-        recomputeLength();
-        recomputeAncestorLengths(); 
         }
 
     public void setVelocity(int val)

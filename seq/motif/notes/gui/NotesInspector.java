@@ -25,6 +25,9 @@ public class NotesInspector extends WidgetList
     JComboBox out;
     JCheckBox armed;
     JCheckBox echo;
+    JCheckBox recordBend;
+    JCheckBox recordCC;
+    JCheckBox recordAftertouch;
     WidgetList widgetList = new WidgetList();
     
     public static final String[] CC_7_NAMES = new String[]
@@ -173,6 +176,48 @@ public class NotesInspector extends WidgetList
                     }
                 });
                 
+            recordBend = new JCheckBox();
+            recordBend.setSelected(notes.getRecordBend());
+            recordBend.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setRecordBend(recordBend.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+                
+            recordCC = new JCheckBox();
+            recordCC.setSelected(notes.getRecordCC());
+            recordCC.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setRecordCC(recordCC.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+                
+            recordAftertouch = new JCheckBox();
+            recordAftertouch.setSelected(notes.getRecordAftertouch());
+            recordAftertouch.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setRecordAftertouch(recordAftertouch.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+                
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 final int _i = i;
@@ -257,7 +302,7 @@ public class NotesInspector extends WidgetList
             }
         finally { lock.unlock(); }
 
-        build(new String[] { "Name", "Out", "In", "Echo", "Armed" }, 
+        build(new String[] { "Name", "Out", "In", "Echo", "Armed", "Record Bend", "Record CC", "Record Aftertouch" }, 
             new JComponent[] 
                 {
                 name,
@@ -265,6 +310,9 @@ public class NotesInspector extends WidgetList
                 in,
                 echo,
                 armed, 
+                recordBend,
+                recordCC,
+                recordAftertouch
                 });
                 
         widgetList.build(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" },
@@ -334,6 +382,9 @@ public class NotesInspector extends WidgetList
             in.setSelectedIndex(notes.getIn()); 
             armed.setSelected(notes.isArmed()); 
             echo.setSelected(notes.getEcho()); 
+            recordBend.setSelected(notes.getRecordBend()); 
+            recordCC.setSelected(notes.getRecordCC()); 
+            recordAftertouch.setSelected(notes.getRecordAftertouch()); 
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 parameterType[i].setSelectedIndex(notes.getMIDIParameterType(i));

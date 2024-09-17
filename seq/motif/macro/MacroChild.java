@@ -77,18 +77,6 @@ public class MacroChild extends Motif
         super.setName(name);
         }
     
-    public void recomputeLength() 
-        { 
-        if (macro == null) 
-            {
-            length = 1; 
-            }
-        else 
-            {
-            length = macro.getChildren().get(index).getMotif().getLength(); 
-            }
-        }
-
     public MacroChild(Seq seq)
         {
         super(seq);

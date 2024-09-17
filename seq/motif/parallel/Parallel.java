@@ -138,16 +138,6 @@ public class Parallel extends Motif
         data.delay = delay;
         } 
 
-    public void recomputeLength()
-        {
-        length = 1;
-        for(Child child : getChildren())
-            {
-            Motif motif = child.getMotif();
-            length = Math.max(length,  motif.getLength() + ((Data)(child.getData())).getDelay());
-            }
-        }
-
     public void load(JSONObject obj) throws JSONException
         {
         setNumChildrenToSelect(obj.getInt("num"));
