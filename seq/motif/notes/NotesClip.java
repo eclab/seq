@@ -259,7 +259,7 @@ public class NotesClip extends Clip
                                     }
                                 if (notes.getEcho()) noteOff(out, pitch, release);
                                 }
-                            else if (isPitchBend(shortmessage))
+                            else if (isPitchBend(shortmessage) && notes.getRecordBend())
                                 {
                                 int lsb = shortmessage.getData1();
                                 int msb = shortmessage.getData2();
@@ -268,7 +268,7 @@ public class NotesClip extends Clip
                                 recording.add(bend);
                                 if (notes.getEcho()) bend(out, bend.value);
                                 }
-                            else if (isCC(shortmessage))
+                            else if (isCC(shortmessage) && notes.getRecordCC())
                                 {
                                 int parameter = shortmessage.getData1();
                                 int value = shortmessage.getData2();
@@ -277,7 +277,7 @@ public class NotesClip extends Clip
                                 recording.add(cc);
                                 if (notes.getEcho()) cc(out, parameter, value);
                                 }
-                            else if (isChannelAftertouch(shortmessage))
+                            else if (isChannelAftertouch(shortmessage) && notes.getRecordAftertouch())
                                 {
                                 int value = shortmessage.getData1();
 
@@ -285,7 +285,7 @@ public class NotesClip extends Clip
                                 recording.add(aftertouch);
                                 if (notes.getEcho()) aftertouch(out, Out.CHANNEL_AFTERTOUCH, value);
                                 }
-                            else if (isPolyphonicAftertouch(shortmessage))
+                            else if (isPolyphonicAftertouch(shortmessage) && notes.getRecordAftertouch())
                                 {
                                 int pitch = shortmessage.getData1();
                                 int value = shortmessage.getData2();
@@ -302,7 +302,6 @@ public class NotesClip extends Clip
             }
         else
             {
-            System.err.println("Process " + pos);
             ArrayList<Notes.Event> playing = notes.events;
             int size = playing.size();
             
@@ -318,7 +317,6 @@ public class NotesClip extends Clip
                     Notes.Note note = (Notes.Note)event;
                     if (note.velocity > 0)
                         {
-                        System.err.println("NOTE ON " + out + " " + note.pitch + " " + note.velocity);
                         noteOn(out, note.pitch, note.velocity);
                         // NOTE: We have to schedule the note off, rather than turn it off at a later time,
                         // because the musician could change the transpose before the note was turned off

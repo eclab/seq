@@ -119,7 +119,7 @@ public class ParallelButton extends MotifButton
             if (at < children.size())
                 {
                 Motif.Child child = children.get(at);
-                subname = child.nickname;                    // FIXME: could this be made just volatile?
+                subname = child.getNickname();                    // FIXME: could this be made just volatile?
                 Parallel.Data data = (Parallel.Data)(child.getData());
                 bar = seq.getBar();
                 muted = data.getMute();

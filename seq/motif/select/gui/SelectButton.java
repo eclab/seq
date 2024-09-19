@@ -147,7 +147,7 @@ public class SelectButton extends MotifButton
                 Motif ownerMotif = owner.getMotif();
                 Motif.Child child = ownerMotif.getChildren().get(at);
 
-                subname = child.nickname;
+                subname = child.getNickname();
                 name = child.getMotif().getDisplayedName();
 
                 SelectClip ownerClip = (SelectClip)(owner.getDisplayClip());
@@ -235,7 +235,7 @@ public class SelectButton extends MotifButton
             if (at >= children.size())  // uh
                 return "BAD CHILD? " + at;
             Motif.Child child = children.get(at);
-            subname = child.nickname;                    // FIXME: could this be made just volatile?
+            subname = child.getNickname();                    // FIXME: could this be made just volatile?
             }
         finally { lock.unlock(); }
 

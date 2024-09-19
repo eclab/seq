@@ -385,6 +385,7 @@ public class AutomatonClip extends Clip
                     // FIXME: is the +1 right?  I think it is?
                     if ((getPosition() + 1) % Automaton.MotifNode.QUANTIZATIONS[((Automaton.MotifNode)node).getQuantization()] == 0)
                         {
+                        System.err.println("Selecting out " + node);
                         // we're just before a quantization boundary, time to transition!
                         return node.selectOut();
                         }

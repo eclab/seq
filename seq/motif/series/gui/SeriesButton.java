@@ -97,7 +97,7 @@ public class SeriesButton extends MotifButton
             Motif.Child child = children.get(at);
             Series.Data data = ((Series.Data)(child.getData()));
 
-            subname = child.nickname;                    // FIXME: could this be made just volatile?
+            subname = child.getNickname();                    // FIXME: could this be made just volatile?
             if (subname != null) 
                 { 
                 subname = subname.trim();

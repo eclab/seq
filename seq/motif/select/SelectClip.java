@@ -921,7 +921,7 @@ processCCIn((ShortMessage)messages[i], select);
         {
         if (current >= 0)
             {
-            Select.Data data = ((Select.Data)(getMotif().getChildren().get(current).data));
+            Select.Data data = ((Select.Data)(getMotif().getChildren().get(current).getData()));
             if (data.getOut() != Select.Data.DISABLED)
                 {
                 out = data.getOut();
@@ -939,7 +939,7 @@ processCCIn((ShortMessage)messages[i], select);
         {
         if (current >= 0)
             {
-            Select.Data data = ((Select.Data)(getMotif().getChildren().get(current).data));
+            Select.Data data = ((Select.Data)(getMotif().getChildren().get(current).getData()));
             if (data.getOut() != Select.Data.DISABLED)
                 {
                 out = data.getOut();
@@ -955,7 +955,7 @@ processCCIn((ShortMessage)messages[i], select);
         {
         if (current >= 0)
             {
-            Select.Data data = ((Select.Data)(getMotif().getChildren().get(current).data));
+            Select.Data data = ((Select.Data)(getMotif().getChildren().get(current).getData()));
             if (data.getOut() != Select.Data.DISABLED)
                 {
                 out = data.getOut();

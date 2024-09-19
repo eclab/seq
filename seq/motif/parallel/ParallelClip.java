@@ -154,19 +154,20 @@ public class ParallelClip extends Clip
         int numChildren = parallel.getNumChildrenToSelect();
         ArrayList<Motif.Child> children = parallel.getChildren();
         
-        if (numChildren == Parallel.ALL_CHILDREN || numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST || numChildren < children.size())
+        if (numChildren == Parallel.ALL_CHILDREN)
             {
-            // do nothing
-            }
-        else if (numChildren == Parallel.INDEPENDENT)
-            {
-            ThreadLocalRandom random = ThreadLocalRandom.current();
             int numRemainingChildren = children.size();
-            for(int i = 0; i < numChildren; i++)
+            for(int i = 0; i < numRemainingChildren; i++)
                 {
                 double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
-                nodes.get(i).muted = (weight == 1.0 ? true : (weight == 0.0 ? false : random.nextDouble() < weight));
+                if (weight == 0.0) nodes.get(i).muted = true;
+                else if (weight == 1.0) nodes.get(i).muted = false;
+                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
                 }
+            }
+        else if (numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST || numChildren < children.size())
+            {
+            // do nothing
             }
         else    // need to build distribution
             {
@@ -282,7 +283,7 @@ public class ParallelClip extends Clip
         for(int i = 0; i < len; i++)
             {
             Node node = (Node)(nodes.get(i));
-            Parallel.Data data = ((Parallel.Data)(parallel.getChildren().get(i)).data);
+            Parallel.Data data = ((Parallel.Data)(parallel.getChildren().get(i)).getData());
             
             if (data.override && !node.localOverride)                                       // if we're an override node and we're not overriding yet
                 {
@@ -341,7 +342,7 @@ public class ParallelClip extends Clip
     // Returns if the currently playing node is an override node
     boolean currentDataIsOverriding()
         {
-        return ((Parallel.Data)(((Parallel)getMotif()).getChildren().get(current).data)).override;
+        return ((Parallel.Data)(((Parallel)getMotif()).getChildren().get(current).getData())).override;
         }
  
     // Releases all children greater than index which are not set to be overriding
@@ -351,7 +352,7 @@ public class ParallelClip extends Clip
         int len = nodes.size();
         for(int i = index; i < len; i++)
             {
-            Parallel.Data data = ((Parallel.Data)(parallel.getChildren().get(index)).data);
+            Parallel.Data data = ((Parallel.Data)(parallel.getChildren().get(index)).getData());
             if (!data.override)
                 {
                 Node node = (Node)(nodes.get(i));

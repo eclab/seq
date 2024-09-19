@@ -437,7 +437,7 @@ public class AutomatonButton extends MotifButton
             if (at >= children.size())  // uh
                 return "BAD CHILD? " + at;
             Motif.Child child = children.get(at);
-            subname = child.nickname;                    // FIXME: could this be made just volatile?
+            subname = child.getNickname();                    // FIXME: could this be made just volatile?
             }
         finally { lock.unlock(); }
 

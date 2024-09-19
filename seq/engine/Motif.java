@@ -45,50 +45,10 @@ public abstract class Motif implements Cloneable
         /** The motif stored in the Child */
         Motif motif;
         /** The child's nickname, if any, initially null */
-        public String nickname = null;
+        String nickname = null;
         /** The data object of the Child */
-        public Object data = null;
+        Object data = null;
         
-        
-        /// PARAMETERS
-        
-        /// parameter[x] can be one of several things:
-        /// >=0: a ground value
-        /// -1: bound to random
-        /// -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
-        /// FIXME: Maybe a MIDI CC or something later?
-        /// The default value is the parent parameter of the same number
-        public static final double PARAMETER_RANDOM = -1;
-        double[] parameters = new double[NUM_PARAMETERS];
-
-        public double getParameter(int param) { return parameters[param]; }
-        public double[] getParameters() { return parameters; }
-        public void setParameter(int param, double val) { parameters[param] = val; }
-
-
-        /// THE RANDOM PARAMETER
-        /// The Random Parameter is updated during clip.reset(), by calling Motif.Child.generateRandomValue()
-        /// and storing the result.  This value is computed by taking the Motif.Child's RANDOM MIN and MAX
-        // and selecting a value under the resulting distribution.
-        
-        /// random min and random max can each be one of several things:
-        /// >=0: a ground value
-        /// -1: bound to random
-        /// -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
-
-        double randomMin = 0.0;
-        double randomMax = 1.0;
-        public void setRandomMin(double val) { randomMin = val; }
-        public double getRandomMin() { return randomMin; }
-        public void setRandomMax(double val) { randomMax = val; }
-        public double getRandomMax() { return randomMax; }
-                
-        public double generateRandomValue(double min, double max)
-            {
-            return motif.generateRandomValue(min, max);
-            }
-                        
-
         /** Returns the motif */
         public Motif getMotif() { return motif; }
         /** Sets the motif */
@@ -105,7 +65,58 @@ public abstract class Motif implements Cloneable
         /** Sets the custom data object of the Child.  This is set by Motif subclasses to add additional parameters. */
         public void setData(Object obj) { data = obj; }
         
-        // Used when loading from JSON
+        
+        
+        
+        /// PARAMETERS
+        
+        /// parameter[x] can be one of several things:
+        /// >=0: a ground value
+        /// -1: bound to random
+        /// -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+        /// FIXME: Maybe a MIDI CC or something later?
+        /// The default value is the parent parameter of the same number
+        public static final double PARAMETER_RANDOM = -1;
+        /** The current parameters */
+        double[] parameters = new double[NUM_PARAMETERS];
+
+		/** Return the value of the given parameter*/
+        public double getParameter(int param) { return parameters[param]; }
+		/** Return the value of all parameter*/
+        public double[] getParameters() { return parameters; }
+		/** Set the value of the given parameter */
+        public void setParameter(int param, double val) { parameters[param] = val; }
+
+
+        /// THE RANDOM PARAMETER
+        /// The Random Parameter is updated during clip.reset(), by calling Motif.Child.generateRandomValue()
+        /// and storing the result.  This value is computed by taking the Motif.Child's RANDOM MIN and MAX
+        // and selecting a value under the resulting distribution.
+        
+        /// random min and random max can each be one of several things:
+        /// >=0: a ground value
+        /// -1: bound to random
+        /// -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+
+        double randomMin = 0.0;
+        double randomMax = 1.0;
+        /** Sets the minimum random value of the random parameter */
+        public void setRandomMin(double val) { randomMin = val; }
+        /** Returns the minimum random value of the random parameter */
+        public double getRandomMin() { return randomMin; }
+        /** Sets the maximum random value of the random parameter */
+        public void setRandomMax(double val) { randomMax = val; }
+        /** Returns the maximum random value of the random parameter */
+        public double getRandomMax() { return randomMax; }
+    	/** Produces a random value between the minimum and maximum values.  
+    		Note that these aren't randomMin and randomMax, which have special meaning when negative. */
+        public double generateRandomValue(double min, double max)
+            {
+            return motif.generateRandomValue(min, max);
+            }
+                        
+
+        // Only used when loading from JSON
         Child() { }
 
         public Child(Motif motif, Motif parent) 
@@ -215,7 +226,8 @@ public abstract class Motif implements Cloneable
     ArrayList<Motif> parents = new ArrayList<>();
     // Is this Motif armed for recording?
     boolean armed = false;
-    int id;             // temporary only
+    // temporary only, used for saving the Motif graph
+    int id;
     // The current Motif version, so clips can stay in sync when playing or recording
     int version;
     // how many clips are playing right now?
