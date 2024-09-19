@@ -609,7 +609,7 @@ public class Automaton extends Motif
             motifNode.rate = other.rate;
             motifNode.transpose = other.transpose;
             motifNode.gain = other.gain;
-            motifNode.out = other.out;
+            motifNode.outMIDI = other.outMIDI;
             
             return motifNode;
             }
@@ -822,16 +822,12 @@ public class Automaton extends Motif
 
     public void connect(int from, int to, int at, double aux)
         {
-        Node fromNode = nodes.get(from);
-        Node toNode = nodes.get(to);
-        connect(fromNode, toNode, at, aux);
+        connect(nodes.get(from), nodes.get(to), at, aux);
         }
 
     public void connect(int from, int to, int at)
         {
-        Node fromNode = nodes.get(from);
-        Node toNode = nodes.get(to);
-        connect(fromNode, toNode, at);
+        connect(nodes.get(from), nodes.get(to), at);
         }
 
     public void disconnect(int from, int at)

@@ -156,14 +156,17 @@ public class Out
 */
         }
 
-    // Send a two-byte message
+    // Send a two-byte voiced message
     boolean sendToChannel(int command, int data, int channel)
         {
+        return sendToChannel(command, data, 0, channel);		// the 0 is presumably ignored
+        /*
         try 
             { 
             return sendMIDI(new ShortMessage(command, channel - 1, data));
             }
         catch (InvalidMidiDataException ex) { return false; }
+        */
 
 /*
   Receiver receiver = seq.emitter;
@@ -181,7 +184,7 @@ public class Out
 */
         }
 
-    // Send a three-byte message
+    // Send a three-byte voiced message
     boolean sendToChannel(int command, int data1, int data2, int channel)
         {
         try 

@@ -135,6 +135,7 @@ public class MotifList extends JPanel
         seq.motif.silence.gui.SilenceUI.class,
         seq.motif.macro.gui.MacroChildUI.class,
         seq.motif.macro.gui.MacroUI.class,
+        seq.motif.modulation.gui.ModulationUI.class,
         };
     
     public static final Class[] MOTIFS = 
@@ -147,7 +148,7 @@ public class MotifList extends JPanel
         seq.motif.automaton.Automaton.class,
         seq.motif.silence.Silence.class,
         seq.motif.macro.MacroChild.class,
-        seq.motif.macro.Macro.class,
+        seq.motif.modulation.Modulation.class,
         };
 
     public MotifListButton getRoot() { return root; }

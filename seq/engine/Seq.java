@@ -820,7 +820,7 @@ public class Seq
         {
         resetTime();
         cut();
-        data.endArmed();
+//        data.endArmed();
         updateGUI(true);
         }
         
@@ -844,7 +844,16 @@ public class Seq
             lock.unlock();
             }
         }
-                
+
+	/** Sets all motifs to not be armed. */
+	public void disarmAll()
+		{
+		for(Motif motif : motifs)
+			{
+			motif.setArmed(false);
+			}
+		}
+        
     /** Returns the current absolute time. */
     public int getTime()
         {
@@ -964,7 +973,7 @@ public class Seq
                             if (time % (PPQ * 4) == (PPQ * 4 - 1))
                                 {
                                 root.release();
-                                data.endArmed();
+//                                data.endArmed();
                                 resetTime();
                                 recording = false;
 //                                playingClips.clear();
@@ -1019,7 +1028,7 @@ public class Seq
         if (isLooping())
             {
             root.release();
-            data.endArmed();
+//            data.endArmed();
             resetTime();
             recording = false;
 //            playingClips.clear();

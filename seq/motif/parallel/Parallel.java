@@ -112,9 +112,8 @@ public class Parallel extends Motif
         }
         
         
-    public static final int INDEPENDENT = 0;
-    public static final int ALL_CHILDREN = 17;
-    public static final int ALL_CHILDREN_STOP_AFTER_FIRST = 18;
+    public static final int ALL_CHILDREN = 0;
+    public static final int ALL_CHILDREN_STOP_AFTER_FIRST = 17;
     int numChildrenToSelect = ALL_CHILDREN;
     
     public int getNumChildrenToSelect() { return numChildrenToSelect; }

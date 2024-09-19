@@ -136,6 +136,10 @@ public class ModulationUI extends MotifUI
         button.setSelected(true);
 
         Motif.Child node = (Motif.Child)(button.getAuxiliary());
+        System.err.println("MODULATION IS " + modulation);
+        System.err.println("UI IS " + button.getMotifUI());
+        System.err.println("NODE " + node);
+        
         setChildInspector(new ModulationChildInspector(seq, modulation, button.getMotifUI(), node, this));
         }
 
@@ -264,6 +268,7 @@ public class ModulationUI extends MotifUI
             children = modulation.getChildren();
             if (children.size() > 0) children.clear();
             modulation.addChild(motifui.getMotif());
+            child = modulation.getChildren().get(0);
             }
         finally
             {

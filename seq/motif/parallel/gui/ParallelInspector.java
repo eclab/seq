@@ -24,8 +24,8 @@ public class ParallelInspector extends WidgetList
     
     public static final String[] CHILDREN_TO_SELECT_STRINGS = 
         { 
-        "Independent", "1", "2", "3", "4", "5", "6", "7", "8", 
-        "9", "10", "11", "12", "13", "14", "15", "16", "All", "All, Finish After First" 
+        "All", "1", "2", "3", "4", "5", "6", "7", "8", 
+        "9", "10", "11", "12", "13", "14", "15", "16", "All, Finish After First" 
         };
                 
     public ParallelInspector(Seq seq, Parallel parallel, ParallelUI parallelui)

@@ -300,6 +300,8 @@ public class Series extends Motif
             gain = other.gain;
             out = other.out;
             weights = copy(other.weights);
+            scale = other.scale;
+            root = other.root;
             }
         }
 

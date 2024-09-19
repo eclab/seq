@@ -13,6 +13,7 @@ import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.font.*;
+import java.util.*;
 
 /** 
     An InputOutput which represents an underlying output Unit.
@@ -172,11 +173,22 @@ public class OutputJack extends InputOutput
         Automaton.Node out = getButton().getNode();
         Automaton.Node in = outgoing.getEnd().getButton().getNode();
         Seq seq = ((AutomatonUI)(getButton().getOwner())).getSeq();
+        Automaton automaton = (Automaton)(getButton().getOwner().getMotif());
                 
         seq.getLock().lock();
         try
             {
             out.setOut(number, in);
+            out.selectOut();
+            
+            ArrayList<Automaton.Node> nodes = automaton.getNodes();
+            for(Automaton.Node node : nodes)
+            	{
+            	System.err.println();
+            	System.err.println(node);
+            	node.selectOut();
+            	}
+            
             }
         finally
             {

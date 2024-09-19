@@ -59,6 +59,7 @@ public abstract class Motif implements Cloneable
         /** Sets the nickname, which is a user-settable name for this child (as opposed to the Motif's name, which is specified by the program). 
             The nickname is initially null. */
         public String getNickname() { return nickname; }
+        /** Returns the current nickname, or if none, the original motif name. */
         public String getCurrentName() { if (nickname != null && (!nickname.trim().equals(""))) return nickname; else return motif.getName(); }
         /** Returns the custom data object of the Child.  This is set by Motif subclasses to add additional parameters. */
         public Object getData() { return data; }
@@ -232,22 +233,24 @@ public abstract class Motif implements Cloneable
     int version;
     // how many clips are playing right now?
     int playCount;
-    // unique ID for motif.  NOT saved out.
-    int uniqueID;
 
     public Motif(Seq seq)
         {
         this.seq = seq;
         name = "";
-        uniqueID = getNextUniqueID();
         }
 
+	/** Returns the Seq */
     public Seq getSeq() { return seq; }
-    public int getUniqueID() { return uniqueID; }
+    /** Increments the play count, that is, how many clips are playing the motif right now. */
     public void incrementPlayCount() { playCount++; }
+    /** Decrements the play count, that is, how many clips are playing the motif right now. */
     public void decrementPlayCount() { playCount = Math.max(0, playCount - 1); }
+    /** Returns the play count, that is, how many clips are playing the motif right now. */
     public int getPlayCount() { return playCount; }
+    /** Sets the play count to 0, that is, how many clips are playing the motif right now. */
     public void resetPlayCount() { playCount = 0; }
+    
     
     ///// VERSION
     /** Increments the current Motif version so clips can stay in sync.
@@ -257,6 +260,7 @@ public abstract class Motif implements Cloneable
     public void incrementVersion() { version++; }
     /** Returns the current Motif version so clips can stay in sync. */
     public int getVersion() { return version; }
+    
     
     ///// NAME
     /** Returns the Motif's name */
@@ -279,10 +283,6 @@ public abstract class Motif implements Cloneable
         For example, MacroChild would return "Macro Child" */ 
     public abstract String getBaseName();
     
-    
-    static int uniqueIDCounter = 0;
-    int getNextUniqueID() { return uniqueIDCounter++; }
-        
 
 
     ///// ARMING
@@ -293,18 +293,22 @@ public abstract class Motif implements Cloneable
         
     /// FIXME: at present we're just gonna assume that this collapses the recordings to the last one,
     /// But we should change it to lazily let the user choose.
+/*
     public void endArmed() 
         { 
         for(Child child : children)
             child.motif.endArmed();
         }
+*/
+        
         
     ///// PARAMETER NAMES
-
     public static final int NUM_PARAMETERS = 8;
     String[] parameterNames = new String[NUM_PARAMETERS];
     public String getParameterName(int param) { return parameterNames[param]; }
     public void setParameterName(int param, String val) { parameterNames[param] = val; }
+
+
 
     ///// TEXTUAL NOTES
     String text = null;

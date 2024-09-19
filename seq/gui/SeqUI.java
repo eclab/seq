@@ -872,6 +872,31 @@ public class SeqUI extends JPanel
                 Prefs.setLastBoolean("SmallMotifButtons", smallButtons);
                 }
             });
+
+        motifMenu.addSeparator();
+
+        JMenuItem disarmItem = new JMenuItem("Disarm All Motifs");
+        motifMenu.add(disarmItem);
+        disarmItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                push();
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    seq.disarmAll();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                    
+                setMotifUI(motifui);	// rebuild
+                }
+            });
+            
         }
         
     public boolean getSmallButtons() { return smallButtons; }
