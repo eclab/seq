@@ -25,6 +25,8 @@ seq/motif/stepsequence/*.java \
 seq/motif/stepsequence/gui/*.java \
 seq/motif/silence/*.java \
 seq/motif/silence/gui/*.java \
+seq/motif/modulation/*.java \
+seq/motif/modulation/gui/*.java 
 
 # Make the main Seq code
 all:
