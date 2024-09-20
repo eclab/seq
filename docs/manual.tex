@@ -237,8 +237,8 @@ George Mason University}
 \\
 \\
 \large\rm {\bf Seq Version 1}\\
-\large\rm {\bf Manual Version 1.1}\\
-\large\rm  August 2024\\
+\large\rm {\bf Manual Version 1.2}\\
+\large\rm  September 2024\\
 
 \vspace{5in}
 \noindent\Large\bf Where to Obtain Seq\\
@@ -318,7 +318,7 @@ Furthermore, when in the course of playing a child generates MIDI, the MIDI is s
 \label{dag}
 \end{wrapfigure}
 
-As a simple example, imagine if Chain X had Chain Y as a child as well as Pattern A.  But Chain Y also had Pattern A as a child, along with Pattern B.  Both Chain X and Chain Y use Pattern A, though perhaps at different times and in different ways.  You could also imagine a Chain Z which used by Chain X and Chain Y, and thus Chain Y was also being used twice, in different ways.
+As a simple example, imagine if Chain X had Chain Y as a child as well as Pattern A.  But Chain Y {\it also} had Pattern A as a child, along with Pattern B.  Both Chain X and Chain Y use Pattern A, though perhaps at different times and in different ways.  You could also imagine a Chain Z which used by Chain X and Chain Y, and thus Chain Y was also being used twice, in different ways.
 
 Figure~\ref{dag} at right shows this very arrangement of these chains and patterns. In the computer science world, this kind of structure is known as a {\it Directed Acyclic Graph} or {\it DAG}.  It's a {\it Graph} because every object is connected to other objects with lines called {\it edges}.  It is {\it directed} because there is a clear relationship between parents and children: that is, the edges are arrows indicating who the child is.  It's {\it Acyclic} because no child can be its own ancestor: you can't have loops (or ``cycles'').  That is, all edges are pointing {\it down}.
 
@@ -358,7 +358,7 @@ Below the Inspectors is a resizable region for {\bf Text Notes} for each Motif.
 \paragraph{Dials}
 
 \begin{wrapfigure}{r}{1in}
-\vspace{-1em}
+%\vspace{-1em}
 \includegraphics[width=1in]{smalldials}
 \vspace{-2em}
 \caption{Dials}
@@ -403,6 +403,7 @@ The Motif Menu has several options.
 	\item You can {\bf automatically set} motifs to be the the Root Motif whenever you select them.  
 	\item You can {\bf Sort Motifs}, which organizes motifs so that children appear lower in the list than their parents.  
 	\item You can change the motif buttons to a {\bf smaller size}.
+	\item You can {\bf disarm all motifs} so that they no longer record MIDI.  This is useful if you've forgotten which ones you've armed so far.
 	\end{itemize}
 
 \paragraph{File Menu}
@@ -642,6 +643,7 @@ But in fact Series has several modes, and so can be set to play its children in 
 \item{\bf Shuffle}\quad Randomly shuffle the order of the children.  Then play them in that order, then finish.
 \item{\bf Random Forever}\quad Select a random child to play.  When finished playing it, select another one at random and play it, and so on.  Do this forever.  
 \item{\bf Random Markov}\quad Select a random child to play.  When finished playing it, select a second one at random using the first child's Markov Weights, and play it.  Then select a third child at random using the second child's Markov Weights, and so on.  Do this forever.
+\item{\bf Round Robin}\quad Play the first child.  When finished playing it, finish.  If you are immediately looped back to playing again, play the second child, then finish, and so on, eventually returning back to playing the first child.  Note that if your'e not immediately being looped, you won't increment to the next children, but will just play the first child over and over.
 \item{\bf Variation}\quad Play the child specified by Parameter 1, then finish. (For discussion of Parameters, see Section~\ref{parameters}).  This is particularly useful for creating and playing multiple {\it variations} of a given Motif.
 \item{\bf Random Variation}\quad Play the child specified by the Random Parameter, then finish. (For discussion of Parameters, see Section~\ref{parameters}).
 \end{itemize}
@@ -708,9 +710,8 @@ Each Child in the Child Motifs can have a {\bf Nickname}, set in its Child Inspe
 Each Child has a {\bf Probability} in its Inspector.  This probability determines whether the child will be played as follows.  In the Parallel Inspector there is a feature called {\bf Children Playing}.  This feature allows you to select some \(N\) children to play when the Parallel starts playing.  Its options are:
 
 \begin{itemize}
-\item {\bf Independent}\quad Each child will play with its given Probability.
+\item {\bf Independent}\quad Each child will play with its given its Probability (by default 1.0).  This is the default.
 \item {\bf 1...16}\quad Parallel will select some \(N\) (1...16) children at random given their Probabilities.  These will be the only children that play.
-\item {\bf All}\quad Every child will play.  This is the default.
 \item {\bf All, Finish After First}\quad Every child will play, but after the first child in the list has finished playing, all children will immediately be terminated.
 \end{itemize}
 
@@ -736,6 +737,9 @@ Unlike in other Motifs, you can {\bf Mute} children in a Parallel.  The children
 \paragraph{Parameters and Arguments}
 
 The Parallel Inspector has an expandable region called {\bf Parameter Names}, and each Child Inspector has an expandable region called {\bf Arguments}. Furthermore, many dials have Special Values called ``Rand'', ``Param 1'', etc.  These are explained in Section~\ref{parameters}.
+
+One trick you can do with Probabilities: bind certain child probabilities to an argument.  Then in a parent you can mute the child at certain iterations by setting that argument to 0.0 versus 1.0.
+
 
 
 \clearpage
@@ -808,7 +812,10 @@ If there are no more endpoints, and {\bf Loop} has been selected, then Iteration
 \end{itemize}
 
 \paragraph{MIDI Modification}
-Unlike Series and Parallel, at present Automaton can exert no MIDI modification on its Children.  This might change in the future.
+
+As a (Motif node) Child of the Automaton emits MIDI, that MIDI is handed to the Automaton, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
+
+Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option)
 
 \clearpage
 
@@ -883,7 +890,7 @@ At present we have four motifs planned:
 
 \begin{itemize}
 \item A Motif for individual notes, chords, or arpeggios
-\item A Motif which implements functions that operates on Parameters, such as LFOs or Envelopes, Random Sequences, MIDI CC
+\item A Motif which implements functions that operates on Parameters, such as LFOs or Envelopes, Random Sequences, MIDI CC.  {\bf \color{red} We have this partially implemented in Seq (the ``Modulation'' motif) but it's not working yet.}
 \item Possibly a Motif which performs more complex MIDI Effects on incoming MIDI data
 \item Possibly a Motif which does Live Coding using some programming language
 \end{itemize}
