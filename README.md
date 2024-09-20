@@ -26,6 +26,11 @@ Seq is written in pure Java.  It runs on MacOS, Linux, and Windows.
 
 This is an early release of Seq, and it's got lots of wires sticking out here and there, is missing important items, and has bugs.  And you have to build it [we'll get binaries latter].  But it works!
 
+## Publications on Seq 
+
+[A Hierarchical, Modular Sequencer](https://cs.gmu.edu/~sean/papers/audiomostly24.pdf).  With Filippo Carnovalini. Presented at Audio Mostly 2024.
+
+
 ## Resources
 
 * Seq has an [initial, rudimentary manual](https://cs.gmu.edu/~eclab/projects/seq/seq.pdf) which explains the basics of using it.
