@@ -829,7 +829,7 @@ Finally, {\bf Rate} changes the speed at which the child is played, faster or sl
 
 \subsection{Select}
 
-Select is different from Series, Parallel, and Automaton: it has Children, but you as a user get to select which ones you want to play in real-time.  This can be done either via the user interface, or by connecting a Novation Launchpad MK III.  
+Select is different from Series, Parallel, and Automaton: it has Children, but you as a user get to select which ones you want to play in real-time.  This can be done either via the user interface, or by connecting a Novation Launchpad MK I or MK III.
 
 Select defines a grid where you can place Children by dragging them in from the Motif List.  The location of the Children does not matter; you can lay them out however you like.  However if {\bf Auto-Play First} is selected in the Select inspector, then the first child (most top-left) will be automatically played when Select is first played.
 
@@ -880,7 +880,17 @@ The Parallel Inspector has an expandable region called {\bf Parameter Names}, an
 
 \paragraph{Using the Novation LaunchPad}
 
-To use a Novation LaunchPad to select Children, you specify it in the {\bf Control In} and {\bf Control Out}.  You should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  When the Select starts playing, it will reset the Launch Pad to display the same grid as your current user interface layout.  You can then choose Children by pressing buttons on the LaunchPad.
+To use a Novation LaunchPad to select Children, you specify it in the {\bf Control In} and {\bf Control Out}.  Specify the device type in {\bf Device}.  When the Select starts playing, it will reset the Launch Pad to display the same grid as your current user interface layout.  You can then choose Children by pressing buttons on the LaunchPad.
+
+\paragraph{LaunchPad Devices}
+
+\begin{itemize}
+\item {\bf MK I}\qquad LaunchPad, LaunchPad S, LaunchPad Pro (untested).   
+\item {\bf MK III}\qquad Launchpad Mini, Launchpad X, LaunchPad Pro [MK3].\\\\When using a MK3 device, you should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  
+
+\end{itemize}
+
+
 
 
 
