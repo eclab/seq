@@ -80,7 +80,7 @@ public class SelectClip extends Clip
         { 
         super.terminate();
         terminateNodes((Select)getMotif());  
-        clearPads();       
+        updatePads();       
         }
 
     /** Schedule a finish to be issued */
@@ -166,71 +166,109 @@ public class SelectClip extends Clip
         }
         
     /// Updates the pads (lights 'em up)
-    void updatePads()
+    public void updatePads()
         {
-        int out = ((Select)getMotif()).getOut();
+        Select motif = (Select)getMotif();
+        int out = motif.getOut();
         int numChildren = children.size();
         for(int i = 0; i < Select.MAX_CHILDREN; i++)
             {
             if (i >= numChildren)               // I don't think this ever happens any more
                 {
-                setPad(out, Select.getNoteForIndex(i), OFF);
+                setPad(out, motif.getNoteForIndex(i), OFF);
                 }
             else
                 {
+            	getChild(i);						// build the child.  FIXME   Is this too costly?
                 Node m = children.get(i);
+                System.err.println(m);
                 if (m == null || m.clip.getMotif() instanceof Blank)
                     {
-                    setPad(out, Select.getNoteForIndex(i), UNUSED);
+                    setPad(out, motif.getNoteForIndex(i), UNUSED);
                     }
                 else
                     {
-                    setPad(out, Select.getNoteForIndex(i), children.get(i).state);
+                    setPad(out, motif.getNoteForIndex(i), children.get(i).state);
                     }
                 }
             }
         }
 
     /// Clear Pads
-    void clearPads()
+    public void clearPads()
         {
-        int out = ((Select)getMotif()).getOut();
+         Select motif = (Select)getMotif();
+       int out = motif.getOut();
         for(int i = 0; i < Select.MAX_CHILDREN; i++)
             {
-            setPad(out, Select.getNoteForIndex(i), UNUSED);
+            setPad(out, motif.getNoteForIndex(i), UNUSED);
             }
         }
 
-    public static final int PAD_UNUSED = 0;
-    public static final int PAD_OFF = 1;
-    public static final int PAD_WAITING = 45;
-    public static final int PAD_ON = 5;
-    public static final int PAD_STOPPING = 53;
-        
+    public static final int PAD_UNUSED_MKIII = 0;
+    public static final int PAD_OFF_MKIII = 1;
+    public static final int PAD_WAITING_MKIII = 45;
+    public static final int PAD_ON_MKIII = 5;
+    public static final int PAD_STOPPING_MKIII = 53;
+
+    public static final int PAD_UNUSED_MKI = 0;
+    public static final int PAD_OFF_MKI = 28;
+    public static final int PAD_WAITING_MKI = 62;
+    public static final int PAD_ON_MKI = 15;
+    public static final int PAD_STOPPING_MKI = 63;
+    
     // Given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
     void setPad(int out, int note, int state)
         {
-        if (state == UNUSED)
-            {
-            seq.forceNoteOn(out, note, PAD_UNUSED, 1);                          // Turn the Light Off
-            }
-        else if (state == ON)                                                   
-            {
-            seq.forceNoteOn(out, note, PAD_ON, 1);              // RED
-            }
-        else if (state == OFF)
-            {
-            seq.forceNoteOn(out, note, PAD_OFF, 1);                             // Gray
-            }
-        else if (state == WAITING)
-            {
-            seq.forceNoteOn(out, note, PAD_WAITING, 1);                         // BLUE
-            }
-        else if (state == STOPPING)
-            {
-            seq.forceNoteOn(out, note, PAD_STOPPING, 1);                                // MAGENTA
-            }
+    	int gridDevice = ((Select)getMotif()).getGridDevice();
+    	if (gridDevice == Select.DEVICE_LAUNCHPAD_MKIII)
+    		{
+			if (state == UNUSED)
+				{
+				seq.forceNoteOn(out, note, PAD_UNUSED_MKIII, 1);                          // Turn the Light Off
+				}
+			else if (state == ON)                                                   
+				{
+				seq.forceNoteOn(out, note, PAD_ON_MKIII, 1);              // RED
+				}
+			else if (state == OFF)
+				{
+				seq.forceNoteOn(out, note, PAD_OFF_MKIII, 1);                             // Gray
+				}
+			else if (state == WAITING)
+				{
+				seq.forceNoteOn(out, note, PAD_WAITING_MKIII, 1);                         // BLUE
+				}
+			else if (state == STOPPING)
+				{
+				seq.forceNoteOn(out, note, PAD_STOPPING_MKIII, 1);                                // MAGENTA
+				}
+			}
+		else if (gridDevice == Select.DEVICE_LAUNCHPAD_MKI)
+    		{
+			if (state == UNUSED)
+				{
+				seq.forceNoteOn(out, note, PAD_UNUSED_MKI, 1);                          // Turn the Light Off
+				}
+			else if (state == ON)                                                   
+				{
+				seq.forceNoteOn(out, note, PAD_ON_MKI, 1);              // RED
+				}
+			else if (state == OFF)
+				{
+				seq.forceNoteOn(out, note, PAD_OFF_MKI, 1);                             // Green Low
+				}
+			else if (state == WAITING)
+				{
+				seq.forceNoteOn(out, note, PAD_WAITING_MKI, 1);                         // Yellow
+				}
+			else if (state == STOPPING)
+				{
+				seq.forceNoteOn(out, note, PAD_STOPPING_MKI, 1);                                // Amber
+				}
+    		}
         }
+
 
     // Extracts an OUT and NOTE from a given NODE, sets the node to the given state,
     // then given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
@@ -458,7 +496,7 @@ public class SelectClip extends Clip
                 int velocity = ((ShortMessage)messages[i]).getData2();
                 if (velocity > 0)       // otherwise it's actually a NOTE OFF
                     {
-                    int c = ((Select)getMotif()).getIndexForNote(((ShortMessage)messages[i]).getData1());
+                    int c = select.getIndexForNote(((ShortMessage)messages[i]).getData1());
                     if (c >= 0 && c < select.getChildren().size()) // we have a child
                         {
                         Node child = getChild(c);

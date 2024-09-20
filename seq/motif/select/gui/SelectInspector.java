@@ -26,6 +26,7 @@ public class SelectInspector extends WidgetList
     JComboBox quantization;
     JComboBox out;
     JComboBox in;
+    JComboBox device;
     JCheckBox playFirst;
     //JCheckBox immediate;
     JCheckBox cut;
@@ -138,6 +139,20 @@ public class SelectInspector extends WidgetList
                     }
                 });
                         
+            device = new JComboBox(Select.GRID_DEVICE_NAMES);
+            device.setSelectedIndex(select.getGridDevice());
+            device.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { select.setGridDevice(device.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
             playFirst = new JCheckBox();
             playFirst.setSelected(select.getPlayFirst());
             playFirst.addActionListener(new ActionListener()
@@ -273,7 +288,7 @@ public class SelectInspector extends WidgetList
           new JComponent[] { dials[4].getLabelledDial("127"), dials[5].getLabelledDial("127"), dials[6].getLabelledDial("127"), dials[7].getLabelledDial("127"), }));
         */               
 
-        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Control In", "Control Out", "Quantization", "Auto-Play First", "Cut Notes", }, //  "Param CCs In", "Param CCs" }, 
+        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Control In", "Control Out", "Control Device", "Quantization", "Auto-Play First", "Cut Notes", }, //  "Param CCs In", "Param CCs" }, 
             new JComponent[] 
                 {
                 panel,
@@ -281,6 +296,7 @@ public class SelectInspector extends WidgetList
                 mode,
                 in,
                 out,
+                device,
                 quantization,
                 playFirst,
                 //immediate,
@@ -307,6 +323,7 @@ public class SelectInspector extends WidgetList
             quantization.setSelectedIndex(select.getQuantization()); 
             out.setSelectedIndex(select.getOut()); 
             in.setSelectedIndex(select.getIn()); 
+            device.setSelectedIndex(select.getGridDevice()); 
             playFirst.setSelected(select.getPlayFirst()); 
             cut.setSelected(select.getCut()); 
             //immediate.setSelected(select.getImmediate()); 

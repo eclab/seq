@@ -423,6 +423,7 @@ public class SelectUI extends MotifUI
             selectGrid.revalidate();
             }
         else System.err.println("SelectUI.moveChild: button not in list");
+        updatePads();
         }
 
     public void doRemove()
@@ -460,6 +461,7 @@ public class SelectUI extends MotifUI
             selectGrid.revalidate();
             }
         else System.err.println("SelectUI.moveChild: button not in list");
+        updatePads();
         }
               
     public void doCopy()
@@ -532,6 +534,7 @@ public class SelectUI extends MotifUI
             sequi.getMotifList().rebuildClipsForMotif(getMotif());
             }
         else System.err.println("SelectUI.doCopy: button not in list");
+        updatePads();
         }
 
     public void addChild(MotifUI motifui, int at)
@@ -574,8 +577,58 @@ public class SelectUI extends MotifUI
         
         revalidate();
         sequi.getMotifList().rebuildClipsForMotif(getMotif());
+		updatePads();
         }
 
+	public void updatePads()
+		{
+        Clip clip = getDisplayClip();
+		seq.getLock().lock();
+		try
+			{
+            if (clip instanceof SelectClip)
+            	{
+				SelectClip playingClip = (SelectClip)clip;
+				playingClip.updatePads();
+            	}
+			}
+		finally
+			{
+			seq.getLock().unlock();
+			}
+		}
+		
+
+	public void clearPads()
+		{
+        Clip clip = getDisplayClip();
+		seq.getLock().lock();
+		try
+			{
+            if (clip instanceof SelectClip)
+            	{
+				SelectClip playingClip = (SelectClip)clip;
+				playingClip.clearPads();
+            	}
+			}
+		finally
+			{
+			seq.getLock().unlock();
+			}
+		}
+		
+
+	public void uiWasSet()
+		{
+		super.uiWasSet();
+		updatePads();
+		}
+
+	public void uiWasUnset()
+		{
+		super.uiWasUnset();
+		updatePads();
+		}
     
     //// DRAG AND DROP
         

@@ -223,42 +223,89 @@ public class Select extends Motif
     /** Set the index in the Seq's Out array for the Out used to light pads. */
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.select.Select"); }
 
+	public static final String[] GRID_DEVICE_NAMES = { "Launchpad MK 1", "Launchpad MK 3" };
+	public static final int DEVICE_LAUNCHPAD_MKI = 0;
+	public static final int DEVICE_LAUNCHPAD_MKIII = 1;
+	int gridDevice = DEVICE_LAUNCHPAD_MKIII;
+	
+	/** Gets the grid device type. */
+	public int getGridDevice() { return gridDevice; }
+	
+	/** Returns the grid device type. */
+	public void setGridDevice(int val) { gridDevice = val; Prefs.setLastOutDevice(0, val, "seq.motif.select.Select"); }
+
     /** Return the key which, when depressed, triggers child 0.  By default this is 60, or
         middle C, so middle C triggers child 0, middle C# triggers child 1, middle D triggers
         child 2, and so on.  Also, middle B (below middle C) will release all playing children,
         and middle Bb (below middle C) will cause the Select to indicate that it has finished. */
-    public int getStartNote() { return startNote; }
+    //public int getStartNote() { return startNote; }
     
     /** Set the key which, when depressed, triggers child 0.  By default this is 60, or
         middle C, so middle C triggers child 0, middle C# triggers child 1, middle D triggers
         child 2, and so on.  Also, middle B (below middle C) will release all playing children,
         and middle Bb (below middle C) will cause the Select to indicate that it has finished. */
-    public void setStartNote(int val) { startNote = val; }
+    //public void setStartNote(int val) { startNote = val; }
         
-    public static int getIndexForCC(int cc)
+    public int getIndexForCC(int cc)
         {
-        // Launchpad Mini Mk 3
-        if (cc == 91) return DEFAULT_FINISH_OFFSET;
-        else if (cc == 92) return DEFAULT_RELEASE_ALL_NOTES_OFFSET;
-        else return INVALID;
+        if (gridDevice == DEVICE_LAUNCHPAD_MKIII)
+        	{
+			// Launchpad Mini Mk 3
+			if (cc == 91) return DEFAULT_FINISH_OFFSET;
+			else if (cc == 92) return DEFAULT_RELEASE_ALL_NOTES_OFFSET;
+			else return INVALID;
+			}
+	    else if (gridDevice == DEVICE_LAUNCHPAD_MKI)
+	    	{
+			// Launchpad Mini Mk 1
+			if (cc == 104) return DEFAULT_FINISH_OFFSET;
+			else if (cc == 105) return DEFAULT_RELEASE_ALL_NOTES_OFFSET;
+			else return INVALID;
+	    	}
+		else return INVALID;		
         }
         
-    public static int getIndexForNote(int note)
+    public int getIndexForNote(int note)
         {
-        // Launchpad Mini Mk 3
-        int row = 9 - (note / 10);              // flip vertically
-        int col = (note % 10);
-        if (row < 1 || row > 8) return INVALID;
-        if (col < 1 || col > 8) return INVALID;
-        return (row - 1) * 8 + (col - 1);
+        if (gridDevice == DEVICE_LAUNCHPAD_MKIII)
+        	{
+	        // Launchpad Mini Mk 3
+	        int row = 9 - (note / 10);              // flip vertically
+	        int col = (note % 10);
+	        if (row < 1 || row > 8) return INVALID;
+	        if (col < 1 || col > 8) return INVALID;
+	        return (row - 1) * 8 + (col - 1);
+	    	}
+	    else if (gridDevice == DEVICE_LAUNCHPAD_MKI)
+	    	{
+	    	// The origin of the MK I is in the top left corner starting at Pitch 0
+	    	// and rows are 16 long
+	    	int row = note / 16;
+	    	int col = note % 16;
+	    	if (col >= 8) return INVALID;		// top 8 values
+	    	return row * 8 + col;
+	    	}
+		else return INVALID;		
         }
     
-    public static int getNoteForIndex(int index)
+    public int getNoteForIndex(int index)
         {
-        // Launchpad Mini Mk 3
-        int row = index / 8;
-        int col = index % 8;
-        return (8 - row) * 10 + col + 1;
+        if (gridDevice == DEVICE_LAUNCHPAD_MKIII)
+        	{
+			// Launchpad Mini Mk 3
+			int row = index / 8;
+			int col = index % 8;
+			return (8 - row) * 10 + col + 1;
+			}
+	    else if (gridDevice == DEVICE_LAUNCHPAD_MKI)
+	    	{
+	    	// The origin of the MK I is in the top left corner starting at Pitch 0
+	    	// and rows are 16 long
+			int row = index / 8;
+			int col = index % 8;
+			return row * 16 + col;
+	    	}
+		else return INVALID;		
         }
     
     public Select(Seq seq)
@@ -271,6 +318,7 @@ public class Select extends Motif
         // Load devices. Note I'm not using setOut(...) etc. which would write the device to prefs
         out = (Prefs.getLastOutDevice(0, "seq.motif.select.Select"));
         in = (Prefs.getLastInDevice(0, "seq.motif.select.Select"));
+        gridDevice = (Prefs.getLastGridDevice(0, "seq.motif.select.Select"));
         //ccIn = (Prefs.getLastControlDevice(0, "seq.motif.select.Select"));
         }
                 
@@ -285,8 +333,10 @@ public class Select extends Motif
         setMode(from.optInt("mode", MODE_SINGLE_ONE_SHOT));
         setQuantization(from.optInt("quant", QUANTIZATION_SIXTEENTH));
         setCut(from.optBoolean("cut", false));
-        setStartNote(from.optInt("startnote", DEFAULT_START_NOTE));
+//        setStartNote(from.optInt("startnote", DEFAULT_START_NOTE));
         setIn(from.optInt("in", 0));
+        setOut(from.optInt("out", 0));
+        setGridDevice(from.optInt("grid", 0));
         /*
           JSONArray param = from.getJSONArray("cc");
           for(int i = 0; i < NUM_PARAMETERS; i++)
@@ -302,8 +352,10 @@ public class Select extends Motif
         to.put("mode", getMode());
         to.put("quant", getQuantization());
         to.put("cut", getCut());
-        to.put("startnote", getStartNote());
+//        to.put("startnote", getStartNote());
         to.put("in", getIn());
+        to.put("out", getOut());
+        to.put("grid", getGridDevice());
         /*
           JSONArray cc = new JSONArray();
           for(int i = 0; i < NUM_PARAMETERS; i++)
