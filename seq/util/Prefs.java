@@ -344,6 +344,30 @@ public class Prefs
         return _default;
         }
 
+    public static void setLastGridDevice(int index, int device, String module)
+        {
+        setLastX("" + device, "LastGridDevice" + index, module);
+        }
+
+    public static int getLastGridDevice(int index, String module)
+        {
+        return getLastGridDevice(index, module, 0);
+        }
+
+    public static int getLastGridDevice(int index, String module, int _default)
+        {
+        String s = getLastX("LastGridDevice" + index, module);
+        try
+            {
+            if (s != null)
+                return Integer.parseInt(s);
+            }
+        catch (NumberFormatException e)
+            {
+            }
+        return _default;
+        }
+
     public static void setLastTupleOutName(int index, String name)
         {
         setLastX(name == null ? "" : name.trim(), "LastTupleOutName" + index);

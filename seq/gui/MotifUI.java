@@ -286,6 +286,13 @@ public abstract class MotifUI extends JPanel
                 }
             }
         }
+    
+    /** Called to give the motifui a chance to revise its inspectors.  
+    	Override this as you see fit, the default is empty.
+    	FIXME: is this needed any more? */  
+    public void revise()
+    	{
+    	}
         
     public void recursiveDragError(MotifButton dropped, SeqUI sequi)
         {

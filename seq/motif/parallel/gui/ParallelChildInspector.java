@@ -617,7 +617,8 @@ public class ParallelChildInspector extends WidgetList
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try { getData().setOverride(override.isSelected()); }
-                    finally { lock.unlock(); }                              
+                    finally { lock.unlock(); }   
+                    if (button != null) button.updateText();
                     }
                 });
 

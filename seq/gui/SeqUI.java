@@ -44,10 +44,18 @@ public class SeqUI extends JPanel
     */
 
     /** Seq Patches end with this extension. */
-    public static String PATCH_EXTENSION = ".seq";
+    public static final String PATCH_EXTENSION = ".seq";
     
-    public static String MIDI_EXTENSION = ".mid";
-
+    public static final String MIDI_EXTENSION = ".mid";
+    
+    public static final int STEP_SEQUENCE_INITIAL = 0; 
+    public static final int NOTES_INITIAL = 1; 
+    public static final int SERIES_INITIAL = 2; 
+    public static final int PARALLEL_INITIAL = 3; 
+    
+    public static final int MIN_INITIAL_WIDTH = 800;
+    public static final int MIN_INITIAL_HEIGHT = 600;
+    
     // Seq Menu Bar
     JMenuBar menubar;
     // The menu dedicated for Motifs, if any
@@ -69,6 +77,7 @@ public class SeqUI extends JPanel
     // Is the selected motif always the root?
     boolean selectedFrameIsRoot;
     boolean smallButtons;
+    int initialMotif = STEP_SEQUENCE_INITIAL;
     
     JMenuItem undoItem;
     JMenuItem redoItem;
@@ -848,6 +857,69 @@ public class SeqUI extends JPanel
             });
         
 
+		JMenu initialMotifMenu = new JMenu("Startup Motif");
+        motifMenu.add(initialMotifMenu);
+		ButtonGroup group = new ButtonGroup();
+		
+        JRadioButtonMenuItem initialMotifStepSequenceMenu = new JRadioButtonMenuItem("Step Sequence");
+        initialMotifStepSequenceMenu.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                initialMotif = STEP_SEQUENCE_INITIAL;
+                Prefs.setLastInt("InitialMotif", initialMotif);
+                }
+            });
+        group.add(initialMotifStepSequenceMenu);
+        initialMotifMenu.add(initialMotifStepSequenceMenu);
+        
+        JRadioButtonMenuItem initialMotifNotesMenu = new JRadioButtonMenuItem("Notes");
+        initialMotifNotesMenu.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                initialMotif = NOTES_INITIAL;
+                Prefs.setLastInt("InitialMotif", initialMotif);
+                }
+            });
+        group.add(initialMotifNotesMenu);
+        initialMotifMenu.add(initialMotifNotesMenu);
+
+        JRadioButtonMenuItem initialMotifSeriesMenu = new JRadioButtonMenuItem("Series");
+        initialMotifSeriesMenu.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                initialMotif = SERIES_INITIAL;
+                Prefs.setLastInt("InitialMotif", initialMotif);
+                }
+            });
+        group.add(initialMotifSeriesMenu);
+        initialMotifMenu.add(initialMotifSeriesMenu);
+
+        JRadioButtonMenuItem initialMotifParallelMenu = new JRadioButtonMenuItem("Parallel");
+        initialMotifParallelMenu.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                initialMotif = PARALLEL_INITIAL;
+                Prefs.setLastInt("InitialMotif", initialMotif);
+                }
+            });
+        group.add(initialMotifParallelMenu);
+        initialMotifMenu.add(initialMotifParallelMenu);
+
+        initialMotif = Prefs.getLastInt("InitialMotif", STEP_SEQUENCE_INITIAL);
+		if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
+			{
+			initialMotif = STEP_SEQUENCE_INITIAL;
+			}
+			
+		if (initialMotif == STEP_SEQUENCE_INITIAL) initialMotifStepSequenceMenu.setSelected(true);
+		else if (initialMotif == NOTES_INITIAL) initialMotifNotesMenu.setSelected(true);
+		else if (initialMotif == SERIES_INITIAL) initialMotifSeriesMenu.setSelected(true);
+		else initialMotifParallelMenu.setSelected(true);
+
         motifMenu.addSeparator();
 
         JMenuItem sortItem = new JMenuItem("Sort Motifs");
@@ -1225,6 +1297,18 @@ public class SeqUI extends JPanel
         inSimpleError = false;
         }
 
+	public static void addResizeListener(JFrame frame)
+		{
+		frame.addComponentListener(new ComponentAdapter()
+			{
+			public void componentResized(ComponentEvent event)
+				{
+				Dimension size = frame.getSize();
+				Prefs.setLastInt("InitialWidth", size.width);
+				Prefs.setLastInt("InitialHeight", size.height);
+				}
+			});
+		}
 
     // TESTING
     public static void main(String[] args) throws Exception
@@ -1240,12 +1324,36 @@ public class SeqUI extends JPanel
         // Build GUI
         SeqUI ui = new SeqUI(seq);
         
-        seq.motif.stepsequence.StepSequence dSeq = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
-        seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, dSeq);
-
-//        seq.motif.notes.Notes dSeq = new seq.motif.notes.Notes(seq);
-//        seq.motif.notes.gui.NotesUI ssui = new seq.motif.notes.gui.NotesUI(seq, ui, dSeq);
-
+        Motif dSeq = null;
+        MotifUI ssui = null;
+        int initialMotif = Prefs.getLastInt("InitialMotif", STEP_SEQUENCE_INITIAL);
+		if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
+			{
+			initialMotif = STEP_SEQUENCE_INITIAL;
+			}
+		if (initialMotif == STEP_SEQUENCE_INITIAL) 
+			{
+         	dSeq = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
+        	ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, (seq.motif.stepsequence.StepSequence)dSeq);
+			}
+		else if (initialMotif == NOTES_INITIAL)
+			{
+			dSeq = new seq.motif.notes.Notes(seq);
+			ssui = new seq.motif.notes.gui.NotesUI(seq, ui, (seq.motif.notes.Notes)dSeq);
+			}
+		else if (initialMotif == SERIES_INITIAL)
+			{
+			dSeq = new seq.motif.series.Series(seq);
+			ssui = new seq.motif.series.gui.SeriesUI(seq, ui, (seq.motif.series.Series)dSeq);
+			}
+			
+		else if (initialMotif == PARALLEL_INITIAL)
+			{
+			dSeq = new seq.motif.parallel.Parallel(seq);
+			ssui = new seq.motif.parallel.gui.ParallelUI(seq, ui, (seq.motif.parallel.Parallel)dSeq);
+			}
+			
+			
         // Build Clip Tree
         seq.setData(dSeq);
 
@@ -1255,8 +1363,17 @@ public class SeqUI extends JPanel
         ui.setupMenu(frame);
         ui.addMotifUI(ssui);
         frame.getContentPane().add(ui);
+    	
+    	// figure out the right window size
+    	int minWidth = Prefs.getLastInt("InitialWidth", MIN_INITIAL_WIDTH);
+    	int minHeight = Prefs.getLastInt("InitialHeight", MIN_INITIAL_HEIGHT);
         frame.pack();
+        Dimension size = frame.getSize();
+        if (size.width < minWidth) size.width = minWidth;
+        if (size.height < minHeight) size.height = minHeight;
+        frame.setSize(size);
         frame.setVisible(true);
+        addResizeListener(frame);
                 
         seq.reset();
         ssui.revise();

@@ -89,7 +89,9 @@ public class ParallelButton extends MotifButton
             ParallelClip clip = ((ParallelClip)(owner.getDisplayClip()));
             if (clip != null) 
                 {
-                ParallelClip.Node n = clip.getNodes().get(at);
+                ParallelClip.Node n = null;
+                try { n = clip.getNodes().get(at); } 
+                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); return false; }		// FIXME: This appears to be a bug...
                 if (n != null)
                     {
                     playing = n.isPlaying();
@@ -108,6 +110,7 @@ public class ParallelButton extends MotifButton
         String subname = null;
         int bar = 0;
         boolean muted = false;
+        boolean override = false;
         
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -123,6 +126,7 @@ public class ParallelButton extends MotifButton
                 Parallel.Data data = (Parallel.Data)(child.getData());
                 bar = seq.getBar();
                 muted = data.getMute();
+                override = data.getOverride();
                 }
             else subname = "";
             }
@@ -143,7 +147,7 @@ public class ParallelButton extends MotifButton
         int beats = (_delay % bar);
         int bars = _delay / bar;
         
-        return "(" + bars + " . " + beats + ") " + ticks + "/192&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (muted ? "MUTED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
+        return (override ? "Override   (" : "(") + bars + " . " + beats + ") " + ticks + "/192&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (muted ? "MUTED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
         }
 
     public void doubleClick(MouseEvent e)
