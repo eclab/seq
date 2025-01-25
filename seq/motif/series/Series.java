@@ -19,6 +19,35 @@ public class Series extends Motif
     public static final int QUANTIZATION_QUARTER = 2;
     public static final int QUANTIZATION_FOUR_QUARTERS = 3;
 
+
+	public static final int NONE = 0;
+	public static final int CC7 = 1;
+	public static final int CC14 = 2;
+	public static final int NRPN = 3;
+	public static final int NRPN_COARSE = 4;
+	public static final int RPN = 5;
+	public static final int BEND = 6;
+	public static final int AFTERTOUCH = 7;
+	
+	int[] midiTypes = new int[NUM_PARAMETERS];
+	int[] midiParameters = new int[NUM_PARAMETERS];
+    int midiParameterOut = 0;
+	
+	public void setMIDIType(int index, int type) 
+		{ 
+		midiTypes[index] = type; 
+		if (type == NONE || type == BEND || type == AFTERTOUCH) setMIDIParameter(index, 0);
+		if (type == CC14 && getMIDIParameter(index) > 31) setMIDIParameter(index, 0);
+		if (type == CC7 && getMIDIParameter(index) > 127) setMIDIParameter(index, 0);
+		}
+	public int getMIDIType(int index) { return midiTypes[index]; }
+
+	public void setMIDIParameter(int index, int param) { midiParameters[index] = param; }
+	public int getMIDIParameter(int index) { return midiParameters[index]; }
+	
+	public void setMIDIParameterOut(int val) { midiParameterOut = val; }
+	public int getMIDIParameterOut() { return midiParameterOut; }
+
     public static class Data
         {
         public static final int DISABLED = -1;
@@ -466,9 +495,30 @@ public class Series extends Motif
         data.repeatProbability = repeatProbability;
         } 
         
+	public Motif copy()
+		{
+		Series other = (Series)(super.copy());
+		for(int i = 0; i < NUM_PARAMETERS; i++)
+			{
+			other.setMIDIParameter(i, getMIDIParameter(i));
+			other.setMIDIType(i, getMIDIType(i));
+			}
+		other.midiParameterOut = midiParameterOut;
+		return other;
+		}
+
     public void save(JSONObject to) throws JSONException 
         {
         to.put("mode", mode); 
+        JSONArray typeArray = new JSONArray();
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+        	{
+        	JSONObject obj = new JSONObject();
+        	typeArray.put(getMIDIType(i));
+        	typeArray.put(getMIDIParameter(i));
+        	}
+        to.put("midi", typeArray);
+        to.put("out", getMIDIParameterOut());
 /*
   JSONObject l = new JSONObject();
   lfo.save(l);
@@ -479,6 +529,23 @@ public class Series extends Motif
     public void load(JSONObject from) throws JSONException
         {
         mode = from.optInt("mode", MODE_SERIES);
+
+        JSONArray typeArray = from.optJSONArray("midi");
+        if (typeArray != null)
+        	{
+			for(int i = 0; i < NUM_PARAMETERS; i++)
+				{
+				setMIDIType(i, typeArray.optInt(i * 2, NONE));
+				setMIDIParameter(i, typeArray.optInt(i * 2 + 1, 0));
+				}
+			}
+		else
+			{
+			System.err.println("Modulation.save(): Internal error: no LFO array");
+			}
+		setMIDIParameterOut(from.optInt("out", 0));
+
+
         /*
           JSONObject l = from.getJSONObject("lfo");
           lfo.load(l);

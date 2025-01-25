@@ -59,6 +59,7 @@ public class Seq
     public boolean isValidTrack(int track) { return validTracks[track]; }
     public void setValidTrack(int track, boolean val) { validTracks[track] = val; }
     
+    Out[] uniqueOuts = new Out[0];
     
     ReentrantLock lock = new ReentrantLock(true);
 /*
@@ -304,7 +305,7 @@ public class Seq
             }
         timertask = null;               // let it (and the Seq instance!) GC
         }
-        
+    
     // Creates the timer task using the existing tick value and bpm, and with the given warmup time
     void startTimerTask(int warmup)
         {
@@ -673,6 +674,14 @@ public class Seq
             resetPlayingClips();
             playing = false;
             recording = false;
+			if (clock == CLOCK_OUT)
+				{
+				for(int i = 0; i < uniqueOuts.length; i++)
+					{
+					uniqueOuts[i].clockStop();
+					}
+				}
+
             }
         finally
             {
@@ -695,6 +704,16 @@ public class Seq
         lock.lock();
         try
             {
+            uniqueOuts = gatherUniqueOuts();
+			if (clock == CLOCK_OUT)
+				{
+				for(int i = 0; i < uniqueOuts.length; i++)
+					{
+					if (isPaused()) uniqueOuts[i].clockContinue(); 
+					else uniqueOuts[i].clockStart();
+					}
+				}
+
             // This should be first so we can send MIDI during reset()
             playing = true;
 
@@ -738,6 +757,14 @@ public class Seq
         lock.lock();
         try
             {
+			if (clock == CLOCK_OUT)
+				{
+				for(int i = 0; i < outs.length; i++)
+					{
+					outs[i].clockStop();
+					}
+				}
+
             if (stopped)                 // not sure this is necessary
                 { 
                 // stop cleared the root and reset it so we're fine
@@ -904,6 +931,17 @@ public class Seq
     
     boolean releasing = false;
     
+    
+    Out[] gatherUniqueOuts()
+    	{
+    	HashMap<Midi.MidiDeviceWrapper, Out> unique = new HashMap<>();
+    	for(int i = 0; i < outs.length; i++)
+    		{
+    		unique.put(outs[i].getWrapper(),outs[i]);
+    		}
+    	return (Out[])(unique.values().toArray(new Out[0]));
+    	}
+    
     // Called by the timer to advance the sequencer one step.  
     // Returns TRUE if advance() believes that it is now finished after processing 
     // this step, that is, its NEXT step would exceed its length
@@ -933,9 +971,9 @@ public class Seq
                     {
                     if (clock == CLOCK_OUT && time % (PPQ / 24) == 0)
                         {
-                        for(int i = 0; i < outs.length; i++)
+                        for(int i = 0; i < uniqueOuts.length; i++)
                             {
-                            outs[i].clockPulse();
+                            uniqueOuts[i].clockPulse();
                             }
                         }
                                                 
@@ -1175,7 +1213,7 @@ public class Seq
     /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
         up for only channel aftertouch, this will be converted to channel aftertouch. 
         Returns true if the message was successfully sent.  
-        You can pass in CHANNEL_AFTERTOUCH for the note, and this will force the message to be sent
+        You can pass in Out.CHANNEL_AFTERTOUCH for the note, and this will force the message to be sent
         as a channel aftertouch message regardless. */
     public boolean aftertouch(int out, int note, int val) 
         {

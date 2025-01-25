@@ -9,6 +9,7 @@ import seq.engine.*;
 import java.util.*;
 import javax.sound.midi.*;
 import java.util.concurrent.*;
+import seq.util.*;
 
 public class NotesClip extends Clip
     {
@@ -350,7 +351,7 @@ public class NotesClip extends Clip
             }
         }
         
-    public boolean finishedPlaying() { return getPosition() >= ((Notes) getMotif()).getMaxNoteOffPosition(); }
+    public boolean finishedPlaying() { return getPosition() >= ((Notes) getMotif()).getEndTime(); }
 
     // TESTING
     public static void main(String[] args) throws Exception
@@ -364,13 +365,15 @@ public class NotesClip extends Clip
         seq.setCountInMode(Seq.COUNT_IN_RECORDING_ONLY);            // count in on recording only
         
         // Set up our module structure
-        Notes dSeq = new Notes(seq);
+        	boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
+        Notes dSeq = new Notes(seq, autoArm);
 //        seq.setIn(0, new In(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
         seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
     
         // Build Clip Tree
         seq.setData(dSeq);
 
+		// Wait for a little bit so the user can prepare to enter some notes.
         try
             {
             Thread.currentThread().sleep(1000);

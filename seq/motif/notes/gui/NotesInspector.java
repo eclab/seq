@@ -23,6 +23,10 @@ public class NotesInspector extends WidgetList
     StringField name;
     JComboBox in;
     JComboBox out;
+    TimeDisplay end;
+    JButton setEnd;
+    JPanel endPanel;
+    int endTime;
     JCheckBox armed;
     JCheckBox echo;
     JCheckBox recordBend;
@@ -147,6 +151,33 @@ public class NotesInspector extends WidgetList
                     }
                 });
 
+			endTime = notes.getEnd();
+			end = new TimeDisplay(endTime, seq, false)
+				{
+				public void updateTime(int time)
+					{
+					// this is already inside the lock but whatever
+					endTime = time;
+					}
+				};
+									
+			setEnd = new JButton("Set");
+			setEnd.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent evt)
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try
+						{
+						notes.setEnd(endTime);
+						}
+					finally
+						{
+						lock.unlock();
+						}
+					}
+				});
 
             armed = new JCheckBox();
             armed.setSelected(notes.isArmed());
@@ -297,17 +328,33 @@ public class NotesInspector extends WidgetList
                 box.add(new JLabel(" "));
                 parameterPanel[i].add(box, BorderLayout.WEST);
                 parameterPanel[i].add(combined[i], BorderLayout.CENTER);
+
+                JPanel vert = new JPanel();
+                vert.setLayout(new BorderLayout());
+                JLabel temp = new JLabel(" ");
+                temp.setFont(SmallDial.FONT);
+                vert.add(temp, BorderLayout.NORTH);
+                vert.add(setEnd, BorderLayout.CENTER);
+                temp = new JLabel(" ");
+                temp.setFont(SmallDial.FONT);
+                vert.add(temp, BorderLayout.SOUTH);
+                                        
+                endPanel = new JPanel();
+                endPanel.setLayout(new BorderLayout());
+                endPanel.add(end, BorderLayout.WEST);
+                endPanel.add(vert, BorderLayout.EAST);
                 }
             
             }
         finally { lock.unlock(); }
 
-        build(new String[] { "Name", "Out", "In", "Echo", "Armed", "Record Bend", "Record CC", "Record Aftertouch" }, 
+        build(new String[] { "Name", "Out", "In", "End", "Echo", "Armed", "Record Bend", "Record CC", "Record Aftertouch" }, 
             new JComponent[] 
                 {
                 name,
                 out,
                 in,
+                endPanel,
                 echo,
                 armed, 
                 recordBend,
@@ -393,6 +440,7 @@ public class NotesInspector extends WidgetList
         finally { lock.unlock(); }                              
         seq = old;
         name.update();
+        if (end != null) end.revise();
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
             {
             if (parameterMSB[i] != null) parameterMSB[i].redraw();

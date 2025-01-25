@@ -155,7 +155,7 @@ public abstract class Motif implements Cloneable
             to.put("rmin", randomMin);
             to.put("rmax", randomMax);
             JSONArray param = new JSONArray();
-            for(int i = 0; i < NUM_PARAMETERS; i++)
+            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 param.put(parent.getParameterName(i));
                 }
@@ -181,7 +181,7 @@ public abstract class Motif implements Cloneable
             randomMin = from.optDouble("rmin", 0.0);
             randomMax = from.optDouble("rmax", 1.0);
             JSONArray param = from.getJSONArray("param");
-            for(int i = 0; i < NUM_PARAMETERS; i++)
+            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 // We can't call param.getString() directly because the underlying
                 // object could be null.  So we do this:
@@ -960,6 +960,7 @@ public abstract class Motif implements Cloneable
     static Motif load(Seq seq, HashMap<Integer, Motif> loadedMotifs, JSONArray motifs, int id) throws JSONException
         {
         JSONObject obj = motifs.getJSONObject(id);
+        //System.err.println("" + id + " " + obj);
         Motif motif = null;
         try
             {
@@ -967,7 +968,7 @@ public abstract class Motif implements Cloneable
             }
         catch (Exception ex)            // probably missing
             {
-            System.err.println("Motif.load(): Error loading object id " + obj.getInt("id") + " of broken class " + obj.getString("type") + ":\n" + ex);
+            System.err.println("Motif.load(): Error loading object id " + /*obj.getInt("id")*/ id  + " of broken class " + obj.getString("type") + ":\n" + ex);
             motif = new seq.motif.blank.Blank(seq);
             ((seq.motif.blank.Blank)motif).setWasToClass(obj.getString("type"));
             }

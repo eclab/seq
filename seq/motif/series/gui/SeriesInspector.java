@@ -23,6 +23,7 @@ public class SeriesInspector extends WidgetList
     JComboBox mode;
 
     public static final String[] MODE_STRINGS = { "Series", "Shuffle", "Random", "Random Markov", "Round Robin", "Variation", "Rand Variation" };         // , "Round Robin Shared" };
+	public static final String[] TYPE_STRINGS = { "None", "CC", "14-Bit CC", "NRPN", "NRPN Coarse", "RPN", "Bend", "Aftertouch" };
 
     public SeriesInspector(Seq seq, Series series, SeriesUI seriesui)
         {
@@ -82,7 +83,322 @@ public class SeriesInspector extends WidgetList
         remove(result);
         add(result, BorderLayout.CENTER);               // re-add it as center
 
+
+		final JComboBox[] types = new JComboBox[Series.NUM_PARAMETERS];
+		final Box[] paramsBox = new Box[Series.NUM_PARAMETERS];
+		final SmallDial[] params = new SmallDial[Series.NUM_PARAMETERS];
+		final SmallDial[] paramsMSB = new SmallDial[Series.NUM_PARAMETERS];
+		final SmallDial[] paramsLSB = new SmallDial[Series.NUM_PARAMETERS];
+		final JComponent[] paramsL = new JComponent[Series.NUM_PARAMETERS];
+		final JComponent[] paramsMSBL = new JComponent[Series.NUM_PARAMETERS];
+		final JComponent[] paramsLSBL = new JComponent[Series.NUM_PARAMETERS];
+
+        lock.lock();
+        try
+            {
+		for(int i = 0; i < Series.NUM_PARAMETERS; i++)
+			{
+			final int _i = i;
+
+			params[_i] = new SmallDial(series.getMIDIParameter(i))
+                    {
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        int param = series.getMIDIParameter(_i);
+                        try 
+                        	{
+							switch(series.getMIDIType(_i))
+								{
+								case Series.CC7:
+									{
+									return param / 127.0;
+									}
+								case Series.CC14:
+									{
+									return param / 31.0;
+									}
+								default:
+									{
+									return 0;			// should not happen
+									}
+							   }
+                        	}
+                        finally { lock.unlock(); }
+                        }
+                        
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try 
+                        	{ 
+							switch(series.getMIDIType(_i))
+								{
+								case Series.CC7:
+									{
+									series.setMIDIParameter(_i, (int)(val * 127.0));
+									break;
+									}
+								case Series.CC14:
+									{
+									series.setMIDIParameter(_i, (int)(val * 31.0));
+									break;
+									}
+								default:
+									{
+									break;
+									}
+							   }
+                        	}
+                        finally { lock.unlock(); }
+                        }
+                        
+                    protected String map(double val)
+                    	{
+                    	switch(series.getMIDIType(_i))
+                    		{
+							case Series.CC7:
+								{
+								return "" + (int)series.getMIDIParameter(_i);
+								}
+							case Series.CC14:
+								{
+								return "" + (int)series.getMIDIParameter(_i);
+								}
+							default:
+								{
+								return "Foo";			// should not happen
+								}
+		                   }
+		                }
+					};		//.getLabelledDial("127");
+				paramsL[_i] = params[_i].getLabelledDial("127");
+			
+				paramsMSB[_i] = new SmallDial(series.getMIDIParameter(i))
+                    {
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        int param = series.getMIDIParameter(_i);
+                        try 
+                        	{
+							switch(series.getMIDIType(_i))
+								{
+								case Series.NRPN:
+								case Series.NRPN_COARSE:
+								case Series.RPN:
+									{
+									return (param / 128) / 127.0;
+									}
+								default:
+									{
+									return 0;			// should not happen
+									}
+							   }
+                        	}
+                        finally { lock.unlock(); }
+                        }
+                        
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try 
+                        	{ 
+							switch(series.getMIDIType(_i))
+								{
+								case Series.NRPN:
+								case Series.NRPN_COARSE:
+								case Series.RPN:
+									{
+									int lsb = series.getMIDIParameter(_i) % 128;
+									series.setMIDIParameter(_i, ((int)(val * 127.0)) * 128 + lsb);
+									((SmallDial)paramsLSB[_i]).redraw();
+									break;
+									}
+								default:
+									{
+									break;
+									}
+							   }
+                        	}
+                        finally { lock.unlock(); }
+                        }
+                        
+                    protected String map(double val)
+                    	{
+                    	return "";
+                    	}
+					};	//.getLabelledDial("Yo");
+				paramsMSBL[_i] = paramsMSB[_i].getLabelledDial("");
+
+
+				paramsLSB[_i] = new SmallDial(series.getMIDIParameter(i))
+                    {
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        int param = series.getMIDIParameter(_i);
+                        try 
+                        	{
+							switch(series.getMIDIType(_i))
+								{
+								case Series.NRPN:
+								case Series.NRPN_COARSE:
+								case Series.RPN:
+									{
+									return (param % 128) / 127.0;
+									}
+								default:
+									{
+									return 0;			// should not happen
+									}
+							   }
+                        	}
+                        finally { lock.unlock(); }
+                        }
+                        
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try 
+                        	{ 
+							switch(series.getMIDIType(_i))
+								{
+								case Series.NRPN:
+								case Series.NRPN_COARSE:
+								case Series.RPN:
+									{
+									int msb = series.getMIDIParameter(_i) / 128;
+									series.setMIDIParameter(_i, ((int)(val * 127.0)) + msb * 128);
+									break;
+									}
+								default:
+									{
+									break;
+									}
+							   }
+                        	}
+                        finally { lock.unlock(); }
+                        }
+                        
+                    protected String map(double val)
+                    	{
+                    	switch(series.getMIDIType(_i))
+                    		{
+							case Series.NRPN:
+							case Series.NRPN_COARSE:
+							case Series.RPN:
+								{
+								return "" + series.getMIDIParameter(_i);
+								}
+							default:
+								{
+								return "Bar";
+								}
+		                   }
+		                }
+					};		//.getLabelledDial("00000");
+				paramsLSBL[_i] = paramsLSB[_i].getLabelledDial("00000");
+			
+			types[i] = new JComboBox(TYPE_STRINGS);
+			types[i].setSelectedIndex(series.getMIDIParameter(i));
+            types[i].addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    int type =  types[_i].getSelectedIndex();
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                    	{ 
+                    	series.setMIDIType(_i, type); 
+                    	}
+                    finally { lock.unlock(); }       
+                                           
+					paramsBox[_i].remove(paramsMSBL[_i]);
+					paramsBox[_i].remove(paramsLSBL[_i]);
+					paramsBox[_i].remove(paramsL[_i]);
+					if (type == Series.CC7 || type == Series.CC14) { paramsBox[_i].add(paramsL[_i]); params[_i].redraw(); }
+					else if (type == Series.NRPN || type == Series.NRPN_COARSE || type == Series.RPN) 
+						{ 
+						paramsBox[_i].add(paramsMSBL[_i]);
+						paramsMSB[_i].redraw(); 
+						paramsBox[_i].add(paramsLSBL[_i]);  
+						paramsLSB[_i].redraw(); 
+						}
+					paramsBox[_i].revalidate();
+					seriesui.revalidate();                            
+                    }
+                });
+                
+            paramsBox[_i] = new Box(BoxLayout.X_AXIS);
+            int type =  types[_i].getSelectedIndex();
+			if (type == Series.CC7 || type == Series.CC14) { paramsBox[_i].add(paramsL[_i]); params[_i].redraw(); }
+			else if (type == Series.NRPN || type == Series.NRPN_COARSE || type == Series.RPN) 
+						{ 
+						paramsBox[_i].add(paramsMSBL[_i]);
+						paramsMSB[_i].redraw(); 
+						paramsBox[_i].add(paramsLSBL[_i]);  
+						paramsLSB[_i].redraw(); 
+						}
+					}
+            }
+        finally { lock.unlock(); }
+
+		Out[] seqOuts = seq.getOuts();
+		String[] outs = new String[seqOuts.length];
+		for(int i = 0; i < seqOuts.length; i++)
+			{
+			// We have to make these strings unique, or else the combo box doesn't give the right selected index, Java bug
+			outs[i] = "" + (i) + ": " + seqOuts[i].toString();
+			}
+			
+		JComboBox out = new JComboBox(outs);
+		out.setMaximumRowCount(outs.length);
+		out.setSelectedIndex(series.getMIDIParameterOut());
+		out.addActionListener(new ActionListener()
+			{
+			public void actionPerformed(ActionEvent e)
+				{
+				if (seq == null) return;
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try { series.setMIDIParameterOut(out.getSelectedIndex()); }
+				finally { lock.unlock(); }
+				}
+			});            
+
+		JComponent[] components = new JComponent[Series.NUM_PARAMETERS + 1];
+		String[] labels = new String[Series.NUM_PARAMETERS + 1];
+		labels[0] = "Out";
+		components[0] = out;
+		for(int i = 1; i < labels.length; i++) 
+			{
+			labels[i] = String.valueOf(i - 1);
+			JPanel comp2 = new JPanel();
+			comp2.setLayout(new BorderLayout());
+			JPanel comp = new JPanel();
+			comp.setLayout(new BorderLayout());
+			comp.add(types[i-1], BorderLayout.WEST);
+			comp.add(paramsBox[i-1], BorderLayout.CENTER);
+			comp2.add(comp, BorderLayout.WEST);
+			comp2.add(new JPanel(), BorderLayout.CENTER);
+			components[i] = comp2;
+			}
+		WidgetList cc = new WidgetList(labels, components);
+        add(new DisclosurePanel("MIDI Parameters", cc), BorderLayout.SOUTH);
         add(new DefaultParameterList(seq, seriesui), BorderLayout.NORTH);
+		seriesui.revalidate();                            
         }
                 
     public void revise()

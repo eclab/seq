@@ -100,6 +100,8 @@ public class TimeDisplay extends JPanel
 
     public void revise()
         {
+        if (stepsDial == null) return;		// we're not quite ready yet
+        
         stepsDial.setValue(steps / (double)maxSteps, false);
         beatsDial.setValue(beats / (double)Math.min(maxBeats, beatsPerBar - 1), false);
         barsDial.setValue(bars / (double)maxBars, false);
@@ -167,7 +169,10 @@ public class TimeDisplay extends JPanel
     public TimeDisplay(int steps, int maxSteps, 
         int beats, int maxBeats, 
         int bars, int maxBars, 
-        int parts, int maxParts, Seq seq) { this(steps, maxSteps, beats, maxBeats, bars, maxBars, parts, maxParts, seq, true); }
+        int parts, int maxParts, Seq seq) 
+        { 
+        this(steps, maxSteps, beats, maxBeats, bars, maxBars, parts, maxParts, seq, true); 
+        }
 
     public TimeDisplay(int time, int maxSteps, int maxBeats, int maxBars, int maxParts, Seq seq, boolean showPresets)
         {
@@ -366,6 +371,8 @@ public class TimeDisplay extends JPanel
             pan.add(vert, BorderLayout.EAST);
             }
         add(pan, BorderLayout.EAST);
+        
+        revise();		// we're NOW ready to revise
         }
         
     void updateTotalSteps()

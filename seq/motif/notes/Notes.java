@@ -21,6 +21,8 @@ public class Notes extends Motif
 
     public static final String MIDI_FILE_EXTENSION = ".mid";
 
+	int end = 0;
+
     public abstract static class Event
         {
         public static final int MAX_LENGTH = Seq.PPQ * 256;
@@ -289,13 +291,16 @@ public class Notes extends Motif
         return other;
         }
         
-    public Notes(Seq seq)
+    public Notes(Seq seq) { this(seq, false); }		// this version is called by the file loader
+    
+    public Notes(Seq seq, boolean arm)				// this version is called when we make a Notes window
         {
         super(seq);
 
         // Load devices. Note I'm not using setOut(...) etc. which would write the device to prefs
         out = (Prefs.getLastOutDevice(0, "seq.motif.notes.Notes"));
         in = (Prefs.getLastInDevice(0, "seq.motif.notes.Notes"));
+        setArmed(arm);
         recordBend = Prefs.getLastBoolean("seq.motif.notes.Notes.recordbend", true); 
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
@@ -319,7 +324,10 @@ public class Notes extends Motif
         {
         return recording;
         }
-
+        
+    public void setEnd(int end) { this.end = end; }
+    public int getEnd() { return end; }
+    
     public void setArmed(boolean val) 
         {
         boolean wasArmed = isArmed();
@@ -357,6 +365,18 @@ public class Notes extends Motif
     public int getMaxNoteOnPosition() { return maxNoteOnPosition; }
     public int getMaxNoteOffPosition() { return maxNoteOffPosition; }
         
+    /// FIXME: did I break this?
+    
+    //// FIXME: This feels wrong.  maxNoteOffPosition is the time we do a release.
+    //// If it is exactly at a certain beat, then wouldn't we actually be doing the first
+    //// tick of the next motif AFTER that beat?  Same thing for end...
+    public int getEndTime()
+    	{
+    	int endTime = (maxNoteOffPosition > end ? maxNoteOffPosition : (end >= 0 ? end : 0)) - 1;			// FIXME: So I'm subtracting 1....
+    	if (endTime < 0) endTime = 0;
+    	return endTime;
+    	}
+    	
     public void sortEvents(ArrayList<Event> events)
         {
         Collections.sort(events, new Comparator<Event>()

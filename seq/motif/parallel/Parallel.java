@@ -75,6 +75,9 @@ public class Parallel extends Motif
             transpose = other.transpose;
             gain = other.gain;
             out = other.out;
+            probability = other.probability;
+            endingQuantization = other.endingQuantization;
+            override = other.override;
             }
         }
         

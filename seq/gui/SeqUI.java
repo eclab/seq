@@ -403,10 +403,12 @@ public class SeqUI extends JPanel
             }
         else
             {       
+            int result = showSimpleChoice("Log MIDI ...", "Some DAWs (like Ableton) cannot properly load\na MIDI file with more than one channel.\n\nBreak out individual channels to separate MIDI files?",
+                 new String[] { "Keep One File", "Break Out", "Cancel" });
+        	if (result < 0 || result == 2) return;
+        	
             if (seq != null) seq.stop();
-
-            boolean multi = showSimpleConfirm("Log MIDI ...", "Some DAWs (like Ableton) cannot properly load\na MIDI file with more than one channel.\n\nBreak out individual channels to separate MIDI files?",
-                "Break Out", "Keep One File");
+        	boolean multi = (result == 1);			// multi means we broke out to multiple files
 
             FileDialog fd = new FileDialog(getFrame(), "Log MIDI ...", FileDialog.SAVE);
                                 
@@ -1228,11 +1230,7 @@ public class SeqUI extends JPanel
     /** Display a simple (OK-OPTION / Cancel) confirmation message.  Return the result (okoption = true, cancel = false). */
     public boolean showSimpleConfirm(String title, String message, String okOption)
         {
-        disableMenuBar();
-        int ret = JOptionPane.showOptionDialog(SeqUI.this, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-            new String[] { okOption, "Cancel" } , okOption);
-        enableMenuBar();
-        return (ret == 0);
+        return showSimpleConfirm(title, message, okOption, "Cancel"); 
         }
 
     public boolean showSimpleConfirm(String title, String message, String okOption, String cancelOption)
@@ -1244,6 +1242,19 @@ public class SeqUI extends JPanel
         return (ret == 0);
         }
         
+    /** Displays all the given options.  The FIRST option will be the default option.  Returns the option
+    	selected by the user, or -1 if the user closed the window (this should be
+    	treated as a cancel) */
+    public int showSimpleChoice(String title, String message, String[] options)
+        {
+        disableMenuBar();
+        int ret = JOptionPane.showOptionDialog(SeqUI.this, message, title, JOptionPane.DEFAULT_OPTION, 
+        	JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        enableMenuBar();
+        if (ret == JOptionPane.CLOSED_OPTION) return -1;
+        return ret;
+        }
+
     boolean inSimpleError;
 
     /** Display a simple error message. */
@@ -1338,7 +1349,8 @@ public class SeqUI extends JPanel
 			}
 		else if (initialMotif == NOTES_INITIAL)
 			{
-			dSeq = new seq.motif.notes.Notes(seq);
+        	boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
+			dSeq = new seq.motif.notes.Notes(seq, autoArm);
 			ssui = new seq.motif.notes.gui.NotesUI(seq, ui, (seq.motif.notes.Notes)dSeq);
 			}
 		else if (initialMotif == SERIES_INITIAL)

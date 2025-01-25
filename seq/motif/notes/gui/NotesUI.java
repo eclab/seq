@@ -38,6 +38,7 @@ public class NotesUI extends MotifUI
     TitledBorder notesBorder;
     NotesInspector notesInspector;
     JMenu menu;
+    JCheckBoxMenuItem autoArmItem;
         
     EventTable table;
                 
@@ -46,7 +47,8 @@ public class NotesUI extends MotifUI
     public static String getType() { return "Notes"; }
     public static MotifUI create(Seq seq, SeqUI ui)
         {
-        return new NotesUI(seq, ui, new Notes(seq));
+        boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
+        return new NotesUI(seq, ui, new Notes(seq, autoArm));
         }
 
     public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
@@ -198,9 +200,30 @@ public class NotesUI extends MotifUI
                 }
             });
         menu.add(insert);
+
+        menu.addSeparator();
+
+        autoArmItem = new JCheckBoxMenuItem("Arm New Notes Motifs");
+        autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
+        menu.add(autoArmItem);
+        autoArmItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                Prefs.setLastBoolean("ArmNewNotesMotifs", autoArmItem.isSelected());
+                }
+            });
+        
+
         }
-        
-        
+    
+    public void uiWasSet()
+    	{
+    	super.uiWasSet();
+    	// revise arm menu
+        autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
+    	}
+    	
     public JMenu getMenu()
         {
         return menu;

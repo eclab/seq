@@ -538,7 +538,7 @@ public abstract class Clip
     /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
         up for only channel aftertouch, this will be converted to channel aftertouch. 
         Returns true if the message was successfully sent.  
-        You can pass in CHANNEL_AFTERTOUCH for the note, and this will force the message to be sent
+        You can pass in Out.CHANNEL_AFTERTOUCH for the note, and this will force the message to be sent
         as a channel aftertouch message regardless. */
     public boolean aftertouch(int out, int note, int val) 
         {

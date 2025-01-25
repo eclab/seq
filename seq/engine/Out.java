@@ -48,13 +48,19 @@ public class Out
     public void setName(String val) { seq.tuple.outName[index] = val; }
     public String getName() { return seq.tuple.outName[index]; }
     
+    public Midi.MidiDeviceWrapper getWrapper() 
+    	{ 
+    	Midi.Tuple tuple = seq.tuple;
+		return tuple.outWrap[index]; 
+		}
+    
     public String toString()
         {
         //MidiEmitter emitter = seq.emitter;
         //if (emitter != null) return emitter.toString();
         Midi.Tuple tuple = seq.tuple;
         if (tuple == null) return "Tuple not set up?";
-        Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+        Midi.MidiDeviceWrapper wrapper = getWrapper();
         if (wrapper == null) return "None";
         if (getName() != null && getName().trim().length() > 0)
             {
@@ -110,7 +116,7 @@ public class Out
         if (receiver == null)
             {
             if (tuple == null) return false;
-            Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+            Midi.MidiDeviceWrapper wrapper = getWrapper();
             if (wrapper == null) return false;
             receiver = wrapper.getReceiver();
             }
@@ -146,7 +152,7 @@ public class Out
   if (receiver == null)
   {
   if (tuple == null) return false;
-  Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+  Midi.MidiDeviceWrapper wrapper = getWrapper();
   if (wrapper == null) return false;
   receiver = wrapper.getReceiver();
   }
@@ -174,7 +180,7 @@ public class Out
   if (receiver == null)
   {
   if (tuple == null) return false;
-  Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+  Midi.MidiDeviceWrapper wrapper = getWrapper();
   if (wrapper == null) return false;
   receiver = wrapper.getReceiver();
   }
@@ -199,7 +205,7 @@ public class Out
   if (receiver == null)
   {
   if (tuple == null) return false;
-  Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+  Midi.MidiDeviceWrapper wrapper = getWrapper();
   if (wrapper == null) return false;
   receiver = wrapper.getReceiver();
   }
@@ -238,7 +244,7 @@ public class Out
           if (receiver == null)
           {
           if (tuple == null) return false;
-          Midi.MidiDeviceWrapper wrapper = tuple.outWrap[index];
+          Midi.MidiDeviceWrapper wrapper = getWrapper();
           if (wrapper == null) return false;
           receiver = wrapper.getReceiver();
           }
