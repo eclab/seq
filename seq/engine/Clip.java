@@ -128,13 +128,14 @@ public abstract class Clip
         {
         position = 0;
         resetTriggers();
-        if (this == seq.root) loadRootRandomParameters();       // this is done only at reset
+        if (this == seq.root) loadRootRandomParameters();       // this is done only at reset and loop
         }
 
     /** Resets the clip position to 0 but doesn't reset.  */
     public void loop() 
         {
         position = 0;
+        if (this == seq.root) loadRootRandomParameters();       // this is done only at reset and loop
         }
         
     /** Gets the current position */

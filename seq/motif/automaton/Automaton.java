@@ -559,7 +559,7 @@ public class Automaton extends Motif
         public static final int QUANTIZATION_FOUR_QUARTERS = 3;
         public static final int[] QUANTIZATIONS = { 1,  Seq.PPQ / 4, Seq.PPQ, Seq.PPQ * 4 };
     
-    public static final int MAX_REPEATS = 64;
+    	public static final int MAX_REPEATS = 64;
         public static final int MAX_TRANSPOSE = 24;
         public static final double MAX_GAIN = 4.0;
         public static final double MAX_RATE = 16.0;

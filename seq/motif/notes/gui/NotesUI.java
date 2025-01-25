@@ -859,7 +859,6 @@ public class NotesUI extends MotifUI
 
     public void loadEvents()
         {
-        System.err.println("Events " + notes.getEvents());
         ArrayList<Notes.Event> events = new ArrayList<Notes.Event>(notes.getEvents());          // copy?
         table.setEvents(events);
         }

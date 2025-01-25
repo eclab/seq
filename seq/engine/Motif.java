@@ -157,9 +157,15 @@ public abstract class Motif implements Cloneable
             JSONArray param = new JSONArray();
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
-                param.put(parent.getParameterName(i));
+                param.put(parameters[i]);
                 }
             to.put("param", param);
+            JSONArray pname = new JSONArray();
+            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+                {
+                pname.put(parent.getParameterName(i));
+                }
+            to.put("pname", pname);
             JSONObject d = new JSONObject();
             parent.saveData(data, motif, d);
             to.put("data", d);
@@ -183,15 +189,20 @@ public abstract class Motif implements Cloneable
             JSONArray param = from.getJSONArray("param");
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
+                parameters[i] = param.optDouble(i, 0);
+                }
+            JSONArray pname = from.getJSONArray("pname");
+            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+                {
                 // We can't call param.getString() directly because the underlying
                 // object could be null.  So we do this:
-                if (param.isNull(i))
+                if (pname.isNull(i))
                     {
                     parent.setParameterName(i, null);
                     }
                 else
                     {
-                    parent.setParameterName(i, param.getString(i));
+                    parent.setParameterName(i, pname.getString(i));
                     }
                 }
             data = parent.loadData(motif, from.getJSONObject("data"));

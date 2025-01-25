@@ -23,7 +23,7 @@ public class SeriesClip extends Clip
     int counter = 0;                                                    // How many times have we iterated (for round robin)?  Used to compute the playingIndex in that case.
     boolean roundRobinFinished = false;                 // Has the round robin child finished yet?
 
-	int midiValues[] = new int[Series.NUM_PARAMETERS];				// The c
+	int midiValues[] = new int[Series.NUM_PARAMETERS];
 	
 	public void setMIDIValue(int param, int val)
 		{
@@ -46,7 +46,7 @@ public class SeriesClip extends Clip
 					}
 				case Series.CC7:
 					{
-					int val = (int)(getParameterValue(i) / 128.0);
+					int val = (int)(getParameterValue(i) * 128);
 					if (val > 127) val = 127;
 					if (midiValues[i] != val)
 						{
@@ -57,7 +57,7 @@ public class SeriesClip extends Clip
 					}
 				case Series.CC14:
 					{
-					int val = (int)(getParameterValue(i) / 16384);
+					int val = (int)(getParameterValue(i) * 16384);
 					if (val > 16383) val = 16383;
 					if (midiValues[i] != val)
 						{
@@ -69,7 +69,7 @@ public class SeriesClip extends Clip
 					}
 				case Series.NRPN:
 					{
-					int val = (int)(getParameterValue(i) / 16384);
+					int val = (int)(getParameterValue(i) * 16384);
 					if (val > 16383) val = 16383;
 					if (midiValues[i] != val)
 						{
@@ -80,7 +80,7 @@ public class SeriesClip extends Clip
 					}
 				case Series.NRPN_COARSE:
 					{
-					int val = (int)(getParameterValue(i) / 128.0);
+					int val = (int)(getParameterValue(i) * 128);
 					if (val > 127) val = 127;
 					if (midiValues[i] != val)
 						{
@@ -91,7 +91,7 @@ public class SeriesClip extends Clip
 					}
 				case Series.RPN:
 					{
-					int val = (int)(getParameterValue(i) / 16384);
+					int val = (int)(getParameterValue(i) * 16384);
 					if (val > 16383) val = 16383;
 					if (midiValues[i] != val)
 						{
@@ -102,7 +102,7 @@ public class SeriesClip extends Clip
 					}
 				case Series.BEND:
 					{
-					int val = (int)(getParameterValue(i) / 16384);
+					int val = (int)(getParameterValue(i) * 16384);
 					if (val > 16383) val = 16383;
 					if (midiValues[i] != val)
 						{
@@ -113,7 +113,7 @@ public class SeriesClip extends Clip
 					}
 				case Series.AFTERTOUCH:
 					{
-					int val = (int)(getParameterValue(i) / 128.0);
+					int val = (int)(getParameterValue(i) * 128.0);
 					if (val > 127) val = 127;
 					if (midiValues[i] != val)
 						{
@@ -578,6 +578,7 @@ public class SeriesClip extends Clip
                 Node playingNode = getNode(playingIndex);
                 playingNode.resetFinishedPlaying();
                 playing.loop();
+        		loadRandomValues(playingNode.clip, playingNode.child);
                 return false;
                 }
             }

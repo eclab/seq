@@ -100,7 +100,9 @@ public class SeriesInspector extends WidgetList
 			{
 			final int _i = i;
 
-			params[_i] = new SmallDial(series.getMIDIParameter(i))
+			double initialVal = series.getMIDIType(_i) == Series.CC7 ? series.getMIDIParameter(i) / 127.0 :
+						series.getMIDIType(_i) == Series.CC14 ? series.getMIDIParameter(i) / 31.0 : 0;
+			params[_i] = new SmallDial(initialVal)
                     {
                     public double getValue() 
                         { 
@@ -177,7 +179,9 @@ public class SeriesInspector extends WidgetList
 					};		//.getLabelledDial("127");
 				paramsL[_i] = params[_i].getLabelledDial("127");
 			
-				paramsMSB[_i] = new SmallDial(series.getMIDIParameter(i))
+			 initialVal = series.getMIDIType(_i) == Series.NRPN || series.getMIDIType(_i) == Series.NRPN_COARSE || series.getMIDIType(_i) == Series.RPN ? 
+								(series.getMIDIParameter(i) / 128 ) / 127.0 : 0;
+				paramsMSB[_i] = new SmallDial(initialVal)
                     {
                     public double getValue() 
                         { 
@@ -238,7 +242,9 @@ public class SeriesInspector extends WidgetList
 				paramsMSBL[_i] = paramsMSB[_i].getLabelledDial("");
 
 
-				paramsLSB[_i] = new SmallDial(series.getMIDIParameter(i))
+			 initialVal = series.getMIDIType(_i) == Series.NRPN || series.getMIDIType(_i) == Series.NRPN_COARSE || series.getMIDIType(_i) == Series.RPN ? 
+								(series.getMIDIParameter(i) % 128 ) / 127.0 : 0;
+				paramsLSB[_i] = new SmallDial(initialVal)
                     {
                     public double getValue() 
                         { 
@@ -310,7 +316,7 @@ public class SeriesInspector extends WidgetList
 				paramsLSBL[_i] = paramsLSB[_i].getLabelledDial("00000");
 			
 			types[i] = new JComboBox(TYPE_STRINGS);
-			types[i].setSelectedIndex(series.getMIDIParameter(i));
+			types[i].setSelectedIndex(series.getMIDIType(i));
             types[i].addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
@@ -342,6 +348,7 @@ public class SeriesInspector extends WidgetList
                 });
                 
             paramsBox[_i] = new Box(BoxLayout.X_AXIS);
+            paramsBox[_i].add(new JLabel(" "));					// spacer
             int type =  types[_i].getSelectedIndex();
 			if (type == Series.CC7 || type == Series.CC14) { paramsBox[_i].add(paramsL[_i]); params[_i].redraw(); }
 			else if (type == Series.NRPN || type == Series.NRPN_COARSE || type == Series.RPN) 

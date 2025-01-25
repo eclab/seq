@@ -116,6 +116,7 @@ public class SelectClip extends Clip
 
     void reset(Node node)
         {
+        loadRandomValues(node.clip, node.getChild(this));
         loadParameterValues(node.clip, node.getChild(this));
         node.clip.reset();
         node.lastPos = -1;
@@ -124,6 +125,7 @@ public class SelectClip extends Clip
 
     void loop(Node node)
         {
+        loadRandomValues(node.clip, node.getChild(this));
         node.clip.loop();
         }
 
@@ -181,7 +183,6 @@ public class SelectClip extends Clip
                 {
             	getChild(i);						// build the child.  FIXME   Is this too costly?
                 Node m = children.get(i);
-                System.err.println(m);
                 if (m == null || m.clip.getMotif() instanceof Blank)
                     {
                     setPad(out, motif.getNoteForIndex(i), UNUSED);

@@ -341,6 +341,7 @@ public class AutomatonClip extends Clip
         void reset(Automaton.MotifNode node, Clip clip)
             {
             resetTriggers();
+            loadRandomValues(clip, node.child);
             loadParameterValues(clip, node.child);
             clip.reset();
             cumulativeRate = 0.0;
@@ -654,6 +655,13 @@ public class AutomatonClip extends Clip
                     // Stay where we are, but reset
                     thread.child.release();
                     thread.child.loop();
+
+					Automaton.Node node = thread.getNode();
+					if (node instanceof Automaton.MotifNode)
+						{
+		            	loadRandomValues(thread.getChild(), ((Automaton.MotifNode)(thread.getNode())).getChild());		// loop
+		            	}
+
                     moveThread();
                     }
                 else if (next == anode || thread.contains(next))                        // we do next == anode because anode may not yet be in visited list
