@@ -12,7 +12,7 @@ Related projects:
 * [Edisyn](https://github.com/eclab/edisyn), a patch editor toolkit with sophisticated exploration tools.
 * [Flow](https://github.com/eclab/flow), a fully-modular, polyphonic, additive software synthesizer.
 * [Gizmo](https://cs.gmu.edu/~sean/projects/gizmo/), an Arduino-based MIDI Swiss Army knife.
-* [Grains Firmware](https://github.com/eclab/grains), a large collection of Arduino programs (synths, modulators, and so on) targeting the AE Modular Grains module.
+* [Arduino Firmware](https://github.com/eclab/grains) (oscillators, modulators, etc.) for the AE Modular Grains module.  Includes an ultralight but full-featured [MIDI library for small microcontrollers](https://github.com/eclab/grains/tree/main/midi).
 * [*Computational Music Synthesis*](https://cs.gmu.edu/~sean/book/synthesis/), an open-content book on building software synthesizers.
 
 ## Donations
