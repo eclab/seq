@@ -179,8 +179,9 @@ public class OutputJack extends InputOutput
         try
             {
             out.setOut(number, in);
-            out.selectOut();
+//            out.selectOut();
             
+/*
             ArrayList<Automaton.Node> nodes = automaton.getNodes();
             for(Automaton.Node node : nodes)
             	{
@@ -188,7 +189,7 @@ public class OutputJack extends InputOutput
             	System.err.println(node);
             	node.selectOut();
             	}
-            
+*/            
             }
         finally
             {

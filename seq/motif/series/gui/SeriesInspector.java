@@ -391,7 +391,7 @@ public class SeriesInspector extends WidgetList
 		components[0] = out;
 		for(int i = 1; i < labels.length; i++) 
 			{
-			labels[i] = String.valueOf(i - 1);
+			labels[i] = "Param " + String.valueOf(i);
 			JPanel comp2 = new JPanel();
 			comp2.setLayout(new BorderLayout());
 			JPanel comp = new JPanel();

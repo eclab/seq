@@ -688,6 +688,8 @@ For example, if you have three children, A, B, and C, and you have set A's Marko
 
 The Series Inspector has an expandable region called {\bf Parameter Names}, and each Child Inspector has an expandable region called {\bf Arguments}. Furthermore, many dials have Special Values called ``Rand'', ``Param 1'', etc.  These are explained in Section~\ref{parameters}.
 
+The Series Inspector also has an expandable region called {\bf MIDI Parameters}.  These are discussed later in Section~\ref{mididata} (\textbf{\textit{Parameterized Control of MIDI Data}}).
+
 \clearpage
 
 \begin{figure}[t]
@@ -996,6 +998,28 @@ This can be a little confusing.  In short, if a feature appears anywhere in {\it
 The Random Parameter is set to a random value between the {\bf Random Min} and {\bf Random Max} inclusive.  You can set these as arguments in the parent (and yes, you can bind them).  
 
 \paragraph{The Point}  Parameterization is very powerful for automation and global control of many features at once, but we're not sure just how many features will benefit from parameterization and how useful it will be.    Time will tell.
+
+\subsection{Parameterized Control of MIDI Data}
+\label{mididata}
+
+The {\bf Series} motif has a trick up it sleeve: the ability to output parameters as MIDI CC, NRPN, RPN, Pitch Bend, or Aftertouch. You can find this by clicking on {\bf MIDI Parameters} in the Series inspector.  This will expand to {\bf Param 1} through {\bf 8}, along with {\bf Out}.  For each Param you can select a Type (such as CC or NRPN), and then a number if appropriate.  
+
+Let's do an example.  First set Param 1's Type to CC.  This reveals a Dial you can set to specify the CC number (from 0--127).  Let's say we set this to 5.  Finally let's set Out to the output device which will receive the CC MIDI messages.
+
+Now, whenever the Series is playing, if its incoming Parameter 1 has changed in value, it will be mapped to a CC value and emitted out CC 5.  Parameters have values from 0.0 to 1.0, whereas CC values range from 0 to 127.  So for example if Parameter 1 changes to 0.5, this will be mapped to 63, and so Seq will emit a CC message number 5 with a value of 63.
+
+The following MIDI output types are available for each Parameter.
+
+\begin{itemize} 
+\item {\bf None}\quad Nothing is emitted.
+\item {\bf CC (Control Change)}\quad You specify the CC number (0--127).  Incoming parameters will be mapped to CC values (also 0--127).
+\item {\bf 14-bit CC}\quad You specify the CC parameter (0--31).  Incoming parameters will be mapped to 14-bit CC values (ranging 0--16383).
+\item {\bf NRPN}\quad You specify the NRPN parameter (0--16383) with two dials: the left one specifies the coarse value or MSB, and the right one specifies the LSB.  The final NRPN number is displayed.  Incoming parameters will be mapped to NRPN values (also 0--16383).
+\item {\bf Coarse NRPN}\quad You specify the NRPN parameter (0--16383) with two dials: the left one specifies the coarse value or MSB, and the right one specifies the LSB.  The final NRPN number is displayed.  Incoming parameters will be mapped to NRPN coarse (or MSB-only) values (0--127).
+\item {\bf RPN}\quad You specify the RPN parameter (0--16383) with two dials: the left one specifies the coarse value or MSB, and the right one specifies the LSB.  The final RPN number is displayed.  Incoming parameters will be mapped to RPN values (also 0--16383).
+\item {\bf Pitch Bend}\quad Incoming parameters will be mapped to Pitch Bend values (\(-8192\)--8191).  Thus if you set the Parameter to 0.5, then this will map to 0.
+\item {\bf Channel Aftertouch}\quad Incoming parameters will be mapped to Channel Aftertouch values (0--127).
+\end{itemize}
 
 \end{document}
 
