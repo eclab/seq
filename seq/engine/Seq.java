@@ -942,6 +942,9 @@ public class Seq
     	return (Out[])(unique.values().toArray(new Out[0]));
     	}
     
+    int ccount = 0;
+    long lastCCTime = 0;
+    
     // Called by the timer to advance the sequencer one step.  
     // Returns TRUE if advance() believes that it is now finished after processing 
     // this step, that is, its NEXT step would exceed its length
@@ -1000,6 +1003,15 @@ public class Seq
                     processNoteOffs(false);
 //                    playingClips.clear();
                     boolean atEnd = (time == NUM_BARS_PER_PART * NUM_PARTS * bar - 1);
+                    if (ccount == 0)
+                    	{
+                    	long cur = System.currentTimeMillis();
+                    	//System.err.println(cur - lastCCTime);
+                    	lastCCTime = cur;
+                    	}
+                    ccount++;
+                    if (ccount >= 24) ccount = 0;
+                    
                     if (releasing || endOfLoop || root.advance()) 
                         {
                         if (atEnd)
@@ -1210,7 +1222,24 @@ public class Seq
         else return false;
         }
         
-    /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
+     /** Sends a bend to the given Out, associated with a given note (for MPE).   Bend goes -8192...8191.
+        Returns true if the message was successfully sent.  */
+    public boolean bend(int out, int note, int val) 
+        {
+        if (isPlaying()) return outs[out].bend(note, val);
+        else return false;
+        }
+        
+    /** Sends a CC to the given Out, associated with a given note (for MPE). 
+        Returns true if the message was successfully sent.  */
+    public boolean cc(int out, int note, int cc, int val) 
+        {
+        if (isPlaying()) return outs[out].cc(note, cc, val);
+        else return false;
+        }
+        
+
+   /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
         up for only channel aftertouch, this will be converted to channel aftertouch. 
         Returns true if the message was successfully sent.  
         You can pass in Out.CHANNEL_AFTERTOUCH for the note, and this will force the message to be sent
@@ -1350,6 +1379,24 @@ public class Seq
                 }
             }
         obj.put("motifs", array);
+
+        
+        // Save MIDI
+        lock.lock();
+        try
+        	{
+        JSONArray outDevs = new JSONArray();
+        JSONArray inDevs = new JSONArray();
+	    Midi.saveTupleToJSON(tuple, outDevs, inDevs);
+	    obj.put("out", outDevs);
+	    obj.put("in", inDevs);
+	    }
+       	finally
+		   {
+		   lock.unlock();  
+		   }
+
+
         return obj;
         }    
     
@@ -1383,6 +1430,27 @@ public class Seq
         seq.motifs = Motif.load(seq, obj.getJSONArray("motifs"), true);
         seq.data = seq.motifs.get(0);
         seq.root = seq.data.buildClip(null);
+        
+        // Update MIDI
+        seq.getLock().lock();
+        try
+        	{
+			JSONArray outDevs = obj.getJSONArray("out");
+			JSONArray inDevs = obj.getJSONArray("in");
+			if (outDevs != null && inDevs != null)
+				{
+				seq.tuple = Midi.loadTupleFromJSON(outDevs, inDevs, seq.getIns());
+				}
+	        }
+	   catch(org.json.JSONException ex)
+	   		{
+	   		// this is incorrectly thrown by getJSONArray when "out" or "in" don't exist.
+	   		// That's fine, we'll just drop here and not bother loading the tuple.
+	   		}
+       finally
+		   {
+		   seq.getLock().unlock();  
+		   }
         return seq;
         }
 
@@ -1577,6 +1645,24 @@ public class Seq
             ins = new In[NUM_INS];
             midi = new Midi(NUM_OUTS, NUM_INS);
 
+			// eliminate old receivers, else we'll have duplicate messages!
+			for (Object indevW : midi.getInDevices())
+				{
+				if (indevW instanceof Midi.MidiDeviceWrapper)
+					{
+					((Midi.MidiDeviceWrapper)indevW).removeAllFromTransmitter();
+					}
+				}
+			
+			// eliminate old receivers, else we'll have duplicate messages!
+			for (Object outdevW : midi.getOutDevices())		// necessary?
+				{
+				if (outdevW instanceof Midi.MidiDeviceWrapper)
+					{
+					((Midi.MidiDeviceWrapper)outdevW).removeAllFromTransmitter();
+					}
+				}
+
             Midi.MidiDeviceWrapper[] outWrappers = new Midi.MidiDeviceWrapper[NUM_OUTS];
             int[] outChannels = new int[NUM_OUTS];
             int[] inChannels = new int[NUM_INS];
@@ -1616,6 +1702,15 @@ public class Seq
             ins = new In[numMIDIInput];
             midi = new Midi(numMIDIOutput, numMIDIInput);
 
+			// eliminate old receivers, else we'll have duplicate messages!
+			for (Object indevW : midi.getInDevices())
+				{
+				if (indevW instanceof Midi.MidiDeviceWrapper)
+					{
+					((Midi.MidiDeviceWrapper)indevW).removeAllFromTransmitter();
+					}
+				}
+			
             if (args.length == 0) 
                 {
                 showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, null, null, false, false);
@@ -1760,6 +1855,10 @@ public class Seq
         System.err.println(error);
         }
 
+    public static void main(String[] args) throws Exception
+    	{
+    	seq.gui.SeqUI.main(args);
+    	}
 
     }
 

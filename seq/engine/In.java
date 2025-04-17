@@ -44,7 +44,9 @@ public class In implements Receiver
         }
 
     public Midi.MidiDeviceWrapper getWrapper() { return wrapper; }
-    public void setWrapper(Midi.MidiDeviceWrapper wrapper) { this.wrapper = wrapper; }
+    
+    // Also removes the receiver from the wrapper just in case
+    public void setWrapper(Midi.MidiDeviceWrapper wrapper) { /* System.err.println("changed wrapper from " + this.wrapper + " to " + wrapper); */ if (this.wrapper != null) wrapper.removeFromTransmitter(this); this.wrapper = wrapper; }
         
     /** Returns the channel */
     public int getChannel() { return channel; }
@@ -60,6 +62,8 @@ public class In implements Receiver
     /** Receives the given message and adds it to the mailbox. */
     public void send(MidiMessage message, long timestamp)
         {
+        //System.err.println("" + index + " " + channel + " " + wrapper + " Received " + message);
+        //new Throwable().printStackTrace();
         synchronized(this)
             {
             messages.add(message);
@@ -93,7 +97,7 @@ public class In implements Receiver
         if (wrapper == null) return "None";
         if (getName() != null && getName().trim().length() > 0)
             {
-            return (channel == 0 ? "O" : ("Ch " + channel)) + " " + getName().trim();
+            return (getName().trim());  // channel == 0 ? "O" : ("Ch " + channel)) + " " + getName().trim();
             }
         return (channel == 0 ? "O" : ("Ch " + channel)) + " " + wrapper.toString();
         //return ("<html><font size='-2'>" + (channel == 0 ? "O" : ("Channel " + channel)) + "<br>" + wrapper.toString() + "</font></html>");

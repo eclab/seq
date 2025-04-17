@@ -527,6 +527,24 @@ public abstract class Clip
         else return parent.bend(out, val); 
         }
         
+    /** Sends a CC to the given Out, associated with a given note (for MPE).
+        Returns true if the message was successfully sent.  */
+    public boolean cc(int out, int note, int cc, int val) 
+        {
+        if (seq.root == this) return seq.cc(out, note, cc, val);
+        // else if (parent == null) // uhh.....
+        else return parent.cc(out, note, cc, val); 
+        }
+        
+    /** Sends a bend to the given Out, associated with a given note (for MPE). Bend goes -8192...8191.
+        Returns true if the message was successfully sent.  */
+    public boolean bend(int out, int note, int val) 
+        {
+        if (seq.root == this) return seq.bend(out, note, val);
+        // else if (parent == null) // uhh.....
+        else return parent.bend(out, note, val); 
+        }
+        
     /** Sends a CC to the given Out. 
         Returns true if the message was successfully sent.  */
     public boolean cc(int out, int cc, int val) 

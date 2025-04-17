@@ -10,8 +10,10 @@ import seq.gui.*;
 import javax.sound.midi.*;
 import java.util.*;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import java.lang.reflect.*;
+import org.json.*;
 
 /**** 
       Static class which contains methods for handling the global MIDI device facility.
@@ -68,12 +70,14 @@ public class Midi
         /** Add a receiver to get routed to. */
         public synchronized void addReceiver(Receiver receiver)
             {
+            //System.err.println("" + this + " addReceiver " + receiver + " " + receiver.getClass());
             receivers.add(receiver);
             }
                         
         /** Sets the only receiver to get routed to. */
         public synchronized void setReceiver(Receiver receiver)
             {
+            //System.err.println("" + this + " setReceiver " + receiver);
             removeAllReceivers();
             receivers.add(receiver);
             }
@@ -81,14 +85,17 @@ public class Midi
         /** Remove a receiver that was routed to. */
         public synchronized void removeReceiver(Receiver receiver)
             {
+            //System.err.println("" + this + " removeReceiver " + receiver);
             receivers.remove(receiver);
             }
 
         /** Remove all receivers. */
         public synchronized void removeAllReceivers()
             {
+            //System.err.println("" + this + " removeAllReceivers ");
             for(int i = 0; i < receivers.size(); i++)
                 {
+                //System.err.println("Closing " +  ((Receiver)(receivers.get(i))));
                 ((Receiver)(receivers.get(i))).close();
                 }
             receivers = new ArrayList();
@@ -299,7 +306,7 @@ public class Midi
     /**
      * Returns all incoming MIDI Devices
      */
-    public ArrayList<MidiDeviceWrapper> getInDevices() 
+    public ArrayList getInDevices() 		// can also include "None"
         {
         updateDevices();
         return inDevices;
@@ -308,14 +315,14 @@ public class Midi
     /**
      * Returns all incoming MIDI Devices
      */
-    public ArrayList<MidiDeviceWrapper> getOutDevices() 
+    public ArrayList getOutDevices()  		// can also include "None"
         {
         updateDevices();
         return outDevices;
         }
 
     // Returns all MIDI Devices period, incoming or outgoing */
-    ArrayList<MidiDeviceWrapper> getAllDevices() 
+    ArrayList getAllDevices()   		// can also include "None"
         {
         updateDevices();
         return allDevices;
@@ -559,7 +566,89 @@ public class Midi
     static final String[] outChannelOptions = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
 
 
-    /** 
+    public static Tuple loadTupleFromJSON(JSONArray outDevs, JSONArray inDevs, In[] inReceiver)
+        {
+        updateDevices();
+        Tuple tuple = new Tuple();
+                                                                
+        for(int i = 0; i < numOutDevices; i++)
+            {
+            JSONObject jsonobj = outDevs.getJSONObject(i);
+            
+            Object obj = findDevice(jsonobj.optString("dev", "None"), outDevices);
+            int channel = jsonobj.optInt("ch", 0);
+            String name = jsonobj.optString("name", "");
+            if (channel > 0 && obj != null && (obj instanceof MidiDeviceWrapper))
+                {
+                tuple.outChannel[i] = channel;
+                tuple.outWrap[i] = ((MidiDeviceWrapper)(obj));
+                tuple.outName[i] = name;
+                }
+            else
+                {
+                tuple.outChannel[i] = channel;
+                tuple.outWrap[i] = null;
+                tuple.outName[i] = name;
+                }
+            }
+
+        for(int i = 0; i < numInDevices; i++)
+            {
+            JSONObject jsonobj = inDevs.getJSONObject(i);
+
+            Object obj = findDevice(jsonobj.optString("dev", "None"), inDevices);
+            int channel = jsonobj.optInt("ch", 0);
+            String name = jsonobj.optString("name", "");
+            if (channel > -1 && obj != null && (obj instanceof MidiDeviceWrapper))
+                {
+                tuple.inChannel[i] = channel;
+                tuple.inWrap[i] = ((MidiDeviceWrapper)(obj));
+                inReceiver[i].setWrapper(tuple.inWrap[i]);	// do this first so the old one is removed
+                tuple.inReceiver[i] = inReceiver[i];
+                tuple.inWrap[i].addToTransmitter(inReceiver[i]);
+                tuple.inName[i] = name;
+                }
+            else
+                {
+                tuple.inChannel[i] = channel;
+                tuple.inWrap[i] = null;
+                inReceiver[i].setWrapper(tuple.inWrap[i]);
+                tuple.inName[i] = name;
+                }
+            }
+                        
+        return tuple;
+        }
+
+	// assumes outDevs and inDevs are empty
+    public static void saveTupleToJSON(Tuple tuple, JSONArray outDevs, JSONArray inDevs)
+        {
+		for(int i = 0; i < numOutDevices; i++)
+			{
+			JSONObject obj = new JSONObject();
+			outDevs.put(obj);
+			if (tuple.outWrap == null || tuple.outWrap[i] == null)
+				obj.put("dev", "None");
+			else
+				obj.put("dev", tuple.outWrap[i].toString());
+			obj.put("ch", tuple.outChannel[i]);
+			obj.put("name", tuple.outName[i] == null ? "" : tuple.outName[i].trim());
+			}
+									
+		for(int i = 0; i < numInDevices; i++)
+			{
+			JSONObject obj = new JSONObject();
+			inDevs.put(obj);
+			if (tuple.inWrap == null || tuple.inWrap[i] == null)
+				obj.put("dev", "None");
+			else
+				obj.put("dev", tuple.inWrap[i].toString());
+			obj.put("ch", tuple.inChannel[i]);
+			obj.put("name", tuple.inName[i] == null ? "" : tuple.inName[i].trim());
+			}
+        }
+
+   /** 
         Loads a tuple from Preferences from the first time, using the provided In[]
     */
     public static Tuple loadTupleFromPreferences(Seq seq, In[] inReceiver)
@@ -571,15 +660,18 @@ public class Midi
             {
             Object obj = findDevice(Prefs.getLastTupleOut(i), outDevices);
             int channel = Prefs.getLastTupleOutChannel(i);
+            String name = Prefs.getLastTupleOutName(i);
             if (channel > 0 && obj != null && (obj instanceof MidiDeviceWrapper))
                 {
                 tuple.outChannel[i] = channel;
                 tuple.outWrap[i] = ((MidiDeviceWrapper)(obj));
+                tuple.outName[i] = name;
                 }
             else
                 {
                 tuple.outChannel[i] = channel;
                 tuple.outWrap[i] = null;
+                tuple.outName[i] = name;
                 }
             }
 
@@ -587,19 +679,22 @@ public class Midi
             {
             Object obj = findDevice(Prefs.getLastTupleIn(i), inDevices);
             int channel = Prefs.getLastTupleInChannel(i);
+            String name = Prefs.getLastTupleInName(i);
             if (channel > -1 && obj != null && (obj instanceof MidiDeviceWrapper))
                 {
                 tuple.inChannel[i] = channel;
                 tuple.inWrap[i] = ((MidiDeviceWrapper)(obj));
+                inReceiver[i].setWrapper(tuple.inWrap[i]);		// Do this first so the old one is removed 
                 tuple.inReceiver[i] = inReceiver[i];
                 tuple.inWrap[i].addToTransmitter(inReceiver[i]);
-                inReceiver[i].setWrapper(tuple.inWrap[i]);
+                tuple.inName[i] = name;
                 }
             else
                 {
                 tuple.inChannel[i] = channel;
                 tuple.inWrap[i] = null;
-                inReceiver[i].setWrapper(null);
+                inReceiver[i].setWrapper(tuple.inWrap[i]);
+                tuple.inName[i] = name;
                 }
             }
                         
@@ -621,7 +716,9 @@ public class Midi
     public static Tuple getNewTuple(Tuple old, JComponent parent, Seq seq, String message, In[] inReceiver)
         {
         updateDevices();
-
+        
+        boolean[] changed = new boolean[1];
+        
 /*
   if (inDevices.size() == 0)
   {
@@ -656,8 +753,16 @@ public class Midi
                     outCombo[i].setSelectedIndex(outDevices.indexOf(old.outWrap[i]));
                 else if (findDevice(Prefs.getLastTupleOut(i), outDevices) != null)
                     outCombo[i].setSelectedItem(findDevice(Prefs.getLastTupleOut(i), outDevices));
+            	
+            	outCombo[i].addActionListener(new ActionListener() 
+            		{
+            		public void actionPerformed(ActionEvent e)
+						{
+						changed[0] = true;
+						}
+            		});
                 }
-
+                
             JComboBox[] inCombo = new JComboBox[numInDevices];
             for(int i = 0; i < inCombo.length; i++)
                 {
@@ -669,6 +774,14 @@ public class Midi
                     inCombo[i].setSelectedIndex(inDevices.indexOf(old.inWrap[i]));
                 else if (findDevice(Prefs.getLastTupleIn(i), inDevices) != null)
                     inCombo[i].setSelectedItem(findDevice(Prefs.getLastTupleIn(i), inDevices));
+
+            	inCombo[i].addActionListener(new ActionListener() 
+            		{
+            		public void actionPerformed(ActionEvent e)
+						{
+						changed[0] = true;
+						}
+            		});
                 }
 
             JComboBox[] outChannelsCombo = new JComboBox[numOutDevices];
@@ -683,6 +796,14 @@ public class Midi
                     outChannelsCombo[i].setSelectedIndex(Prefs.getLastTupleOutChannel(i) - 1);
                 else 
                     outChannelsCombo[i].setSelectedIndex(0);
+
+            	outChannelsCombo[i].addActionListener(new ActionListener() 
+            		{
+            		public void actionPerformed(ActionEvent e)
+						{
+						changed[0] = true;
+						}
+            		});
                 }
                                 
             JComboBox[] inChannelsCombo = new JComboBox[numInDevices];
@@ -697,12 +818,23 @@ public class Midi
                     inChannelsCombo[i].setSelectedIndex(Prefs.getLastTupleInChannel(i));
                 else 
                     inChannelsCombo[i].setSelectedIndex(0);
+
+            	inChannelsCombo[i].addActionListener(new ActionListener() 
+            		{
+            		public void actionPerformed(ActionEvent e)
+						{
+						changed[0] = true;
+						}
+            		});
                 }
                 
             StringField[] outNicknames = new StringField[numOutDevices];
             for(int i = 0; i < outNicknames.length; i++)
                 {
-                outNicknames[i] = new StringField("");
+                outNicknames[i] = new StringField("")
+                	{
+                	public String newValue(String val) { changed[0] = (!getValue().equals(val)); return val; }
+                	};
                 String nick = null;
                 if (old != null) nick = old.outName[i];
                 if (nick == null || nick.trim().length() == 0)
@@ -722,7 +854,10 @@ public class Midi
             StringField[] inNicknames = new StringField[numInDevices];
             for(int i = 0; i < inNicknames.length; i++)
                 {
-                inNicknames[i] = new StringField("");
+                inNicknames[i] = new StringField("")
+                	{
+                	public String newValue(String val) { changed[0] = (!getValue().equals(val)); return val; }
+                	};
                 String nick = null;
                 if (old != null) nick = old.inName[i];
                 if (nick == null || nick.trim().length() == 0)
@@ -771,16 +906,22 @@ public class Midi
                 components[i + numOutDevices + 1] = box;
                 }
             
-            while(true)
-                {
                 int result = Dialogs.showMultiOption(parent, names, components, new String[] {  "Set", "Reload", "Cancel" }, 0, "MIDI Devices", message);
                                         
                 if (result == 1)                        // "Reload"
                     {
-                    continue;
+					Tuple tup = getNewTuple(old, parent, seq, message, inReceiver);
+                    	Dialogs.enableMenuBar();
+					return tup;
                     }         
                 else if (result == 0)           // "Set"
                     {
+                    if (!changed[0]) 
+                    	{ 
+                    	Dialogs.enableMenuBar();
+						return old; 
+						}
+                    
                     // we need to build a tuple
                                                                 
                     Tuple tuple = new Tuple();
@@ -840,8 +981,8 @@ public class Midi
                             {
                             tuple.inReceiver[i] = inReceiver[i];
                             tuple.inWrap[i] = ((MidiDeviceWrapper)(inCombo[i].getSelectedItem()));
+                            inReceiver[i].setWrapper(tuple.inWrap[i]);		// Do this first so the old one is removed
                             tuple.inWrap[i].addToTransmitter(inReceiver[i]);
-                            inReceiver[i].setWrapper(tuple.inWrap[i]);
                             }
                         }
 
@@ -874,7 +1015,6 @@ public class Midi
                     return CANCELLED;
                     }
                 }
-            }
         }
 
 

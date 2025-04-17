@@ -64,11 +64,17 @@ jar: all
 	echo jar -cvfm install/seq.jar `find seq -name "*.class"` `find seq -name "*.html"` `find seq -name "*.png"` `find seq -name "*.jpg"` uk/ META-INF/ org/ com/ 
 	rm -rf uk META-INF com org module-info.class
 
-install: jar
+install8: jar
 	rm -rf install/Seq.app install/bundles install/Seq.dmg.html install/Seq.dmg.jnlp
 	- javapackager -deploy -native dmg -srcfiles install/seq.jar -appclass seq.gui.SeqUI -name Seq -outdir install -outfile Seq.dmg -v
 	- mv install/bundles/Seq-1.0.dmg install/Seq.dmg
 	rm -rf install/bundles install/Seq.dmg.html install/Seq.dmg.jnlp 
+
+install: jar
+	rm -rf install/Seq.app install/bundles install/Seq.dmg.html install/Seq.dmg.jnlp
+	- jpackage --input install --name Seq --main-jar seq.jar --main-class seq.gui.SeqUI --type dmg --mac-package-name "Seq" --verbose --java-options '-XX:+UseZGC -XX:MaxGCPauseMillis=1'
+	open Seq-1.0.dmg
+
 
 # Indent to your preferred brace format using emacs.  Seq's default
 # format is Whitesmiths at 4 spaces.  Yes, I know.  Idiosyncratic.

@@ -186,16 +186,16 @@ public abstract class Motif implements Cloneable
             nickname = from.optString("nick", null);                    // checks for nullity
             randomMin = from.optDouble("rmin", 0.0);
             randomMax = from.optDouble("rmax", 1.0);
-            JSONArray param = from.getJSONArray("param");
+            JSONArray param = from.optJSONArray("param");
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
-                parameters[i] = param.optDouble(i, 0);
+                parameters[i] = (param == null ? 0 : param.optDouble(i, 0));
                 }
             JSONArray pname = from.optJSONArray("pname");
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 // We can't call param.getString() directly because the underlying
-                // object could be null.  So we do this:
+                // object could be null (or pname could be missing).  So we do this:
                 if (pname == null || pname.isNull(i))
                     {
                     parent.setParameterName(i, null);

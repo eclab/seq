@@ -64,7 +64,7 @@ public class Out
         if (wrapper == null) return "None";
         if (getName() != null && getName().trim().length() > 0)
             {
-            return ("Ch " + tuple.outChannel[index] + " " + getName().trim());
+            return (getName().trim());  // "Ch " + tuple.outChannel[index] + " " + getName().trim());
             }
         return ("Ch " + tuple.outChannel[index] + " " + wrapper.toString());
         //return ("<html><font size='-2'>Channel " + tuple.outChannel[index] + "<br>" + wrapper.toString() + "</font></html>");
@@ -315,6 +315,14 @@ public class Out
 
     /** Sends a CC.  Returns true if the message was successfully sent.  */
     public boolean cc(int cc, int val) { return send(ShortMessage.CONTROL_CHANGE, cc, val); }
+
+    /** Sends a bend, associated with a given note (for MPE).   Bend goes -8192...8191.  Returns true if the message was successfully sent.  */
+    // for the time being this just does regular bend
+    public boolean bend(int note, int val) { return bend(val); }
+
+    /** Sends a CC, associated with a given note (for MPE).  Returns true if the message was successfully sent.  */
+    // for the time being this just does regular cc
+    public boolean cc(int note, int cc, int val) { return cc(cc, val); }
 
     /** Sends polyphonic aftertouch.  If the Out is set to send only channel aftertouch, this will
         be modified to channel aftertouch.   Returns true if the message was successfully sent. 

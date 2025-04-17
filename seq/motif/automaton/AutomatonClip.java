@@ -386,7 +386,6 @@ public class AutomatonClip extends Clip
                     // FIXME: is the +1 right?  I think it is?
                     if ((getPosition() + 1) % Automaton.MotifNode.QUANTIZATIONS[((Automaton.MotifNode)node).getQuantization()] == 0)
                         {
-                        System.err.println("Selecting out " + node);
                         // we're just before a quantization boundary, time to transition!
                         return node.selectOut();
                         }
@@ -449,7 +448,7 @@ public class AutomatonClip extends Clip
                         }
                     }
                 delayCount++;
-                if (delayCount > d * achord.getTimeOn())        // stop playing the chord
+               if (delayCount >= d * achord.getTimeOn())        // stop playing the chord
                     {
                     int release = achord.getRelease();
                     int out = achord.getMIDIOut();
@@ -463,7 +462,7 @@ public class AutomatonClip extends Clip
                         notes[i] = Automaton.Chord.NO_NOTE;
                         }
                     }
-                if (delayCount > d)                                             // note >
+                if (delayCount >= d)                                             // note >
                     {
                     delayCount = 0;
                     return achord.selectOut();              // it's possible to have zero delay
@@ -702,7 +701,6 @@ public class AutomatonClip extends Clip
                         Automaton.Node n = nodes[i];
                         @SuppressWarnings("unchecked")
                             AutomatonThread newthread = new AutomatonThread(n, (HashSet<Automaton.Node>)(thread.getVisited().clone()));
-                        System.err.println("Contains " + n + " ? " + newthread.contains(n));
                         if (//n instanceof Automaton.MotifNode ||
                             //n instanceof Automaton.Chord ||
                             //(n instanceof Automaton.Delay && ((Automaton.Delay)n).getDelay() > 0) ||
@@ -710,13 +708,11 @@ public class AutomatonClip extends Clip
                             newthread.contains(n)                                       // it's a cycle
                             )
                             {
-                            System.err.println("Node processed " + n);
                             // put new thread on processed
                             processed.add(newthread);
                             }
                         else
                             {
-                            System.err.println("Node unprocessed " + n);
                             // put new thread on unprocessed
                             unprocessed.add(newthread);
                             }

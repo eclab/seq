@@ -779,6 +779,10 @@ public class SeqUI extends JPanel
                         finally { lock.unlock(); }
                         stopped = true;
                         }
+                    else
+                    	{
+                    	return;
+                    	}
                     }
 
                 Midi midi = seq.getMIDI();
@@ -1321,6 +1325,39 @@ public class SeqUI extends JPanel
 			});
 		}
 
+	public void doQuit()
+		{
+		}
+		
+    void doAbout()
+        {
+        ImageIcon icon = new ImageIcon(SeqUI.class.getResource("seq.png"));
+        JFrame frame = new JFrame("About Seq");
+        frame.getContentPane().setLayout(new BorderLayout());
+        frame.getContentPane().setBackground(Color.BLACK);
+        JLabel label = new JLabel(icon);
+
+        frame.getContentPane().add(label, BorderLayout.CENTER);
+
+        JPanel pane = new JPanel()
+            {
+            public Insets getInsets() { return new Insets(10, 10, 10, 10); }
+            };
+        pane.setBackground(Color.WHITE);
+        pane.setLayout(new BorderLayout());
+
+        JLabel edisyn = new JLabel("Seq Version 0, March 2025");
+        edisyn.setBackground(Color.WHITE);
+        edisyn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        pane.add(edisyn, BorderLayout.SOUTH);
+        
+        frame.add(pane, BorderLayout.SOUTH);
+        frame.pack();
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        }
+
     // TESTING
     public static void main(String[] args) throws Exception
         {
@@ -1334,6 +1371,8 @@ public class SeqUI extends JPanel
 
         // Build GUI
         SeqUI ui = new SeqUI(seq);
+        
+        Mac.setup(ui);
         
         Motif dSeq = null;
         MotifUI ssui = null;

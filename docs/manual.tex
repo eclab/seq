@@ -320,7 +320,7 @@ Furthermore, when in the course of playing a child generates MIDI, the MIDI is s
 
 As a simple example, imagine if Chain X had Chain Y as a child as well as Pattern A.  But Chain Y {\it also} had Pattern A as a child, along with Pattern B.  Both Chain X and Chain Y use Pattern A, though perhaps at different times and in different ways.  You could also imagine a Chain Z which used by Chain X and Chain Y, and thus Chain Y was also being used twice, in different ways.
 
-Figure~\ref{dag} at right shows this very arrangement of these chains and patterns. In the computer science world, this kind of structure is known as a {\it Directed Acyclic Graph} or {\it DAG}.  It's a {\it Graph} because every object is connected to other objects with lines called {\it edges}.  It is {\it directed} because there is a clear relationship between parents and children: that is, the edges are arrows indicating who the child is.  It's {\it Acyclic} because no child can be its own ancestor: you can't have loops (or ``cycles'').  That is, all edges are pointing {\it down}.
+Figure~\ref{dag} at right shows this very arrangement of these chains and patterns. In the computer science world, this kind of structure is known as a {\it Directed Acyclic Graph} or {\it DAG}.  It's a {\it graph} because every object is connected to other objects with lines called {\it edges}.  It is {\it directed} because there is a clear relationship between parents and children: that is, the edges are arrows indicating who the child is.  It's {\it acyclic} because no child can be its own ancestor: you can't have loops (or ``cycles'').  That is, all edges are pointing {\it down}.
 
 You don't have to start playing at Chain Z.  You could instead choose to start playing at (say) Chain Y, and so Z and X would both just be ignored.  Seq calls the node that you're starting playing at the {\bf Root} of the current sequence (even if it itself has parents).
 
@@ -437,9 +437,10 @@ We'll discuss the Root Arguments later in Section~\ref{parameters}.  However we 
 
 \paragraph{MIDI Menu}
 
-The MIDI Menu is where you set up MIDI to play and record.  First, you with {\bf Set MIDI Devices}, you can set up to 16 {\bf Outputs} and up to four {\bf Inputs}.  Each Input or Output is a combination of a MIDI Device and a Channel.  Once you have set up an input or output. it appears as an option in device selectors for Motifs which input or output MIDI.  Inputs and Outputs are saved to preferences so you don't have to set them up each time.  You can reset from preferences by pressing the {\bf Reload} button in the setup window.
+The MIDI Menu is where you set up MIDI to play and record.  First, you with {\bf Set MIDI Devices}, you can set up to 16 {\bf Outputs} and up to four {\bf Inputs} in your patch.  Each Input or Output is a combination of a MIDI Device and a Channel.  Once you have set up an input or output. it appears as an option in device selectors for Motifs which input or output MIDI.  
+Inputs and Outputs also have {\bf Nicknames}.  If you give an Input or Output a Nickname, the Nickname will appear in the selectors for various Features instead of the device name.  You get rid a Nickname by deleting the text in its text box.
 
-Inputs and Outputs also have {\bf Nicknames}, which are stored in preferences with them.  If you give an Input or Output a Nickname, the Nickname will appear in the selectors for various Features instead of the device name.  You'll still see the channel number.  You get rid a Nickname by deleting its text box.
+When you select {\it Set} to save your choices, the Inputs and Outputs are saved not only with your patch, but also to global preferences so you next time you create a patch they'll be set by default.  You can optionally select {\it Reload}, which reloads the Inputs and Outputs from your patch, clearing the changes you just made.  If you load a patch, its current Inputs and Outputs will be loaded, overriding your defaults.
 
 You can also {\bf Panic}.  This sends an {\bf All Sounds Off} and an {\bf All Notes Off} to every setup device in order to quiet MIDI devices with stuck notes.
 
