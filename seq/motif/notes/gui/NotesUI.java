@@ -62,6 +62,20 @@ public class NotesUI extends MotifUI
         this.seq = seq;
         this.notes = notes;
         this.sequi = sequi;
+  
+  		// disarm others
+		  if (notes.isArmed() && getSeqUI().getDisarmsAllBeforeArming())
+			{
+			ReentrantLock lock = seq.getLock();
+			lock.lock();
+			try
+				{
+				seq.disarmAll();
+				}
+			finally { lock.unlock(); }
+			getSeqUI().incrementRebuildInspectorsCount();		// show disarmed
+			}
+
         //build();
         }
     

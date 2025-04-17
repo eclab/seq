@@ -219,6 +219,10 @@ public class Midi
                     transmitter = _transmitter;         // we set it last in case of an exception
                     in = _in;                                           // we set it last in case of an exception
                     }
+                catch (MidiUnavailableException ex)	// no input sources at all
+                	{
+                	return false;
+                	}
                 catch(Exception e) { ExceptionDump.handleException(e); return false; }
                 }
             
@@ -244,6 +248,10 @@ public class Midi
                     transmitter = _transmitter;         // we set it last in case of an exception
                     in = _in;                                           // we set it last in case of an exception
                     }
+                catch (MidiUnavailableException ex)	// no input sources at all
+                	{
+                	return false;
+                	}
                 catch(Exception e) { ExceptionDump.handleException(e); return false; }
                 }
             

@@ -86,6 +86,21 @@ public class SeqUI extends JPanel
     
     int rebuildInspectorsCount = 0;
     
+    // Arming
+    boolean disarmsAllBeforeArming;
+
+	/** Sets whether we disarm all armed Motifs before arming a new one */
+	public void setDisarmsAllBeforeArming(boolean val)
+		{
+		disarmsAllBeforeArming = val;
+		}
+		
+	/** Returns whether we disarm all armed Motifs before arming a new one */
+	public boolean getDisarmsAllBeforeArming()
+		{
+		return disarmsAllBeforeArming;
+		}
+		
     public Transport getTransport() { return transport; }
     
     public SeqUI(Seq seq)
@@ -184,6 +199,10 @@ public class SeqUI extends JPanel
         {
         removeAll();
         smallButtons = Prefs.getLastBoolean("SmallMotifButtons", false);        // must be before MotifList
+
+		// Arming
+		disarmsAllBeforeArming = Prefs.getLastBoolean("DisarmFirst", true);
+
         list = new MotifList(seq, this);
 
         ReentrantLock lock = null;
@@ -953,6 +972,18 @@ public class SeqUI extends JPanel
 
         motifMenu.addSeparator();
 
+        JCheckBoxMenuItem disarmsAllBeforeArmingItem = new JCheckBoxMenuItem("Disarm Motifs Before Arming Next");
+        motifMenu.add(disarmsAllBeforeArmingItem);
+        disarmsAllBeforeArmingItem.setSelected(disarmsAllBeforeArming);
+        disarmsAllBeforeArmingItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                disarmsAllBeforeArming = disarmsAllBeforeArmingItem.isSelected();
+                Prefs.setLastBoolean("DisarmFirst", disarmsAllBeforeArming);
+                }
+            });
+
         JMenuItem disarmItem = new JMenuItem("Disarm All Motifs");
         motifMenu.add(disarmItem);
         disarmItem.addActionListener(new ActionListener()
@@ -972,6 +1003,7 @@ public class SeqUI extends JPanel
                     }
                     
                 setMotifUI(motifui);	// rebuild
+				incrementRebuildInspectorsCount();		// show disarmed
                 }
             });
             
@@ -979,7 +1011,7 @@ public class SeqUI extends JPanel
         
     public boolean getSmallButtons() { return smallButtons; }
     
-    public void incrementRebuildInspectorsCount() { motifui.rebuildInspectors(++rebuildInspectorsCount);        }
+    public void incrementRebuildInspectorsCount() { if (motifui != null) motifui.rebuildInspectors(++rebuildInspectorsCount);        }
         
     /** Returns the window. */
     public JFrame getFrame() { return frame; }
@@ -1403,8 +1435,7 @@ public class SeqUI extends JPanel
 			dSeq = new seq.motif.parallel.Parallel(seq);
 			ssui = new seq.motif.parallel.gui.ParallelUI(seq, ui, (seq.motif.parallel.Parallel)dSeq);
 			}
-			
-			
+		
         // Build Clip Tree
         seq.setData(dSeq);
 

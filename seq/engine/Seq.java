@@ -51,7 +51,7 @@ public class Seq
     //HighResolutionTimer timer;                        // park uses too much CPU  :-(
     java.util.Timer timer;
     // The timer lock.  This lock must be acquired in order to manipulate the data stored in clip or clip.motif
-    
+        
     Track[] tracks = null;
     boolean[] validTracks = null;
     public Track[] getTracks() { return tracks; }
@@ -871,6 +871,7 @@ public class Seq
             lock.unlock();
             }
         }
+
 
 	/** Sets all motifs to not be armed. */
 	public void disarmAll()

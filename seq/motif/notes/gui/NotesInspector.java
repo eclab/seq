@@ -187,9 +187,22 @@ public class NotesInspector extends WidgetList
                     {
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
+                    boolean disarm = false;
                     lock.lock();
-                    try { notes.setArmed(armed.isSelected()); }
+                    try 
+                    	{
+                    	if (armed.isSelected() && notesui.getSeqUI().getDisarmsAllBeforeArming())
+                    		{
+                    		seq.disarmAll();
+							disarm = true;
+							} 
+                    	notes.setArmed(armed.isSelected()); 
+                    	}
                     finally { lock.unlock(); }                              
+                    if (disarm)		// outside lock
+                    	{
+						notesui.getSeqUI().incrementRebuildInspectorsCount();		// show disarmed
+                       	}
                     }
                 });
 
