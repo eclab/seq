@@ -39,6 +39,7 @@ public class Transport extends JPanel implements SeqListener
     JComboBox clock;
     WidgetList options;
     JLabel time;
+	DisclosurePanel clockOptions;
     
     public static final String[] CLOCK_STRINGS = { "Internal", "Emit Clock" };          // FIXME: need to add  "External" };
     public static final String[] COUNT_IN_STRINGS = { "None", "Record", "Rec/Play" };
@@ -68,6 +69,23 @@ public class Transport extends JPanel implements SeqListener
         this.seq = seq;
         this.sequi = sequi;
         rebuildTransport();
+        
+        // Tooltips
+		playButton.setToolTipText(PLAY_BUTTON_TOOLTIP);
+		pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
+		stopButton.setToolTipText(STOP_BUTTON_TOOLTIP);
+		recordButton.setToolTipText(RECORD_BUTTON_TOOLTIP);
+		loopButton.setToolTipText(LOOP_BUTTON_TOOLTIP);
+		midiInLabel.setToolTipText(MIDI_IN_TOOLTIP);
+		time.setToolTipText(TIME_TOOLTIP);
+		clockOptions.setToolTipText(CLOCK_OPTIONS_TOOLTIP);
+		beatsPerBar.setToolTipText(BEATS_PER_BAR_TOOLTIP);
+		bpm.setToolTipText(BPM_TOOLTIP);
+		beepVolume.setToolTipText(BEEP_VOLUME_TOOLTIP);
+		countIn.setToolTipText(COUNT_IN_TOOLTIP);
+		metronome.setToolTipText(METRONOME_TOOLTIP);
+		clock.setToolTipText(CLOCK_TOOLTIP);
+		options.updateToolTips();		// update the labels
         }
     
     public void rebuildTransport()
@@ -78,26 +96,21 @@ public class Transport extends JPanel implements SeqListener
         playButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doPlay(); } });
         playButton.setSelectedIcon(playing);
         playButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
-        playButton.setToolTipText("Begin playing the sequence");
         stopButton = new JButton(stopped); 
         stopButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doStop(); } });
         stopButton.setSelectedIcon(stopped);
         stopButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
-        stopButton.setToolTipText("Stop the sequence");
         pauseButton = new JButton(notPaused); 
         pauseButton.setSelectedIcon(paused);
         pauseButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doPause(); } });
         pauseButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
-        pauseButton.setToolTipText("Pause / unpause the sequence");
         recordButton = new JButton(notRecording); 
         recordButton.setSelectedIcon(recording);
         recordButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doRecord(); } });
         recordButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
-        recordButton.setToolTipText("Begin playing the sequence while recording armed elements");
         loopButton = new JToggleButton(notLooping); 
         loopButton.setSelectedIcon(looping);
         loopButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
-        loopButton.setToolTipText("Set the sequence to loop on playing");
 		ReentrantLock lock = seq.getLock();
 		lock.lock();
 		try { loopButton.setSelected(seq.isLooping()); }
@@ -105,7 +118,6 @@ public class Transport extends JPanel implements SeqListener
 
         midiInLabel = new JLabel();
         midiInLabel.setIcon(midiInOff);
-        midiInLabel.setToolTipText("MIDI input indicator");
         playBox = new Box(BoxLayout.X_AXIS);
         playBox.add(recordButton);
         playBox.add(playButton);
@@ -118,7 +130,6 @@ public class Transport extends JPanel implements SeqListener
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout());
         time = new JLabel("0:0:0:0");
-        time.setToolTipText("Current time in Parts : Bars : Beats : Ticks\n\nThere are " + Seq.PPQ + " Ticks per Beat\nYou can set the Beats per Bar in the Clock Options\nThere are " + Seq.NUM_BARS_PER_PART + " Bars per Part\nThere are up to 256 Parts");
         pane.add(midiInLabel, BorderLayout.WEST);
         pane.add(time, BorderLayout.CENTER);
         add(pane, BorderLayout.CENTER);
@@ -140,14 +151,15 @@ public class Transport extends JPanel implements SeqListener
             {
             seq.addListener(this);
 
-            bpm = new SmallDial((Math.min(299, seq.getBPM() - 1) / 299.0))
+			final int bpmL = Seq.MAX_BPM - 1;
+            bpm = new SmallDial((Math.min(bpmL, seq.getBPM() - 1) / (double)bpmL))
                 {
-                protected String map(double val) { return String.valueOf((int)(val * 299) + 1) + " BPM"; }
+                protected String map(double val) { return String.valueOf((int)(val * bpmL) + 1) + " BPM"; }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { return (Math.min(299, seq.getBPM() - 1) / 299.0); }
+                    try { return (Math.min(bpmL, seq.getBPM() - 1) / (double)bpmL); }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -155,11 +167,11 @@ public class Transport extends JPanel implements SeqListener
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { seq.setBPM((int)(val * 299) + 1); }
+                    try { seq.setBPM((int)(val * bpmL) + 1); }
                     finally { lock.unlock(); }
                     }
                 };
-            bpm.setToolTipText("Sequencer tempo in Beats Per Minute.");
+            bpm.setScale(480.0);		// Increase the scale for our tempo range
                 
             clock = new JComboBox(CLOCK_STRINGS);
             clock.setSelectedIndex(seq.getClock());
@@ -174,7 +186,6 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
-            clock.setToolTipText("Options for emitting MIDI Clock to outputs.");
 
             beatsPerBar = new SmallDial((seq.getBar() - 1) / 15.0)
                 {
@@ -195,7 +206,6 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }
                     }
                 };
-            beatsPerBar.setToolTipText("Number of beats in a measure.");
                 
             countIn = new JComboBox(COUNT_IN_STRINGS);
             countIn.setSelectedIndex(seq.getCountInMode());
@@ -210,7 +220,6 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
-            countIn.setToolTipText("Whether one bar's worth of count-in metronome beats should play before the sequencer starts playing and/or recording.");
 
             metronome = new JCheckBox();
             metronome.setSelected(seq.getMetronome());
@@ -225,7 +234,6 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
-            metronome.setToolTipText("Whether a metronome beat should play as the sequencer is running.");
 
             beepVolume = new SmallDial(seq.getBeepVolume())
                 {
@@ -245,7 +253,6 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }
                     }
                 };
-            beepVolume.setToolTipText("Volume of the metronome and count-in beeps, if any.");
 
             }
         finally
@@ -256,7 +263,7 @@ public class Transport extends JPanel implements SeqListener
         options = new WidgetList(new String[] { "Tempo", "Clock", "Beats/Bar", "Count-In", "Metronome", "Beep Vol." }, 
             new JComponent[] 
                 { 
-                bpm.getLabelledDial("299 BPM"), 
+                bpm.getLabelledDial("bpmL BPM"), 
                 clock,
                 beatsPerBar.getLabelledDial("16"),
                 countIn,
@@ -264,8 +271,8 @@ public class Transport extends JPanel implements SeqListener
                 beepVolume.getLabelledDial("0.000"),
                 });
                         
-        DisclosurePanel dp = new DisclosurePanel("Clock Options", options);
-        add(dp, BorderLayout.SOUTH);
+        clockOptions = new DisclosurePanel("Clock Options", options);
+        add(clockOptions, BorderLayout.SOUTH);
         
         midiInTimer = new javax.swing.Timer(MIDI_IN_DISPLAY_TIME, new ActionListener()
             {
@@ -421,7 +428,7 @@ public class Transport extends JPanel implements SeqListener
         recordButton.setText(null);
         playButton.setText(null);
         recordButton.setEnabled(true);
-        sequi.redraw(true);             // force a redraw
+        sequi.redraw(false);             // force a redraw
         }
 
     public void doPause()
@@ -431,7 +438,8 @@ public class Transport extends JPanel implements SeqListener
         try
             {
             if (seq.isRecording()) return;                      // should never happen
-            
+            if (seq.isStopped()) return;						// should never happen
+            /*
             if (seq.isStopped())
                 {
                 seq.play();
@@ -441,6 +449,7 @@ public class Transport extends JPanel implements SeqListener
                 stopButton.setIcon(notStopped);
                 }
             else
+            */
                 {
                 if (seq.isPlaying())
                     {
@@ -473,5 +482,62 @@ public class Transport extends JPanel implements SeqListener
         midiInTimer.stop();
         midiInTimer.start();
         }
+
+
+	/*** Tooltips ***/
+	
+	static final String PLAY_BUTTON_TOOLTIP = "<html><b>Play</b><br>" +
+		"Starts playing the sequencer.<br><br>If the <b>Count-In</b> is set to <b>Record/Play</b> in the <b>Clock Options</b>,<br>then the metronome will provide a one-bar count-in before playing.</html>";
+	
+	static final String PAUSE_BUTTON_TOOLTIP = "<html><b>Pause</b><br>" +
+		"Pauses or unpauses the sequencer while it's playing.</html>";
+	
+	static final String STOP_BUTTON_TOOLTIP = "<html><b>Stop</b><br>" +
+		"Stops playing the sequencer.</html>";
+	
+	static final String RECORD_BUTTON_TOOLTIP = "<html><b>Record</b><br>" +
+		"Starts the sequencer playing in record mode.<br><br>If the <b>Count-In</b> is set to <b>Record</b> or <b>Record/Play</b> in the <b>Clock Options</b>,<br>then the metronome will provide a one-bar count-in before playing.</html>";
+	
+	static final String LOOP_BUTTON_TOOLTIP = "<html><b>Loop</b><br>" +
+		"When <b>off</b>, playing will stop at the end of the sequence.<br>When <b>on</b>, playing will instead loop back to the start of the sequence and continue.</html>";
+	
+	static final String MIDI_IN_TOOLTIP = "<html><b>MIDI IN Indicator</b><br>" +
+		"Flashes when incoming MIDI data is detected.</html>";
+	
+	static final String TIME_TOOLTIP = "<html><b>Time</b><br>" +
+		"The current play time of the sequencer.<br>Play time is displayed in <i>Parts</i>&nbsp;:&nbsp;<i>Bars</i>&nbsp;:&nbsp;<i>Beats</i>&nbsp;:&nbsp;<i>Ticks</i>." +
+        "<ul><li>There are " + Seq.PPQ + " Ticks per Beat." +
+        "<li>You can set the number of <b>Beats per Bar</b> in the Clock Options." + 
+        "<li>There are " + Seq.NUM_BARS_PER_PART + " Bars per Part." +
+        "<li>There are up to 256 Parts." +
+        "</ul></html>";
+
+	static final String CLOCK_OPTIONS_TOOLTIP = "<html><b>Clock Options</b><br>" +
+		"Additional options for controlling or displaying the clock.</html>";
+	
+	static final String BEATS_PER_BAR_TOOLTIP = "<html><b>Beats Per Bar</b><br>" +
+		"The number of beats (quarter notes) per bar (measure) in this sequence.</html>";
+
+	static final String BPM_TOOLTIP = "<html><b>Tempo</b><br>" +
+		"The tempo of the song, measured in <b>Beats Per Minute (BPM).</html>";
+		
+	static final String BEEP_VOLUME_TOOLTIP = "<html><b>Beep Volume</b><br>" +
+		"The volume of the beeps used in the <b>Metronome</b> and the <b>Count-In</b>.</html>";
+
+	static final String COUNT_IN_TOOLTIP = "<html><b>Count-In</b><br>" +
+		"When should the sequencer provide a one-bar count-in prior to playing or recording?" +
+		"<ul><li>Never" +
+        "<li>When Recording Only" + 
+        "<li>When Recording or Playing" +
+        "</ul></html>";
+
+	static final String METRONOME_TOOLTIP = "<html><b>Metronome</b><br>" +
+		"Specifies whether the sequencer provide one beep per bar while playing or recording the song.</html>";
+		
+	static final String CLOCK_TOOLTIP = "<html><b>Clock</b><br>" +
+		"Where does control of the tempo, as well as play, pause, and stop controls, come from?"+
+		"<ul><li>Internal: specified here" +
+        "<li>Emit clock: internal (specified here), and also emitted via MIDI" + 
+        "</ul></html>";
 
     }

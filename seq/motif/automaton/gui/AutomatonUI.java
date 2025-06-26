@@ -123,7 +123,7 @@ public class AutomatonUI extends MotifUI
                 // reset all the buttons 
                 select(button);                 // redraws its inspector to reflect the change
                 resetStart();                   // re-assigns status to each of the buttons
-                redraw();
+                redraw(false);
                 }
             });
         menu.add(load);
@@ -191,15 +191,21 @@ public class AutomatonUI extends MotifUI
         
     public JPanel buildHeader()
         {
+        JPanel left = new JPanel();
+        left.setLayout(new BorderLayout());
         nodeGrid.removeAll();
-        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_DELAY));
-        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_CHORD));
-        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_FINISHED));
-        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_ITERATE));
-        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_RANDOM));
-        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_FORK));
-        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_JOIN));
-        return nodeGrid;
+        // A little trick to make everybody the same size -- a special constructor to set the width to the largest button
+        AutomatonNodeButton finished = new AutomatonNodeButton(AutomatonNodeButton.TYPE_FINISHED);
+        
+        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_DELAY, finished));
+        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_CHORD, finished));
+        nodeGrid.add(finished);
+        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_ITERATE, finished));
+        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_RANDOM, finished));
+        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_FORK, finished));
+        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_JOIN, finished));
+        left.add(nodeGrid, BorderLayout.WEST);
+        return left;
         }
         
     public AutomatonButton getButton(int i)
@@ -405,10 +411,10 @@ public class AutomatonUI extends MotifUI
             }
         }
         
-    public void redraw() 
+    public void redraw(boolean inResponseToStep) 
         {
         updateText();
-        super.redraw();
+        super.redraw(inResponseToStep);
         }
     
     public void updateText()

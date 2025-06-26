@@ -158,7 +158,7 @@ public class AutomatonNodeInspector extends WidgetList
                             }
                         // reset all the buttons 
                         owner.resetStart();
-                        owner.redraw();
+                        owner.redraw(false);
                         }
                     });
 

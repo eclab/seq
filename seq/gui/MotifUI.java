@@ -49,6 +49,8 @@ public abstract class MotifUI extends JPanel
         this.seq = seq;
         this.sequi = sequi;
         this.motif = motif;
+        setOpaque(false);
+        setBackground(Color.ORANGE);
                 
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -79,21 +81,28 @@ public abstract class MotifUI extends JPanel
         {       
         setLayout(new BorderLayout());  
         inspectorScroll.setBorder(null);
-        primaryScroll.setDoubleBuffered(true);
+//        primaryScroll.setDoubleBuffered(true);
         buildPrimary(primaryScroll);
         buildInspectors(inspectorScroll);
         JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        panel.setBackground(Color.BLUE);
         panel.setLayout(new BorderLayout());
         panel.add(primaryScroll, BorderLayout.CENTER);
         add(panel,BorderLayout.CENTER);
-        header = new JPanel();
-        header.setLayout(new BorderLayout());
-        header.add(buildHeader(), BorderLayout.WEST);
-        panel.add(header, BorderLayout.NORTH);
-        footer = new JPanel();
-        footer.setLayout(new BorderLayout());
-        footer.add(buildConsole(), BorderLayout.CENTER);
-        panel.add(footer, BorderLayout.SOUTH);
+        header = buildHeader();
+        if (header != null) panel.add(header, BorderLayout.NORTH);
+        footer = buildConsole();
+        if (footer != null) panel.add(footer, BorderLayout.SOUTH);
+        //header = new JPanel();
+        //header.setLayout(new BorderLayout());
+        //header.add(buildHeader(), BorderLayout.WEST);
+        //header = buildHeader();
+        //panel.add(header, BorderLayout.NORTH);
+        //footer = new JPanel();
+        //footer.setLayout(new BorderLayout());
+        //footer.add(buildConsole(), BorderLayout.CENTER);
+        //panel.add(footer, BorderLayout.SOUTH);
         
         String txt = "";
         ReentrantLock lock = seq.getLock();
@@ -148,12 +157,12 @@ public abstract class MotifUI extends JPanel
     public void buildMenu() { }
     
     /** This method should return the "console".  This is the area BELOW the primary scroll pane.
-        The default just fills it with an empty JPanel. */
-    public JPanel buildConsole() { return new JPanel(); }
+        The default just return null. */
+    public JPanel buildConsole() { return null; }
                         
     /** This method should return the "Header".  This is the area ABOVE the primary scroll pane, and is left-justified.
-        The default just fills it with an empty JPanel. */
-    public JPanel buildHeader() { return new JPanel(); }
+        The default just returns null. */
+    public JPanel buildHeader() { return null; }
                         
     /** This method should be implemented as { return getStaticIcon(); } */
     public abstract Icon getIcon();
@@ -223,7 +232,7 @@ public abstract class MotifUI extends JPanel
                 
     public JScrollPane getPrimaryScroll() { return primaryScroll; }
 
-    public void redraw() 
+    public void redraw(boolean inResponseToStep) 
         { 
         primaryScroll.repaint(); 
         }

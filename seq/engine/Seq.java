@@ -45,6 +45,7 @@ public class Seq
     public static final int NUM_BARS_PER_PART = 256;
     public static final int NUM_PARTS = 256;
     public static final int DEFAULT_BPM = 120;
+    public static final int MAX_BPM = 480;
     // Current BPM
     int bpm = DEFAULT_BPM;
     // The timer, pulses at the approporiate amount to do 192 PPQ at the current BPM
@@ -528,7 +529,7 @@ public class Seq
 
     // RECORDING    
     /** Sets recording and also throws away any existing input MIDI Messages */
-    public void setRecording(boolean val) { for(int i = 0; i < ins.length; i++) ins[i].getMessages(); recording = val; updateGUI(true); }
+    public void setRecording(boolean val) { for(int i = 0; i < ins.length; i++) ins[i].getMessages(); recording = val; updateGUI(false); }
     /** Returns recording. */
     public boolean isRecording() { return recording; }
 
@@ -612,13 +613,13 @@ public class Seq
                 
     public seq.gui.SeqUI getSeqUI() { return sequi; }
 
-    void updateGUI(boolean definitely) 
+    void updateGUI(boolean inResponseToStep) 
         {
         SwingUtilities.invokeLater(new Runnable()
             {
             public void run()
                 {
-                if (sequi != null) sequi.redraw(definitely);
+                if (sequi != null) sequi.redraw(inResponseToStep);
                 for(SeqListener listener : listeners)
                     {
                     listener.stateChanged(Seq.this);
@@ -694,7 +695,7 @@ public class Seq
             }
 //        playingClips.clear();
         informStopped();
-        updateGUI(true);
+        updateGUI(false);
         }
 
     /** Starts the Sequence from being stopped or paused. */
@@ -746,7 +747,7 @@ public class Seq
             {
             lock.unlock();
             }
-        updateGUI(true);
+        updateGUI(false);
         }
         
     /** Stops (pauses) the Sequence.  Clears all outstanding NOTE ON messages  Does not reset the time.  
@@ -778,7 +779,7 @@ public class Seq
             {
             lock.unlock();
             }
-        updateGUI(true);
+        updateGUI(false);
         }
     
     /** Blocks until the next time the sequence has stopped. */
@@ -848,7 +849,7 @@ public class Seq
         resetTime();
         cut();
 //        data.endArmed();
-        updateGUI(true);
+        updateGUI(false);
         }
         
     /** Clears all outstanding NOTE_ON messages (sends NOTE_OFF messages corresponding to them).  */
@@ -863,7 +864,7 @@ public class Seq
                 root.cut();
                 processNoteOffs(true);
                 releasing = false;
-                updateGUI(true);
+                updateGUI(false);
                 }
             }
         finally
@@ -1070,7 +1071,7 @@ public class Seq
             {
             lock.unlock();
             }
-        updateGUI(false);                            // should we do this at this rate?
+        updateGUI(true);                            // should we do this at this rate?
         }
     
     // called when we're finished because we ran out of time -- this is a rare situation
@@ -1091,7 +1092,7 @@ public class Seq
             cut();
             stop();
             }
-        updateGUI(true);                            // should we do this at this rate?
+        updateGUI(false);                            // should we do this at this rate?
         }
 
     public void sendPanic()
@@ -1855,11 +1856,14 @@ public class Seq
             }
         System.err.println(error);
         }
-
-    public static void main(String[] args) throws Exception
-    	{
-    	seq.gui.SeqUI.main(args);
-    	}
-
+        
+    // This is the document counter.  It increases every time we call SeqUI.doNew() or SeqUI.doLoad(), but not SeqUI.doMerge().
+    // Motifs use it to determine whether to reset their numbering back to 1.
+    static int document = 0;
+    /** Increments the document counter.  Only SeqUI.doNew() or SeqUI.doLoad() should do this. */
+    public static void incrementDocument() { document++; }
+    /** Checks the document counter.  If it's larger than the motif's internal document counter, 
+    	it knows that we have a new document, so the motif's motif counter should be reset. */
+    public static int getDocument() { return document; }
     }
 

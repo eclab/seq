@@ -53,7 +53,7 @@ public class PushButton extends JPanel
             }
         }
     
-    public void setToolTipText(String text) { button.setToolTipText(text); }
+    public void setToolTipText(String text) { super.setToolTipText(text); button.setToolTipText(text); }
     public boolean getPopsUpAbove() { return popsUpAbove; }
     public void setPopsUpAbove(boolean val) { popsUpAbove = val; }
     

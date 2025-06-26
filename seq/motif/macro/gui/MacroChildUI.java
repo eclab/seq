@@ -79,10 +79,4 @@ public class MacroChildUI extends MotifUI
     public void buildPrimary(JScrollPane scroll)
         {
         }
-                
-    public JPanel buildConsole()
-        {
-        JPanel console = new JPanel();
-        return console; 
-        }
     }

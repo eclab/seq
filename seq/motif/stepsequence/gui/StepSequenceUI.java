@@ -23,7 +23,7 @@ public class StepSequenceUI extends MotifUI
     StepSequenceInspector ssInspector;
     TrackInspector trackInspector;
     StepInspector stepInspector;
-        
+    
     JPanel inspectorPane;
     JPanel inspectorPane2; 
     JPanel ssOuter;
@@ -46,25 +46,27 @@ public class StepSequenceUI extends MotifUI
     
     public int getZoom() { return zoom; }
 
-    HashSet<StepUI> dirtySteps = new HashSet<>();
     boolean allDirty = false;
-    boolean updating = false;
-        
-    public void markAllDirty() { allDirty = true; }
-    public void markDirty(StepUI step)
-        {
-        if (!allDirty) dirtySteps.add(step);
-        }
-    public void clearAllDirty() { allDirty = false; dirtySteps.clear(); updating = false; }
-    public boolean isDirty(StepUI step) { return allDirty || dirtySteps.contains(step);  }
-    public boolean isUpdating() { return updating; }
+    public void setAllDirty(boolean val) { allDirty = val; }
+	public boolean isAllDirty() { return allDirty; }
+    public void setDirty(int track, int step, boolean val) { getTrack(track).getStep(step).setDirty(true); }
     
     int[] lastSteps = null;
     int[] currentSteps = null;
     
+    public int getTrackWidth()
+    	{
+    	return getTrack(0).getWidth();
+    	}
+    	
+    public int getTrackX()
+    	{
+    	return primaryScroll.getViewport().getViewPosition().x;
+    	}
+
     protected void paintComponent(Graphics g)
         {
-        if (allDirty)
+        if (isAllDirty())
             {
             super.paintComponent(g);
             }
@@ -179,6 +181,8 @@ public class StepSequenceUI extends MotifUI
         this.seq = seq;
         this.ss = ss;
         this.sequi = sequi;
+        setOpaque(false);
+//        setBackground(Color.WHITE);
         //build();
         }
         
@@ -232,7 +236,7 @@ public class StepSequenceUI extends MotifUI
           
     public void updateDirty()
         {
-        updating = true;
+        //updating = true;
         StepSequenceClip clip = ((StepSequenceClip)(getDisplayClip()));
         if (clip != null)
             {
@@ -271,16 +275,15 @@ public class StepSequenceUI extends MotifUI
                                 
             // Now, who's dirty?
             if (lastSteps == null)
-                markAllDirty();
+                setAllDirty(true);
             else
                 {
                 for(int i = 0; i < numTracks; i++)
                     {
                     if (lastSteps[i] != currentSteps[i]) // it's changed
                         {
-                        TrackUI trackui = getTrack(i);
-                        markDirty(trackui.getStep(lastSteps[i]));
-                        markDirty(trackui.getStep(currentSteps[i]));
+                        setDirty(i, lastSteps[i], true);
+                        setDirty(i, currentSteps[i], true);
                         }
                     }
                 }
@@ -291,7 +294,7 @@ public class StepSequenceUI extends MotifUI
             allDirty = true;
             }
         }
-
+        
     public void buildPrimary(JScrollPane scroll)
         {
         trackBox = new Box(BoxLayout.Y_AXIS)
@@ -301,29 +304,18 @@ public class StepSequenceUI extends MotifUI
                 updateDirty();
                 Graphics2D g = (Graphics2D) _g;
                 RenderingHints oldHints = g.getRenderingHints();
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-                /*
-                  seq.getLock().lock();
-                  // We're locking on everything, which should be faster than individual locks for the steps
-                  try
-                  {
-                  super.paint(_g);
-                  }
-                  finally
-                  {
-                  seq.getLock().unlock();
-                  }
-                  g.setRenderingHints(oldHints);
-                */
                 super.paint(_g);
-                clearAllDirty();
+                setAllDirty(false);
                 }
-            };
+           };
+//        trackBox.setBackground(Color.YELLOW);
         trackBoxOuter = new JPanel();
         trackBoxOuter.setOpaque(false);
         trackBoxOuter.setLayout(new BorderLayout());
         trackBoxOuter.add(trackBox, BorderLayout.NORTH);
+        trackBoxOuter.setBackground(Color.RED);
         trackHeaders = new Box(BoxLayout.Y_AXIS);
         trackHeaders.setBorder(matte);
 
@@ -339,10 +331,15 @@ public class StepSequenceUI extends MotifUI
         trackHeadersOuter.add(trackHeaders, BorderLayout.NORTH);
 
         JPanel boxHolder = new JPanel();
-        boxHolder.setOpaque(false);
         boxHolder.setLayout(new BorderLayout());
         boxHolder.add(trackBoxOuter, BorderLayout.WEST);
+        boxHolder.setBackground(Color.BLUE);
+        boxHolder.setOpaque(false);
         scroll.setViewportView(boxHolder);
+        scroll.setBackground(Color.GREEN);
+        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
+        scroll.getViewport().setBackground(Color.RED);
         scroll.setRowHeaderView(trackHeadersOuter);
         
         ruler = new Ruler(seq, ss, this);
@@ -359,7 +356,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         addButton.getButton().setPreferredSize(new Dimension(24, 24));
-        addButton.setToolTipText("Add new track");
+        addButton.setToolTipText(ADD_BUTTON_TOOLTIP);
 
         PushButton removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
             {
@@ -369,7 +366,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
-        removeButton.setToolTipText("Delete selected track");
+        removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
 
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
@@ -379,7 +376,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
-        copyButton.setToolTipText("Copy selected track");
+        copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
 
 
         PushButton zoomInButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/zoomin.png")))
@@ -390,7 +387,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         zoomInButton.getButton().setPreferredSize(new Dimension(24, 24));
-        zoomInButton.setToolTipText("Zoom in");
+        zoomInButton.setToolTipText(ZOOM_IN_BUTTON_TOOLTIP);
 
         PushButton zoomOutButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/zoomout.png")))
             {
@@ -400,7 +397,7 @@ public class StepSequenceUI extends MotifUI
                 }
             };
         zoomOutButton.getButton().setPreferredSize(new Dimension(24, 24));
-        zoomOutButton.setToolTipText("Zoom out");
+        zoomOutButton.setToolTipText(ZOOM_OUT_BUTTON_TOOLTIP);
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
@@ -675,6 +672,19 @@ public class StepSequenceUI extends MotifUI
   }
 */
                 
+    public void redraw(boolean inResponseToStep) 
+        { 
+        if (inResponseToStep)
+        	{
+			primaryScroll.getViewport().repaint();			// just repaint the viewport, not the scroll view
+			ruler.repaint();
+        	}
+        else 
+        	{
+        	super.redraw(inResponseToStep);
+        	}
+        }
+    
 
     public SimpleColorMap getStepVelocityMap() { return stepVelocityMap; }
         
@@ -800,4 +810,29 @@ public class StepSequenceUI extends MotifUI
         
         seq.waitUntilStopped();         // we're looping so this will never exit
         }
+
+
+
+
+
+
+	/*** Tooltips ***/
+	
+	static final String ADD_BUTTON_TOOLTIP = "<html><b>Add Track</b><br>" +
+		"Adds a new track to the bottom of the track list.</html>";
+	
+	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Track</b><br>" +
+		"Removes the selected track.<br><br>" +
+		"The selected track has a red track number and name, and a blue selected step.";
+	
+	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Track</b><br>" +
+		"Duplicates the selected track, inserting the new one just under it.<br><br>" +
+		"The selected track has a red track number and name, and a blue selected step.";
+		
+	static final String ZOOM_IN_BUTTON_TOOLTIP = "<html><b>Zoom In</b><br>" +
+		"Magnifies the view of the step sequence (in time).</html>";
+	
+	static final String ZOOM_OUT_BUTTON_TOOLTIP = "<html><b>Zoom Out</b><br>" +
+		"Demagnifies the view of the step sequence (in time).</html>";
+	
     }

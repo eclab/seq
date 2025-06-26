@@ -33,6 +33,7 @@ public class Out
     // Aftertouch is polyphonic
     boolean polyphonicAftertouch = false;
         
+    // Indicates that an aftertouch message is a Channel Aftertouch message, rather than a Polyphonic Aftertouch message
     public static final int CHANNEL_AFTERTOUCH = -1;
     
     public void setSeq(Seq val) { seq = val; }

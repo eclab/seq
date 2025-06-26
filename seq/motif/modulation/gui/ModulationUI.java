@@ -175,10 +175,10 @@ public class ModulationUI extends MotifUI
             }
         }
         
-    public void redraw() 
+    public void redraw(boolean inResponseToStep) 
         {
         updateText();
-        super.redraw();
+        super.redraw(inResponseToStep);
         }
           
     public void doRemove()

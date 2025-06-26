@@ -29,11 +29,9 @@ public class EventTable extends JPanel
     // WHEN
     // NOTE
     // UNTIL
-    // AFTERTOUCH
-    // BEND
-    // CC
+    // OTHER
         
-    JTable table = new JTable(0, 5);
+    JTable table = new JTable(0, 3);
     int index = -1;
     Seq seq;
         
@@ -110,7 +108,7 @@ public class EventTable extends JPanel
     public void setIndex(int index)
         {
         if (this.index == index) return; // nothing changed
-                
+         
         this.index = index;
         if (index >= 0)
             {
@@ -189,11 +187,19 @@ public class EventTable extends JPanel
                 }
             else if (evt instanceof Notes.CC)
                 {
-                obj[pos][4] = (Notes.CC)evt;
+                obj[pos][3] = (Notes.CC)evt;
                 }
             else if (evt instanceof Notes.Aftertouch)
                 {
-                obj[pos][5] = (Notes.Aftertouch)evt;
+                obj[pos][3] = (Notes.Aftertouch)evt;
+                }
+            else if (evt instanceof Notes.NRPN)
+                {
+                obj[pos][3] = (Notes.NRPN)evt;
+                }
+            else if (evt instanceof Notes.RPN)
+                {
+                obj[pos][3] = (Notes.RPN)evt;
                 }
             pos++;
             }
@@ -201,7 +207,7 @@ public class EventTable extends JPanel
         table.setModel(
             new DefaultTableModel(
                 obj,
-                new Object[] { "When", "Note", "Until", "Bend", "CC", "Aftertouch" })
+                new Object[] { "When", "Note", "Until", "Other" })
                 {
                 public boolean isCellEditable(int row, int column) { return false; }
                 });

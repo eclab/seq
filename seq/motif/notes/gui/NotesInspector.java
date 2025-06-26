@@ -32,6 +32,8 @@ public class NotesInspector extends WidgetList
     JCheckBox recordBend;
     JCheckBox recordCC;
     JCheckBox recordAftertouch;
+    JCheckBox convertNRPNRPN;
+    
     WidgetList widgetList = new WidgetList();
     
     public static final String[] CC_7_NAMES = new String[]
@@ -248,6 +250,20 @@ public class NotesInspector extends WidgetList
                     }
                 });
                 
+            convertNRPNRPN = new JCheckBox();
+            convertNRPNRPN.setSelected(notes.getRecordCC());
+            convertNRPNRPN.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setConvertNRPNRPN(convertNRPNRPN.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+                
             recordAftertouch = new JCheckBox();
             recordAftertouch.setSelected(notes.getRecordAftertouch());
             recordAftertouch.addActionListener(new ActionListener()
@@ -361,7 +377,7 @@ public class NotesInspector extends WidgetList
             }
         finally { lock.unlock(); }
 
-        build(new String[] { "Name", "Out", "In", "End", "Echo", "Armed", "Record Bend", "Record CC", "Record Aftertouch" }, 
+        build(new String[] { "Name", "Out", "In", "End", "Echo", "Armed", "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN"}, 
             new JComponent[] 
                 {
                 name,
@@ -371,8 +387,9 @@ public class NotesInspector extends WidgetList
                 echo,
                 armed, 
                 recordBend,
+                recordAftertouch,
                 recordCC,
-                recordAftertouch
+                convertNRPNRPN,
                 });
                 
         widgetList.build(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" },
@@ -445,6 +462,7 @@ public class NotesInspector extends WidgetList
             recordBend.setSelected(notes.getRecordBend()); 
             recordCC.setSelected(notes.getRecordCC()); 
             recordAftertouch.setSelected(notes.getRecordAftertouch()); 
+            convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 parameterType[i].setSelectedIndex(notes.getMIDIParameterType(i));
@@ -460,4 +478,35 @@ public class NotesInspector extends WidgetList
             if (parameterLSB[i] != null) parameterLSB[i].redraw();
             }
         }
+
+	
+	/*** Tooltips ***/
+	
+	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+		"Sets the name of the Notes.  This will appear in the Motif List at left.</html>";
+
+	static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
+		"Sets the MIDI output for the Notes.</html>";
+	
+	static final String IN_TOOLTIP = "<html><b>In</b><br>" +
+		"Sets the MIDI input for the Notes.</html>";
+	
+	static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
+		"Sets the <i>default</i> MIDI note output for all steps in the track.<br>" +
+		"You can override this value in the individual step's inspector.</html>";
+			
+	static final String SET_NOTE_TOOLTIP = "<html><b>Set All Note</b><br>" +
+		"Resets all steps to use the MIDI output note as shown at left.</html>";
+	
+	static final String LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
+		"Sets the number of steps in the track.  This doesn't take effect until the <b>Set</b><br>" +
+		"button is pressed.  Changing the number of steps overrides the <b>Track Len</b> setting<br>" +
+		"in the Step Sequence inspector.  To return to the default, double-click the dial (and press<br>" +
+		"the Set button).</html>";
+			
+	static final String SET_LENGTH_TOOLTIP = "<html><b>Set All Length</b><br>" +
+		"Changes the number of steps in the track to the <b>Track Len</b> value at left.</html>";
+	
+
+
     }

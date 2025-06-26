@@ -404,6 +404,7 @@ The Motif Menu has several options.
 	\item You can {\bf Sort Motifs}, which organizes motifs so that children appear lower in the list than their parents.  
 	\item You specify which kind of Motif is the {\bf initial one displayed} when Seq launches.
 	\item You can change the motif buttons to a {\bf smaller size}.
+	\item You can set things such that {\bf arming a motif} automatically disarms all the others.  If your Motif (notably Notes) is set to automatically arm itself when first created, this will also disarm the others.
 	\item You can {\bf disarm all motifs} so that they no longer record MIDI.  This is useful if you've forgotten which ones you've armed so far.
 	\end{itemize}
 
@@ -505,7 +506,7 @@ Step Sequence is one of the most complex motifs, as it is a reasonably full-feat
 
 \paragraph{Steps}
 
-A Step is either {\bf off} (gray) or {\bf on}.  When on, the Step has a {\bf velocity} (volume), represented by a gradeated color between white and red.  Each Step can also have its own {\bf Note Pitch}, its own number of {\bf Flams} (ratchets), and a declaration of {\bf When} (or perhaps better called {\it whether}) the Step plays when its time is up.  The When setting can be {\it always}, or it can play with some {\it probability}, or it can play with some {\it pattern}.  An example pattern is \textsf{O O X}, which means to play the first two times the Step Sequence is iterated, and then not play the third time, and then repeat. 
+A Step is either {\bf off} (gray) or {\bf on}.  When on, the Step has a {\bf velocity} (volume), represented by a gradiated color between white and red.  Each Step can also have its own {\bf Note Pitch}, its own number of {\bf Flams} (ratchets), and a declaration of {\bf When} (or perhaps better called {\it whether}) the Step plays when its time is up.  The When setting can be {\it always}, or it can play with some {\it probability}, or it can play with some {\it pattern}.  An example pattern is \textsf{O O X}, which means to play the first two times the Step Sequence is iterated, and then not play the third time, and then repeat. 
 
 All four of these features (Note, Velocity, Flams, and When) also can be set to the special value {\bf Default}.   If set this way, the feature will defer to the feature value for its Track.
 
@@ -515,7 +516,7 @@ Every fourth Step is bolded in the interface only for visual assistance.    The 
 
 A track is an iteration of Steps played one after another.  Even though tracks can have different numbers of steps, they will play their steps such that they all finish at the same time.
 
-A Track has a {\bf Track Header} and then the list of Steps.  You can change the order of a Track in the list of Tracks by dragging its Track Header up or down.  A Track also has a {\bf Name}, which you can set in its Inspector,  Track Headers have three buttons: {\bf Arm (A), Solo (S),} and {\bf Mute (M)}.  If you select Arm, then the track is armed for recording (see {\bf Recording} below).   If you select Mute, then that track will not play.  If you select Solo, then {\it only} that track will play.
+A Track has a {\bf Track Header} and then the list of Steps.  You can change the order of a Track in the list of Tracks by dragging its Track Header up or down.  A Track also has a {\bf Name}, which you can set in its Inspector,  Track Headers have three buttons: {\bf Learn (L), Solo (S),} and {\bf Mute (M)}.  If you select Mute, then that track will not play.  If you select Solo, then {\it only} that track will play.  If you select Learn, then the track is {\bf learning} its track note while playing.  This means that if you press a key, the track will use that key as its output {\bf Note}.     
 
 You can add, delete, and duplicate tracks with the buttons at bottom.  You can also Zoom In and Zoom Out.  The currently selected Track has its track number highlighted in red.
 
@@ -537,10 +538,11 @@ At top, the Step Sequence inspector defines the global settings for the Step Seq
 
 You can also set the default {\bf Swing}, {\bf Velocity}, and {\bf Out}, and Tracks will defer to these if set to {\it Default}.  The {\bf Track Length} indicates the initial number of Steps for newly added Tracks. Finally, {\bf In} specifies the MIDI Input to use when recording tracks.
 
+\ignore{
 \paragraph{Recording a Step Sequence}
 
 If you arm one or more Tracks, set their Notes, and set the Sequence's MIDI Input accordingly, then you can record in Notes to those tracks when you press Record on Seq.   You will find this easier if you turn on the metronome and if you set the Step Sequence to be the Root, so it records immediately.  Remember that if your Step Sequence motif is not a descendant of the Root, it will never be reached to do Recording.
-
+}
 
 
 \clearpage
@@ -565,19 +567,24 @@ Notes has a MIDI Out and a MIDI In.  The MIDI Out is of course where the MIDI ev
 
 You can select ranges of notes (for various menu actions), and when Notes is playing, it will highlight the last event played (and scroll to it).
 
-\paragraph{Notes and Events} The Notes object supports four kinds of events: Notes, Pitch Bend, CC, and Aftertouch.  If you select an event, its inspector pops up.  All four events have a time of onset called {\bf When}.  You can change this value, but you must press {\bf Set} to set it, because it will change the order of the note in the list.
+\paragraph{Notes and Events} The Notes object supports several kinds of events: Notes, Pitch Bend, CC, Aftertouch, RPN, and NRPN.  If you select an event, its inspector pops up.  All events have a time of onset called {\bf When}.  You can change this value, but you must press {\bf Set} to set it, because it will change the order of the note in the list.  Additionally:
 
-Notes also have a {\bf Length}, a {\bf Pitch}, a {\bf Velocity} (volume), and a {\bf Release Velocity}.  Note that the velocity cannot be set to 0.  The Length comes with some useful presets.  Unlike When, changing Length is immediate.
+\begin{itemize}
 
-Pitch Bend has a bend value called, not surprisingly, {\bf Bend}. It's positive or negative.
+\item Notes also have a {\bf Length}, a {\bf Pitch}, a {\bf Velocity} (volume), and a {\bf Release Velocity}.  Note that the velocity cannot be set to 0.  The Length comes with some useful presets.  Unlike When, changing Length is immediate.
 
-CC events each have a {\bf Parameter} and a {\bf Value}.
+\item Pitch Bend has a bend value called, not surprisingly, {\bf Bend}. It's positive or negative.
 
-Aftertouch events each have a {\bf Pitch} and a {\bf Value}.
+\item CC events each have a {\bf Parameter} and a {\bf Value}.
+
+\item Aftertouch events each have a {\bf Pitch} and a {\bf Value}.
+
+\item RPN and NRPN events  each have a {\bf Parameter} (broken into MSB and LSB) and a {\bf Value} (also broken into MSB and LSB).
+\end{itemize}
 
 \paragraph{Recording Notes} To record notes, first make sure that its {\bf MIDI In} is set to your device.  Then {\bf Arm} the Notes in its Inspector, press Record in Seq, and record in some notes.  You'll find it easier if you turned on the Metronome.  If you select {\bf Echo} in the Inspector, then all events received via the MIDI In will be echoed out the MIDI Out: you probably would want that.  Remember that if your Notes motif is not a descendant of the Root, it will never be reached to do Recording.
 
-When recording, you can filter out CC, Pitch Bend, and Aftertouch in real-time: just uncheck the {\bf Record Bend}, {\bf Record CC}, or {\bf Record Aftertouch} checkboxes as appropriate.  Edisyn will store these in its Preferences and configure them this way next time as well.
+When recording, you can filter out CC (which also filters out RPN and NRPN), Pitch Bend, and Aftertouch in real-time: just uncheck the {\bf Record Bend}, {\bf Record CC}, or {\bf Record Aftertouch} checkboxes as appropriate.  You can also postprocess CC to produce RPN and NRPN when appropriate by checking {\bf Make RPN/NRPN}.  Seq will store these in its Preferences and configure them this way next time as well.
 
 \paragraph{The Notes Menu} Notes has a number of items under its menu:
 
@@ -606,7 +613,7 @@ When recording, you can filter out CC, Pitch Bend, and Aftertouch in real-time: 
 
 \item{\bf Delete Selection}\quad deletes the selection.
 
-\item{\bf Filter...}\quad gives options for filtering out (deleting) notes, bend data, CC data, or aftertouch data.
+\item{\bf Filter...}\quad gives options for filtering out (deleting) notes, bend data, CC data, RPN and NRPN data, or aftertouch data.
 
 \item{\bf Add Note}\quad adds a note and selects it.
 

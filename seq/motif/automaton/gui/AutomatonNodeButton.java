@@ -53,6 +53,13 @@ public class AutomatonNodeButton extends JButton implements Transferable
     
     public int getType() { return type; }
 
+    public AutomatonNodeButton(int type, AutomatonNodeButton thisSize)
+    	{
+    	this(type);
+    	setPreferredSize(thisSize.getPreferredSize());
+    	setMinimumSize(thisSize.getMinimumSize());
+    	}
+
     public AutomatonNodeButton(int type)
         {
         this.type = type;

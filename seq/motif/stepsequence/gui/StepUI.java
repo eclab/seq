@@ -14,7 +14,7 @@ import javax.swing.*;
 import java.util.concurrent.locks.*;
 import java.awt.geom.*;
 
-public class StepUI extends JPanel
+public class StepUI extends JComponent
     {
     public static final Stroke beatStroke = new BasicStroke(3.0f);
     public static final Stroke offStroke = new BasicStroke(1.0f);
@@ -42,10 +42,10 @@ public class StepUI extends JPanel
     
     static int counter = 0;
     
-    // local repaint dirtiness only
     boolean dirty;
-    public void repaint() { dirty = true; super.repaint(); }
-        
+    public boolean isDirty() { return dirty; }
+    public void setDirty(boolean val) { dirty = val; repaint(); }
+    
     public StepUI(Seq seq, StepSequence ss, StepSequenceUI ssui, TrackUI track, int trackNum, int stepNum)
         {
         this.seq = seq;
@@ -62,12 +62,12 @@ public class StepUI extends JPanel
             public void mouseEntered(MouseEvent e)
                 {
                 mouseOver = true;
-                repaint();
+                setDirty(true);
                 }
             public void mouseExited(MouseEvent e)
                 {
                 mouseOver = false;
-                repaint();
+                setDirty(true);
                 }
                         
             public void mouseReleased(MouseEvent e)
@@ -88,7 +88,7 @@ public class StepUI extends JPanel
                 else
                     {
                     toggleOn();
-                    repaint();
+                	setDirty(true);
                     }
                 if (oldStepNum != StepUI.this.stepNum || oldTrackNum != StepUI.this.trackNum)
                     {
@@ -97,6 +97,7 @@ public class StepUI extends JPanel
                     }
                 }
             });
+        setToolTipText(TOOLTIP);
         }
         
     public boolean isOn()
@@ -130,26 +131,20 @@ public class StepUI extends JPanel
     public Dimension getMaximumSize() { return new Dimension(3000, 3000); }
     protected void paintComponent(Graphics _g)
         {
-        // First, do I paint myself?
-        // If I'm not updating then I definitely need to repaint, it's probably a scroll
-        /*
-          boolean needToRepaint =
-          (!ssui.isUpdating() ||
-          // Next, if I'm locally dirty, definitely need to repaint
-          dirty ||
-          // Next, if I'm in the dirty list, need to repaint
-          ssui.isDirty(this));
-        */
-        boolean needToRepaint = true;           // for the moment, sigh.  Repainting dirty is not working right now...
-                
-        if (!needToRepaint) return;
-        dirty = false;
+        // NOTE FROM JUNE 10 2025: Dirtying code works, but Java is erasing the entire background of the JScrollPane
+        // and filling it with the background of the enclosing pane, regardless of setting of opacity or double buffering.
+        // I've spent a long time working on trying to prevent this, but it doesn't work.  So we have to just cut out
+        // setting dirty.
+        //
+        // I *did* manage to get the code to repaint much faster by turning off antialising.  To make things look better,
+        // I changed the step boxes to rectangles rather than round rects.  Also the fine-grained per-step locking doesn't
+        // seem to have a big impact on total speed, so it's retained for now.
         
-        /// WARNING: NO LOCK.  This is because StepSequenceUI.Paint() locks for us
-
-        //System.err.println("Painting " + trackNum + " " + stepNum + " " + !ssui.isUpdating() + " " + dirty + " " + ssui.isDirty(this));
-                
-        super.paintComponent(_g);
+        //if (!isDirty() && !ssui.isAllDirty()) return;
+        //setDirty(false);
+        
+        // Not needed, looks like, since the background is getting erased anyway :-(
+        //super.paintComponent(_g);
 
         // Get data
         boolean on = false;
@@ -173,13 +168,18 @@ public class StepUI extends JPanel
         finally { lock.unlock(); }
 
         Graphics2D g = (Graphics2D) _g;
+        
+        boolean selected = ssui.getSelectedTrackNum() == trackNum && ssui.getSelectedStepNum() == stepNum;
+        boolean beat = (selected || stepNum % 4 == 0);
 
         g.setPaint(on ? ssui.getStepVelocityMap().getColor(finalVelocity) : offColor);
-        RoundRectangle2D.Double rect = new RoundRectangle2D.Double(2, 2, getBounds().width - 4, getBounds().height - 4, 8, 8);
+        
+        int inset = (beat ? 1 : 0);
+        Rectangle2D.Double rect = new Rectangle2D.Double(2 + inset, 2 + inset, getBounds().width - 4 - (inset * 2), getBounds().height - 4 - (inset * 2));
+        //RoundRectangle2D.Double rect = new RoundRectangle2D.Double(2, 2, getBounds().width - 4, getBounds().height - 4, 8, 8);
         g.fill(rect);
-        boolean selected = ssui.getSelectedTrackNum() == trackNum && ssui.getSelectedStepNum() == stepNum;
         g.setPaint(selected ? Color.BLUE : (mouseOver ? Color.GREEN : strokeColor));
-        g.setStroke(selected || stepNum % 4 == 0 ? beatStroke : offStroke);
+        g.setStroke(beat ? beatStroke : offStroke);
         g.draw(rect);
                 
         if (iAmCurrentStep)
@@ -189,4 +189,14 @@ public class StepUI extends JPanel
             g.fill(ellipse);
             }
         }
+
+
+	static final String TOOLTIP = "<html><b>Step</b><br>" +
+		"Click on the step to enable or disable it and also select it.  Shift-Click or Right-Click<br>"+
+		"the step to just select it.  When selected, the step inspector is shown at right,<br>" +
+		"along with the step's track inspector.<br><br>" +
+		"The step color indicates its velocity.  Set the velocity in the step inspector, or set<br>" +
+		"the track's default velocity in the track inspector, or set the step sequence's default<br>" +
+		"velocity in the step sequencer inspector, all at right.";
+	
     }

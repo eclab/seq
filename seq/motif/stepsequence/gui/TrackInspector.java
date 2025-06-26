@@ -80,6 +80,7 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            trackExclusive.setToolTipText(EXCLUSIVE_RANDOM_TOOLTIP);
 
             trackNote = new SmallDial(-1)
                 {
@@ -105,6 +106,7 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+            trackNote.setToolTipText(NOTE_TOOLTIP);
 
             setTrackNote = new PushButton("Set All")
                 {
@@ -122,6 +124,7 @@ public class TrackInspector extends WidgetList
                     ssui.getStepInspector().revise();
                     }
                 };
+            setTrackNote.setToolTipText(SET_NOTE_TOOLTIP);
 
             trackLen = (ss.getNumSteps(trackNum) - 1) / 127.0;
             numSteps = new SmallDial(-1)
@@ -130,6 +133,7 @@ public class TrackInspector extends WidgetList
                 public double getValue() { return trackLen; }
                 public void setValue(double val) { trackLen = val; }
                 };
+            numSteps.setToolTipText(LENGTH_TOOLTIP);
 
             setNumSteps = new PushButton("Set")
                 {
@@ -142,9 +146,10 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }
                     ssui.tracks.get(trackNum).updateLength();
                     ssui.updateSizes();
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
+            setNumSteps.setToolTipText(SET_LENGTH_TOOLTIP);
 
 
             trackGain = new SmallDial(-1)
@@ -163,9 +168,10 @@ public class TrackInspector extends WidgetList
                     lock.lock();
                     try { ss.setTrackGain(trackNum, val); }
                     finally { lock.unlock(); }
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
+            trackGain.setToolTipText(GAIN_TOOLTIP);
 
             trackFlam = new JComboBox(FLAM_STRINGS);
             trackFlam.setSelectedIndex(ss.getTrackFlam(trackNum));
@@ -181,6 +187,8 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+
+            trackFlam.setToolTipText(FLAM_TOOLTIP);
 
             setTrackFlam = new PushButton("Set All")
                 {
@@ -198,6 +206,7 @@ public class TrackInspector extends WidgetList
                     ssui.getStepInspector().revise();
                     }
                 };
+            setTrackFlam.setToolTipText(SET_FLAM_TOOLTIP);
 
             String[] chokes = new String[ss.getNumTracks() + 1];
             chokes[0] = "None";
@@ -218,6 +227,8 @@ public class TrackInspector extends WidgetList
                     }
                 });
 
+            trackChoke.setToolTipText(CHOKE_TOOLTIP);
+
             trackWhen = new JComboBox(WHEN_STRINGS);
             trackWhen.setSelectedIndex(ss.getTrackWhen(trackNum));
             trackWhen.addActionListener(new ActionListener()
@@ -232,6 +243,7 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            trackWhen.setToolTipText(WHEN_TOOLTIP);
 
             setTrackWhen = new PushButton("Set All")
                 {
@@ -249,7 +261,8 @@ public class TrackInspector extends WidgetList
                     ssui.getStepInspector().revise();
                     }
                 };
-                        
+            setTrackWhen.setToolTipText(SET_WHEN_TOOLTIP);
+
             trackSwing = new SmallDial(-1, 0)
                 {
                 protected String map(double val) 
@@ -275,6 +288,9 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+            trackSwing.setToolTipText(SWING_TOOLTIP);
+
+
             trackVelocity = new SmallDial(-1, 0)
                 {
                 protected String map(double val) 
@@ -297,9 +313,10 @@ public class TrackInspector extends WidgetList
                     lock.lock();
                     try { ss.setTrackVelocity(trackNum, (int)(val * 127)); }
                     finally { lock.unlock(); }
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
+            trackVelocity.setToolTipText(VELOCITY_TOOLTIP);
                 
             setTrackVelocity = new PushButton("Set All")
                 {
@@ -317,6 +334,7 @@ public class TrackInspector extends WidgetList
                     ssui.getStepInspector().revise();
                     }
                 };
+            setTrackVelocity.setToolTipText(SET_VELOCITY_TOOLTIP);
 
             Out[] seqOuts = seq.getOuts();
             String[] outs = new String[seqOuts.length + 1];
@@ -341,6 +359,8 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            trackOut.setToolTipText(OUT_TOOLTIP);
+
                         
             trackName = new StringField(null, ss.getTrackName(trackNum))
                 {
@@ -358,6 +378,7 @@ public class TrackInspector extends WidgetList
                     }
                 };
             trackName.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
+            trackName.setToolTipText(NAME_TOOLTIP);
 
             }
         finally { lock.unlock(); }
@@ -366,29 +387,32 @@ public class TrackInspector extends WidgetList
         lengthPanel.setLayout(new BorderLayout());
         lengthPanel.add(numSteps.getLabelledDial("128"), BorderLayout.WEST);
         lengthPanel.add(setNumSteps, BorderLayout.EAST);
-
+        lengthPanel.setToolTipText(LENGTH_TOOLTIP);
 
         JPanel notePanel = new JPanel();
         notePanel.setLayout(new BorderLayout());
         notePanel.add(trackNote.getLabelledDial("C#-2"), BorderLayout.WEST);
         notePanel.add(setTrackNote, BorderLayout.EAST);
+        notePanel.setToolTipText(NOTE_TOOLTIP);
 
 
         JPanel velocityPanel = new JPanel();
         velocityPanel.setLayout(new BorderLayout());
         velocityPanel.add(trackVelocity.getLabelledDial("<html><i>Default</i></html>"), BorderLayout.WEST);
         velocityPanel.add(setTrackVelocity, BorderLayout.EAST);
-
+        velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
 
         JPanel flamPanel = new JPanel();
         flamPanel.setLayout(new BorderLayout());
         flamPanel.add(trackFlam, BorderLayout.CENTER);          // so it stretches
         flamPanel.add(setTrackFlam, BorderLayout.EAST);
+        flamPanel.setToolTipText(FLAM_TOOLTIP);
 
         JPanel whenPanel = new JPanel();
         whenPanel.setLayout(new BorderLayout());
         whenPanel.add(trackWhen, BorderLayout.CENTER);          // so it stretches
         whenPanel.add(setTrackWhen, BorderLayout.EAST);
+        whenPanel.setToolTipText(WHEN_TOOLTIP);
 
         build(new String[] { "Name", "Gain", "Note", "   Velocity", "Flams", "When", "Choke", "Swing", "Ex. Rand.", "Out", "Length" }, 
             new JComponent[] 
@@ -433,4 +457,81 @@ public class TrackInspector extends WidgetList
         trackVelocity.redraw();
         numSteps.redraw();
         }
+
+	/*** Tooltips ***/
+	
+	static final String EXCLUSIVE_RANDOM_TOOLTIP = "<html><b>Exclusive Random</b><br>" +
+		"Sets whether the track is part of the exclusive random group.<br><br>" +
+		"Only one track in the exclusive random group is played each iteration.<br>" +
+		"The others are muted.</html>";
+	
+	static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
+		"Sets the <i>default</i> MIDI note output for all steps in the track.<br>" +
+		"You can override this value in the individual step's inspector.</html>";
+			
+	static final String SET_NOTE_TOOLTIP = "<html><b>Set All Note</b><br>" +
+		"Resets all steps to use the MIDI output note as shown at left.</html>";
+	
+	static final String LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
+		"Sets the number of steps in the track.  This doesn't take effect until the <b>Set</b><br>" +
+		"button is pressed.  Changing the number of steps overrides the <b>Track Len</b> setting<br>" +
+		"in the Step Sequence inspector.  To return to the default, double-click the dial (and press<br>" +
+		"the Set button).</html>";
+			
+	static final String SET_LENGTH_TOOLTIP = "<html><b>Set All Length</b><br>" +
+		"Changes the number of steps in the track to the <b>Track Len</b> value at left.</html>";
+	
+	static final String GAIN_TOOLTIP = "<html><b>Gain</b><br>" +
+		"Sets the gain (volume) for all steps in the track.</html>";
+			
+	static final String FLAM_TOOLTIP = "<html><b>Flams</b><br>" +
+		"Sets the <i>default</i> number of <i>flams</i> (or <i>ratchets</i>) for all steps in the track.<br>" +
+		"You can override this value in the individual step's inspector.<br><br>"+
+		"When a step has flams, then it is played multiple times, spaced evenly, within the same step.</html>";
+			
+	static final String SET_FLAM_TOOLTIP = "<html><b>Set All Flams</b><br>" +
+		"Resets all steps to use the default number of flams as shown at left.</html>";
+		
+	static final String CHOKE_TOOLTIP = "<html><b>Choke</b><br>" +
+		"Sets the choke track for this track.  The choke track can be any of the first 16<br>" +
+		"tracks in the sequence, or none.<br><br>" +
+		"When a step is playing in this track, it will mute any step playing or about to play<br>" +
+		"in the choke track.  This is useful for closed high hats to mute open high hats, for example.</html>";
+		
+	static final String WHEN_TOOLTIP = "<html><b>When</b><br>" +
+		"Sets the <i>default</i> pattern value by each step to determine if it should play.<br>" +
+		"You can override this pattern value in each step's inspector. There are many options:<br>" +
+		"<ul><li>Always play." + 
+		"<li>Play with some probability." +
+		"<li>Play with the probability <i>1/Tracks</i> where <i>Tracks<i> is the number of tracks." +
+		"<li>Play with the probability <i>1/(1-Tracks)</i> where <i>Tracks<i> is the number of tracks." +
+		"<li>Play (X) or don't play (O) with a certain repeating pattern." +
+		"</ul>" +
+		"Regardless of the pattern, a step doesn't play if it hasn't been enabled in the sequencer grid.</html>";
+			
+	static final String SET_WHEN_TOOLTIP = "<html><b>Set All When</b><br>" +
+		"Resets all tracks to the <b>Track Len</b> value at left.</html>";
+	
+	static final String SWING_TOOLTIP = "<html><b>Swing</b><br>" +
+		"Sets the swing value for the track.  This overrides the default setting<br>" +
+		"in the Step Sequence inspector.  To return to the default, double-click the dial.</html>";
+	
+	static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+		"Sets the <i>default</i> velocity value for all steps in the track.  This overrides<br>" +
+		"the default setting in the Step Sequence inspector.  To return to the default,<br>"+ 
+		"double-click the dial.<br><br>" + 
+		"You can override both the step sequence default and the track default in the<br>"+
+		"individual step's inspector.</html>";
+	
+	static final String SET_VELOCITY_TOOLTIP = "<html><b>Set All Velocity</b><br>" +
+		"Resets all steps in the track to use the default velocity value shown at left<br>" + 
+		"instead of custom per-step velocity values.</html>";
+
+	static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
+		"Sets the <i>default</i> MIDI output for the track.  This overrides the default<br>" +
+		"setting in the Step Sequence inspector.  To return to the default, set the value<br>" + 
+		"to \"<i>default</i>\".</html>";
+	
+	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+		"Sets the name of the Track.  This will appear in the <b>Track Header</b>.</html>";
     }

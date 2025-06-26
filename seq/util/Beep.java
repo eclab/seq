@@ -169,7 +169,7 @@ public class Beep
         synchronized(frequencyLock) { running = true; }
         Thread thread = new Thread(new Runnable()
             {
-            int pos = Integer.MIN_VALUE;
+            int pos = 0;                        // Integer.MIN_VALUE;
             public void run()
                 {
                 try
@@ -205,7 +205,7 @@ public class Beep
                             {
                             if (amp == 0)
                                 {
-                                pos = Integer.MIN_VALUE;                // might as well reset
+                                pos = 0; // Integer.MIN_VALUE;                // might as well reset
                                 for(int i = 0; i < chunk.length; i++)
                                     {
                                     chunk[i] = 0;

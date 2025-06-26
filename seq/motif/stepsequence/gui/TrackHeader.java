@@ -61,6 +61,15 @@ public class TrackHeader extends JPanel implements Transferable
         if (!selected)
             handle.setText("  " + (track.getTrackNum() + 1));
         else handle.setText("<html><font color=red>&nbsp;&nbsp;" + (track.getTrackNum() + 1) + "</font></html>"); 
+        
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            { 
+        	int trackNum = track.getTrackNum();
+            trackName.setText(trackName(trackNum));		// so it's in color as appropriate
+            }
+        finally { lock.unlock(); }                              
         }
 
     public TrackHeader(Seq seq, StepSequence ss, StepSequenceUI ssui, TrackUI track)
@@ -132,6 +141,14 @@ public class TrackHeader extends JPanel implements Transferable
                     return size;
                     }               
                 };
+
+			trackName.addMouseMotionListener(new MouseMotionAdapter()
+				{
+				public void mouseDragged(MouseEvent e)
+					{
+					getTransferHandler().exportAsDrag(TrackHeader.this, e, TransferHandler.MOVE);
+					}
+				});
             }
         finally { lock.unlock(); }
                 
@@ -149,7 +166,26 @@ public class TrackHeader extends JPanel implements Transferable
         add(console, BorderLayout.EAST);
         add(handle, BorderLayout.CENTER);
                 
-        addMouseListener(new MouseAdapter()
+        addDragListeners(this);
+        addDragListeners(handle);
+        addDragListeners(trackName);
+
+        setTransferHandler(new TrackHeaderTransferHandler());
+        setDropTarget(new DropTarget(this, new TrackHeaderDropTargetListener()));
+        setBorder(matte);
+       
+        // Tooltips
+		trackSolo.setToolTipText(SOLO_BUTTON_TOOLTIP);
+		trackMute.setToolTipText(MUTE_BUTTON_TOOLTIP);
+		trackLearn.setToolTipText(LEARN_BUTTON_TOOLTIP);
+        trackName.setToolTipText(TRACK_NAME_TOOLTIP);
+        handle.setToolTipText(TRACK_NUMBER_TOOLTIP);
+    	setToolTipText(TRACK_HEADER_TOOLTIP);
+        }
+                                
+	void addDragListeners(JComponent component)
+		{
+        component.addMouseListener(new MouseAdapter()
             {
             public void mousePressed(MouseEvent e)
                 {
@@ -157,19 +193,17 @@ public class TrackHeader extends JPanel implements Transferable
                 }
             });
                         
-        addMouseMotionListener(new MouseMotionAdapter()
+        component.addMouseMotionListener(new MouseMotionAdapter()
             {
             public void mouseDragged(MouseEvent e)
                 {
                 getTransferHandler().exportAsDrag(TrackHeader.this, e, TransferHandler.MOVE);
                 }
             });
-
-        setTransferHandler(new TrackHeaderTransferHandler());
-        setDropTarget(new DropTarget(this, new TrackHeaderDropTargetListener()));
-        setBorder(matte);
         }
-                                
+
+
+
     public String getName()
         {
         ReentrantLock lock = seq.getLock();
@@ -180,7 +214,18 @@ public class TrackHeader extends JPanel implements Transferable
             }
         finally { lock.unlock(); }                              
         }
-                
+    
+    // Assumes we already have a lock
+    String trackName(int trackNum)
+    	{
+		String name = ss.getTrackName(trackNum);
+		if (name == null) name = "";
+		else name = name.trim();
+		if (name == "") name = "Track " + trackNum;
+		if (selected) return "<html><font color=red>"+name+"</font></html>";
+		else return "<html>"+name+"</html>";
+    	}
+    	
     public void revise()
         {
         ReentrantLock lock = seq.getLock();
@@ -193,11 +238,7 @@ public class TrackHeader extends JPanel implements Transferable
             trackSolo.setSelected(ss.isTrackSoloed(trackNum)); 
             trackMute.setSelected(ss.isTrackMuted(trackNum)); 
             trackLearn.setSelected(ss.isTrackLearning(trackNum));
-            String name = ss.getTrackName(trackNum);
-            if (name == null) name = "";
-            else name = name.trim();
-            if (name == "") name = "Track " + trackNum;
-            trackName.setText(name);
+            trackName.setText(trackName(trackNum));
             }
         finally { lock.unlock(); }                              
         seq = old;
@@ -398,4 +439,32 @@ public class TrackHeader extends JPanel implements Transferable
                 }
             }
         }
+
+
+
+	/*** Tooltips ***/
+	
+	static final String TRACK_NAME_TOOLTIP = "<html><b>Track Name</b><br>" +
+		"The track's name." + 
+		"<p>To set the name, select the track (click on the name for example),<br>" +
+		"then change the <b>Name</b> field in the <b>Track</b> inspector</b> at right.<br>" + 
+		"Remember to press <i>Return</i>.</html>";
+	
+	static final String TRACK_HEADER_TOOLTIP = "<html><b>Track Header</b><br>" +
+		"Drag the track header to move it to another position in the stequence.<br>" +
+		"A red line will show where it will be inserted.<br>" +
+		"The track's current number in the sequence is shown at left.";	
+	
+	static final String TRACK_NUMBER_TOOLTIP = TRACK_HEADER_TOOLTIP; 
+
+	static final String MUTE_BUTTON_TOOLTIP = "<html><b>Mute</b><br>" +
+		"Mutes this track while playing.</html>";
+	
+	static final String SOLO_BUTTON_TOOLTIP = "<html><b>Solo</b><br>" +
+		"Mutes all tracks but this one while playing.</html>";
+	
+	static final String LEARN_BUTTON_TOOLTIP = "<html><b>Learn</b><br>" +
+		"Sets note learning on or off.<br><br>" +
+		"While note learning is on, and the step sequence is playing or recording,<br>" +
+        "if you play a note the track will learn to respond to this note.";
     }

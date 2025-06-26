@@ -84,6 +84,7 @@ public class StepInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+            stepNote.setToolTipText(NOTE_TOOLTIP);
 
             stepFlam = new JComboBox(FLAM_STRINGS);
             stepFlam.setSelectedIndex(ss.getFlam(trackNum, stepNum) + 1);
@@ -98,6 +99,8 @@ public class StepInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            stepFlam.setToolTipText(FLAM_TOOLTIP);
+
 
             stepWhen = new JComboBox(WHEN_STRINGS);
             stepWhen.setSelectedIndex(ss.getWhen(trackNum, stepNum) + 1);
@@ -112,6 +115,7 @@ public class StepInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            stepWhen.setToolTipText(WHEN_TOOLTIP);
 
             stepVelocity = new SmallDial(-1, 0)
                 {
@@ -136,10 +140,11 @@ public class StepInspector extends WidgetList
                     lock.lock();
                     try { ss.setVelocity(trackNum, stepNum, (int)(val * 127)); }
                     finally { lock.unlock(); }
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
-                        
+            stepVelocity.setToolTipText(VELOCITY_TOOLTIP);
+
             }
         finally { lock.unlock(); }
 
@@ -172,4 +177,30 @@ public class StepInspector extends WidgetList
         stepNote.redraw();
         stepVelocity.redraw();
         }
+
+
+	static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
+		"Sets the MIDI note output for this track.  This overrides the <b>Note</b> setting<br>" + 
+		"in the track inspector.  To return to the default, double-click the dial.</html>";
+			
+	static final String FLAM_TOOLTIP = "<html><b>Flams</b><br>" +
+		"Sets the number of <i>flams</i> (or <i>ratchets</i>) for this step.  This<br>" +
+		"overrides the <b>Flams</b> setting in the track inspector.  To return to<br>" +
+		"the default, double-click the dial.</html>";
+			
+	static final String WHEN_TOOLTIP = "<html><b>When</b><br>" +
+		"Sets the pattern value for this step to determine if it should play.  This overrides<br>" +
+		"the <b>When</b> setting in the track inspector.  To return to the default, double-click<br>" +
+		"the dial. There are many pattern options:<br>" +
+		"<ul><li>Always play." + 
+		"<li>Play with some probability." +
+		"<li>Play with the probability <i>1/Tracks</i> where <i>Tracks<i> is the number of tracks." +
+		"<li>Play with the probability <i>1/(1-Tracks)</i> where <i>Tracks<i> is the number of tracks." +
+		"<li>Play (X) or don't play (O) with a certain repeating pattern." +
+		"</ul>" +
+		"Regardless of the pattern, a step doesn't play if it hasn't been enabled in the sequencer grid.</html>";
+			
+	static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+		"Sets the velocity value for this step.  This overridesthe <b>Velocity</b> setting<br>" +
+		"in the track inspector.  To return to the default, double-click the dial.</html>";
     }

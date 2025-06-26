@@ -4,6 +4,7 @@ FLAGS = -g -Xlint:deprecation
 
 # Main java files, not including the 3D stuff
 SRCS = \
+seq/*.java \
 seq/engine/*.java \
 seq/gui/*.java \
 seq/util/*.java \

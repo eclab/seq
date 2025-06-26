@@ -29,9 +29,19 @@ public class EventInspector extends WidgetList
     SmallDial release;
     SmallDial value;
     SmallDial parameter;
+    SmallDial parameterMSB;
+    SmallDial parameterLSB;
+    SmallDial valueMSB;
+    SmallDial valueLSB;
     JButton setWhen;
     JPanel whenPanel;
+    JLabel parameterResult;
+    JLabel valueResult;
+    PushButton valuePresets;
     int time;
+    
+    public static final String[] BEND_OPTIONS = new String[] { "-4096", "-1024", "-256", "-64", "-16", "-8", "-4", "-2", "-1", "0", "1", "2", "4", "8", "16", "64", "256", "1024", "4096" };
+    public static final int[] BEND_VALUES = new int[] { -4096, -1024, -256, -64, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 64, 256, 1024, 4096 };
         
     public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
@@ -93,6 +103,7 @@ public class EventInspector extends WidgetList
                         try
                             {
                             event.when = time;
+                            notes.computeMaxTime();	  // note on/off time has just changed
                             notes.sortEvents(notes.getEvents());
                             }
                         finally
@@ -100,6 +111,7 @@ public class EventInspector extends WidgetList
                             lock.unlock();
                             }
                         notesui.reloadTable();
+                        notesui.getTable().setSelection(notes.getEvents().indexOf(event));		// re-select the event after sorting and reloading
                         }
                     });
 
@@ -130,7 +142,7 @@ public class EventInspector extends WidgetList
                             {
                             // this is already inside the lock but whatever
                             note.length = time; 
-                            notes.computeMaxTime();
+                            notes.computeMaxTime();	  // note off time has just changed
                             updateTable();
                             }
                         };
@@ -235,20 +247,43 @@ public class EventInspector extends WidgetList
                             updateTable(); 
                             }
                         };
+                    value.setScale(512.0);	// increase resolution
+
+					valuePresets = new PushButton("Presets...", BEND_OPTIONS)
+						{
+						public void perform(int val)
+							{
+							if (seq == null) return;
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { bend.value = BEND_VALUES[val]; }
+							finally { lock.unlock(); }
+							value.redraw();
+							updateTable();
+							}
+						};
+						
+					JPanel valuePanel = new JPanel();
+        			valuePanel.setLayout(new BorderLayout());
+        			valuePanel.add(value.getLabelledDial("-8192"), BorderLayout.CENTER);   // so it stretches
+    			    valuePanel.add(valuePresets, BorderLayout.EAST); 
+	
                     strs = new String[] { "Type", "When", "Bend" };
                     comps = new JComponent[] 
                         {
                         new JLabel("Bend"),
                         whenPanel,
-                        value.getLabelledDial("-8192")
+                        valuePanel,
+                        //value.getLabelledDial("-8192")
                         };
+
                     }
                 else if (event instanceof Notes.CC)
                     {
                     Notes.CC cc = (Notes.CC) event;
                     parameter = new SmallDial(cc.parameter / 127.0)
                         {
-                        protected String map(double val) { return "" + (int)(cc.parameter * 127.0); }
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
@@ -261,14 +296,14 @@ public class EventInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { cc.value = (int)(cc.parameter * 127.0); }
+                            try { cc.parameter = (int)(val * 127.0); }
                             finally { lock.unlock(); }
                             updateTable();  
                             }
                         };
                     value = new SmallDial(cc.value / 127.0)
                         {
-                        protected String map(double val) { return "" + (int)(cc.value * 127.0); }
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
@@ -291,25 +326,23 @@ public class EventInspector extends WidgetList
                         {
                         new JLabel("CC"),
                         whenPanel,
-                        parameter,
+                        parameter.getLabelledDial("127"),
                         value.getLabelledDial("127")
                         };
                     }
-                else if (event instanceof Notes.Aftertouch)
+                else if (event instanceof Notes.NRPN)
                     {
-                    Notes.Aftertouch aftertouch = (Notes.Aftertouch) event;
-                    pitch = new SmallDial(aftertouch.pitch / 127.0)
+                    Notes.NRPN nrpn = (Notes.NRPN) event;
+                    parameterResult = new JLabel("");
+                    valueResult = new JLabel("");
+                    parameterMSB = new SmallDial((nrpn.parameter >> 7) / 127.0)
                         {
-                        protected String map(double val) 
-                            {
-                            int p = (int)(val * 127.0);
-                            return "" + ( KEYS[p % 12] + (p / 12));
-                            }
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { return aftertouch.pitch / 127.0; }
+                            try { return (nrpn.parameter >> 7) / 127.0; }
                             finally { lock.unlock(); }
                             }
                         public void setValue(double val) 
@@ -317,7 +350,260 @@ public class EventInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { aftertouch.pitch = (int)(val * 127.0); }
+                            int param;
+                            try { param = nrpn.parameter = (((int)(val * 127.0)) << 7) + (nrpn.parameter & 127); }
+                            finally { lock.unlock(); }
+                            parameterResult.setText(" " + param);
+                            updateTable();  
+                            }
+                        };
+                    parameterLSB = new SmallDial((nrpn.parameter & 127) / 127.0)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (nrpn.parameter & 127) / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            int param;
+                            try { param = nrpn.parameter = ((nrpn.parameter >>> 7) << 7) + ((int)(val * 127.0)); }
+                            finally { lock.unlock(); }
+                            parameterResult.setText(" " + param);
+                            updateTable();  
+                            }
+                        };
+                    valueMSB = new SmallDial((nrpn.value >> 7) / 127.0)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (nrpn.value >> 7) / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            int value;
+                            try { value = nrpn.value = (((int)(val * 127.0)) << 7) + (nrpn.value & 127); }
+                            finally { lock.unlock(); }
+                            valueResult.setText(" " + value);
+                            updateTable();  
+                            }
+                        };
+                    valueLSB = new SmallDial((nrpn.value & 127) / 127.0)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (nrpn.value & 127) / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            int value;
+                            try { value = nrpn.value = ((nrpn.value >>> 7) << 7) + ((int)(val * 127.0)); }
+                            finally { lock.unlock(); }
+                            valueResult.setText(" " + value);
+                            updateTable();  
+                            }
+                        };
+                Box parameterBox = new Box(BoxLayout.X_AXIS);
+                parameterBox.add(parameterMSB.getLabelledTitledDialVertical("MSB", " 888 "));
+                parameterBox.add(parameterLSB.getLabelledTitledDialVertical("LSB", " 888 "));
+                JPanel pan2 = new JPanel();
+                pan2.setLayout(new BorderLayout());
+                pan2.add(parameterResult, BorderLayout.WEST);
+                JPanel pan1 = new JPanel();
+                pan1.setLayout(new BorderLayout());
+                pan1.add(parameterBox, BorderLayout.WEST);
+                pan1.add(pan2, BorderLayout.CENTER);
+
+                Box valueBox = new Box(BoxLayout.X_AXIS);
+                valueBox.add(valueMSB.getLabelledTitledDialVertical("MSB", " 888 "));
+                valueBox.add(valueLSB.getLabelledTitledDialVertical("LSB", " 888 "));
+                JPanel pan4 = new JPanel();
+                pan4.setLayout(new BorderLayout());
+                pan4.add(valueResult, BorderLayout.WEST);
+                JPanel pan3 = new JPanel();
+                pan3.setLayout(new BorderLayout());
+                pan3.add(valueBox, BorderLayout.WEST);
+                pan3.add(pan4, BorderLayout.CENTER);
+
+                    strs = new String[] { "Type", "When", "Parameter", "Value" };
+                    comps = new JComponent[] 
+                        {
+                        new JLabel("NRPN"),
+                        whenPanel,
+                        pan1,
+                        pan3,
+                        };
+                    }
+
+                else if (event instanceof Notes.RPN)
+                    {
+                    Notes.RPN rpn = (Notes.RPN) event;
+                    parameterResult = new JLabel("");
+                    valueResult = new JLabel("");
+                    parameterMSB = new SmallDial((rpn.parameter >> 7) / 127.0)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (rpn.parameter >> 7) / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            int param;
+                            try { param = rpn.parameter = (((int)(val * 127.0)) << 7) + (rpn.parameter & 127); }
+                            finally { lock.unlock(); }
+                            parameterResult.setText(" " + param);
+                            updateTable();  
+                            }
+                        };
+                    parameterLSB = new SmallDial((rpn.parameter & 127) / 127.0)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (rpn.parameter & 127) / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            int param;
+                            try { param = rpn.parameter = ((rpn.parameter >>> 7) << 7) + ((int)(val * 127.0)); }
+                            finally { lock.unlock(); }
+                            parameterResult.setText(" " + param);
+                            updateTable();  
+                            }
+                        };
+                    valueMSB = new SmallDial((rpn.value >> 7) / 127.0)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (rpn.value >> 7) / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            int value;
+                            try { value = rpn.value = (((int)(val * 127.0)) << 7) + (rpn.value & 127); }
+                            finally { lock.unlock(); }
+                            valueResult.setText(" " + value);
+                            updateTable();  
+                            }
+                        };
+                    valueLSB = new SmallDial((rpn.value & 127) / 127.0)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (rpn.value & 127) / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            int value;
+                            try { value = rpn.value = ((rpn.value >>> 7) << 7) + ((int)(val * 127.0)); }
+                            finally { lock.unlock(); }
+                            valueResult.setText(" " + value);
+                            updateTable();  
+                            }
+                        };
+                Box parameterBox = new Box(BoxLayout.X_AXIS);
+                parameterBox.add(parameterMSB.getLabelledTitledDialVertical("MSB", " 888 "));
+                parameterBox.add(parameterLSB.getLabelledTitledDialVertical("LSB", " 888 "));
+                JPanel pan2 = new JPanel();
+                pan2.setLayout(new BorderLayout());
+                pan2.add(parameterResult, BorderLayout.WEST);
+                JPanel pan1 = new JPanel();
+                pan1.setLayout(new BorderLayout());
+                pan1.add(parameterBox, BorderLayout.WEST);
+                pan1.add(pan2, BorderLayout.CENTER);
+
+                Box valueBox = new Box(BoxLayout.X_AXIS);
+                valueBox.add(valueMSB.getLabelledTitledDialVertical("MSB", " 888 "));
+                valueBox.add(valueLSB.getLabelledTitledDialVertical("LSB", " 888 "));
+                JPanel pan4 = new JPanel();
+                pan4.setLayout(new BorderLayout());
+                pan4.add(valueResult, BorderLayout.WEST);
+                JPanel pan3 = new JPanel();
+                pan3.setLayout(new BorderLayout());
+                pan3.add(valueBox, BorderLayout.WEST);
+                pan3.add(pan4, BorderLayout.CENTER);
+
+                    strs = new String[] { "Type", "When", "Parameter", "Value" };
+                    comps = new JComponent[] 
+                        {
+                        new JLabel("RPN"),
+                        whenPanel,
+                        pan1,
+                        pan3,
+                        };
+                    }
+
+                else if (event instanceof Notes.Aftertouch)
+                    {
+                    Notes.Aftertouch aftertouch = (Notes.Aftertouch) event;
+                    pitch = new SmallDial((aftertouch.pitch + 1) / 128.0)
+                        {
+                        protected String map(double val) 
+                            {
+                            int p = (int)((val * 128.0) - 1);
+                            if (p == -1) return "[Channel AT]";
+                            else return "" + ( KEYS[p % 12] + (p / 12));
+                            }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (aftertouch.pitch + 1) / 128.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { aftertouch.pitch = (int)((val * 128.0) - 1); }
                             finally { lock.unlock(); }
                             updateTable();  
                             }
@@ -376,5 +662,11 @@ public class EventInspector extends WidgetList
         if (release != null) release.redraw();
         if (value != null) value.redraw();
         if (parameter != null) parameter.redraw();
+        if (parameterMSB != null) parameterMSB.redraw();
+        if (parameterLSB != null) parameterLSB.redraw();
+        if (valueMSB != null) valueMSB.redraw();
+        if (valueLSB != null) valueLSB.redraw();
+        if (parameterResult != null) parameterResult.repaint();
+        if (valueResult != null) valueResult.repaint();
         }
     }

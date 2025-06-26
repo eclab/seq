@@ -287,7 +287,6 @@ public class MotifList extends JPanel
         addButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/plus.png")), items);
         addButton.setPopsUpAbove(true);
         addButton.getButton().setPreferredSize(new Dimension(24, 24));
-        addButton.setToolTipText("Add new motif");
 
         removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
             {
@@ -297,7 +296,6 @@ public class MotifList extends JPanel
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
-        removeButton.setToolTipText("Delete current motif");
 
         backButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/backward.png")))
             {
@@ -307,7 +305,6 @@ public class MotifList extends JPanel
                 }
             };
         backButton.getButton().setPreferredSize(new Dimension(24, 24));
-        backButton.setToolTipText("Back up to previous motif");
 
         forwardButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/forward.png")))
             {
@@ -317,7 +314,6 @@ public class MotifList extends JPanel
                 }
             };
         forwardButton.getButton().setPreferredSize(new Dimension(24, 24));
-        forwardButton.setToolTipText("Return to motif");
 
         copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
@@ -327,7 +323,6 @@ public class MotifList extends JPanel
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
-        copyButton.setToolTipText("Copy current motif");
 
 /*
   rootButton = new PushButton("Root")
@@ -356,6 +351,13 @@ public class MotifList extends JPanel
         list.setDropTarget(new DropTarget(this, buildDropTargetListener()));
         
         setCompressed(sequi.getSmallButtons());
+        
+        // Tooltips
+		backButton.setToolTipText(BACK_BUTTON_TOOLTIP);
+		forwardButton.setToolTipText(FORWARD_BUTTON_TOOLTIP);
+		addButton.setToolTipText(ADD_BUTTON_TOOLTIP);
+		removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
+		copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
         }
     
     public void doBack()
@@ -889,4 +891,34 @@ public class MotifList extends JPanel
                 }
             }
         }
+
+
+
+	/*** Tooltips ***/
+	
+	static final String BACK_BUTTON_TOOLTIP = "<html><b>Go Back</b><br>" +
+		"Backs up to display the previous Motif.</html>";
+	
+	static final String FORWARD_BUTTON_TOOLTIP = "<html><b>Go Forward</b><br>" +
+		"Moves forward to display the Motif we previously backed up from.</html>";
+	
+	static final String ADD_BUTTON_TOOLTIP = "<html><b>Add Motif</b><br>" +
+		"Adds a motif to the list.  You may choose from:" + 
+		"<ul><li><b>Step Sequence</b>&nbsp;&nbsp;&nbsp;A step sequence." +
+        "<li><b>Notes</b>&nbsp;&nbsp;&nbsp;A track of MIDI notes or other events." + 
+        "<li><b>Select</b>&nbsp;&nbsp;&nbsp;A grid of motifs: you can manually select which ones are playing." + 
+        "<li><b>Series</b>&nbsp;&nbsp;&nbsp;A collection of motifs played in series or randomly." + 
+        "<li><b>Parallel</b>&nbsp;&nbsp;&nbsp;A collection of motifs played simultaneously." + 
+        "<li><b>Automaton</b>&nbsp;&nbsp;&nbsp;A finite-state automaton of motifs and playing rules." + 
+        "<li><b>Silence</b>&nbsp;&nbsp;&nbsp;An empty interval." + 
+        "<li><b>Macro Child</b>&nbsp;&nbsp;&nbsp;A stand-in for a child to a macro when used later." + 
+        "<li><b>Macro</b>&nbsp;&nbsp;&nbsp;A macro loaded from disk." + 
+        "</ul></html>";
+		
+	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
+		"Removes a motif from the list.</html>";
+	
+	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Motif</b><br>" +
+		"Duplicates a motif in the list.</html>";
+	
     }

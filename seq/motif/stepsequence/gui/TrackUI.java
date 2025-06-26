@@ -43,10 +43,11 @@ public class TrackUI extends JPanel
         }
                 
     public int getTrackNum() { return trackNum; }
-        
+        		
     public TrackUI(Seq seq, StepSequence ss, StepSequenceUI ssui, int trackNum)
         {
         setOpaque(false);
+        //setBackground(Color.WHITE);
         this.seq = seq;
         this.ss = ss;
         this.ssui = ssui;
@@ -99,6 +100,7 @@ public class TrackUI extends JPanel
             };
         setLayout(new BorderLayout());
         add(trackBody, BorderLayout.CENTER);
+        //setBackground(Color.ORANGE);
                 
         for(int i = 0; i < ss.getNumSteps(trackNum); i++)
             {

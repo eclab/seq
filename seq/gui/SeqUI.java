@@ -29,6 +29,11 @@ import org.json.*;
 
 public class SeqUI extends JPanel
     {       
+static
+	{
+	ToolTipManager.sharedInstance().setDismissDelay(1000000);			// Our tooltips are long. We don't want an auto-dismiss unless the user navigates away
+	}
+	
     /*  
         private static class MyEventQueue extends EventQueue {
         public void postEvent(AWTEvent theEvent) {
@@ -77,6 +82,7 @@ public class SeqUI extends JPanel
     // Is the selected motif always the root?
     boolean selectedFrameIsRoot;
     boolean smallButtons;
+    boolean showToolTips;
     int initialMotif = STEP_SEQUENCE_INITIAL;
     
     JMenuItem undoItem;
@@ -105,6 +111,8 @@ public class SeqUI extends JPanel
     
     public SeqUI(Seq seq)
         {
+        setBackground(Color.YELLOW);
+        setOpaque(false);
         reset(seq);
         }
     
@@ -199,6 +207,7 @@ public class SeqUI extends JPanel
         {
         removeAll();
         smallButtons = Prefs.getLastBoolean("SmallMotifButtons", false);        // must be before MotifList
+        showToolTips = Prefs.getLastBoolean("ShowToolTips", true);
 
 		// Arming
 		disarmsAllBeforeArming = Prefs.getLastBoolean("DisarmFirst", true);
@@ -291,39 +300,52 @@ public class SeqUI extends JPanel
     /* Makes a new document. */
     public void doNew()
         {
-        Seq s;
-        try
-            {
-            clearUndo();
+        // First confirm
+    	if (showSimpleConfirm("New Sequence", "Create a new sequence?\n\nThis will erase the current sequence, which cannot be undone.", "New Sequence"))
+    		{
+			Seq s;
+			try
+				{
+				clearUndo();
 
-            ReentrantLock lock = seq.getLock();
-            lock.lock();
-            try 
-                { 
-                this.seq.stop();
-                this.seq.shutdown();            // kills timer in old sequence
-                }
-            finally { lock.unlock(); }
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try 
+					{ 
+					this.seq.stop();
+					this.seq.shutdown();            // kills timer in old sequence
+					}
+				finally { lock.unlock(); }
 
-            reset(new Seq(seq));
+				reset(new Seq(seq));
+				Seq.incrementDocument();
 
-            list.removeAll();  // delete old ones
+				list.removeAll();  // delete old ones
 
-            seq.setFile(null);
-            frame.setTitle("Untitled");
-            // We'll start with a blank step sequence
-            seq.motif.stepsequence.StepSequence ss = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
-            seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, SeqUI.this, ss);
-            addMotifUI(ssui);
-            list.setRoot(ssui.getPrimaryButton());
-            revalidate();
-            repaint();
-            }
-        catch (Exception ex)
-            {
-            ex.printStackTrace();
-            showSimpleError("Error Creating New Sequence", "An error occurred creating the new sequence.");
-            }
+				seq.setFile(null);
+				frame.setTitle("Untitled");
+
+				Motif dSeq = null;
+				Motif[] temp = new Motif[1];
+				MotifUI ssui = setupInitialMotif(temp, seq, this);
+				dSeq = temp[0];
+
+		/*
+				// We'll start with a blank step sequence
+				seq.motif.stepsequence.StepSequence ss = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
+				seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, SeqUI.this, ss);
+		*/
+				addMotifUI(ssui);
+				list.setRoot(ssui.getPrimaryButton());		// this also calls setData, which builds the clip
+				revalidate();
+				repaint();
+				}
+			catch (Exception ex)
+				{
+				ex.printStackTrace();
+				showSimpleError("Error Creating New Sequence", "An error occurred creating the new sequence.");
+				}
+			}
         }
     
     /* Saves the sequence to an existing file. */
@@ -406,7 +428,7 @@ public class SeqUI extends JPanel
     
     void doLog()
         {
-        if (logFile != null)
+        if (logFile != null)		// currently logging
             {
             // clean up
             logItem.setText("Log MIDI ...");
@@ -584,6 +606,7 @@ public class SeqUI extends JPanel
 
                 seq = newSeq;                                
                 reset(seq);
+            	Seq.incrementDocument();
 
                 MotifUI motifui = list.getMotifUIFor(seq.getData());
                 list.setRoot(motifui);
@@ -1006,6 +1029,23 @@ public class SeqUI extends JPanel
 				incrementRebuildInspectorsCount();		// show disarmed
                 }
             });
+
+
+        motifMenu.addSeparator();
+
+        JCheckBoxMenuItem showToolTipsItem = new JCheckBoxMenuItem("Show Tooltips");
+        motifMenu.add(showToolTipsItem);
+        showToolTipsItem.setSelected(showToolTips);
+        ToolTipManager.sharedInstance().setEnabled(showToolTips);
+        showToolTipsItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                ToolTipManager.sharedInstance().setEnabled(showToolTipsItem.isSelected());
+                Prefs.setLastBoolean("ShowToolTips", showToolTips);
+                }
+            });
+
             
         }
         
@@ -1027,16 +1067,44 @@ public class SeqUI extends JPanel
     // The last timestep, in ms, when we updated the window
     long lastUpdate = 0;
     
-    /** Updates and redraws the MotifList and the current Motif.  Only does so if the last time
-        this method was called was earlier than UPDATE_INTERVAL ago, or if definitely is true. */
-    public void redraw(boolean definitely) 
+    /** Updates and redraws the MotifList and the current Motif.  If the redrawing is in response to a step,
+    	it is specified here.  Only redraws if NOT in response to a step, or if the last time
+        this method was called was earlier than UPDATE_INTERVAL ago */
+    public void redraw(boolean inResponseToStep) 
         { 
-        long time = System.currentTimeMillis();
-        if (definitely || time < lastUpdate || time - lastUpdate > UPDATE_INTERVAL)     // time to update
+        long wallClocktime = System.currentTimeMillis();
+        if (!inResponseToStep || wallClocktime < lastUpdate || wallClocktime - lastUpdate > UPDATE_INTERVAL)     // time to update
             {
-            lastUpdate = time;
-            _redraw();
-            }
+            lastUpdate = wallClocktime;
+            
+            
+			int time = 0;	
+			ReentrantLock lock = seq.getLock();
+			lock.lock();
+			try
+				{
+				time = seq.getTime();
+				}
+			finally
+				{
+				lock.unlock();
+				}
+						
+			for(MotifUI ui : list.getMotifUIs())
+				{
+				ui.updateText();
+				}
+
+			if (motifui != null) 
+				{
+				motifui.redraw(inResponseToStep);
+				}
+		
+			if (transport != null) 
+				{
+				transport.updateClock(time);
+				}
+			}
         }
     
     /** This is used exclusively by Seq */
@@ -1063,45 +1131,6 @@ public class SeqUI extends JPanel
             });
         }
         
-
-    void _redraw()
-        {
-        //HashSet<Motif> playingMotifs = new HashSet<>();
-        //ArrayList<Clip> playingClips = seq.getPlayingClips();
-        int time = 0;
-                
-        ReentrantLock lock = seq.getLock();
-        lock.lock();
-        try
-            {
-            time = seq.getTime();
-            //for(Clip clip : playingClips)
-            //    {
-            //    playingMotifs.add(clip.getMotif());
-            //    }
-            }
-        finally
-            {
-            lock.unlock();
-            }
-                        
-        //for(MotifUI ui : list.getMotifUIs())
-        //    {
-        //    ui.setPlaying(playingMotifs.contains(ui.getMotif()));
-        //    }
-
-        for(MotifUI ui : list.getMotifUIs())
-            {
-            ui.updateText();
-            }
-
-        if (motifui != null) 
-            {
-            motifui.redraw();
-            }
-        
-        if (transport != null) transport.updateClock(time);
-        }
                 
     /** Sets the current MotifUI and selects its button in the MotifList */
     public void setMotifUI(MotifUI motifui) 
@@ -1249,6 +1278,7 @@ public class SeqUI extends JPanel
                 }
             logs = null;
             logFile = null;
+            logItem.setText("Log MIDI ...");
             }
         }
 
@@ -1389,6 +1419,42 @@ public class SeqUI extends JPanel
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         }
+        
+        
+    public static MotifUI setupInitialMotif(Motif[] motif, Seq seq, SeqUI ui)
+    	{
+    	MotifUI mui;
+    	
+        int initialMotif = Prefs.getLastInt("InitialMotif", STEP_SEQUENCE_INITIAL);
+		if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
+			{
+			initialMotif = STEP_SEQUENCE_INITIAL;
+			}
+			
+		if (initialMotif == STEP_SEQUENCE_INITIAL) 
+			{
+         	motif[0]  = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
+        	mui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, (seq.motif.stepsequence.StepSequence)motif[0] );
+			}
+		else if (initialMotif == NOTES_INITIAL)
+			{
+        	boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
+			motif[0]  = new seq.motif.notes.Notes(seq, autoArm);
+			mui = new seq.motif.notes.gui.NotesUI(seq, ui, (seq.motif.notes.Notes)motif[0] );
+			}
+		else if (initialMotif == SERIES_INITIAL)
+			{
+			motif[0]  = new seq.motif.series.Series(seq);
+			mui = new seq.motif.series.gui.SeriesUI(seq, ui, (seq.motif.series.Series)motif[0] );
+			}
+		else // if (initialMotif == PARALLEL_INITIAL)
+			{
+			motif[0]  = new seq.motif.parallel.Parallel(seq);
+			mui = new seq.motif.parallel.gui.ParallelUI(seq, ui, (seq.motif.parallel.Parallel)motif[0] );
+			}
+		
+		return mui;
+    	}
 
     // TESTING
     public static void main(String[] args) throws Exception
@@ -1407,40 +1473,16 @@ public class SeqUI extends JPanel
         Mac.setup(ui);
         
         Motif dSeq = null;
-        MotifUI ssui = null;
-        int initialMotif = Prefs.getLastInt("InitialMotif", STEP_SEQUENCE_INITIAL);
-		if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
-			{
-			initialMotif = STEP_SEQUENCE_INITIAL;
-			}
-		if (initialMotif == STEP_SEQUENCE_INITIAL) 
-			{
-         	dSeq = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
-        	ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, (seq.motif.stepsequence.StepSequence)dSeq);
-			}
-		else if (initialMotif == NOTES_INITIAL)
-			{
-        	boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
-			dSeq = new seq.motif.notes.Notes(seq, autoArm);
-			ssui = new seq.motif.notes.gui.NotesUI(seq, ui, (seq.motif.notes.Notes)dSeq);
-			}
-		else if (initialMotif == SERIES_INITIAL)
-			{
-			dSeq = new seq.motif.series.Series(seq);
-			ssui = new seq.motif.series.gui.SeriesUI(seq, ui, (seq.motif.series.Series)dSeq);
-			}
-			
-		else if (initialMotif == PARALLEL_INITIAL)
-			{
-			dSeq = new seq.motif.parallel.Parallel(seq);
-			ssui = new seq.motif.parallel.gui.ParallelUI(seq, ui, (seq.motif.parallel.Parallel)dSeq);
-			}
-		
+        Motif[] temp = new Motif[1];
+        MotifUI ssui = setupInitialMotif(temp, seq, ui);
+		dSeq = temp[0];
+				
         // Build Clip Tree
         seq.setData(dSeq);
 
         seq.sequi = ui;
         JFrame frame = new JFrame();
+        seq.setFile(null);
         frame.setTitle("Untitled");
         ui.setupMenu(frame);
         ui.addMotifUI(ssui);

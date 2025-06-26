@@ -63,6 +63,7 @@ public class StepSequenceInspector extends WidgetList
                     }
                 };
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
+            name.setToolTipText(NAME_TOOLTIP);
                         
             numBeats = new SmallDial(-1)
                 {
@@ -81,9 +82,10 @@ public class StepSequenceInspector extends WidgetList
                     lock.lock();
                     try { ss.setLengthInSteps((int)(val * 127) + 1); }
                     finally { lock.unlock(); }
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
+            numBeats.setToolTipText(DURATION_TOOLTIP);
 
             initialNumSteps = new SmallDial(-1)
                 {
@@ -104,8 +106,9 @@ public class StepSequenceInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
-                        
-            setNumSteps = new PushButton("Set")
+            initialNumSteps.setToolTipText(TRACK_LENGTH_TOOLTIP);
+
+            setNumSteps = new PushButton("Set All")
                 {
                 public void perform()
                     {
@@ -125,10 +128,11 @@ public class StepSequenceInspector extends WidgetList
                         ssui.tracks.get(i).updateLength();
                         }
                     ssui.updateSizes();
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
-                        
+            setNumSteps.setToolTipText(SET_TRACK_LENGTH_TOOLTIP);
+
             defaultSwing = new SmallDial(-1)
                 {
                 public double getValue() 
@@ -147,7 +151,8 @@ public class StepSequenceInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
-                        
+            defaultSwing.setToolTipText(SWING_TOOLTIP);
+
             setDefaultSwing = new PushButton("Set All")
                 {
                 public void perform()
@@ -164,6 +169,7 @@ public class StepSequenceInspector extends WidgetList
                     ssui.getTrackInspector().revise();
                     }
                 };
+            setDefaultSwing.setToolTipText(SET_SWING_TOOLTIP);
 
             defaultVelocity = new SmallDial(-1)
                 {
@@ -182,9 +188,10 @@ public class StepSequenceInspector extends WidgetList
                     lock.lock();
                     try { ss.setDefaultVelocity((int)(val * 127)); }
                     finally { lock.unlock(); }
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
+            defaultVelocity.setToolTipText(VELOCITY_TOOLTIP);
                         
             setDefaultVelocity = new PushButton("Set All")
                 {
@@ -206,9 +213,10 @@ public class StepSequenceInspector extends WidgetList
                     finally { lock.unlock(); }
                     ssui.getTrackInspector().revise();
                     ssui.getStepInspector().revise();
-                    ssui.redraw();
+                    ssui.redraw(false);
                     }
                 };
+            setDefaultVelocity.setToolTipText(SET_VELOCITY_TOOLTIP);
 
             Out[] seqOuts = seq.getOuts();
             String[] outs = new String[seqOuts.length];
@@ -231,6 +239,7 @@ public class StepSequenceInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            defaultOut.setToolTipText(OUT_TOOLTIP);
 
             In[] seqIns = seq.getIns();
             String[] ins = new String[seqIns.length];
@@ -252,6 +261,7 @@ public class StepSequenceInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            in.setToolTipText(IN_TOOLTIP);
 
 
             }
@@ -261,16 +271,19 @@ public class StepSequenceInspector extends WidgetList
         lengthPanel.setLayout(new BorderLayout());
         lengthPanel.add(initialNumSteps.getLabelledDial("128"), BorderLayout.WEST);
         lengthPanel.add(setNumSteps, BorderLayout.EAST);
+        lengthPanel.setToolTipText(TRACK_LENGTH_TOOLTIP);
                 
         JPanel swingPanel = new JPanel();
         swingPanel.setLayout(new BorderLayout());
         swingPanel.add(defaultSwing.getLabelledDial("0.0000"), BorderLayout.WEST);
         swingPanel.add(setDefaultSwing, BorderLayout.EAST);
+        swingPanel.setToolTipText(SWING_TOOLTIP);
 
         JPanel velocityPanel = new JPanel();
         velocityPanel.setLayout(new BorderLayout());
         velocityPanel.add(defaultVelocity.getLabelledDial("127"), BorderLayout.WEST);
         velocityPanel.add(setDefaultVelocity, BorderLayout.EAST);
+        velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
 
         build(new String[] { "Name", "Duration", "Swing", "   Velocity", "Out", "In", "Track Len", /* "Tracks" */ }, 
             new JComponent[] 
@@ -305,4 +318,45 @@ public class StepSequenceInspector extends WidgetList
         name.update();
 //              numTracks.redraw();
         }
+
+
+	/*** Tooltips ***/
+	
+	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+		"Sets the name of the Sequence.  This will appear in the <b>Motif List</b>.</html>";
+	
+	static final String DURATION_TOOLTIP = "<html><b>Duration</b><br>" +
+		"Sets the length of time (in sixteenth notes) that the entire sequence<br>" + 
+		"takes to complete one iteration.";
+	
+	static final String TRACK_LENGTH_TOOLTIP = "<html><b>Track Length</b><br>" +
+		"Changes the <i>initial</i> number of steps a new track will have.<br>" +
+		"After creating a track, you can change the number of steps it has<br>" +
+		"(its length) in the track's inspector." ;
+		
+	static final String SET_TRACK_LENGTH_TOOLTIP = "<html><b>Set All Track Length</b><br>" +
+		"Resets all tracks to the <b>Track Len</b> value at left.</html>";
+	
+	static final String SWING_TOOLTIP = "<html><b>Swing</b><br>" +
+		"Sets the <i>default</i> swing value for all tracks.  This can be overridden<br>" +
+		"in the track's inspector.</html>";
+	
+	static final String SET_SWING_TOOLTIP = "<html><b>Set All Swing</b><br>" +
+		"Resets all tracks to use the default swing value shown at left instead of" + 
+		"custom per-track swing values.</html>";
+	
+	static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+		"Sets the <i>default</i> velocity value for all tracks.  This can be overridden<br>" +
+		"in the track's inspector.</html>";
+	
+	static final String SET_VELOCITY_TOOLTIP = "<html><b>Set All Velocity</b><br>" +
+		"Resets all tracks to use the default velocity value shown at left instead of" + 
+		"custom per-track velocity values.</html>";
+
+	static final String OUT_TOOLTIP = "<html><b>Set Out</b><br>" +
+		"Sets the <i>default</i> MIDI output for all tracks.  This can be overridden<br>" +
+		"in the track's inspector.</html>";
+	
+	static final String IN_TOOLTIP = "<html><b>Zoom Out</b><br>" +
+		"Sets the sequencer's MIDI input, used for a track's <b>Learn</b> functionality.</html>";
     }

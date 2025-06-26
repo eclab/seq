@@ -285,8 +285,9 @@ public abstract class Motif implements Cloneable
         name from a UI perspective.  Counters are static and per-class.  You should implement 
         this in your Motif subclass as:
         <pre>
+        static int document = 0;
         static int counter = 1;
-        public int getNextCounter() { return counter++; }
+        public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
         </pre>
     */
     public abstract int getNextCounter(); 

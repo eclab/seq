@@ -10,6 +10,8 @@ import java.util.*;
 import javax.sound.midi.*;
 import java.util.concurrent.*;
 import seq.util.*;
+import javax.swing.*;
+import seq.gui.*;
 
 public class NotesClip extends Clip
     {
@@ -20,6 +22,7 @@ public class NotesClip extends Clip
     // Where in notes.events was my LAST EVENT.  If I have NO EVENTS, then this value is -1  
     int index = -1;  
     boolean didRecord;
+    boolean parseRPNNRPN;
 
     public static final int NO_MIDI_VALUE = -1;
     int[] lastMIDIValue = new int[Notes.NUM_PARAMETERS];
@@ -90,7 +93,19 @@ public class NotesClip extends Clip
         ArrayList<Notes.Event> recording = notes.getRecording();
         if (!recording.isEmpty())
             {
-            notes.setEvents(recording);
+            boolean result = notes.setEvents(recording);
+            final SeqUI sequi = seq.getSeqUI();
+            if (result)
+            	{
+				SwingUtilities.invokeLater(new Runnable()
+					{
+					public void run()
+						{
+						sequi.showSimpleError("Errors in Converting to NRPN/RPN",
+							"There were errors in converting certain CC messages to NRPN or RPN.\nThese CC messages will be removed.");
+						}
+					});
+            	}
             notes.clearRecording();
             updateIndex();
             setDidRecord(true);
@@ -239,9 +254,7 @@ public class NotesClip extends Clip
                             if (isNoteOn(shortmessage))
                                 {
                                 int pitch = shortmessage.getData1();
-                                Notes.Note noteOn = new Notes.Note(pitch,
-                                    shortmessage.getData2(),
-                                    pos, 1);             // gotta have something for length
+                                Notes.Note noteOn = new Notes.Note(pitch, shortmessage.getData2(), pos, 1);             // gotta have something for length
                                 recording.add(noteOn);
                                 if (notes.getEcho()) noteOn(out, pitch, noteOn.velocity);
                                 recordedNoteOn[pitch] = noteOn;
@@ -306,6 +319,7 @@ public class NotesClip extends Clip
             ArrayList<Notes.Event> playing = notes.events;
             int size = playing.size();
             
+            
             // At present, index is where I LAST had an event, or -1            
             while (size > (index + 1) && playing.get(index + 1).when <= pos)            // is there another event, and is it time for it?
                 {
@@ -341,6 +355,16 @@ public class NotesClip extends Clip
                     {
                     Notes.Aftertouch aftertouch = (Notes.Aftertouch)event;
                     aftertouch(out, aftertouch.pitch, aftertouch.value);
+                    }
+                else if (event instanceof Notes.NRPN)
+                    {
+                    Notes.NRPN nrpn = (Notes.NRPN)event;
+                    nrpn(out, nrpn.parameter, nrpn.value);
+                    }
+                else if (event instanceof Notes.RPN)
+                    {
+                    Notes.RPN rpn = (Notes.RPN)event;
+                    rpn(out, rpn.parameter, rpn.value);
                     }
                 }
                                 

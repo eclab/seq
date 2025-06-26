@@ -39,7 +39,7 @@ public class NotesUI extends MotifUI
     NotesInspector notesInspector;
     JMenu menu;
     JCheckBoxMenuItem autoArmItem;
-        
+    
     EventTable table;
                 
     public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/notes.png")); }        // don't ask
@@ -204,16 +204,69 @@ public class NotesUI extends MotifUI
             });
         menu.add(filter);
 
-        JMenuItem insert = new JMenuItem("Add Note");
-        insert.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        insert.addActionListener(new ActionListener()
+        JMenuItem insertNote = new JMenuItem("Add Note");
+        insertNote.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        insertNote.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent event)
                 {
-                doInsert();
+                doInsert(TYPE_NOTE);
                 }
             });
+        menu.add(insertNote);
+        
+        JMenuItem insert = new JMenu("Add...");
         menu.add(insert);
+
+        JMenuItem insertBend = new JMenuItem("Bend");
+        insertBend.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doInsert(TYPE_BEND);
+                }
+            });
+        insert.add(insertBend);
+
+        JMenuItem insertAftertouch = new JMenuItem("Aftertouch");
+        insertAftertouch.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doInsert(TYPE_AFTERTOUCH);
+                }
+            });
+        insert.add(insertAftertouch);
+
+        JMenuItem insertCC = new JMenuItem("CC");
+        insertCC.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doInsert(TYPE_CC);
+                }
+            });
+        insert.add(insertCC);
+
+        JMenuItem insertNRPN = new JMenuItem("NRPN");
+        insertNRPN.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doInsert(TYPE_NRPN);
+                }
+            });
+        insert.add(insertNRPN);
+
+        JMenuItem insertRPN = new JMenuItem("RPN");
+        insertRPN.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doInsert(TYPE_RPN);
+                }
+            });
+        insert.add(insertRPN);
 
         menu.addSeparator();
 
@@ -227,10 +280,9 @@ public class NotesUI extends MotifUI
                 Prefs.setLastBoolean("ArmNewNotesMotifs", autoArmItem.isSelected());
                 }
             });
-        
 
         }
-    
+        
     public void uiWasSet()
     	{
     	super.uiWasSet();
@@ -616,18 +668,22 @@ public class NotesUI extends MotifUI
             range.setSelected(false);
             range.setEnabled(false);
             }
-        String[] names = { "Filter Selection Only", "Remove Notes", "Remove Bend", "Remove CC", "Remove Aftertouch" };
+        String[] names = { "Filter Selection Only", "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch" };
         JCheckBox removeNotes = new JCheckBox("");
         JCheckBox removeBend = new JCheckBox("");
         JCheckBox removeCC = new JCheckBox("");
         JCheckBox removeAftertouch = new JCheckBox("");
+        JCheckBox removeNRPN = new JCheckBox("");
+        JCheckBox removeRPN = new JCheckBox("");
 
         removeNotes.setSelected(Prefs.getLastBoolean("FilterRemoveNotes", false));
         removeBend.setSelected(Prefs.getLastBoolean("FilterRemoveBend", false));
         removeCC.setSelected(Prefs.getLastBoolean("FilterRemoveCC", false));
         removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveAftertouch", false));
+        removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveNRPN", false));
+        removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveRPN", false));
         
-        JComponent[] components = new JComponent[] { range, removeNotes, removeBend, removeCC, removeAftertouch};
+        JComponent[] components = new JComponent[] { range, removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch};
         int result = Dialogs.showMultiOption(this, names, components, new String[] {  "Filter", "Cancel" }, 0, "Filter", "Enter Filter Settings");
         
         if (result == 0)
@@ -638,6 +694,8 @@ public class NotesUI extends MotifUI
             boolean _removeBend = removeBend.isSelected();
             boolean _removeCC = removeCC.isSelected();
             boolean _removeAftertouch = removeAftertouch.isSelected();
+            boolean _removeNRPN = removeNRPN.isSelected();
+            boolean _removeRPN = removeRPN.isSelected();
         
             ReentrantLock lock = seq.getLock();
             lock.lock();
@@ -646,11 +704,11 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.filter(min, max, _removeNotes, _removeBend, _removeCC, _removeAftertouch);
+                    notes.filter(min, max, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removeAftertouch);
                     }
                 else
                     {
-                    notes.filter(_removeNotes, _removeBend, _removeCC, _removeAftertouch);
+                    notes.filter(_removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removeAftertouch);
                     }
                 }
             finally
@@ -662,6 +720,8 @@ public class NotesUI extends MotifUI
             Prefs.setLastBoolean("FilterRemoveBend", _removeBend);
             Prefs.setLastBoolean("FilterRemoveCC", _removeCC);
             Prefs.setLastBoolean("FilterRemoveAftertouch", _removeAftertouch);
+            Prefs.setLastBoolean("FilterRemoveNRPN", _removeNRPN);
+            Prefs.setLastBoolean("FilterRemoveRPN", _removeRPN);
             if (hasRange) Prefs.setLastBoolean("FilterRange", _range);
 
             reloadTable();
@@ -831,14 +891,43 @@ public class NotesUI extends MotifUI
             reloadTable();
             }
         }
-    public void doInsert()
+        
+	public static final int TYPE_NOTE = 0;
+	public static final int TYPE_AFTERTOUCH = 1;
+	public static final int TYPE_CC = 2;
+	public static final int TYPE_NRPN = 3;
+	public static final int TYPE_RPN = 4;
+	public static final int TYPE_BEND = 5;
+	
+    public void doInsert(int type)
         {
         seq.push();
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
-            notes.getEvents().add(0, new Notes.Note(60, 127, 0, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+            switch(type)
+            	{
+            	case TYPE_NOTE:
+    	         	notes.getEvents().add(0, new Notes.Note(60, 127, 0, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+					notes.computeMaxTime();
+	           	break;
+            	case TYPE_AFTERTOUCH:
+    	         	notes.getEvents().add(0, new Notes.Aftertouch(Out.CHANNEL_AFTERTOUCH, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+            	break;
+            	case TYPE_CC:
+    	         	notes.getEvents().add(0, new Notes.CC(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+            	break;
+            	case TYPE_NRPN:
+    	         	notes.getEvents().add(0, new Notes.NRPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+            	break;
+            	case TYPE_RPN:
+    	         	notes.getEvents().add(0, new Notes.RPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+            	break;
+            	case TYPE_BEND:
+    	         	notes.getEvents().add(0, new Notes.Bend(0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+            	break;
+            	}
             }
         finally
             {
@@ -983,7 +1072,12 @@ public class NotesUI extends MotifUI
                 
         scroll.setViewportView(inspectorPane);
         }
-                
+    
+    public EventTable getTable()
+    	{
+    	return table;
+    	}
+    	
     public void buildPrimary(JScrollPane scroll)
         {
         table = new EventTable(notes, seq);
@@ -1044,7 +1138,7 @@ public class NotesUI extends MotifUI
             }
         }
         
-    public void redraw() 
+    public void redraw(boolean inResponseToStep) 
         {
         boolean stopped;
         boolean recorded;

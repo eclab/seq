@@ -50,13 +50,17 @@ public class Notes extends Motif
                 return new CC(obj);
             else if (type.equals("a"))
                 return new Aftertouch(obj);
+            else if (type.equals("n"))
+                return new NRPN(obj);
+            else if (type.equals("r"))
+                return new RPN(obj);
             else 
                 {
                 System.err.println("Notes.Event.load: unknown type " + type);
                 return null;
                 }
             }
-        public abstract void write(Track track) throws InvalidMidiDataException;
+        public abstract void write(Track track, Notes notes) throws InvalidMidiDataException;
                         
         public JSONObject save() throws JSONException
             {
@@ -99,7 +103,7 @@ public class Notes extends Motif
             {
             return new Note(pitch, velocity, when, length, release);
             }
-        public void write(Track track) throws InvalidMidiDataException
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
             track.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, pitch, velocity), when));
             if (release == 64)
@@ -139,7 +143,7 @@ public class Notes extends Motif
             {
             return new Bend(value, when);
             }
-        public void write(Track track) throws InvalidMidiDataException
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
             int v = value + 8192;
             track.add(new MidiEvent(new ShortMessage(ShortMessage.PITCH_BEND, (v & 127), ((v >>> 7) & 127)), when));
@@ -152,6 +156,96 @@ public class Notes extends Motif
             return obj;
             }
         public String toString() { return "Bend[" + value + "]"; }
+        }
+
+    public static class NRPN extends Event
+        {
+        public int parameter;
+        public int value;
+        public NRPN(int parameter, int value, int when)
+            {
+            super(when, 0);
+            this.value = value;
+            this.parameter = parameter;
+            }
+        public NRPN(JSONObject obj)
+            {
+            super(obj);
+            parameter = obj.optInt("p", 0);
+            value = obj.optInt("v", 0);
+            }
+        public Event copy()
+            {
+            return new NRPN(parameter, value, when);
+            }
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
+            {
+        	if (notes.wasRPN || notes.lastNRPN != parameter)
+    			{
+    			// Write out the parameter first
+    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 99, (parameter >>> 7)), when));
+    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 98, (parameter & 127)), when));
+    			notes.lastNRPN = parameter;
+    			notes.wasRPN = false;
+    			}
+    		// Now write out value, MSB first
+    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 6, (value >>> 7)), when));
+    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 38, (value & 127)), when));
+            }
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            obj.put("t", "n");
+            obj.put("p", parameter);
+            obj.put("v", value);
+            return obj;
+            }
+        public String toString() { return "NRPN[" + parameter + "->" + value + "]"; }
+        }
+
+    public static class RPN extends Event
+        {
+        public int parameter;
+        public int value;
+        public RPN(int parameter, int value, int when)
+            {
+            super(when, 0);
+            this.value = value;
+            this.parameter = parameter;
+            }
+        public RPN(JSONObject obj)
+            {
+            super(obj);
+            parameter = obj.optInt("p", 0);
+            value = obj.optInt("v", 0);
+            }
+        public Event copy()
+            {
+            return new RPN(parameter, value, when);
+            }
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
+            {
+        	if (!notes.wasRPN || notes.lastNRPN != parameter)
+    			{
+    			// Write out the parameter first
+    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 101, (parameter >>> 7)), when));
+    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 100, (parameter & 127)), when));
+    			notes.lastNRPN = parameter;
+    			notes.wasRPN = true;
+    			}
+    		// Now write out value, MSB first
+    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 6, (value >>> 7)), when));
+    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 38, (value & 127)), when));
+            }
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            obj.put("t", "r");
+            obj.put("p", parameter);
+            obj.put("v", value);
+            return obj;
+            }
+        public String toString() { return "RPN[" + parameter + "->" + value + "]"; }
         }
 
     public static class CC extends Event
@@ -174,7 +268,7 @@ public class Notes extends Motif
             {
             return new CC(parameter, value, when);
             }
-        public void write(Track track) throws InvalidMidiDataException
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
             track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, parameter, value), when));
             }
@@ -215,7 +309,7 @@ public class Notes extends Motif
             {
             return new Aftertouch(pitch, value, when);
             }
-        public void write(Track track) throws InvalidMidiDataException
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
             if (pitch == Out.CHANNEL_AFTERTOUCH)
                 track.add(new MidiEvent(new ShortMessage(ShortMessage.CHANNEL_PRESSURE, value, 0), when));
@@ -230,14 +324,145 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "AT[" + (pitch == Out.CHANNEL_AFTERTOUCH ? "" : ("" + pitch + "->")) + value + "]"; }
+        public String toString() { return "AT[" + 
+        	(pitch == Out.CHANNEL_AFTERTOUCH ? "" : 
+        		"" + (Note.NOTES[pitch % 12] + (pitch / 12)) + "->")  + value + "]"; }
         }
+        
+
+
+// This class converts the CCs, when appropriate, into NRPN or RPN messages in an ArrayList of events.
+static class EventParser
+	{
+	boolean rpn = false;					// Whether the last NRPN/RPN parameter is RPN
+    int lastParamMSB = -1;					// The MSB of the last NRPN/RPN parameter
+    int lastParamLSB = -1;					// The LSB of the last NRPN/RPN parameter
+    int lastValueMSB = -1;					// The MSB of the last NRPN/RPN value
+    boolean bareValueMSB = false;			// True if an MSB for the NRPN/RPN value has been issued but not an LSB yet
+    int bareValueMSBWhen = 0;				// The timestamp of the last NRPN/RPN value
+    boolean error;
+    
+    public boolean getError() { return error; }
+    
+    ArrayList<Event> parsed = new ArrayList<>();		// The resulting list of events
+	
+	// If there is a bare MSB value with no LSB pair, it is assumed to have LSB = 0.  Add it to the list.
+	void dumpBareMSBValue()
+		{
+		if (lastParamMSB > 0 && lastParamLSB > 0 && lastValueMSB > 0 && bareValueMSB)
+			{
+			if (rpn)
+				{
+				parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
+				}
+			else
+				{
+				parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
+				}
+			bareValueMSB = false;
+			lastValueMSB = -1;
+			bareValueMSBWhen = 0;
+			}
+		}
+		
+	public EventParser(ArrayList<Event> input, boolean convertNRPN)
+		{
+		for(Event evt : input)
+			{
+			if (convertNRPN && evt instanceof CC)
+				{
+				CC cc = (CC)evt;
+				if (cc.parameter == 99)
+					{
+					dumpBareMSBValue();
+					if (rpn) lastParamLSB = -1;
+					lastParamMSB = cc.value;
+					rpn = false;
+					}
+				else if (cc.parameter == 98)
+					{
+					dumpBareMSBValue();
+					if (rpn) lastParamMSB = -1;
+					lastParamLSB = cc.value;
+					rpn = false;
+					}
+				else if (cc.parameter == 101)
+					{
+					dumpBareMSBValue();
+					if (rpn) lastParamLSB = -1;
+					lastParamMSB = cc.value;
+					rpn = true;
+					}
+				else if (cc.parameter == 100)
+					{
+					dumpBareMSBValue();
+					if (rpn) lastParamMSB = -1;
+					lastParamLSB = cc.value;
+					rpn = true;
+					}
+				else if (cc.parameter == 6)
+					{
+					dumpBareMSBValue();
+					if (lastParamMSB > 0 && lastParamLSB > 0)
+						{
+						lastValueMSB = cc.value;
+						bareValueMSB = true;
+						bareValueMSBWhen = cc.when;
+						}
+					else	
+						{
+						error = true;
+						}
+					}
+				else if (cc.parameter == 38)
+					{
+					if (lastParamMSB > 0 && lastParamLSB > 0)
+						{
+						if (rpn)
+							{
+							parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
+							}
+						else
+							{
+							parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
+							}
+						bareValueMSB = false;
+						bareValueMSBWhen = 0;
+						}
+					else
+						{
+						error = true;
+						}
+					}
+				else  
+					{
+					dumpBareMSBValue();
+					parsed.add(evt);
+					}
+				}
+			else
+				{
+				dumpBareMSBValue();
+				parsed.add(evt);
+				}
+			}
+		dumpBareMSBValue();
+		}
+	
+	public ArrayList<Event> getParsedEvents()
+		{
+		return parsed;
+		}
+	}
+	        
+        
         
     ArrayList<Event> events = new ArrayList<>();                // FIXME maybe this should be a list of lists to allow for fragmentation
     ArrayList<Event> recording = new ArrayList<>();
     boolean recordBend;
     boolean recordCC;
     boolean recordAftertouch;
+    boolean convertNRPNRPN;
     int out;
     int in;
     int maxNoteOnPosition = 0;
@@ -268,6 +493,9 @@ public class Notes extends Motif
 
     public boolean getRecordCC() { return recordCC; }
     public void setRecordCC(boolean val) { recordCC = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordcc", val); }
+
+    public boolean getConvertNRPNRPN() { return convertNRPNRPN; }
+    public void setConvertNRPNRPN(boolean val) { convertNRPNRPN = val; Prefs.setLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", val); }
 
     public boolean getRecordAftertouch() { return recordAftertouch; }
     public void setRecordAftertouch(boolean val) { recordAftertouch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordaftertouch", val); }
@@ -304,16 +532,27 @@ public class Notes extends Motif
         recordBend = Prefs.getLastBoolean("seq.motif.notes.Notes.recordbend", true); 
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
+        convertNRPNRPN = Prefs.getLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", true); 
         for(int i = 0; i < NUM_PARAMETERS; i++) { midiParameterType[i] = NO_MIDI_PARAMETER; }
         }
 
     public ArrayList<Event> getEvents() { return events; }
-    public void setEvents(ArrayList<Event> val) 
+    public boolean setEvents(ArrayList<Event> val) 
         {
-        events = val; 
-        computeMaxTime();         
+        if (getConvertNRPNRPN())
+        	{
+        	EventParser parser = new EventParser(val, true);
+        	events = parser.getParsedEvents();
+		    computeMaxTime();     
+		    return parser.getError();    
+        	}
+        else
+        	{
+        	events = val;
+		    computeMaxTime();     
+		    return true;    
+        	}
         }
-        
 
     public void clearRecording()
         {
@@ -412,14 +651,14 @@ public class Notes extends Motif
         }
 
     /** Removes elements by index, not by time */
-    public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeAftertouch)
+    public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)
         {
         if (events.size() == 0) return new ArrayList<Event>();
-        else return filter(0, events.size() - 1, removeNotes, removeBend, removeCC, removeAftertouch);
+        else return filter(0, events.size() - 1, removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch);
         }
                 
     /** Removes elements by index, not by time */
-    public ArrayList<Event> filter(int startIndex, int endIndex, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeAftertouch)        // endIndex is inclusive
+    public ArrayList<Event> filter(int startIndex, int endIndex, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)        // endIndex is inclusive
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
@@ -435,7 +674,10 @@ public class Notes extends Motif
                 (event instanceof Note && removeNotes) ||
                 (event instanceof Bend && removeBend) ||
                 (event instanceof CC && removeCC) ||
-                (event instanceof Aftertouch && removeAftertouch))            
+                (event instanceof Aftertouch && removeAftertouch) ||
+                (event instanceof NRPN && removeNRPN) ||
+                (event instanceof RPN && removeRPN)
+                )            
                 {
                 cut.add(event);
                 }
@@ -969,14 +1211,19 @@ public class Notes extends Motif
         }
 
 
-                
+    
+    int lastNRPN = -1;
+    boolean wasRPN = false;
+    
     Sequence write() throws InvalidMidiDataException
         {
         javax.sound.midi.Sequence sequence = new javax.sound.midi.Sequence(javax.sound.midi.Sequence.PPQ, Seq.PPQ);
         Track track = sequence.createTrack();
+        lastNRPN = -1;
+        wasRPN = false;
         for(Event event : events)
             {
-            event.write(track);
+            event.write(track, this);
             }
         return sequence;
         }
@@ -1054,8 +1301,9 @@ public class Notes extends Motif
         obj.put("events", eventsArray);
         }
 
+	static int document = 0;
     static int counter = 1;
-    public int getNextCounter() { return counter++; }
+    public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
         
     public String getBaseName() { return "Notes"; }
     }

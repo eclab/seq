@@ -14,6 +14,8 @@ public class WidgetList extends JPanel
         
     JPanel panel;
     JLabel[] labels;
+    JComponent[] widgets;
+    
     public JLabel[] getLabels() { return labels; }
     
     public WidgetList() { }
@@ -67,8 +69,17 @@ public class WidgetList extends JPanel
         
         setLayout(new BorderLayout());
         add(panel, BorderLayout.NORTH);
+        this.widgets = widgets;
+        updateToolTips();
         return panel;
         }
 
+	public void updateToolTips()
+		{
+        for(int i = 0; i < labels.length; i++)
+        	{
+            this.labels[i].setToolTipText(widgets[i] != null ? widgets[i].getToolTipText() : null);
+        	}
+		}
     }
         

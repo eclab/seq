@@ -24,11 +24,16 @@ public abstract class SmallDial extends JPanel
     private static final long serialVersionUID = 1;
 
     public void setToolTipText(String text) 
-        { 
-        //super.setToolTipText(text); 
+        {
+        super.setToolTipText(text);
         if (title != null) title.setToolTipText(text);
         if (data != null) data.setToolTipText(text);
         }
+        
+    public String getToolTipText()
+    	{
+        return super.getToolTipText();
+    	}
 
     public static final int NO_DEFAULT = Dial.NO_DEFAULT;
     public static final int DEFAULT = Dial.DEFAULT;
@@ -56,8 +61,6 @@ public abstract class SmallDial extends JPanel
     public static float DEFAULTS_DOT_THICKNESS = 4;
     // The label font
     public static final Font FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
-    // The leaky integrator amount used to gradually move the reported value towards the desired value indicated by the user 
-    public static final int SCALE = 256;
     // The largest size the drop-down menu can be
     public static final int MAXIMUM_MENU_LENGTH = 24;
 
@@ -77,6 +80,10 @@ public abstract class SmallDial extends JPanel
     JLabel title = null;
     // The Dial's displayed value.   This is null until a LabelledDial is generated.
     JLabel data = null;
+    
+    double scale = 256.0;
+    public double getScale() { return scale; }
+    public void setScale(double val) { scale = val; }
 
     /** Returns the color of the thick portion of the dial when not being changed. */
     public Color getStaticColor() { return staticColor; }
@@ -160,7 +167,11 @@ public abstract class SmallDial extends JPanel
     /** Returns the Labelled, Titled version of this Dial in vertical format, with title at top and value at bottom. */
     public JPanel getLabelledTitledDialVertical(String title, String maximumLabel)
         {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel()
+        	{
+        	public String getToolTipText() { return SmallDial.this.getToolTipText(); }
+        	public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
+        	};
                         
         this.title = new JLabel(title, SwingConstants.CENTER);
         this.title.setFont(FONT);
@@ -187,9 +198,6 @@ public abstract class SmallDial extends JPanel
         panel.add(this, BorderLayout.CENTER);
         panel.add(this.title, BorderLayout.NORTH);
         panel.add(data, BorderLayout.SOUTH);
-        data.setToolTipText(getToolTipText());
-        this.title.setToolTipText(getToolTipText());
-        panel.setToolTipText(getToolTipText());
         return panel;
         }
 
@@ -198,8 +206,12 @@ public abstract class SmallDial extends JPanel
         {
         JPanel panel = new JPanel();
         JPanel subpanel = new JPanel();
-        JPanel superpanel = new JPanel();
-                        
+        JPanel superpanel = new JPanel()
+        	{
+        	public String getToolTipText() { return SmallDial.this.getToolTipText(); }
+        	public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
+        	};
+                    
         this.title = new JLabel(title);
         this.title.setFont(FONT);
         
@@ -230,10 +242,6 @@ public abstract class SmallDial extends JPanel
         subpanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
         panel.add(subpanel, BorderLayout.CENTER);
         superpanel.add(panel, BorderLayout.NORTH);
-        panel.setToolTipText(getToolTipText());
-        superpanel.setToolTipText(getToolTipText());
-        data.setToolTipText(getToolTipText());
-        this.title.setToolTipText(getToolTipText());
         return superpanel;
         }
         
@@ -242,8 +250,12 @@ public abstract class SmallDial extends JPanel
         {
         JPanel panel = new JPanel();
         JPanel subpanel = new JPanel();
-        JPanel superpanel = new JPanel();
-                        
+        JPanel superpanel = new JPanel()
+        	{
+        	public String getToolTipText() { return SmallDial.this.getToolTipText(); }
+        	public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
+        	};
+
         final JLabel temp = new JLabel(maximumLabel);
         
         data = new JLabel(mapDefault(getValue()))
@@ -257,7 +269,8 @@ public abstract class SmallDial extends JPanel
                 }
             public Dimension getMinimumSize() { return getPreferredSize(); }
             public Dimension getMaximumSize() { return getPreferredSize(); }
-            };
+			};
+		data.setToolTipText(SmallDial.this.getToolTipText());
                         
         panel.setLayout(new BorderLayout());
         subpanel.setLayout(new BorderLayout());
@@ -268,9 +281,6 @@ public abstract class SmallDial extends JPanel
         subpanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         panel.add(subpanel, BorderLayout.CENTER);
         superpanel.add(panel, BorderLayout.NORTH);
-        panel.setToolTipText(getToolTipText());
-        superpanel.setToolTipText(getToolTipText());
-        data.setToolTipText(getToolTipText());
         return superpanel;
         }
         
@@ -454,11 +464,7 @@ public abstract class SmallDial extends JPanel
                 
                 int py = e.getY();                                
                 int y = -(py - startY);
-                int min = 0;
-                int max = 1;
-                double range = (max - min);
-                double multiplicand = SCALE / range;
-                double proposedValue = startValue + y / multiplicand;
+                double proposedValue = startValue + y / scale;
                 if (proposedValue < 0) proposedValue = 0;
                 if (proposedValue > 1) proposedValue = 1;
                             
