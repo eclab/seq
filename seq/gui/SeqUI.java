@@ -1414,12 +1414,12 @@ static
 		text.setLayout(new BorderLayout());
         JLabel seq = new JLabel(" Seq ");
         seq.setBackground(Color.WHITE);
-        seq.setFont(new Font(Font.SERIF, Font.BOLD, 72));
+        seq.setFont(new Font(Font.SERIF, Font.PLAIN, 96));
         text.add(seq, BorderLayout.WEST);
         
-        JLabel version = new JLabel("<html>A Modular and Hierarchical Sequencer<br>By Sean Luke<br><b>Version 2</b>, July 2025<br>https://github.com/eclab/seq</html>");
+        JLabel version = new JLabel("<html>A Modular and Hierarchical MIDI Sequencer<br>By Sean Luke<br>With Help from Filippo Carnovalini<br><b><font color='#3498db'>Version 2</font></b>, July 2025<br>https://github.com/eclab/seq</html>");
         version.setBackground(Color.WHITE);
-        version.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        version.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
         text.add(version, BorderLayout.CENTER);
         
         Collapse collapse = new Collapse(text);
