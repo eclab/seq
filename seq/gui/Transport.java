@@ -34,6 +34,7 @@ public class Transport extends JPanel implements SeqListener
     SmallDial beatsPerBar;
     SmallDial bpm;
     SmallDial beepVolume;
+    SmallDial beepPitch;
     JComboBox countIn;
     JCheckBox metronome;
     JComboBox clock;
@@ -57,6 +58,8 @@ public class Transport extends JPanel implements SeqListener
     static ImageIcon notLooping = buildIcon("icons/loop.png");
     static ImageIcon midiIn = buildIcon("icons/MidiIn.png");
     static ImageIcon midiInOff = buildIcon("icons/MidiInOff.png");
+
+	public static final String[] BEEP_PITCHES = { "A 220", "-Bb", "-B", "-C", "-Db", "-D", "-Eb", "-E", "-F", "-Gb", "-G", "-Ab", "A 440", "+Bb", "+B", "+C", "+Db", "+D", "+Eb", "+E", "+F", "+Gb", "+G", "+Ab", "A 880" };
 
     public static ImageIcon buildIcon(String file)
         {
@@ -82,6 +85,7 @@ public class Transport extends JPanel implements SeqListener
 		beatsPerBar.setToolTipText(BEATS_PER_BAR_TOOLTIP);
 		bpm.setToolTipText(BPM_TOOLTIP);
 		beepVolume.setToolTipText(BEEP_VOLUME_TOOLTIP);
+		beepPitch.setToolTipText(BEEP_PITCH_TOOLTIP);
 		countIn.setToolTipText(COUNT_IN_TOOLTIP);
 		metronome.setToolTipText(METRONOME_TOOLTIP);
 		clock.setToolTipText(CLOCK_TOOLTIP);
@@ -253,6 +257,29 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }
                     }
                 };
+                
+            beepPitch = new SmallDial((seq.getBeepPitch() + 12) / 24.0)
+                {
+                protected String map(double val) 
+                	{
+                	return BEEP_PITCHES[(int)(val * 24.0)];
+               	 	}
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return (seq.getBeepPitch() + 12) / 24.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { seq.setBeepPitch((int)(val * 24.0) - 12); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
             }
         finally
@@ -260,7 +287,7 @@ public class Transport extends JPanel implements SeqListener
             lock.unlock();
             }
         
-        options = new WidgetList(new String[] { "Tempo", "Clock", "Beats/Bar", "Count-In", "Metronome", "Beep Vol." }, 
+        options = new WidgetList(new String[] { "Tempo", "Clock", "Beats/Bar", "Count-In", "Metronome", "Beep Vol.", "Beep Pitch" }, 
             new JComponent[] 
                 { 
                 bpm.getLabelledDial("bpmL BPM"), 
@@ -269,6 +296,7 @@ public class Transport extends JPanel implements SeqListener
                 countIn,
                 metronome,
                 beepVolume.getLabelledDial("0.000"),
+                beepPitch.getLabelledDial("A 440"),
                 });
                         
         clockOptions = new DisclosurePanel("Clock Options", options);
@@ -523,6 +551,9 @@ public class Transport extends JPanel implements SeqListener
 		
 	static final String BEEP_VOLUME_TOOLTIP = "<html><b>Beep Volume</b><br>" +
 		"The volume of the beeps used in the <b>Metronome</b> and the <b>Count-In</b>.</html>";
+
+	static final String BEEP_PITCH_TOOLTIP = "<html><b>Beep Pitch</b><br>" +
+		"The pitch of the beeps used in the <b>Metronome</b> and the <b>Count-In</b>.</html>";
 
 	static final String COUNT_IN_TOOLTIP = "<html><b>Count-In</b><br>" +
 		"When should the sequencer provide a one-bar count-in prior to playing or recording?" +

@@ -823,11 +823,11 @@ public class StepSequenceUI extends MotifUI
 	
 	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Track</b><br>" +
 		"Removes the selected track.<br><br>" +
-		"The selected track has a red track number and name, and a blue selected step.";
+		"The selected track has a red track number and name, and a blue selected step.</html>";
 	
 	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Track</b><br>" +
 		"Duplicates the selected track, inserting the new one just under it.<br><br>" +
-		"The selected track has a red track number and name, and a blue selected step.";
+		"The selected track has a red track number and name, and a blue selected step.</html>";
 		
 	static final String ZOOM_IN_BUTTON_TOOLTIP = "<html><b>Zoom In</b><br>" +
 		"Magnifies the view of the step sequence (in time).</html>";

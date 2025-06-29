@@ -254,14 +254,26 @@ public class Seq
     int currentCountIn;
     
     ///// BEEP
-    public static final int BEEP_COUNT_IN_FREQUENCY = 440;
-    public static final int BEEP_COUNT_IN_BAR_FREQUENCY = 880 * 2;
-    public static final int BEEP_FREQUENCY = 440;
-    public static final int BEEP_BAR_FREQUENCY = 880;
+    //public static final int BEEP_COUNT_IN_FREQUENCY = 440;
+    //public static final int BEEP_COUNT_IN_BAR_FREQUENCY = 880 * 2;
+    // spublic static final int BEEP_FREQUENCY = 440;
+    //public static final int BEEP_BAR_FREQUENCY = 880;
+    public static final double BEEP[] = 			// Frequencies for pitches -12 ... 0 ... +12
+    	{
+    	220.00000, 233.08188, 246.94165, 261.62557, 277.18263, 293.66477,
+		311.12698, 329.62756, 349.22823, 369.99442, 391.99544, 415.30470,
+		440.00000, 466.16376, 493.88330, 523.25113, 554.36526, 587.32954,
+		622.25397, 659.25511, 698.45646, 739.98885, 783.99087, 830.60940,
+		880.00000
+		};
+
+
     // Our beep, which creates its own thread.
     Beep beep = new Beep();
     // Beep volume, 0...1.0 as a fraction of maximum volume
     double beepVolume = 1.0;
+    // Beep pitch, -12...12, with 0 centered at A 440
+    int beepPitch = 0;
     
     ///// HOOKS FOR CHANGES IN STATE
     ArrayList<SeqListener> listeners = new ArrayList<>();
@@ -288,6 +300,22 @@ public class Seq
     public File getFile() { return file; }
     /** Sets the file associated with this Seq.  Can be set to null. */
     public void setFile(File file) { this.file = file; }
+    
+    public int getBeepPitch()
+    	{
+    	return beepPitch;
+    	}
+    	
+    public void setBeepPitch(int val)
+    	{
+    	beepPitch = val;
+    	}
+    
+    /** Returns frequencies for pitch deviations ranging from -12 to +12 */
+    public double getBeepBarFrequency()
+    	{
+    	return BEEP[getBeepPitch() + 12];
+    	}
     
     /** Prepares Seq to be thrown away. */
     public void shutdown()
@@ -912,7 +940,7 @@ public class Seq
             }
         }
 
-    void doBeep(int time, int beepFrequency, int beepBarFrequency)
+    void doBeep(int time, double beepFrequency, double beepBarFrequency)
         {
         if (time % PPQ == 0)
             {
@@ -962,7 +990,7 @@ public class Seq
                         ((playing && (countInMode == COUNT_IN_RECORDING_AND_PLAYING)))))    // we're playing, and teh count-in is for playing
                     {
                     // we're in the count-in phase
-                    doBeep(Math.abs(bar) * PPQ - currentCountIn, BEEP_COUNT_IN_FREQUENCY, BEEP_COUNT_IN_BAR_FREQUENCY);
+                    doBeep(Math.abs(bar) * PPQ - currentCountIn, getBeepBarFrequency(), getBeepBarFrequency() * 4);
                     if ((currentCountIn % PPQ) == 0)
                         setCountIn(currentCountIn / PPQ);
                     currentCountIn--;
@@ -1000,7 +1028,7 @@ public class Seq
                         }
                                                                 
                     // Handle beep
-                    if (metronome) doBeep(time, BEEP_FREQUENCY, BEEP_BAR_FREQUENCY);
+                    if (metronome) doBeep(time, getBeepBarFrequency(), getBeepBarFrequency() * 2);
                         
                     processNoteOffs(false);
 //                    playingClips.clear();
@@ -1355,6 +1383,7 @@ public class Seq
         obj.put("countin", countInMode);
         obj.put("metronome", metronome);
         obj.put("beepvolume", beepVolume);
+        obj.put("beeppitch", beepPitch);
         obj.put("macrochildcounter", macroChildCounter);
         JSONArray params = Motif.doubleToJSONArray(parameterValues);
         obj.put("params", params);
@@ -1422,6 +1451,7 @@ public class Seq
         seq.countInMode = obj.optInt("countin", COUNT_IN_RECORDING_ONLY);
         seq.metronome = obj.optBoolean("metronome", false);
         seq.beepVolume = obj.optDouble("beepvolume", 1.0);
+        seq.beepPitch = obj.optInt("beeppitch", 0);
         seq.macroChildCounter = obj.getInt("macrochildcounter");                // note not optInt
         seq.parameterValues = Motif.JSONToDoubleArray(obj.getJSONArray("params"));      // note not getJSONArray
         seq.randomMax = obj.optDouble("rmax", 0.0);

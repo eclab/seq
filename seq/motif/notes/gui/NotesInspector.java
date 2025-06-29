@@ -154,7 +154,7 @@ public class NotesInspector extends WidgetList
                 });
 
 			endTime = notes.getEnd();
-			end = new TimeDisplay(endTime, seq, false)
+			end = new TimeDisplay(endTime, seq)
 				{
 				public void updateTime(int time)
 					{
@@ -348,15 +348,22 @@ public class NotesInspector extends WidgetList
                 updateFull(i);
                                 
                 parameterPanel[i] = new JPanel();
+                parameterPanel[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
                 parameterPanel[i].setLayout(new BorderLayout());
                 Box box = new Box(BoxLayout.X_AXIS);
                 box.add(new Collapse(parameterType[i]));
+                parameterType[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
                 box.add(new JLabel(" "));
-                box.add(parameterMSB[i].getLabelledTitledDialVertical("MSB", "127"));
-                box.add(parameterLSB[i].getLabelledTitledDialVertical("LSB", "127"));
+                JComponent comp = parameterMSB[i].getLabelledTitledDialVertical("MSB", "127");
+                comp.setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
+                box.add(comp);
+                comp = parameterLSB[i].getLabelledTitledDialVertical("LSB", "127");
+                box.add(comp);
                 box.add(new JLabel(" "));
                 parameterPanel[i].add(box, BorderLayout.WEST);
+                combined[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
                 parameterPanel[i].add(combined[i], BorderLayout.CENTER);
+                parameterPanel[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
 
                 JPanel vert = new JPanel();
                 vert.setLayout(new BorderLayout());
@@ -372,10 +379,23 @@ public class NotesInspector extends WidgetList
                 endPanel.setLayout(new BorderLayout());
                 endPanel.add(end, BorderLayout.WEST);
                 endPanel.add(vert, BorderLayout.EAST);
+        		endPanel.setToolTipText(END_TOOLTIP);
                 }
             
             }
         finally { lock.unlock(); }
+
+		name.setToolTipText(NAME_TOOLTIP);
+		out.setToolTipText(OUT_TOOLTIP);
+		in.setToolTipText(IN_TOOLTIP);
+		end.setToolTipText(END_TOOLTIP);
+		setEnd.setToolTipText(SET_END_TOOLTIP);
+		echo.setToolTipText(ECHO_TOOLTIP);
+		armed.setToolTipText(ARMED_TOOLTIP);
+		recordBend.setToolTipText(RECORD_BEND_TOOLTIP);
+		recordAftertouch.setToolTipText(RECORD_AFTERTOUCH_TOOLTIP);
+		recordCC.setToolTipText(RECORD_CC_TOOLTIP);
+		convertNRPNRPN.setToolTipText(CONVERT_NRPN_RPN_TOOLTIP);
 
         build(new String[] { "Name", "Out", "In", "End", "Echo", "Armed", "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN"}, 
             new JComponent[] 
@@ -398,6 +418,7 @@ public class NotesInspector extends WidgetList
         DisclosurePanel disclosure = new DisclosurePanel("MIDI Parameters", widgetList);
         disclosure.setParentComponent(this);
         add(disclosure, BorderLayout.SOUTH);
+                disclosure.setToolTipText(OUTPUT_MIDI_VALUES_TOOLTIP);
         }
         
     public void updateFull(int param)
@@ -489,24 +510,59 @@ public class NotesInspector extends WidgetList
 		"Sets the MIDI output for the Notes.</html>";
 	
 	static final String IN_TOOLTIP = "<html><b>In</b><br>" +
-		"Sets the MIDI input for the Notes.</html>";
+		"Sets the MIDI input for recording to the Notes.</html>";
 	
-	static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
-		"Sets the <i>default</i> MIDI note output for all steps in the track.<br>" +
-		"You can override this value in the individual step's inspector.</html>";
-			
-	static final String SET_NOTE_TOOLTIP = "<html><b>Set All Note</b><br>" +
-		"Resets all steps to use the MIDI output note as shown at left.</html>";
+	static final String END_TOOLTIP = "<html><b>End</b><br>" +
+		"Adjusts the End time of the Notes.  To set it, press <b>Set</b>. The Notes will<br>" +
+		"terminate after the End, or after the last event has completed, whichever is later.</html>";
 	
-	static final String LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
-		"Sets the number of steps in the track.  This doesn't take effect until the <b>Set</b><br>" +
-		"button is pressed.  Changing the number of steps overrides the <b>Track Len</b> setting<br>" +
-		"in the Step Sequence inspector.  To return to the default, double-click the dial (and press<br>" +
-		"the Set button).</html>";
-			
-	static final String SET_LENGTH_TOOLTIP = "<html><b>Set All Length</b><br>" +
-		"Changes the number of steps in the track to the <b>Track Len</b> value at left.</html>";
+	static final String SET_END_TOOLTIP = "<html><b>Set End</b><br>" +
+		"Sets the End of the Notes to the time at left.  The Notes will terminate<br>" +
+		"after the End, or after the last event has completed, whichever is later.</html>";
 	
+	static final String ECHO_TOOLTIP = "<html><b>Echo</b><br>" +
+		"Sets whether received MIDI data will be echoed out Output during recording.</html.";
+		
+	static final String ARMED_TOOLTIP = "<html><b>Arm</b><br>" +
+		"Arms the Notes to receive and record MIDI data during recording.</html>";
+	
+	static final String RECORD_BEND_TOOLTIP = "<html><b>Record Bend</b><br>" +
+		"Sets whether the Notes will record Pitch Bend data during recording.</html>";
+	
+	static final String RECORD_AFTERTOUCH_TOOLTIP = "<html><b>Record Aftertouch</b><br>" +
+		"Sets whether the Notes will record Aftertouch data during recording.</html>";
+	
+	static final String RECORD_CC_TOOLTIP = "<html><b>Record CC</b><br>" +
+		"Sets whether the Notes will record CC data during recording.</html>";
+	
+	static final String CONVERT_NRPN_RPN_TOOLTIP = "<html><b>Make NRPN/RPN</b><br>" +
+		"Sets whether the Notes will attempt to convert appropriate CC data" + 
+		"into NRPN or RPN events after recording.  If not, the CC data will" +
+		"be retained as CC events.</html>";
+	
+	static final String OUTPUT_MIDI_VALUES_TOOLTIP = "<html><b>MIDI Parameters</b><br>" +
+		"Convert user parameters into MIDI parameters to be output each timestep, including:" + 
+		"<ul>" + 
+		"<li>Pitch Bend" + 
+		"<li>(7-bit) Control Change or CC" + 
+		"<li>(14-bit) Control Change" + 
+		"<li>NRPN" + 
+		"<li>RPN" + 
+		"</ul></html>";
 
-
+	static final String OUTPUT_ONE_MIDI_VALUE_TOOLTIP = "<html><b>MIDI Parameter</b><br>" +
+		"Convert a user parameter into a MIDI parameter to be output each timestep.<br>" +
+		"Each parameter is defined by a MSB (Most Significant Byte) and LSB (Least<br>" +
+		"Significant Byte), but some parameters only use the MSB, or only use part of<br>" +
+		"the range of the MSB.  See below for information on setting parameter numbers:" +
+		"<ul>" + 
+		"<li><b>Pitch Bend</b>.  Doesn't use MSB or LSB.  Ignore them." +
+		"<li><b>(7-bit) Control Change or CC</b>.  Uses only the MSB.  Ignore the LSB." + 
+		"<li><b>(14-bit) Control Change</b>.  There are only 32 14-bit Control Change<br>" +
+		"parameters (0-31), and so it only uses the first 32 values of the MSB.<br>" + 
+		"Ignore the LSB." + 
+		"<li><b>NRPN</b>.  Uses the MSB and LSB together to define the parameter." + 
+		"<li><b>RPN</b>.  Uses the MSB and LSB together to define the parameter." + 
+		"</ul></html>";
+	
     }

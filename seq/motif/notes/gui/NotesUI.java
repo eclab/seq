@@ -295,6 +295,7 @@ public class NotesUI extends MotifUI
         return menu;
         }
         
+
     /*
       public static final int NEAREST_32_TRIPLETS = 0;
       public static final int NEAREST_32 = 1;
@@ -321,11 +322,11 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
+		Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("QuantizeRange", true));
             hasRange = true;
@@ -335,6 +336,7 @@ public class NotesUI extends MotifUI
             range.setSelected(false);
             range.setEnabled(false);
             }
+
         String[] names = { "Quantize Selection Only", "To Nearest", "Note Ends", "Non-Note Events", "Bias" };
         JComboBox toNearest = new JComboBox(new String[] {"32nd Trip", "32nd Note", "16th Trip", "16th Note", "8th Trip", "8th Note", "Quarter Trip", "Quarter Note"});
         toNearest.setSelectedIndex(Prefs.getLastInt("QuantizeTo", 1));
@@ -349,6 +351,7 @@ public class NotesUI extends MotifUI
             public void setValue(double val) { value = val; }
             public String map(double val) { return String.format("%.4f", val - 0.5); }
             };
+
         JComponent[] components = new JComponent[] { range, toNearest, noteEnds, nonNoteEvents, bias.getLabelledDial("-0.0000") };
         int result = Dialogs.showMultiOption(this, names, components, new String[] {  "Quantize", "Cancel" }, 0, "Quantize", "Enter Note Quantization Settings");
         
@@ -369,7 +372,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.quantize(min, max, divisor, _ends, _nonNotes, _bias);
+                    notes.quantize(indices, divisor, _ends, _nonNotes, _bias);
                     }
                 else
                     {
@@ -387,7 +390,8 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("QuantizeBias", _bias);
             if (hasRange) Prefs.setLastBoolean("QuantizeRange", _range);
 
-            reloadTable();
+            table.reload();		// we could change ordering
+			table.setSelectedEvents(evts);
             }
         }
 
@@ -396,11 +400,11 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
+		Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("RandomizeTimeRange", true));
             hasRange = true;
@@ -440,7 +444,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.randomizeTime(min, max, _variance, _lengths, _nonNotes, seq.getDeterministicRandom());
+                    notes.randomizeTime(indices, _variance, _lengths, _nonNotes, seq.getDeterministicRandom());
                     }
                 else
                     {
@@ -457,7 +461,8 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("RandomizeTimeVariance", _variance);
             if (hasRange) Prefs.setLastBoolean("RandomizeTimeRange", _range);
 
-            reloadTable();
+            table.reload();					// we could change ordering
+			table.setSelectedEvents(evts);
             }
         }
         
@@ -465,11 +470,10 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("RandomizeVelocityRange", true));
             hasRange = true;
@@ -506,7 +510,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.randomizeVelocity(min, max, _variance, _releases, seq.getDeterministicRandom());
+                    notes.randomizeVelocity(indices, _variance, _releases, seq.getDeterministicRandom());
                     }
                 else
                     {
@@ -521,8 +525,6 @@ public class NotesUI extends MotifUI
             Prefs.setLastBoolean("RandomizeVelocityReleases", _releases);
             Prefs.setLastDouble("RandomizeVelocityVariance", _variance);
             if (hasRange) Prefs.setLastBoolean("RandomizeVelocityRange", _range);
-
-            reloadTable();
             }
         }
 
@@ -530,11 +532,10 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("SetVelocityRange", true));
             hasRange = true;
@@ -568,7 +569,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.setVelocity(min, max, _velocity);
+                    notes.setVelocity(indices, _velocity);
                     }
                 else
                     {
@@ -582,8 +583,6 @@ public class NotesUI extends MotifUI
         
             Prefs.setLastDouble("SetVelocity", _velocity);
             if (hasRange) Prefs.setLastBoolean("SetVelocityRange", _range);
-
-            reloadTable();
             }
         }
 
@@ -592,11 +591,10 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("TransposeRange", true));
             hasRange = true;
@@ -631,7 +629,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.transpose(min, max, by);
+                    notes.transpose(indices, by);
                     }
                 else
                     {
@@ -645,8 +643,6 @@ public class NotesUI extends MotifUI
         
             Prefs.setLastDouble("TransposeBy", _variance);
             if (hasRange) Prefs.setLastBoolean("TransposeRange", _range);
-
-            reloadTable();
             }
         }
 
@@ -654,11 +650,10 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("FilterRange", true));
             hasRange = true;
@@ -704,7 +699,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.filter(min, max, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removeAftertouch);
+                    notes.filter(indices, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removeAftertouch);
                     }
                 else
                     {
@@ -724,7 +719,8 @@ public class NotesUI extends MotifUI
             Prefs.setLastBoolean("FilterRemoveRPN", _removeRPN);
             if (hasRange) Prefs.setLastBoolean("FilterRange", _range);
 
-            reloadTable();
+			// we could change everything
+            table.reload();
             }
         }
 
@@ -741,7 +737,6 @@ public class NotesUI extends MotifUI
             {
             lock.unlock();
             }
-        reloadTable();          
         }
 
     static final int[] TIME_UNITS = { 1, 192 / 16, 192 / 4, 192, 192 * 4 };
@@ -750,11 +745,11 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
+		Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("ShiftTimeRange", true));
             hasRange = true;
@@ -794,7 +789,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    shiftResult = notes.shift(min, max, by);
+                    shiftResult = notes.shift(indices, by);
                     }
                 else
                     {
@@ -814,7 +809,9 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("ShiftTimeBy", _variance);
             Prefs.setLastInt("ShiftTimeUnits", _units);
             if (hasRange) Prefs.setLastBoolean("ShiftTimeRange", _range);
-            reloadTable();
+            
+            table.reload();					// we could change ordering
+			table.setSelectedEvents(evts);
             }
         }
 
@@ -823,11 +820,11 @@ public class NotesUI extends MotifUI
         {
         JCheckBox range = new JCheckBox("");
 
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
+		Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             range.setSelected(Prefs.getLastBoolean("StretchTimeRange", true));
             hasRange = true;
@@ -873,7 +870,7 @@ public class NotesUI extends MotifUI
                 {
                 if (_range)
                     {
-                    notes.stretch(min, max, _from, _to);
+                    notes.stretch(indices, _from, _to);
                     }
                 else
                     {
@@ -888,7 +885,9 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("StretchTimeFrom", from.getValue());
             Prefs.setLastDouble("StretchTimeTo", to.getValue());
             if (hasRange) Prefs.setLastBoolean("StretchTimeRange", _range);
-            reloadTable();
+            
+            table.reload();					// we could change time
+			table.setSelectedEvents(evts);
             }
         }
         
@@ -933,30 +932,31 @@ public class NotesUI extends MotifUI
             {
             lock.unlock();
             }
-        reloadTable();
+            
+        table.reload();					// we will change the table
         table.setSelection(0);
         }
 
     public void doDelete()
         {
-        int min = table.getTable().getSelectionModel().getMinSelectionIndex();
-        int max = table.getTable().getSelectionModel().getMaxSelectionIndex();
+        int[] indices = table.getSelectedIndices();
                 
-        if (min >= 0)
+        if (indices.length > 0)
             {
             seq.push();
             ReentrantLock lock = seq.getLock();
             lock.lock();
             try
                 {
-                notes.remove(min, max);         // do nothing with the result
+                notes.remove(indices);         // do nothing with the result
                 }
             finally
                 {
                 lock.unlock();
                 }
             }
-        reloadTable();
+            
+        table.reload();				// we will change events
         }
 
 
@@ -966,7 +966,7 @@ public class NotesUI extends MotifUI
         table.setEvents(events);
         }
         
-    public void loadMIDIFile()
+    void loadMIDIFile()
         {
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -1031,7 +1031,6 @@ public class NotesUI extends MotifUI
                 if (events != null) 
                     {
                     table.setEvents(events);
-                    table.clearSelection();
                     }
                 }
             catch (Exception ex)
@@ -1107,6 +1106,7 @@ public class NotesUI extends MotifUI
         return new JPanel();
         }
 
+
     public void setChildInspector(EventInspector inspector)
         {
         childInspector = inspector;
@@ -1146,7 +1146,7 @@ public class NotesUI extends MotifUI
         NotesClip clip = (NotesClip)getDisplayClip();
         if (clip == null)
             {
-            table.clearSelection();
+//            table.clearSelection();
             }
         else
             {
@@ -1187,28 +1187,8 @@ public class NotesUI extends MotifUI
         if (isUIBuilt())
             {
             table.setIndex(-1);
-            reloadTable();
             }
         }
                           
-    public void reloadTable() 
-        { 
-        ArrayList<Notes.Event> events = null;
-        ReentrantLock lock = seq.getLock();
-        lock.lock();
-        try
-            {
-            events = new ArrayList<Notes.Event>(notes.getEvents());         // copy?
-            }
-        finally
-            {
-            lock.unlock();
-            }
-        if (events != null) 
-            {
-            table.setEvents(events);
-            table.clearSelection();
-            }
-        }
 
     }

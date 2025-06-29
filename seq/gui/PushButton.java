@@ -47,7 +47,8 @@ public class PushButton extends JPanel
         text = val; 
         if (text != null)
             {
-            button.setText("<html>"+text+"</html>"); 
+            // Wrapping in HTML will force the button to a specific minimum width
+            button.setText(text); // "<html>"+text+"</html>"); 
             // we need to de-htmlify the text for accessibility
             button.getAccessibleContext().setAccessibleName(text.replaceAll("<.*?>", ""));
             }

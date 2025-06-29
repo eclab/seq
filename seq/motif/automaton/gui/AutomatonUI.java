@@ -75,6 +75,8 @@ public class AutomatonUI extends MotifUI
         
     AutomatonGrid automatonGrid = new AutomatonGrid();
     JPanel nodeGrid = new JPanel();
+    JPanel horizontalHeader = new JPanel();
+    JPanel verticalHeader = new JPanel();
     
     public AutomatonGrid getAutomatonGrid() { return automatonGrid; }
     
@@ -226,8 +228,23 @@ public class AutomatonUI extends MotifUI
         outer2.setBackground(BACKGROUND);
         scroll.setViewportView(outer2);
         
+        outer = new JPanel();
+        outer.setLayout(new BorderLayout());
+        outer.add(verticalHeader, BorderLayout.NORTH);
+        outer.setBackground(BACKGROUND);
+        scroll.setRowHeaderView(outer);
+
+        outer = new JPanel();
+        outer.setLayout(new BorderLayout());
+        outer.add(horizontalHeader, BorderLayout.WEST);
+        outer.setBackground(BACKGROUND);
+        scroll.setColumnHeaderView(outer);
+
         automatonGrid.setLayout(new GridLayout(GRID_WIDTH, GRID_WIDTH));
         automatonGrid.setDropTarget(new DropTarget(this, buildDropTargetListener()));
+
+        horizontalHeader.setLayout(new GridLayout(1, GRID_WIDTH));
+        verticalHeader.setLayout(new GridLayout(GRID_WIDTH, 2));
 
         seq.getLock().lock();
         try
@@ -290,6 +307,29 @@ public class AutomatonUI extends MotifUI
             seq.getLock().unlock();
             }
             
+        for(int i = 0; i < GRID_WIDTH; i++)
+            {
+            JLabel p = new JLabel("" + (i + 1))
+                {
+                public Dimension getPreferredSize() { return new Dimension(AutomatonButton.MINIMUM_SIZE + 2 * InputOutput.LABELLED_DIAL_WIDTH(), MIN_HEADER_SPACE); }
+                public Dimension getMaximumSize() { return getPreferredSize(); }
+                public Dimension getMinimumSize() { return getPreferredSize(); }
+                };
+            p.setHorizontalAlignment(JLabel.CENTER);
+            p.setBorder(BorderFactory.createMatteBorder(0,0,1,0,HEADER_LINE_COLOR));
+            horizontalHeader.add(p);
+            
+            p = new JLabel("" + (i + 1))
+                {
+                public Dimension getPreferredSize() { return new Dimension(MIN_HEADER_SPACE, AutomatonButton.MINIMUM_SIZE); }
+                public Dimension getMaximumSize() { return getPreferredSize(); }
+                public Dimension getMinimumSize() { return getPreferredSize(); }
+                };
+            p.setHorizontalAlignment(JLabel.CENTER);
+            p.setBorder(BorderFactory.createMatteBorder(0,0,0,1,HEADER_LINE_COLOR));
+            verticalHeader.add(p);
+            }
+
         resetStart();
         automatonGrid.repaint();
         }
@@ -304,7 +344,7 @@ public class AutomatonUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
-        removeButton.setToolTipText("Remove selected motif from automaton");
+        removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
 
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
@@ -314,7 +354,7 @@ public class AutomatonUI extends MotifUI
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
-        copyButton.setToolTipText("Copy selected motif in automaton");
+        copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
@@ -984,4 +1024,10 @@ public class AutomatonUI extends MotifUI
         //seq.waitUntilStopped();
         }
 
+	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Node</b><br>" +
+		"Removes the selected node.</html>";
+	
+	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Node</b><br>" +
+		"Duplicates the selected node, inserting the new one in the next space available.</html>";
+		
     }

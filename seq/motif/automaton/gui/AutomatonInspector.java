@@ -58,6 +58,7 @@ public class AutomatonInspector extends WidgetList
             }
         finally { lock.unlock(); }
 
+		name.setToolTipText(NAME_TOOLTIP);
 
         JPanel result = build(new String[] { "Name" }, 
             new JComponent[] 
@@ -84,4 +85,9 @@ public class AutomatonInspector extends WidgetList
         finally { lock.unlock(); }                              
         name.update();
         }
+
+
+	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+		"Sets the name of the Automaton.  This will appear in the Motif List at left.</html>";
+	
     }

@@ -28,6 +28,7 @@ public class Notes extends Motif
         public static final int MAX_LENGTH = Seq.PPQ * 256;
         public int when;
         public int length;
+        public boolean selected;
         public Event(int when, int length)
             {
             this.when = when;
@@ -626,10 +627,28 @@ static class EventParser
         }
     
     /** Removes elements by index, not by time */
-    public ArrayList<Event> remove(int startIndex, int endIndex)        // endIndex is inclusive
+    public ArrayList<Event> remove(int[] indices)        // endIndex is inclusive
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
+
+        HashSet<Integer> hash = buildIndexHash(indices);
+        
+        for(int i = 0; i < events.size(); i++)
+        	{
+        	if (hash.contains(i))
+        		{
+            	Event event = events.get(i);
+            	cut.add(event);
+        		}
+        	else
+        		{
+            	Event event = events.get(i);
+            	newEvents.add(event);
+        		}
+        	}
+
+/*
         for(int i = 0; i < startIndex; i++)
             {
             Event event = events.get(i);
@@ -645,6 +664,8 @@ static class EventParser
             Event event = events.get(i);
             newEvents.add(event);
             }
+*/
+
         events = newEvents;
         computeMaxTime();
         return cut;
@@ -654,14 +675,46 @@ static class EventParser
     public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)
         {
         if (events.size() == 0) return new ArrayList<Event>();
-        else return filter(0, events.size() - 1, removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch);
+        else return filter(buildIndices(0, events.size() - 1), removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch);
         }
-                
+    
     /** Removes elements by index, not by time */
-    public ArrayList<Event> filter(int startIndex, int endIndex, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)        // endIndex is inclusive
+    public ArrayList<Event> filter(int[] indices, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)        // endIndex is inclusive
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
+        
+        HashSet<Integer> hash = buildIndexHash(indices);
+        
+        for(int i = 0; i < events.size(); i++)
+        	{
+        	if (hash.contains(i))
+        		{
+				Event event = events.get(i);
+				if (
+					(event instanceof Note && removeNotes) ||
+					(event instanceof Bend && removeBend) ||
+					(event instanceof CC && removeCC) ||
+					(event instanceof Aftertouch && removeAftertouch) ||
+					(event instanceof NRPN && removeNRPN) ||
+					(event instanceof RPN && removeRPN)
+					)            
+					{
+					cut.add(event);
+					}
+				else        
+					{
+					newEvents.add(event);
+					}
+        		}
+        	else
+        		{
+            	Event event = events.get(i);
+            	newEvents.add(event);
+        		}
+        	}
+        	
+        /*
         for(int i = 0; i < startIndex; i++)
             {
             Event event = events.get(i);
@@ -691,6 +744,8 @@ static class EventParser
             Event event = events.get(i);
             newEvents.add(event);
             }
+        */
+        
         events = newEvents;
         computeMaxTime();
         return cut;
@@ -828,15 +883,18 @@ static class EventParser
     public boolean shift(int by)
         {
         if (events.size() == 0) return true;
-        else return shift(0, events.size() - 1, by);
+        else return shift(buildIndices(0, events.size() - 1), by);
         }
-
-    public boolean shift(int from, int to, int by)
+        
+    public boolean shift(int[] indices, int by)
         {
         if (events.isEmpty()) return true;
+        if (indices.length == 0) return true;
         if (by == 0) return true;
         
-        if (from > to) { int temp = to; to = from; from = temp; }
+        int from = minimum(indices);
+        
+//        if (from > to) { int temp = to; to = from; from = temp; }
         
         if (!events.isEmpty() && events.get(from).when < (0 - by)) // uh oh, can't do it backwards by far enough
             {
@@ -844,7 +902,8 @@ static class EventParser
             }
 
         // I don't think should be able to change the order, so we're probably still okay?
-        for(int i = from; i <= to; i++)
+//        for(int i = from; i <= to; i++)
+			for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -859,17 +918,18 @@ static class EventParser
     public void stretch(int stretchFrom, int stretchTo)
         {
         if (events.size() == 0) return;
-        else stretch(0, events.size() - 1, stretchFrom, stretchTo);
+        else stretch(buildIndices(0, events.size() - 1), stretchFrom, stretchTo);
         }
 
-    public void stretch(int from, int to, int stretchFrom, int stretchTo)
+    public void stretch(int[] indices, int stretchFrom, int stretchTo)
         {
         if (stretchFrom == stretchTo) return;
         if (events.isEmpty()) return;
         
-        if (from > to) { int temp = to; to = from; from = temp; }
-        
-        for(int i = from; i <= to; i++)
+//        if (from > to) { int temp = to; to = from; from = temp; }
+//        
+//        for(int i = from; i <= to; i++)
+		for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -888,17 +948,18 @@ static class EventParser
     public void transpose(int by)
         {
         if (events.size() == 0) return;
-        else transpose(0, events.size() - 1, by);
+        else transpose(buildIndices(0, events.size() - 1), by);
         }
 
-    public void transpose(int from, int to, int by)
+    public void transpose(int[] indices, int by)
         {
-        if (from > to) { int temp = to; to = from; from = temp; }
+//        if (from > to) { int temp = to; to = from; from = temp; }
  
         if (by == 0) return;
         
         // I don't think should be able to change the order, so we're probably still okay?
-        for(int i = from; i <= to; i++)
+//        for(int i = from; i <= to; i++)
+			for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1006,7 +1067,41 @@ static class EventParser
         events = readEvents;
         computeMaxTime();
         } 
-        
+    
+    //// INDEX SET MANIPULATION
+    
+    // Build an array of indices from FROM to TO inclusive
+    int[] buildIndices(int from, int to)
+    	{
+    	int[] idx = new int[to - from + 1];
+    	for(int i = from; i <= to; i++) idx[i] = i;
+    	return idx;
+    	}
+
+	// Return the minimum index among the provided indices
+	int minimum(int[] indices)
+		{
+		if (indices.length == 0) return 0; 	// uhm...
+		int min = indices[0];
+		for(int i = 1; i < indices.length; i++)
+			{
+			if (indices[i] < min) min = indices[i];
+			}
+		return min;
+		}
+
+	// Return as HashSet of the given indices
+    HashSet<Integer> buildIndexHash(int[] indices)
+    	{
+    	HashSet<Integer> hash = new HashSet<>();
+    	for(int i : indices)
+    		{
+    		hash.add(i);
+    		}
+    	return hash;
+    	}
+    	         
+    
     /** Quantize all events to the nearest DIVISOR NOTE in ticks.  For each note we compute the DIVISOR NOTE
         that is LESS THAN OR EQUAL to the note.  Then if the note is less than DIVISOR * PERCENTAGE later
         than the DIVISOR NOTE, we push it to the divisor note, else we push it to the next divisor note.
@@ -1015,7 +1110,7 @@ static class EventParser
     public void quantize(int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
         {
         if (events.size() == 0) return;
-        else quantize(0, events.size() - 1, divisor, quantizeEnds, quantizeNonNotes, percentage);
+        else quantize(buildIndices(0, events.size() - 1), divisor, quantizeEnds, quantizeNonNotes, percentage);
         }
 
     /** Quantize all events in the given from...to range (inclusive)
@@ -1024,12 +1119,13 @@ static class EventParser
         than the DIVISOR NOTE, we push it to the divisor note, else we push it to the next divisor note.
         Optionally also quantize the ends, and non-notes.  Percentage can be any value 0.0 to 1.0 inclusive.
     */
-    public void quantize(int from, int to, int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
+    public void quantize(int[] indices, int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
         {
-        if (from > to) { int temp = to; to = from; from = temp; }
-        
+//        if (from > to) { int temp = to; to = from; from = temp; }
+//        
         // I don't think should be able to change the order, so we're probably still okay?
-        for(int i = from; i <= to; i++)
+//        for(int i = from; i <= to; i++)
+			for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1084,16 +1180,17 @@ static class EventParser
     public void randomizeTime(double stdev, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
         {
         if (events.size() == 0) return;
-        else randomizeTime(0, events.size() - 1, stdev, randomizeLengths, randomizeNonNotes, random);
+        else randomizeTime(buildIndices(0, events.size() - 1), stdev, randomizeLengths, randomizeNonNotes, random);
         }
 
     /** Quantize the onset, and possibly release time, of all events, possibly including non-notes, by the given
         variance (in ticks), in the event range from FROM to TO. */
-    public void randomizeTime(int from, int to, double max, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
+    public void randomizeTime(int[] indices, double max, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
         {
-        if (from > to) { int temp = to; to = from; from = temp; }
-
-        for(int i = from; i <= to; i++)
+//        if (from > to) { int temp = to; to = from; from = temp; }
+//
+//        for(int i = from; i <= to; i++)
+		for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1126,14 +1223,15 @@ static class EventParser
     public void setVelocity(int val)
         {
         if (events.size() == 0) return;
-        else setVelocity(0, events.size() - 1, val);
+        else setVelocity(buildIndices(0, events.size() - 1), val);
         }
 
-    public void setVelocity(int from, int to, int val)
+    public void setVelocity(int[] indices, int val)
         {
-        if (from > to) { int temp = to; to = from; from = temp; }
-        
-        for(int i = from; i <= to; i++)
+//        if (from > to) { int temp = to; to = from; from = temp; }
+//        
+//        for(int i = from; i <= to; i++)
+			for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1156,18 +1254,19 @@ static class EventParser
     public void randomizeVelocity(double max, boolean randomizeReleases, Random random)
         {
         if (events.size() == 0) return;
-        else randomizeVelocity(0, events.size() - 1, max, randomizeReleases, random);
+        else randomizeVelocity(buildIndices(0, events.size() - 1), max, randomizeReleases, random);
         }
 
     static final int NUM_TRIES = 8;
         
     /** Quantize the velocity, and possibly release velocity, of all events, possibly including non-notes, by the given
         variance (from 0..255), in the event range from FROM to TO. */
-    public void randomizeVelocity(int from, int to, double max, boolean randomizeReleases, Random random)
+    public void randomizeVelocity(int[] indices, double max, boolean randomizeReleases, Random random)
         {
-        if (from > to) { int temp = to; to = from; from = temp; }
-        
-        for(int i = from; i <= to; i++)
+//        if (from > to) { int temp = to; to = from; from = temp; }
+//        
+//        for(int i = from; i <= to; i++)
+			for(int i : indices)
             {
             Event event = events.get(i);
                 

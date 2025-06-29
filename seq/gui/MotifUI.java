@@ -114,7 +114,7 @@ public abstract class MotifUI extends JPanel
         finally { lock.unlock(); }
         
         text = new JTextArea(txt);
-        text.setToolTipText("Text notes about this motif");
+        text.setToolTipText(TEXT_NOTES_TOOLTIP);
         text.setLineWrap(true);
         text.setWrapStyleWord(true);
         JScrollPane textScroll = new JScrollPane(text);
@@ -325,4 +325,10 @@ public abstract class MotifUI extends JPanel
         return this.getClass().getSimpleName() + "@" + System.identityHashCode(this);
         }
 
+
+
+
+
+	static final String TEXT_NOTES_TOOLTIP = "<html><b>Notes</b><br>" +
+		"Add notes about this motif here.</html>";
     }

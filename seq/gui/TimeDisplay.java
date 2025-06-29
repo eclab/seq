@@ -20,7 +20,6 @@ public class TimeDisplay extends JPanel
     SmallDial beatsDial;            // 0...N, where N is 0...255 and can vary
     SmallDial barsDial;                     // 0...255
     SmallDial partsDial;            // 0...255
-    JLabel totalSteps = new JLabel();
     PushButton presets;
     int steps;
     int maxSteps;
@@ -33,7 +32,18 @@ public class TimeDisplay extends JPanel
     int beatsPerBar;
     Seq seq;
         
-    // returns true if changed
+     public void setToolTipText(String text) 
+        {
+        super.setToolTipText(text);
+        stepsDial.setToolTipText(text);
+        beatsDial.setToolTipText(text);
+        barsDial.setToolTipText(text);
+        partsDial.setToolTipText(text);
+        presets.setToolTipText(text);
+        }
+        
+
+   // returns true if changed
     boolean reviseBeatsPerBar()
         {
         ReentrantLock lock = seq.getLock();
@@ -110,39 +120,54 @@ public class TimeDisplay extends JPanel
         beatsDial.redraw();
         barsDial.redraw();
         partsDial.redraw();
-        updateTotalSteps();
         }
                 
     public static final String[] PRESET_OPTIONS = 
         { 
-        "1/32",
-        "1/16",
-        "1/8",
-        "1/6",
-        "1/4",
-        "1/3",
-        "3/8",
-        "1/2",
-        "2/3",
-        "5/8",
-        "3/4",
-        "7/8",
+        "  1/16",
+        "  2/16   1/8",
+        "  3/16",
+        "  4/16   2/8   1/4",
+        "  5/16",
+        "  6/16   3/8",
+        "  7/16",
+        "  8/16   4/8   2/4   1/2",
+        "  9/16",
+        "10/16   5/8",
+        "11/16",
+        "12/16   6/8   3/4",
+        "13/16",
+        "14/16   7/8",
+        "15/16",
+        "  1/6",
+        "  2/6    1/3",
+        "  3/6    1/2",
+        "  4/6    2/3",
+		"  5/6",
         };
 
     public static final int[] PRESETS = 
         {
-        Seq.PPQ / 32, 
-        Seq.PPQ / 16,
-        Seq.PPQ / 8,
-        Seq.PPQ / 6,
-        Seq.PPQ / 4,
-        Seq.PPQ / 3,
-        Seq.PPQ * 3 / 8,
-        Seq.PPQ / 2,
-        Seq.PPQ * 2 / 3,
-        Seq.PPQ * 5 / 8,
-        Seq.PPQ * 3 / 4,
-        Seq.PPQ * 7 / 8
+        Seq.PPQ / 16 * 1,
+        Seq.PPQ / 16 * 2,
+        Seq.PPQ / 16 * 3,
+        Seq.PPQ / 16 * 4,
+        Seq.PPQ / 16 * 5,
+        Seq.PPQ / 16 * 6,
+        Seq.PPQ / 16 * 7,
+        Seq.PPQ / 16 * 8,
+        Seq.PPQ / 16 * 9,
+        Seq.PPQ / 16 * 10,
+        Seq.PPQ / 16 * 11,
+        Seq.PPQ / 16 * 12,
+        Seq.PPQ / 16 * 13,
+        Seq.PPQ / 16 * 14,
+        Seq.PPQ / 16 * 15,
+        Seq.PPQ / 6 * 1,
+        Seq.PPQ / 6 * 2,
+        Seq.PPQ / 6 * 3,
+        Seq.PPQ / 6 * 4,
+        Seq.PPQ / 6 * 5,
         };
 
 
@@ -216,35 +241,27 @@ public class TimeDisplay extends JPanel
             protected String map(double val) 
                 {
                 int ppq = (int)(val * maxSteps);
-                return String.valueOf(ppq);
-                /*
-                  if (ppq == 0) return String.valueOf(ppq);
-                  else if (ppq % (Seq.PPQ/2) == 0)       // divisible by 2
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/2)) + "/2" + "]";
-                  else if (ppq % (Seq.PPQ/3) == 0)  // divisible by 3
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/3)) + "/3" + "]";
-                  else if (ppq % (Seq.PPQ/4) == 0)  // divisible by 4
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/4)) + "/4" + "]";
-                  else if (ppq % (Seq.PPQ/6) == 0)  // divisible by 6
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/6)) + "/6" + "]";
-                  else if (ppq % (Seq.PPQ/8) == 0)  // divisible by 8
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/8)) + "/8" + "]";
-                  else if (ppq % (Seq.PPQ/12) == 0) // divisible by 12
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/12)) + "/12" + "]";
-                  else if (ppq % (Seq.PPQ/16) == 0) // divisible by 16
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/16)) + "/16" + "]";
-                  else if (ppq % (Seq.PPQ/24) == 0) // divisible by 24
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/24)) + "/24" + "]";
-                  else if (ppq % (Seq.PPQ/32) == 0) // divisible by 32
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/32)) + "/32" + "]";
-                  else if (ppq % (Seq.PPQ/36) == 0) // divisible by 36
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/36)) + "/36" + "]";
-                  else if (ppq % (Seq.PPQ/48) == 0) // divisible by 48
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/48)) + "/48" + "]";
-                  else if (ppq % (Seq.PPQ/96) == 0) // divisible by 96
-                  return "[" + String.valueOf(ppq/(Seq.PPQ/96)) + "/96" + "]";
-                  else return String.valueOf(ppq) + "/" + Seq.PPQ;
-                */
+
+				if (ppq == 12)	return "1|16";
+				else if  (ppq == 24)	return "1|8";
+					else if  (ppq == 32)	return "1|6";
+				else if  (ppq == 36)	return "3|16";
+				else if  (ppq == 48)	return "1|4";
+					else if  (ppq == 64)	return "1|3";
+				else if  (ppq == 60)	return "5|16";
+				else if  (ppq == 72)	return "3|8";
+				else if  (ppq == 84)	return "7|16";
+				else if  (ppq == 96)	return "1|2";
+				else if  (ppq == 108)	return "9|16";
+				else if  (ppq == 120)	return "5|8";
+					else if  (ppq == 128)	return "2|3";
+				else if  (ppq == 132)	return "11|16";
+				else if  (ppq == 144)	return "3|4";
+				else if  (ppq == 156)	return "13|16";
+					else if  (ppq == 160)	return "5|6";
+				else if  (ppq == 168)	return "7|8";
+				else if  (ppq == 180)	return "15|16";
+				else return String.valueOf(ppq);
                 }
                                 
             public double getValue() 
@@ -263,7 +280,6 @@ public class TimeDisplay extends JPanel
                 lock.lock();
                 try { TimeDisplay.this.steps = (int)(val * maxSteps); updateTime(); }
                 finally { lock.unlock(); }
-                updateTotalSteps();
                 }
             };
 
@@ -286,7 +302,6 @@ public class TimeDisplay extends JPanel
                 lock.lock();
                 try { TimeDisplay.this.beats = (int)(val * Math.min(maxBeats, beatsPerBar - 1));  updateTime(); }
                 finally { lock.unlock(); }
-                updateTotalSteps();
                 }
             };
                 
@@ -309,7 +324,6 @@ public class TimeDisplay extends JPanel
                 lock.lock();
                 try { TimeDisplay.this.bars = (int)(val * maxBars);  updateTime(); }
                 finally { lock.unlock(); }
-                updateTotalSteps();
                 }
             };
 
@@ -332,18 +346,17 @@ public class TimeDisplay extends JPanel
                 lock.lock();
                 try { TimeDisplay.this.parts = (int)(val * maxParts);  updateTime(); }
                 finally { lock.unlock(); }
-                updateTotalSteps();
                 }
             };
                         
         Box box = new Box(BoxLayout.X_AXIS);
-        if (maxParts > 0) box.add(partsDial.getLabelledTitledDialVertical("Part", " 888 "));
-        if (maxBars > 0) box.add(barsDial.getLabelledTitledDialVertical("Bar", " 888 "));
-        if (maxBeats > 0) box.add(beatsDial.getLabelledTitledDialVertical("Beat", " 888 "));
-        if (maxSteps > 0) box.add(stepsDial.getLabelledTitledDialVertical("Tick", " 888 "));
+        if (maxParts > 0) box.add(partsDial.getLabelledTitledDialVertical("Part", "15|16"));
+        if (maxBars > 0) box.add(barsDial.getLabelledTitledDialVertical("Bar", "15|16"));
+        if (maxBeats > 0) box.add(beatsDial.getLabelledTitledDialVertical("Beat", "15|16"));		// slightly bigger than " 888 "
+        if (maxSteps > 0) box.add(stepsDial.getLabelledTitledDialVertical("Tick", "15|16"));
         setLayout(new BorderLayout());
                 
-        presets = new PushButton("Presets", PRESET_OPTIONS)
+        presets = new PushButton("...", PRESET_OPTIONS)
             {
             public void perform(int val)
                 {
@@ -352,7 +365,6 @@ public class TimeDisplay extends JPanel
                 }
             };
         add(box, BorderLayout.WEST);
-        //add(totalSteps, BorderLayout.CENTER);
         JPanel pan = new JPanel();
         pan.setLayout(new BorderLayout());
         pan.add(Stretch.makeHorizontalStretch(), BorderLayout.CENTER);
@@ -364,19 +376,16 @@ public class TimeDisplay extends JPanel
             JLabel temp = new JLabel(" ");
             temp.setFont(SmallDial.FONT);
             vert.add(temp, BorderLayout.NORTH);
-            vert.add(presets, BorderLayout.CENTER);
             temp = new JLabel(" ");
             temp.setFont(SmallDial.FONT);
             vert.add(temp, BorderLayout.SOUTH);
-            pan.add(vert, BorderLayout.EAST);
+
+            vert.add(Stretch.makeHorizontalStretch(), BorderLayout.CENTER);
+            vert.add(presets, BorderLayout.WEST);
+            pan.add(vert, BorderLayout.WEST);
             }
-        add(pan, BorderLayout.EAST);
+        add(pan, BorderLayout.CENTER);
         
         revise();		// we're NOW ready to revise
-        }
-        
-    void updateTotalSteps()
-        {
-        totalSteps.setText(" " + getTime() + " ");
         }
     }

@@ -100,10 +100,17 @@ public class InputJack extends InputOutput
             };
             
         addMouseListener(mouseAdapter);
+        jack.setToolTipText(INPUT_TOOLTIP);
         }
 
     public String toString()
         {
         return "InputJack[name=" + title.getText() + ", number=" + number + ", panel=" + paintComponent + "]"; 
         }
+
+	static final String INPUT_TOOLTIP = "<html><b>Input</b><br>" +
+		"The input for this node.  You can connect this input to an <b>output</b> (a gray port)<br>" +
+		"by dragging from the output to the input.  You can disconnect the input from an output by<br>" +
+		"clicking on the output.  You can change the color of the connection by clicking on the input.<br><br>" +
+		"When the node transitions out the output, play continues at the node with the connected input.</html>";
     }

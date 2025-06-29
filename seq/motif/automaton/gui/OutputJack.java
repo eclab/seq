@@ -133,6 +133,7 @@ public class OutputJack extends InputOutput
             
         jack.addMouseMotionListener(mouseAdapter);
         jack.addMouseListener(mouseAdapter);
+        jack.setToolTipText(OUTPUT_TOOLTIP);			// for some reason this has to be set on the jack itself.  Dunno why.
         }
 
 
@@ -248,4 +249,10 @@ public class OutputJack extends InputOutput
         {
         return "OutputJack[name=" + title.getText() + ", number=" + number + ", panel=" + paintComponent + "]"; 
         }
+		
+	static final String OUTPUT_TOOLTIP = "<html><b>Output</b><br>" +
+		"An output for this node.  You can connect this output to an <b>input</b> (a yellow port)<br>" +
+		"by dragging from the output to the input.  You can disconnect the output from an input by<br>" +
+		"clicking on the output.  You can change the color of the connection by clicking on the input.<br><br>" +
+		"When the node transitions out the output, play continues at the node with the connected input.</html>";
     }

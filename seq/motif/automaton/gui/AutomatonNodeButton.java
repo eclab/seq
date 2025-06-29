@@ -58,6 +58,7 @@ public class AutomatonNodeButton extends JButton implements Transferable
     	this(type);
     	setPreferredSize(thisSize.getPreferredSize());
     	setMinimumSize(thisSize.getMinimumSize());
+    	setToolTipText(TOOLTIPS[type]);
     	}
 
     public AutomatonNodeButton(int type)
@@ -72,6 +73,7 @@ public class AutomatonNodeButton extends JButton implements Transferable
         setIcon(new ImageIcon(image));
         setIconTextGap(6);
         setText(text[type]);
+    	setToolTipText(TOOLTIPS[type]);
                 
         addMouseMotionListener(new MouseMotionAdapter()
             {
@@ -152,4 +154,55 @@ public class AutomatonNodeButton extends JButton implements Transferable
 
         public void dragMouseMoved(DragSourceDragEvent dsde) {}
         } 
+
+
+	static final String DELAY_BUTTON_TOOLTIP = "<html><b>Delay Button</b><br>" +
+		"Drag from this button into the grid to create a Delay Node.<br><br>" +
+		"This represents a time delay.  When the automaton transitions to this node, it waits for<br>" +
+		"some amount of time before transitioning to the next node connected to the output.</html>";
+
+	static final String CHORD_BUTTON_TOOLTIP = "<html><b>Chord Button</b><br>" +
+		"Drag from this button into the grid to create a Chord Node.<br><br>" +
+		"This represents a chord, interval, or single note.  When the automaton transitions to this node, it plays<br>" +
+		"the chord for the specified amount of time before transitioning to the next node connected to the output.</html>";
+
+	static final String FINISHED_BUTTON_TOOLTIP = "<html><b>Finished Button</b><br>" +
+		"Drag from this button into the grid to create a Finished Node.<br><br>" +
+		"This node tells the automaton's parent motifs that the automaton believes it has finished playing.</html>";
+
+	static final String ITERATE_BUTTON_TOOLTIP = "<html><b>Iterate Button</b><br>" +
+		"Drag from this button into the grid to create an Iterate Node.<br><br>" +
+		"This node iterates through up to four outputs, transitioning out different ones each time<br>" +
+		"the automaton transitions to it. Iterations works as follows:" + 
+		"<ol>" +
+		"<li>When first played, we immediately transition to the first output that is connected to us." +
+		"<li>Each time we are played, we continue transiting out that input until we have done so<br>" +
+		"<b>Iterations</b> total times. Thereafter we continue to the next output that is connected to us.<br>" +
+		"<li>When we have finished with all our connected outputs, if <b>Loop</b> is checked, then we<br>" +
+		"loop back and continue again with our first connectd output. Else we stop transitioning entirely.</html>";
+
+	static final String RANDOM_BUTTON_TOOLTIP = "<html><b>Random Button</b><br>" +
+		"Drag from this button into the grid to create a Random Node.<br><br>" +
+		"This node transitions out a random output each time the automaton transitions to it.<br>" +
+		"This works as follows.  When played, we take all the connected outputs and normalize<br>" + 
+		"their weights into probabilities (divide them by their sum).  If they're all 0, they're<br>" +
+		"all treated as equal probability.  Then we select an output at random according to the probabilities<br>" +
+		"and transition to that output.  If no outputs are connected, we don't transition at all.</html>";
+
+	static final String FORK_BUTTON_TOOLTIP = "<html><b>Fork Button</b><br>" +
+		"Drag from this button into the grid to create a Fork Node.<br><br>" +
+		"This node creates one or more playing threads each time the automaton transitions to it.<br>" +
+		"These threads output in parallel along separate outputs and continue playing and transitioning.<br>" +
+		"in parallel.  You can create no more than 8 threads at a time: further threads are ignored.<br>" +
+		"You an eliminate threads by <b>Joining</b> them with one another.</html>";
+
+	static final String JOIN_BUTTON_TOOLTIP = "<html><b>Join Button</b><br>" +
+		"Drag from this button into the grid to create a Join Node.<br><br>" +
+		"This node joins one or more playing threads each time the automaton transitions to it.<br>" +
+		"Joined threads are collapsed to a single thread, which is then transitioned along the output.<br>" +
+		"When a thread arrives at the input, Join may do nothing yet: it will wait until the right<br>" +
+		"number of threads have arrived before joining them (see <b>Threads</b> in the inspector at right).</html>";
+
+	public static final String[] TOOLTIPS = { DELAY_BUTTON_TOOLTIP, CHORD_BUTTON_TOOLTIP, FINISHED_BUTTON_TOOLTIP, ITERATE_BUTTON_TOOLTIP, RANDOM_BUTTON_TOOLTIP, FORK_BUTTON_TOOLTIP, JOIN_BUTTON_TOOLTIP };
+
     }

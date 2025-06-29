@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.concurrent.locks.*;
+import java.util.*;
 
 public class EventInspector extends WidgetList
     {
@@ -20,7 +21,6 @@ public class EventInspector extends WidgetList
     NotesUI notesui;
     
     Notes.Event event;
-    int index;
     
     TimeDisplay when;
     TimeDisplay length;
@@ -40,12 +40,35 @@ public class EventInspector extends WidgetList
     PushButton valuePresets;
     int time;
     
+
     public static final String[] BEND_OPTIONS = new String[] { "-4096", "-1024", "-256", "-64", "-16", "-8", "-4", "-2", "-1", "0", "1", "2", "4", "8", "16", "64", "256", "1024", "4096" };
     public static final int[] BEND_VALUES = new int[] { -4096, -1024, -256, -64, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 64, 256, 1024, 4096 };
         
     public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-    public int getIndex() { return index; }
+	/** Returns the index for the event, or -1 if it does not appear to exist. */
+    public int getIndex() 
+    	{ 
+    	// Find the index, it may have changed
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			ArrayList<Notes.Event> events = notes.getEvents();
+			for(int i = 0; i < events.size(); i++)
+				{
+				if (events.get(i) == event)	// got it
+					{
+					return i;
+					}
+				}
+			}
+		finally
+			{
+			lock.unlock();
+			}
+		return -1;			// couldn't find it!
+    	}
     
     void updateTable()
         {
@@ -60,17 +83,27 @@ public class EventInspector extends WidgetList
         this.seq = seq;
         this.notes = notes;
         this.notesui = notesui;
-        if (index < 0 || index >= notes.getEvents().size())
-            {
-            this.index = -1;
-            event = null;
-            }
-        else
-            {
-            this.index = index;
-            event = notes.getEvents().get(index);
-            }
-        
+
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			ArrayList<Notes.Event> evts = notes.getEvents();
+			if (index < 0 || index >= evts.size())
+				{
+				this.event = null;
+				}
+			else
+				{
+	        	this.event = evts.get(index);
+	        	}
+			}
+		finally
+			{
+			lock.unlock();
+			}
+
+
         if (event == null)
             {
             strs = new String[] { "Type" };
@@ -79,12 +112,12 @@ public class EventInspector extends WidgetList
             }
         else
             {
-            ReentrantLock lock = seq.getLock();
+            lock = seq.getLock();
             lock.lock();
             try
                 {
                 time = event.when;
-                when = new TimeDisplay(event.when, seq, false)
+                when = new TimeDisplay(event.when, seq)
                     {
                     public void updateTime(int time)
                         {
@@ -92,6 +125,7 @@ public class EventInspector extends WidgetList
                         EventInspector.this.time = time;
                         }
                     };
+				when.setToolTipText(WHEN_TOOLTIP);
                                         
                 setWhen = new JButton("Set");
                 setWhen.addActionListener(new ActionListener()
@@ -110,10 +144,11 @@ public class EventInspector extends WidgetList
                             {
                             lock.unlock();
                             }
-                        notesui.reloadTable();
+                        notesui.getTable().reload();
                         notesui.getTable().setSelection(notes.getEvents().indexOf(event));		// re-select the event after sorting and reloading
                         }
                     });
+				setWhen.setToolTipText(SET_WHEN_TOOLTIP);
 
                 JPanel vert = new JPanel();
                 vert.setLayout(new BorderLayout());
@@ -129,6 +164,7 @@ public class EventInspector extends WidgetList
                 whenPanel.setLayout(new BorderLayout());
                 whenPanel.add(when, BorderLayout.WEST);
                 whenPanel.add(vert, BorderLayout.EAST);
+				whenPanel.setToolTipText(WHEN_TOOLTIP);
 
 
 
@@ -146,7 +182,8 @@ public class EventInspector extends WidgetList
                             updateTable();
                             }
                         };
-
+					length.setToolTipText(LENGTH_TOOLTIP);
+					
                     pitch = new SmallDial(note.pitch / 127.0)
                         {
                         protected String map(double val) 
@@ -171,6 +208,7 @@ public class EventInspector extends WidgetList
                             updateTable(); 
                             }
                         };
+				pitch.setToolTipText(PITCH_TOOLTIP);
 
                     velocity = new SmallDial((note.velocity == 0 ? 0 : note.velocity - 1) / 126.0)              // we dont allow 0 velocity
                         {
@@ -192,6 +230,7 @@ public class EventInspector extends WidgetList
                             updateTable(); 
                             }
                         };
+				velocity.setToolTipText(VELOCITY_TOOLTIP);
 
                     release = new SmallDial(note.velocity / 127.0)
                         {
@@ -213,6 +252,8 @@ public class EventInspector extends WidgetList
                             updateTable(); 
                             }
                         };
+				release.setToolTipText(RELEASE_VELOCITY_TOOLTIP);
+
                     strs = new String[] { "Type", "When", "Length", "Pitch", "Velocity", "Release" };
                     comps = new JComponent[] 
                         {
@@ -248,6 +289,7 @@ public class EventInspector extends WidgetList
                             }
                         };
                     value.setScale(512.0);	// increase resolution
+				value.setToolTipText(VALUE_TOOLTIP);
 
 					valuePresets = new PushButton("Presets...", BEND_OPTIONS)
 						{
@@ -262,11 +304,13 @@ public class EventInspector extends WidgetList
 							updateTable();
 							}
 						};
+				valuePresets.setToolTipText(VALUE_PRESETS_TOOLTIP);
 						
 					JPanel valuePanel = new JPanel();
         			valuePanel.setLayout(new BorderLayout());
         			valuePanel.add(value.getLabelledDial("-8192"), BorderLayout.CENTER);   // so it stretches
     			    valuePanel.add(valuePresets, BorderLayout.EAST); 
+				valuePanel.setToolTipText(VALUE_TOOLTIP);
 	
                     strs = new String[] { "Type", "When", "Bend" };
                     comps = new JComponent[] 
@@ -301,6 +345,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				parameter.setToolTipText(PARAMETER_TOOLTIP);
+
                     value = new SmallDial(cc.value / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -321,6 +367,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				value.setToolTipText(VALUE_TOOLTIP);
+
                     strs = new String[] { "Type", "When", "Parameter", "Value" };
                     comps = new JComponent[] 
                         {
@@ -334,7 +382,9 @@ public class EventInspector extends WidgetList
                     {
                     Notes.NRPN nrpn = (Notes.NRPN) event;
                     parameterResult = new JLabel("");
+                    parameterResult.setToolTipText(PARAMETER_RESULT_TOOLTIP);
                     valueResult = new JLabel("");
+                    valueResult.setToolTipText(VALUE_RESULT_TOOLTIP);
                     parameterMSB = new SmallDial((nrpn.parameter >> 7) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -357,6 +407,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				parameterMSB.setToolTipText(PARAMETER_MSB_TOOLTIP);
+
                     parameterLSB = new SmallDial((nrpn.parameter & 127) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -379,6 +431,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				parameterLSB.setToolTipText(PARAMETER_LSB_TOOLTIP);
+
                     valueMSB = new SmallDial((nrpn.value >> 7) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -401,6 +455,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				valueMSB.setToolTipText(VALUE_MSB_TOOLTIP);
+
                     valueLSB = new SmallDial((nrpn.value & 127) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -423,6 +479,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				valueLSB.setToolTipText(VALUE_LSB_TOOLTIP);
+
                 Box parameterBox = new Box(BoxLayout.X_AXIS);
                 parameterBox.add(parameterMSB.getLabelledTitledDialVertical("MSB", " 888 "));
                 parameterBox.add(parameterLSB.getLabelledTitledDialVertical("LSB", " 888 "));
@@ -433,6 +491,7 @@ public class EventInspector extends WidgetList
                 pan1.setLayout(new BorderLayout());
                 pan1.add(parameterBox, BorderLayout.WEST);
                 pan1.add(pan2, BorderLayout.CENTER);
+				pan1.setToolTipText(PARAMETER_RESULT_TOOLTIP);
 
                 Box valueBox = new Box(BoxLayout.X_AXIS);
                 valueBox.add(valueMSB.getLabelledTitledDialVertical("MSB", " 888 "));
@@ -444,6 +503,7 @@ public class EventInspector extends WidgetList
                 pan3.setLayout(new BorderLayout());
                 pan3.add(valueBox, BorderLayout.WEST);
                 pan3.add(pan4, BorderLayout.CENTER);
+				pan3.setToolTipText(VALUE_RESULT_TOOLTIP);
 
                     strs = new String[] { "Type", "When", "Parameter", "Value" };
                     comps = new JComponent[] 
@@ -459,7 +519,9 @@ public class EventInspector extends WidgetList
                     {
                     Notes.RPN rpn = (Notes.RPN) event;
                     parameterResult = new JLabel("");
+                    parameterResult.setToolTipText(PARAMETER_RESULT_TOOLTIP);
                     valueResult = new JLabel("");
+                    valueResult.setToolTipText(VALUE_RESULT_TOOLTIP);
                     parameterMSB = new SmallDial((rpn.parameter >> 7) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -482,6 +544,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				parameterMSB.setToolTipText(PARAMETER_MSB_TOOLTIP);
+
                     parameterLSB = new SmallDial((rpn.parameter & 127) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -504,6 +568,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				parameterLSB.setToolTipText(PARAMETER_LSB_TOOLTIP);
+
                     valueMSB = new SmallDial((rpn.value >> 7) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -526,6 +592,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				valueMSB.setToolTipText(VALUE_MSB_TOOLTIP);
+
                     valueLSB = new SmallDial((rpn.value & 127) / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
@@ -548,6 +616,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				valueLSB.setToolTipText(VALUE_LSB_TOOLTIP);
+
                 Box parameterBox = new Box(BoxLayout.X_AXIS);
                 parameterBox.add(parameterMSB.getLabelledTitledDialVertical("MSB", " 888 "));
                 parameterBox.add(parameterLSB.getLabelledTitledDialVertical("LSB", " 888 "));
@@ -558,6 +628,7 @@ public class EventInspector extends WidgetList
                 pan1.setLayout(new BorderLayout());
                 pan1.add(parameterBox, BorderLayout.WEST);
                 pan1.add(pan2, BorderLayout.CENTER);
+				pan1.setToolTipText(PARAMETER_RESULT_TOOLTIP);
 
                 Box valueBox = new Box(BoxLayout.X_AXIS);
                 valueBox.add(valueMSB.getLabelledTitledDialVertical("MSB", " 888 "));
@@ -569,6 +640,7 @@ public class EventInspector extends WidgetList
                 pan3.setLayout(new BorderLayout());
                 pan3.add(valueBox, BorderLayout.WEST);
                 pan3.add(pan4, BorderLayout.CENTER);
+				pan3.setToolTipText(VALUE_RESULT_TOOLTIP);
 
                     strs = new String[] { "Type", "When", "Parameter", "Value" };
                     comps = new JComponent[] 
@@ -608,6 +680,9 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+
+				pitch.setToolTipText(AFTERTOUCH_PITCH_TOOLTIP);
+
                     value = new SmallDial(aftertouch.value / 127.0)
                         {
                         protected String map(double val) { return "" + (int)(aftertouch.value * 127.0); }
@@ -628,6 +703,8 @@ public class EventInspector extends WidgetList
                             updateTable();  
                             }
                         };
+				value.setToolTipText(VALUE_TOOLTIP);
+
                     strs = new String[] { "Type", "When", "Pitch", "Value" };
                     comps = new JComponent[] 
                         {
@@ -669,4 +746,74 @@ public class EventInspector extends WidgetList
         if (parameterResult != null) parameterResult.repaint();
         if (valueResult != null) valueResult.repaint();
         }
-    }
+ 
+ 
+ /*
+	static final String TYPE_TOOLTIP = "<html><b>Type</b><br>" +
+		"The type of the event.  Types can be any of:</br>" +
+		"<ul>" + 
+		"<li> Notes" + 
+		"<li> Aftertouch Events, both Polyphonic (per-note) and Channel (whole-keyboard)" + 
+		"<li> Pitch Bend Events, each with a value" + 
+		"<li> Control Change (CC) Messages, each with a parameter and value" + 
+		"<li> Non-Registered Parameter Number (NRPN) Messages, each with a parameter and value." + 
+		"<li> Registered Parameter Number (RPN) Messages, each with a parameter and value.</html>";
+ */
+ 
+	static final String WHEN_TOOLTIP = "<html><b>When</b><br>" +
+		"Adjusts when this event occurs.  To set it, press <b>Set</b>.</html>";
+
+	static final String SET_WHEN_TOOLTIP = "<html><b>Set When</b><br>" +
+		"Sets when this event occurs to the time at left.</html>";
+	
+	static final String LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
+		"Sets the length of this note.</html>";
+	
+	static final String PITCH_TOOLTIP = "<html><b>Pitch</b><br>" +
+		"Sets the pitch of this note.</html>";
+	
+	static final String AFTERTOUCH_PITCH_TOOLTIP = "<html><b>Pitch</b><br>" +
+		"Sets the pitch of this note receiving aftertouch.<br><br>" +
+		"Set to <b>[Channel AT]</b> to set this to channel (whole keyboard) aftertouch.</html>";
+	
+	static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+		"Sets the velocity (volume) of this note.</html>";
+
+	static final String RELEASE_VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+		"Sets the release velocity of this note.  This is the velocity with<br>" +
+		"which the key was released.  In MIDI, by default this is 64.</html>";
+	
+	static final String PARAMETER_TOOLTIP = "<html><b>Parameter</b><br>" +
+		"Sets the parameter number.</html.";
+		
+	static final String PARAMETER_MSB_TOOLTIP = "<html><b>Parameter MSB</b><br>" +
+		"Sets the MSB (\"Most Significant Byte\") of the parameter number.<br><br>" +
+		"The parameter number is determined by the MSB \u00D7 128 + LSB.</html>";
+	
+	static final String PARAMETER_LSB_TOOLTIP = "<html><b>Parameter LSB</b><br>" +
+		"Sets the LSB (\"Least Significant Byte\") of the parameter number.<br><br>" +
+		"The parameter number is determined by the MSB \u00D7 128 + LSB.</html>";
+	
+	static final String VALUE_TOOLTIP = "<html><b>Value</b><br>" +
+		"Sets the aftertouch value.</html>";
+	
+	static final String VALUE_MSB_TOOLTIP = "<html><b>Value MSB</b><br>" +
+		"Sets the MSB (\"Most Significant Byte\") of the parameter's value.<br><br>" +
+		"The value is determined by the MSB \u00D7 128 + LSB, as shown at right.</html>";
+	
+	static final String VALUE_LSB_TOOLTIP = "<html><b>Value LSB</b><br>" +
+		"Sets the LSB (\"Least Significant Byte\") of the parameter's value.<br><br>" +
+		"The value is determined by the MSB \u00D7 128 + LSB, as shown at right.</html>";
+	
+	static final String PARAMETER_RESULT_TOOLTIP = "<html><b>Parameter</b><br>" +
+		"The parameter number.<br><br>" + 
+		"The parameter number is determined by the MSB \u00D7 128 + LSB.</html>";
+
+	static final String VALUE_RESULT_TOOLTIP = "<html><b>Value</b><br>" +
+		"The parameter's value.<br><br>" + 
+		"The value is determined by the MSB \u00D7 128 + LSB.</html>";
+
+	static final String VALUE_PRESETS_TOOLTIP = "<html><b>Pitch Bend Presets</b><br>" +
+		"Presets for the Pitch Bend value.</html>";
+
+   }
