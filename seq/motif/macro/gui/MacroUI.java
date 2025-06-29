@@ -254,7 +254,7 @@ public class MacroUI extends MotifUI
         Box addRemoveBox = new Box(BoxLayout.X_AXIS);
         //addRemoveBox.add(addButton);
         addRemoveBox.add(removeButton);
-        addRemoveBox.add(copyButton);
+//        addRemoveBox.add(copyButton);
         console.add(addRemoveBox, BorderLayout.WEST);   
                 
         return console; 

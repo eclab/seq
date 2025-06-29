@@ -1417,7 +1417,7 @@ static
         seq.setFont(new Font(Font.SERIF, Font.PLAIN, 96));
         text.add(seq, BorderLayout.WEST);
         
-        JLabel version = new JLabel("<html>A Modular and Hierarchical MIDI Sequencer<br>By Sean Luke<br>With Help from Filippo Carnovalini<br><b><font color='#3498db'>Version 2</font></b>, July 2025<br>https://github.com/eclab/seq</html>");
+        JLabel version = new JLabel(SEQ_ABOUT_TEXT);
         version.setBackground(Color.WHITE);
         version.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
         text.add(version, BorderLayout.CENTER);
@@ -1543,4 +1543,12 @@ static
         seq.reset();
         ssui.revise();
         }
+        
+        
+    public static final String SEQ_ABOUT_TEXT = 
+    	"<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
+    	"By Sean Luke<br>" + 
+    	"With Help from Filippo Carnovalini<br>" + 
+    	"<b><font color='#3498db'>Version 2</font></b>, July 2025<br>" + 
+    	"https://github.com/eclab/seq</html>";
     }
