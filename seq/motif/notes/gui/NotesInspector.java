@@ -536,8 +536,8 @@ public class NotesInspector extends WidgetList
 		"Sets whether the Notes will record CC data during recording.</html>";
 	
 	static final String CONVERT_NRPN_RPN_TOOLTIP = "<html><b>Make NRPN/RPN</b><br>" +
-		"Sets whether the Notes will attempt to convert appropriate CC data" + 
-		"into NRPN or RPN events after recording.  If not, the CC data will" +
+		"Sets whether the Notes will attempt to convert appropriate CC data<br>" + 
+		"into NRPN or RPN events after recording.  If not, the CC data will<br>" +
 		"be retained as CC events.</html>";
 	
 	static final String OUTPUT_MIDI_VALUES_TOOLTIP = "<html><b>MIDI Parameters</b><br>" +

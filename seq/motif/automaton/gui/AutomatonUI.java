@@ -104,6 +104,28 @@ public class AutomatonUI extends MotifUI
         //build();
         }
  
+ 	public void doMakeStart()
+ 		{
+		AutomatonButton button = getSelectedButton();
+		if (button == null)
+			{
+			sequi.showSimpleError("Cannot Make Start Node", "Select a node before making it the start node.");
+			return;
+			}
+		seq.push();
+		seq.getLock().lock();
+		try
+			{
+			automaton.setStart(button.getNode());
+			}
+		finally { seq.getLock().unlock(); }
+		
+		// reset all the buttons 
+		select(button);                 // redraws its inspector to reflect the change
+		resetStart();                   // re-assigns status to each of the buttons
+		redraw(false);
+ 		}
+ 
     public void buildMenu()
         {
         menu = new JMenu("Automaton");
@@ -112,20 +134,7 @@ public class AutomatonUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                AutomatonButton button = getSelectedButton();
-                if (button == null) return;                             // FIXME: maybe popup a warning dialog?
-                seq.push();
-                seq.getLock().lock();
-                try
-                    {
-                    automaton.setStart(button.getNode());
-                    }
-                finally { seq.getLock().unlock(); }
-                
-                // reset all the buttons 
-                select(button);                 // redraws its inspector to reflect the change
-                resetStart();                   // re-assigns status to each of the buttons
-                redraw(false);
+                doMakeStart();
                 }
             });
         menu.add(load);
@@ -356,6 +365,16 @@ public class AutomatonUI extends MotifUI
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
         copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
 
+        PushButton startButton = new PushButton("S")
+            {
+            public void perform()
+                {
+                doMakeStart();
+                }
+            };
+        startButton.getButton().setPreferredSize(new Dimension(24, 24));
+        startButton.setToolTipText(START_BUTTON_TOOLTIP);
+
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
                 
@@ -363,6 +382,10 @@ public class AutomatonUI extends MotifUI
         addRemoveBox.add(removeButton);
         addRemoveBox.add(copyButton);
         console.add(addRemoveBox, BorderLayout.WEST);   
+        
+        Box otherBox = new Box(BoxLayout.X_AXIS);
+        otherBox.add(startButton);
+        console.add(otherBox, BorderLayout.EAST);
                 
         return console; 
         }
@@ -1029,5 +1052,8 @@ public class AutomatonUI extends MotifUI
 	
 	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Node</b><br>" +
 		"Duplicates the selected node, inserting the new one in the next space available.</html>";
+		
+	static final String START_BUTTON_TOOLTIP = "<html><b>Make Start Node</b><br>" +
+		"Makes the selected node the start node.</html>";
 		
     }

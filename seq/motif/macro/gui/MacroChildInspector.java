@@ -85,6 +85,16 @@ public class MacroChildInspector extends WidgetList
         namePanel.setLayout(new BorderLayout());
         namePanel.add(name, BorderLayout.CENTER);
 
+		if (macroUI == null)
+			{
+             name.setToolTipText(NAME_TOOLTIP);
+             namePanel.setToolTipText(NAME_TOOLTIP);
+			}
+		else
+			{
+             name.setToolTipText(NICKNAME_TOOLTIP);
+             namePanel.setToolTipText(NICKNAME_TOOLTIP);
+			}
 /*
   if (macroUI != null)
   {               
@@ -112,4 +122,11 @@ public class MacroChildInspector extends WidgetList
         name.update();
         }
         
+	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+		"Sets the name of the Macro Child.  This will appear in the Motif List at left.</html>";
+
+	static final String NICKNAME_TOOLTIP = "<html><b>Nickname</b><br>" +
+		"Sets a nickname for the Macro Child, overriding its name as originally set.</html>";
+
+
     }

@@ -193,6 +193,7 @@ public class AutomatonButton extends MotifButton
             {
             public void mousePressed(MouseEvent e)
                 {
+                dragCount = 0;				// sometimes the actionListener isn't triggered, so we do this here too
                 int modifiers = e.getModifiers();
                 if (SwingUtilities.isRightMouseButton(e) ||
                     ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
@@ -329,6 +330,7 @@ public class AutomatonButton extends MotifButton
                 {
                 public void mousePressed(MouseEvent e)
                     {
+                	button.dragCount = 0;				// sometimes the actionListener isn't triggered, so we do this here too
                     int modifiers = e.getModifiers();
                     if (SwingUtilities.isRightMouseButton(e) ||
                         ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
@@ -358,9 +360,12 @@ public class AutomatonButton extends MotifButton
                     {
                     if (button.isEnabled())
                         {
+                        System.err.println(button.dragCount);
                         button.dragCount++;
                         if (button.dragCount == MAX_DRAG_COUNT)
+                        	{
                             button.getTransferHandler().exportAsDrag(button, e, TransferHandler.MOVE);
+                            }
                         }
                     }
                 });

@@ -1393,6 +1393,46 @@ static
 		
     void doAbout()
         {
+        ImageIcon icon = new ImageIcon(SeqUI.class.getResource("about.png"));
+        JFrame frame = new JFrame("About Seq");
+        frame.getContentPane().setLayout(new BorderLayout());
+        frame.getContentPane().setBackground(Color.BLACK);
+        JLabel label = new JLabel(icon);
+
+        frame.getContentPane().add(label, BorderLayout.CENTER);
+
+        JPanel pane = new JPanel()
+            {
+            public Insets getInsets() { return new Insets(10, 10, 10, 10); }
+            };
+        pane.setBackground(Color.WHITE);
+        pane.setLayout(new BorderLayout());
+
+
+		JPanel text = new JPanel();
+		text.setBackground(Color.WHITE);
+		text.setLayout(new BorderLayout());
+        JLabel seq = new JLabel(" Seq ");
+        seq.setBackground(Color.WHITE);
+        seq.setFont(new Font(Font.SERIF, Font.BOLD, 72));
+        text.add(seq, BorderLayout.WEST);
+        
+        JLabel version = new JLabel("<html>A Modular and Hierarchical Sequencer<br>By Sean Luke<br><b>Version 2</b>, July 2025<br>https://github.com/eclab/seq</html>");
+        version.setBackground(Color.WHITE);
+        version.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        text.add(version, BorderLayout.CENTER);
+        
+        Collapse collapse = new Collapse(text);
+        collapse.setBackground(Color.WHITE);
+        pane.add(collapse, BorderLayout.SOUTH);
+        
+        frame.add(pane, BorderLayout.SOUTH);
+        frame.pack();
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        
+        /*
         ImageIcon icon = new ImageIcon(SeqUI.class.getResource("seq.png"));
         JFrame frame = new JFrame("About Seq");
         frame.getContentPane().setLayout(new BorderLayout());
@@ -1418,6 +1458,7 @@ static
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        */
         }
         
         

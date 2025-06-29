@@ -38,6 +38,11 @@ public class MotifButton extends JToggleButton implements Transferable
     public static final Color NEXT_COLOR = Color.BLUE;
     public static final Color REMOVE_COLOR = Color.MAGENTA;
 
+	// DRAG COUNT
+	// This counter should be increased with successive mouseDragged messages
+	// and reset on mouseDown.  Its purpose is to prevent dragging from happening
+	// too soon, in case it's just a sloppy click on the button.  Drags should
+	// only be initiated when the dragCount exceeds MAX_DRAG_COUNT
     public static final int MAX_DRAG_COUNT = 4;
     protected int dragCount;
     

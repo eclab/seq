@@ -234,8 +234,9 @@ public class MacroUI extends MotifUI
                 }
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
-        removeButton.setToolTipText("Remove selected motif from macro list");
+        removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
 
+/*
         PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
             {
             public void perform()
@@ -245,6 +246,7 @@ public class MacroUI extends MotifUI
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
         copyButton.setToolTipText("Copy selected motif in macro list");
+*/
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
@@ -345,7 +347,8 @@ public class MacroUI extends MotifUI
             }
         else System.err.println("MacroUI.moveChild: button not in list");
         }
-              
+    
+    /*     
     public void doCopy()
         {
         // Where is the button?
@@ -413,7 +416,8 @@ public class MacroUI extends MotifUI
             }
         else System.err.println("MacroUI.doCopy: button not in list");
         }
-
+	*/
+	
     public void addChild(MotifUI motifui, int at)
         {  
         MacroButton newButton = new MacroButton(sequi, motifui, MacroUI.this, at);
@@ -624,5 +628,9 @@ public class MacroUI extends MotifUI
                 }
             }
         }
+
+	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
+		"Removes the selected motif from the Macro Child slot.</html>";
+	
 
     }

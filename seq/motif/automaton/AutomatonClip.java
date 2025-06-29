@@ -204,6 +204,14 @@ public class AutomatonClip extends Clip
     boolean finished = false;
         
 
+	// AUTOMATON THREAD ITERATION COUNTS
+	// Iterations are per thread at present.  FIXME maybe this should be an option.
+			
+	static class Iterate		// Note this class used to be inside AutomatonThread, but Java 8 doesn't like that.
+		{
+		int count = -1;         // we'll get incremented the first time
+		}
+                
     // Set temporarily so the MIDI methods know what node is sending MIDI right now
     Automaton.MotifNode currentNode = null; 
         
@@ -230,14 +238,6 @@ public class AutomatonClip extends Clip
             setNode(start);
             }
                         
-        // ITERATION COUNTS
-        // Iterations are per thread at present.  FIXME maybe this should be an option.
-                
-        static class Iterate
-            {
-            int count = -1;         // we'll get incremented the first time
-            }
-                
         HashMap<Automaton.Iterate, Iterate> iterates = null;
         
         Iterate getIterateFor(Automaton.Iterate aiterate)

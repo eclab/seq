@@ -67,6 +67,7 @@ public class SelectInspector extends WidgetList
                     }
                 };
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
+            name.setToolTipText(NAME_TOOLTIP);
                 
             mode = new JComboBox(MODES);
             mode.setSelectedIndex(select.getMode());
@@ -81,6 +82,7 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            mode.setToolTipText(MODE_TOOLTIP);
 
             quantization = new JComboBox(QUANTIZATIONS);
             quantization.setSelectedIndex(select.getQuantization());
@@ -95,6 +97,7 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            quantization.setToolTipText(QUANTIZATION_TOOLTIP);
 
             Out[] seqOuts = seq.getOuts();
             String[] outs = new String[seqOuts.length];
@@ -117,6 +120,7 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            out.setToolTipText(CONTROL_OUT_TOOLTIP);
 
             In[] seqIns = seq.getIns();
             String[] ins = new String[seqIns.length];
@@ -138,7 +142,8 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
-                        
+            in.setToolTipText(CONTROL_IN_TOOLTIP);
+      
             device = new JComboBox(Select.GRID_DEVICE_NAMES);
             device.setSelectedIndex(select.getGridDevice());
             device.addActionListener(new ActionListener()
@@ -152,6 +157,7 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            device.setToolTipText(CONTROL_DEVICE_TOOLTIP);
 
             playFirst = new JCheckBox();
             playFirst.setSelected(select.getPlayFirst());
@@ -166,6 +172,7 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            playFirst.setToolTipText(AUTO_PLAY_FIRST_TOOLTIP);
 
 
             cut = new JCheckBox();
@@ -181,6 +188,7 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            cut.setToolTipText(CUT_NOTES_TOOLTIP);
 
 /*
   for(int i = 0; i < 8; i++)
@@ -271,6 +279,7 @@ public class SelectInspector extends WidgetList
                 finally { lock.unlock(); }                              
                 }
             });
+        finish.setToolTipText(FINISH_BUTTON_TOOLTIP);
 
         Box actions = new Box(BoxLayout.X_AXIS);
         //actions.add(release);
@@ -278,7 +287,8 @@ public class SelectInspector extends WidgetList
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(actions, BorderLayout.WEST);
-        
+        panel.setToolTipText(FINISH_BUTTON_TOOLTIP);
+
         /*
           Box dialBox = new Box(BoxLayout.X_AXIS);
           dialBox.add(new WidgetList(new String[] { "Param 1", "Param 2", "Param 3", "Param 4", },
@@ -332,4 +342,57 @@ public class SelectInspector extends WidgetList
         seq = old;
         name.update();
         }
+
+	static final String FINISH_BUTTON_TOOLTIP = "<html><b>Finish</b><br>" +
+		"Indicates to the parent motif that this Select believes it has finished playing.</html>";
+	
+	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+		"Sets the name of the Select.  This will appear in the Motif List at left.</html>";
+
+	static final String MODE_TOOLTIP = "<html><b>Mode</b><br>" +
+		"Sets the Select's mode of operation, to one of:" +
+		"<ul>" + 
+		"<li><b>Single</b> only allows one child node to play at a time.  When a node finishes<br>" +
+		"playing, it stops.  If a second node  is selected while another is playing, the second<br>" +
+		"node will begin playing after the first one finishes." +
+		"<li><b>Single Repeating</b> only allows one child node to play at a time, but when a node<br>" +
+		"finishes playing, starts up again, unless another node has been selected, in which case<br>" +
+		"that second node starts playing instead.  You can stop a node from repeating by deselecting it." +
+		"<li><b>Multi</b> allows multiple nodes to be selected to play simultaneously. When a node<br>" +
+		"finishes playing, it stops." +
+		"<li><b>Multi Repeating</b> allows multiple nodes to be selected to play simultaneously. When a node<br>" +
+		"finishes playing, it stops.  You can stop a node from repeating by deselecting it." +
+		"</ul></html>";
+
+	static final String CONTROL_IN_TOOLTIP = "<html><b>Control In</b><br>" +
+		"The MIDI Input for the optional controller device.  This should be set to the same<br>" +
+		"device as the <b>Control Out</b>.</html>";
+
+	static final String CONTROL_OUT_TOOLTIP = "<html><b>Control In</b><br>" +
+		"The MIDI Output for the optional controller device.  This should be set to the same<br>" +
+		"device as the <b>Control In</b>.</html>";
+
+	static final String CONTROL_DEVICE_TOOLTIP = "<html><b>Control Device</b><br>" +
+		"The particular kind of controller device used.  At present this is one of:" +
+		"<ul>" +
+		"<li><b>Launchpad MK 1</b>: Launchpad (original), Launchpad S" +
+		"<li><b>Launchpad MK 3</b>: Launchpad Mini MK 3" +
+		"</ul></html>";
+
+	static final String QUANTIZATION_TOOLTIP = "<html><b>Quantization</b><br>" +
+		"The time boundary at which nodes begin playing.  One of:" +
+		"<ul>" +
+		"<li>None (playing begins immediately)" +
+		"<li>The next 16th note" +
+		"<li>The next quarter note" +
+		"<li>The next measure (bar) boundary" +
+		"</ul></html>";
+
+	static final String AUTO_PLAY_FIRST_TOOLTIP = "<html><b>Auto-Play First</b><br>" +
+		"If selected, then when the Select begins playing, and there is a node in the top-left<br>" +
+		"corner (position 1,1), it immediately starts playing.</html>";
+
+	static final String CUT_NOTES_TOOLTIP = "<html><b>Cut Notes</b><br>" +
+		"If selected, then when a node is terminated early, it stops playing notes immediately<br>" +
+		"instead of letting them finish for their normal length.</html>";
     }
