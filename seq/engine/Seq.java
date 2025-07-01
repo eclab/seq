@@ -100,6 +100,8 @@ public class Seq
     boolean endOfLoop;
     // Have I stopped after playing once?  This is used by waitUntilStopped() to block until the next time we have finished playing
     boolean stopped = true;
+    // Am I resuming after a pause?
+    boolean resuming = false;
     // The lock for the stopped parameter above.  BTW, it's an Object[0] because arrays are automatically serializable, so that's a useful trick.
     Object stoppedLock = new Object[0];
     int notificationTime = -1;
@@ -527,6 +529,8 @@ public class Seq
     public boolean isEndOfLoop() { return endOfLoop; }
     /** Returns whether the sequencer is currently paused.  The sequencer is paused when it is NOT playing but NOT stopped. */
     public boolean isPaused() { return !stopped && !playing; }
+    /** Returns whether the sequencer is resuming from a pause. */
+    public boolean isResuming() { return resuming; }
     /** Sets the number of beats per measure for purposes count-in and for looping quantization. */
     public void setBar(int val) { bar = Math.min(Math.max(1, val), MAX_BEATS_PER_BAR); }
     /** Returns the number of beats per measure for purposes count-in and for looping quantization. */
@@ -703,6 +707,7 @@ public class Seq
             resetPlayingClips();
             playing = false;
             recording = false;
+            resuming = false;
             if (clock == CLOCK_OUT)
                 {
                 for(int i = 0; i < uniqueOuts.length; i++)
@@ -744,11 +749,16 @@ public class Seq
                 { 
                 root.reset();
                 currentCountIn = (countInMode != COUNT_IN_NONE ? 1 : 0) * bar * PPQ;                // reset, we're counting in
+                resuming = false;
                 }
-            else if (currentCountIn > 0)        // we're currently counting in, the behavior at present should be to reset the count
-                {
-                currentCountIn = (countInMode != COUNT_IN_NONE ? 1 : 0) * bar * PPQ;                // reset, we're counting in
-                }
+            else 
+            	{
+                resuming = true;
+            	if (currentCountIn > 0)        // we're currently counting in, the behavior at present should be to reset the count
+					{
+					currentCountIn = (countInMode != COUNT_IN_NONE ? 1 : 0) * bar * PPQ;                // reset, we're counting in
+					}
+				}
             beep.setAmplitude(0);
             beep.setRunning(true);
             
@@ -780,7 +790,7 @@ public class Seq
             {
             if (clock == CLOCK_OUT)
                 {
-                for(int i = 0; i < outs.length; i++)
+                for(int i = 0; i < uniqueOuts.length; i++)
                     {
                     uniqueOuts[i].clockStop();
                     }
@@ -794,6 +804,7 @@ public class Seq
             beep.setRunning(false);
             cut(); 
             playing = false;
+            resuming = false;
             }
         finally
             {
@@ -981,33 +992,47 @@ public class Seq
                         ((recording && (countInMode != COUNT_IN_NONE)) ||                   // we're recording, and the count-in is for recording 
                         ((playing && (countInMode == COUNT_IN_RECORDING_AND_PLAYING)))))    // we're playing, and teh count-in is for playing
                     {
-                    System.err.println("Count In");
                     // we're in the count-in phase
                     doBeep(Math.abs(bar) * PPQ - currentCountIn, getBeepBarFrequency(), getBeepBarFrequency() * 4);
                     if ((currentCountIn % PPQ) == 0)
                         setCountIn(currentCountIn / PPQ);
                     currentCountIn--;
+                    
+					// send out clock even though we've not started yet as a good measure 
+					if (currentCountIn % (PPQ / 24) == 0)		// issue a pulse
+						{
+						for(int i = 0; i < uniqueOuts.length; i++)
+							{
+							uniqueOuts[i].clockPulse();
+							}
+						}
                     }
 
                 else
                     {
 					if (currentCountIn == 0)
                     	{
-                    	System.err.println("Zero Count In");
                     	setCountIn(currentCountIn);
                     	currentCountIn--;							// we're done with count-ins
                     	}
                     
                     if (clock == CLOCK_OUT)
                     	{
-                    	if (time == 0)		// issue a start
+                    	if (isResuming())
                     		{
 							for(int i = 0; i < uniqueOuts.length; i++)
 								{
-								if (isPaused()) uniqueOuts[i].clockContinue(); 
-								else uniqueOuts[i].clockStart();
+								uniqueOuts[i].clockContinue();
+								}
+                    		}
+                    	else if (time == 0)		// issue a start
+                    		{
+							for(int i = 0; i < uniqueOuts.length; i++)
+								{
+								uniqueOuts[i].clockStart();
 								}
 							}
+							
                     	if (time % (PPQ / 24) == 0)		// issue a pulse
 							{
 							for(int i = 0; i < uniqueOuts.length; i++)
@@ -1016,7 +1041,8 @@ public class Seq
 								}
 							}
 						}
-                                                
+                 	resuming = false;			// we're done resuming
+                                               
                     if (time == notificationTime && notificationTime != -1) 
                         {
                         synchronized(stoppedLock)
