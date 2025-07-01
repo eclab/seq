@@ -367,7 +367,7 @@ public class NotesClip extends Clip
                     rpn(out, rpn.parameter, rpn.value);
                     }
                 }
-                                
+                                 
             // at this point, index points to the LAST EVENT that we emitted
             
             // at present we declare we're finished when all our NOTES OFF have completed

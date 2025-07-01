@@ -733,15 +733,7 @@ public class Seq
         lock.lock();
         try
             {
-            uniqueOuts = gatherUniqueOuts();
-            if (clock == CLOCK_OUT)
-                {
-                for(int i = 0; i < uniqueOuts.length; i++)
-                    {
-                    if (isPaused()) uniqueOuts[i].clockContinue(); 
-                    else uniqueOuts[i].clockStart();
-                    }
-                }
+            uniqueOuts = gatherUniqueOuts();		// Load so we can use them in step() and stop()
 
             // This should be first so we can send MIDI during reset()
             playing = true;
@@ -790,7 +782,7 @@ public class Seq
                 {
                 for(int i = 0; i < outs.length; i++)
                     {
-                    outs[i].clockStop();
+                    uniqueOuts[i].clockStop();
                     }
                 }
 
@@ -989,26 +981,41 @@ public class Seq
                         ((recording && (countInMode != COUNT_IN_NONE)) ||                   // we're recording, and the count-in is for recording 
                         ((playing && (countInMode == COUNT_IN_RECORDING_AND_PLAYING)))))    // we're playing, and teh count-in is for playing
                     {
+                    System.err.println("Count In");
                     // we're in the count-in phase
                     doBeep(Math.abs(bar) * PPQ - currentCountIn, getBeepBarFrequency(), getBeepBarFrequency() * 4);
                     if ((currentCountIn % PPQ) == 0)
                         setCountIn(currentCountIn / PPQ);
                     currentCountIn--;
                     }
-                else if (currentCountIn == 0)
-                    {
-                    setCountIn(currentCountIn);
-                    currentCountIn--;
-                    }
+
                 else
                     {
-                    if (clock == CLOCK_OUT && time % (PPQ / 24) == 0)
-                        {
-                        for(int i = 0; i < uniqueOuts.length; i++)
-                            {
-                            uniqueOuts[i].clockPulse();
-                            }
-                        }
+					if (currentCountIn == 0)
+                    	{
+                    	System.err.println("Zero Count In");
+                    	setCountIn(currentCountIn);
+                    	currentCountIn--;							// we're done with count-ins
+                    	}
+                    
+                    if (clock == CLOCK_OUT)
+                    	{
+                    	if (time == 0)		// issue a start
+                    		{
+							for(int i = 0; i < uniqueOuts.length; i++)
+								{
+								if (isPaused()) uniqueOuts[i].clockContinue(); 
+								else uniqueOuts[i].clockStart();
+								}
+							}
+                    	if (time % (PPQ / 24) == 0)		// issue a pulse
+							{
+							for(int i = 0; i < uniqueOuts.length; i++)
+								{
+								uniqueOuts[i].clockPulse();
+								}
+							}
+						}
                                                 
                     if (time == notificationTime && notificationTime != -1) 
                         {

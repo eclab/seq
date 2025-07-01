@@ -466,6 +466,7 @@ public class Notes extends Motif
     boolean convertNRPNRPN;
     int out;
     int in;
+    int maxEventPosition = 0;
     int maxNoteOnPosition = 0;
     int maxNoteOffPosition = 0;
     // Do I play out notes as I am recording them?
@@ -591,8 +592,10 @@ public class Notes extends Motif
         {
         maxNoteOnPosition = 0;
         maxNoteOffPosition = 0;
+        maxEventPosition = 0;
         for(Event event : events)
             {
+            maxEventPosition = Math.max(maxEventPosition, event.when);
             if (event instanceof Note)
                 {
                 Note note = (Note) event;
@@ -602,6 +605,7 @@ public class Notes extends Motif
             }
         }
                 
+    public int getMaxEventPosition() { return maxEventPosition; }
     public int getMaxNoteOnPosition() { return maxNoteOnPosition; }
     public int getMaxNoteOffPosition() { return maxNoteOffPosition; }
         
@@ -612,7 +616,8 @@ public class Notes extends Motif
     //// tick of the next motif AFTER that beat?  Same thing for end...
     public int getEndTime()
         {
-        int endTime = (maxNoteOffPosition > end ? maxNoteOffPosition : (end >= 0 ? end : 0)) - 1;                       // FIXME: So I'm subtracting 1....
+        int maxPos = (maxNoteOffPosition > maxEventPosition ? maxNoteOffPosition : maxEventPosition);
+        int endTime = (maxPos > end ? maxPos : (end >= 0 ? end : 0)) - 1;                       // FIXME: So I'm subtracting 1....
         if (endTime < 0) endTime = 0;
         return endTime;
         }
