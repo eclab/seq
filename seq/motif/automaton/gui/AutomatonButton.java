@@ -193,7 +193,7 @@ public class AutomatonButton extends MotifButton
             {
             public void mousePressed(MouseEvent e)
                 {
-                dragCount = 0;				// sometimes the actionListener isn't triggered, so we do this here too
+                dragCount = 0;                          // sometimes the actionListener isn't triggered, so we do this here too
                 int modifiers = e.getModifiers();
                 if (SwingUtilities.isRightMouseButton(e) ||
                     ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
@@ -330,7 +330,7 @@ public class AutomatonButton extends MotifButton
                 {
                 public void mousePressed(MouseEvent e)
                     {
-                	button.dragCount = 0;				// sometimes the actionListener isn't triggered, so we do this here too
+                    button.dragCount = 0;                           // sometimes the actionListener isn't triggered, so we do this here too
                     int modifiers = e.getModifiers();
                     if (SwingUtilities.isRightMouseButton(e) ||
                         ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
@@ -363,7 +363,7 @@ public class AutomatonButton extends MotifButton
                         System.err.println(button.dragCount);
                         button.dragCount++;
                         if (button.dragCount == MAX_DRAG_COUNT)
-                        	{
+                            {
                             button.getTransferHandler().exportAsDrag(button, e, TransferHandler.MOVE);
                             }
                         }
@@ -478,59 +478,59 @@ public class AutomatonButton extends MotifButton
 
 
 
-	static final String MOTIF_TOOLTIP = "<html><b>Motif Node</b><br>" +
-		"This represents a single motif.  When the automaton transitions to this node, it begins repeatedly<br>" +
-		"playing the motif, and then ultimately transitioning to the node connected to the output.<br>" +
-		"Repeating works as follows:" +
-		"<ol>" +
-		"<li>The motif node is played once." +
-		"<li>Then the motif node is played <b>Initial Repeats</b> more times." +
-		"<li>Then a coin is flipped repeatedly with <b>Repeat Probability</b> of being heads.<br>" +
-		"If it comes up heads <i>N</i> times before the first tails, then the motif node is<br>" +
-		"played <i>N</i> more times." + 
-		"<li>Then the motif node transitions to the next motif." +
-		"</ol>" +
-		"All the while, if a 1.0 is sent to <b>Parameter 8</b> and <b>Until Trigger 8</b> is<br>" +
-		"selected, then the motif node transitions to the next motif with no further repeats.</html>";
+    static final String MOTIF_TOOLTIP = "<html><b>Motif Node</b><br>" +
+        "This represents a single motif.  When the automaton transitions to this node, it begins repeatedly<br>" +
+        "playing the motif, and then ultimately transitioning to the node connected to the output.<br>" +
+        "Repeating works as follows:" +
+        "<ol>" +
+        "<li>The motif node is played once." +
+        "<li>Then the motif node is played <b>Initial Repeats</b> more times." +
+        "<li>Then a coin is flipped repeatedly with <b>Repeat Probability</b> of being heads.<br>" +
+        "If it comes up heads <i>N</i> times before the first tails, then the motif node is<br>" +
+        "played <i>N</i> more times." + 
+        "<li>Then the motif node transitions to the next motif." +
+        "</ol>" +
+        "All the while, if a 1.0 is sent to <b>Parameter 8</b> and <b>Until Trigger 8</b> is<br>" +
+        "selected, then the motif node transitions to the next motif with no further repeats.</html>";
 
-	static final String DELAY_TOOLTIP = "<html><b>Delay Node</b><br>" +
-		"This represents a time delay.  When the automaton transitions to this node, it waits for<br>" +
-		"some amount of time before transitioning to the next node connected to the output.</html>";
+    static final String DELAY_TOOLTIP = "<html><b>Delay Node</b><br>" +
+        "This represents a time delay.  When the automaton transitions to this node, it waits for<br>" +
+        "some amount of time before transitioning to the next node connected to the output.</html>";
 
-	static final String CHORD_TOOLTIP = "<html><b>Chord Node</b><br>" +
-		"This represents a chord, interval, or single note.  When the automaton transitions to this node, it plays<br>" +
-		"the chord for the specified amount of time before transitioning to the next node connected to the output.</html>";
+    static final String CHORD_TOOLTIP = "<html><b>Chord Node</b><br>" +
+        "This represents a chord, interval, or single note.  When the automaton transitions to this node, it plays<br>" +
+        "the chord for the specified amount of time before transitioning to the next node connected to the output.</html>";
 
-	static final String FINISHED_TOOLTIP = "<html><b>Finished Node</b><br>" +
-		"This node tells the automaton's parent motifs that the automaton believes it has finished playing.</html>";
+    static final String FINISHED_TOOLTIP = "<html><b>Finished Node</b><br>" +
+        "This node tells the automaton's parent motifs that the automaton believes it has finished playing.</html>";
 
-	static final String ITERATE_TOOLTIP = "<html><b>Iterate Node</b><br>" +
-		"This node iterates through up to four outputs, transitioning out different ones each time<br>" +
-		"the automaton transitions to it. Iterations works as follows:" + 
-		"<ol>" +
-		"<li>When first played, we immediately transition to the first output that is connected to us." +
-		"<li>Each time we are played, we continue transiting out that input until we have done so<br>" +
-		"<b>Iterations</b> total times. Thereafter we continue to the next output that is connected to us.<br>" +
-		"<li>When we have finished with all our connected outputs, if <b>Loop</b> is checked, then we<br>" +
-		"loop back and continue again with our first connectd output. Else we stop transitioning entirely.</html>";
+    static final String ITERATE_TOOLTIP = "<html><b>Iterate Node</b><br>" +
+        "This node iterates through up to four outputs, transitioning out different ones each time<br>" +
+        "the automaton transitions to it. Iterations works as follows:" + 
+        "<ol>" +
+        "<li>When first played, we immediately transition to the first output that is connected to us." +
+        "<li>Each time we are played, we continue transiting out that input until we have done so<br>" +
+        "<b>Iterations</b> total times. Thereafter we continue to the next output that is connected to us.<br>" +
+        "<li>When we have finished with all our connected outputs, if <b>Loop</b> is checked, then we<br>" +
+        "loop back and continue again with our first connectd output. Else we stop transitioning entirely.</html>";
 
-	static final String RANDOM_TOOLTIP = "<html><b>Random Node</b><br>" +
-		"This node transitions out a random output each time the automaton transitions to it.<br>" +
-		"This works as follows.  When played, we take all the connected outputs and normalize<br>" + 
-		"their weights into probabilities (divide them by their sum).  If they're all 0, they're<br>" +
-		"all treated as equal probability.  Then we select an output at random according to the probabilities<br>" +
-		"and transition to that output.  If no outputs are connected, we don't transition at all.</html>";
+    static final String RANDOM_TOOLTIP = "<html><b>Random Node</b><br>" +
+        "This node transitions out a random output each time the automaton transitions to it.<br>" +
+        "This works as follows.  When played, we take all the connected outputs and normalize<br>" + 
+        "their weights into probabilities (divide them by their sum).  If they're all 0, they're<br>" +
+        "all treated as equal probability.  Then we select an output at random according to the probabilities<br>" +
+        "and transition to that output.  If no outputs are connected, we don't transition at all.</html>";
 
-	static final String FORK_TOOLTIP = "<html><b>Fork Node</b><br>" +
-		"This node creates one or more playing threads each time the automaton transitions to it.<br>" +
-		"These threads output in parallel along separate outputs and continue playing and transitioning.<br>" +
-		"in parallel.  You can create no more than 8 threads at a time: further threads are ignored.<br>" +
-		"You an eliminate threads by <b>Joining</b> them with one another.</html>";
+    static final String FORK_TOOLTIP = "<html><b>Fork Node</b><br>" +
+        "This node creates one or more playing threads each time the automaton transitions to it.<br>" +
+        "These threads output in parallel along separate outputs and continue playing and transitioning.<br>" +
+        "in parallel.  You can create no more than 8 threads at a time: further threads are ignored.<br>" +
+        "You an eliminate threads by <b>Joining</b> them with one another.</html>";
 
-	static final String JOIN_TOOLTIP = "<html><b>Join Node</b><br>" +
-		"This node joins one or more playing threads each time the automaton transitions to it.<br>" +
-		"Joined threads are collapsed to a single thread, which is then transitioned along the output.<br>" +
-		"When a thread arrives at the input, Join may do nothing yet: it will wait until the right<br>" +
-		"number of threads have arrived before joining them (see <b>Threads</b> in the inspector at right).</html>";
+    static final String JOIN_TOOLTIP = "<html><b>Join Node</b><br>" +
+        "This node joins one or more playing threads each time the automaton transitions to it.<br>" +
+        "Joined threads are collapsed to a single thread, which is then transitioned along the output.<br>" +
+        "When a thread arrives at the input, Join may do nothing yet: it will wait until the right<br>" +
+        "number of threads have arrived before joining them (see <b>Threads</b> in the inspector at right).</html>";
     }
         

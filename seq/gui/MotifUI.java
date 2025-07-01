@@ -297,11 +297,11 @@ public abstract class MotifUI extends JPanel
         }
     
     /** Called to give the motifui a chance to revise its inspectors.  
-    	Override this as you see fit, the default is empty.
-    	FIXME: is this needed any more? */  
+        Override this as you see fit, the default is empty.
+        FIXME: is this needed any more? */  
     public void revise()
-    	{
-    	}
+        {
+        }
         
     public void recursiveDragError(MotifButton dropped, SeqUI sequi)
         {
@@ -329,6 +329,6 @@ public abstract class MotifUI extends JPanel
 
 
 
-	static final String TEXT_NOTES_TOOLTIP = "<html><b>Notes</b><br>" +
-		"Add notes about this motif here.</html>";
+    static final String TEXT_NOTES_TOOLTIP = "<html><b>Notes</b><br>" +
+        "Add notes about this motif.</html>";
     }

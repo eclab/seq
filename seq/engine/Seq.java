@@ -258,14 +258,14 @@ public class Seq
     //public static final int BEEP_COUNT_IN_BAR_FREQUENCY = 880 * 2;
     // spublic static final int BEEP_FREQUENCY = 440;
     //public static final int BEEP_BAR_FREQUENCY = 880;
-    public static final double BEEP[] = 			// Frequencies for pitches -12 ... 0 ... +12
-    	{
-    	220.00000, 233.08188, 246.94165, 261.62557, 277.18263, 293.66477,
-		311.12698, 329.62756, 349.22823, 369.99442, 391.99544, 415.30470,
-		440.00000, 466.16376, 493.88330, 523.25113, 554.36526, 587.32954,
-		622.25397, 659.25511, 698.45646, 739.98885, 783.99087, 830.60940,
-		880.00000
-		};
+    public static final double BEEP[] =                         // Frequencies for pitches -12 ... 0 ... +12
+        {
+        220.00000, 233.08188, 246.94165, 261.62557, 277.18263, 293.66477,
+        311.12698, 329.62756, 349.22823, 369.99442, 391.99544, 415.30470,
+        440.00000, 466.16376, 493.88330, 523.25113, 554.36526, 587.32954,
+        622.25397, 659.25511, 698.45646, 739.98885, 783.99087, 830.60940,
+        880.00000
+        };
 
 
     // Our beep, which creates its own thread.
@@ -302,20 +302,20 @@ public class Seq
     public void setFile(File file) { this.file = file; }
     
     public int getBeepPitch()
-    	{
-    	return beepPitch;
-    	}
-    	
+        {
+        return beepPitch;
+        }
+        
     public void setBeepPitch(int val)
-    	{
-    	beepPitch = val;
-    	}
+        {
+        beepPitch = val;
+        }
     
     /** Returns frequencies for pitch deviations ranging from -12 to +12 */
     public double getBeepBarFrequency()
-    	{
-    	return BEEP[getBeepPitch() + 12];
-    	}
+        {
+        return BEEP[getBeepPitch() + 12];
+        }
     
     /** Prepares Seq to be thrown away. */
     public void shutdown()
@@ -703,13 +703,13 @@ public class Seq
             resetPlayingClips();
             playing = false;
             recording = false;
-			if (clock == CLOCK_OUT)
-				{
-				for(int i = 0; i < uniqueOuts.length; i++)
-					{
-					uniqueOuts[i].clockStop();
-					}
-				}
+            if (clock == CLOCK_OUT)
+                {
+                for(int i = 0; i < uniqueOuts.length; i++)
+                    {
+                    uniqueOuts[i].clockStop();
+                    }
+                }
 
             }
         finally
@@ -734,14 +734,14 @@ public class Seq
         try
             {
             uniqueOuts = gatherUniqueOuts();
-			if (clock == CLOCK_OUT)
-				{
-				for(int i = 0; i < uniqueOuts.length; i++)
-					{
-					if (isPaused()) uniqueOuts[i].clockContinue(); 
-					else uniqueOuts[i].clockStart();
-					}
-				}
+            if (clock == CLOCK_OUT)
+                {
+                for(int i = 0; i < uniqueOuts.length; i++)
+                    {
+                    if (isPaused()) uniqueOuts[i].clockContinue(); 
+                    else uniqueOuts[i].clockStart();
+                    }
+                }
 
             // This should be first so we can send MIDI during reset()
             playing = true;
@@ -786,13 +786,13 @@ public class Seq
         lock.lock();
         try
             {
-			if (clock == CLOCK_OUT)
-				{
-				for(int i = 0; i < outs.length; i++)
-					{
-					outs[i].clockStop();
-					}
-				}
+            if (clock == CLOCK_OUT)
+                {
+                for(int i = 0; i < outs.length; i++)
+                    {
+                    outs[i].clockStop();
+                    }
+                }
 
             if (stopped)                 // not sure this is necessary
                 { 
@@ -902,14 +902,14 @@ public class Seq
         }
 
 
-	/** Sets all motifs to not be armed. */
-	public void disarmAll()
-		{
-		for(Motif motif : motifs)
-			{
-			motif.setArmed(false);
-			}
-		}
+    /** Sets all motifs to not be armed. */
+    public void disarmAll()
+        {
+        for(Motif motif : motifs)
+            {
+            motif.setArmed(false);
+            }
+        }
         
     /** Returns the current absolute time. */
     public int getTime()
@@ -963,14 +963,14 @@ public class Seq
     
     
     Out[] gatherUniqueOuts()
-    	{
-    	HashMap<Midi.MidiDeviceWrapper, Out> unique = new HashMap<>();
-    	for(int i = 0; i < outs.length; i++)
-    		{
-    		unique.put(outs[i].getWrapper(),outs[i]);
-    		}
-    	return (Out[])(unique.values().toArray(new Out[0]));
-    	}
+        {
+        HashMap<Midi.MidiDeviceWrapper, Out> unique = new HashMap<>();
+        for(int i = 0; i < outs.length; i++)
+            {
+            unique.put(outs[i].getWrapper(),outs[i]);
+            }
+        return (Out[])(unique.values().toArray(new Out[0]));
+        }
     
     int ccount = 0;
     long lastCCTime = 0;
@@ -1034,11 +1034,11 @@ public class Seq
 //                    playingClips.clear();
                     boolean atEnd = (time == NUM_BARS_PER_PART * NUM_PARTS * bar - 1);
                     if (ccount == 0)
-                    	{
-                    	long cur = System.currentTimeMillis();
-                    	//System.err.println(cur - lastCCTime);
-                    	lastCCTime = cur;
-                    	}
+                        {
+                        long cur = System.currentTimeMillis();
+                        //System.err.println(cur - lastCCTime);
+                        lastCCTime = cur;
+                        }
                     ccount++;
                     if (ccount >= 24) ccount = 0;
                     
@@ -1252,7 +1252,7 @@ public class Seq
         else return false;
         }
         
-     /** Sends a bend to the given Out, associated with a given note (for MPE).   Bend goes -8192...8191.
+    /** Sends a bend to the given Out, associated with a given note (for MPE).   Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
     public boolean bend(int out, int note, int val) 
         {
@@ -1269,7 +1269,7 @@ public class Seq
         }
         
 
-   /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
+    /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
         up for only channel aftertouch, this will be converted to channel aftertouch. 
         Returns true if the message was successfully sent.  
         You can pass in Out.CHANNEL_AFTERTOUCH for the note, and this will force the message to be sent
@@ -1415,17 +1415,17 @@ public class Seq
         // Save MIDI
         lock.lock();
         try
-        	{
-        JSONArray outDevs = new JSONArray();
-        JSONArray inDevs = new JSONArray();
-	    Midi.saveTupleToJSON(tuple, outDevs, inDevs);
-	    obj.put("out", outDevs);
-	    obj.put("in", inDevs);
-	    }
-       	finally
-		   {
-		   lock.unlock();  
-		   }
+            {
+            JSONArray outDevs = new JSONArray();
+            JSONArray inDevs = new JSONArray();
+            Midi.saveTupleToJSON(tuple, outDevs, inDevs);
+            obj.put("out", outDevs);
+            obj.put("in", inDevs);
+            }
+        finally
+            {
+            lock.unlock();  
+            }
 
 
         return obj;
@@ -1466,23 +1466,23 @@ public class Seq
         // Update MIDI
         seq.getLock().lock();
         try
-        	{
-			JSONArray outDevs = obj.getJSONArray("out");
-			JSONArray inDevs = obj.getJSONArray("in");
-			if (outDevs != null && inDevs != null)
-				{
-				seq.tuple = Midi.loadTupleFromJSON(outDevs, inDevs, seq.getIns());
-				}
-	        }
-	   catch(org.json.JSONException ex)
-	   		{
-	   		// this is incorrectly thrown by getJSONArray when "out" or "in" don't exist.
-	   		// That's fine, we'll just drop here and not bother loading the tuple.
-	   		}
-       finally
-		   {
-		   seq.getLock().unlock();  
-		   }
+            {
+            JSONArray outDevs = obj.getJSONArray("out");
+            JSONArray inDevs = obj.getJSONArray("in");
+            if (outDevs != null && inDevs != null)
+                {
+                seq.tuple = Midi.loadTupleFromJSON(outDevs, inDevs, seq.getIns());
+                }
+            }
+        catch(org.json.JSONException ex)
+            {
+            // this is incorrectly thrown by getJSONArray when "out" or "in" don't exist.
+            // That's fine, we'll just drop here and not bother loading the tuple.
+            }
+        finally
+            {
+            seq.getLock().unlock();  
+            }
         return seq;
         }
 
@@ -1677,23 +1677,23 @@ public class Seq
             ins = new In[NUM_INS];
             midi = new Midi(NUM_OUTS, NUM_INS);
 
-			// eliminate old receivers, else we'll have duplicate messages!
-			for (Object indevW : midi.getInDevices())
-				{
-				if (indevW instanceof Midi.MidiDeviceWrapper)
-					{
-					((Midi.MidiDeviceWrapper)indevW).removeAllFromTransmitter();
-					}
-				}
-			
-			// eliminate old receivers, else we'll have duplicate messages!
-			for (Object outdevW : midi.getOutDevices())		// necessary?
-				{
-				if (outdevW instanceof Midi.MidiDeviceWrapper)
-					{
-					((Midi.MidiDeviceWrapper)outdevW).removeAllFromTransmitter();
-					}
-				}
+            // eliminate old receivers, else we'll have duplicate messages!
+            for (Object indevW : midi.getInDevices())
+                {
+                if (indevW instanceof Midi.MidiDeviceWrapper)
+                    {
+                    ((Midi.MidiDeviceWrapper)indevW).removeAllFromTransmitter();
+                    }
+                }
+                        
+            // eliminate old receivers, else we'll have duplicate messages!
+            for (Object outdevW : midi.getOutDevices())             // necessary?
+                {
+                if (outdevW instanceof Midi.MidiDeviceWrapper)
+                    {
+                    ((Midi.MidiDeviceWrapper)outdevW).removeAllFromTransmitter();
+                    }
+                }
 
             Midi.MidiDeviceWrapper[] outWrappers = new Midi.MidiDeviceWrapper[NUM_OUTS];
             int[] outChannels = new int[NUM_OUTS];
@@ -1734,15 +1734,15 @@ public class Seq
             ins = new In[numMIDIInput];
             midi = new Midi(numMIDIOutput, numMIDIInput);
 
-			// eliminate old receivers, else we'll have duplicate messages!
-			for (Object indevW : midi.getInDevices())
-				{
-				if (indevW instanceof Midi.MidiDeviceWrapper)
-					{
-					((Midi.MidiDeviceWrapper)indevW).removeAllFromTransmitter();
-					}
-				}
-			
+            // eliminate old receivers, else we'll have duplicate messages!
+            for (Object indevW : midi.getInDevices())
+                {
+                if (indevW instanceof Midi.MidiDeviceWrapper)
+                    {
+                    ((Midi.MidiDeviceWrapper)indevW).removeAllFromTransmitter();
+                    }
+                }
+                        
             if (args.length == 0) 
                 {
                 showDevices(mainClass, numMIDIOutput, numMIDIInput, midi, null, null, false, false);
@@ -1893,7 +1893,7 @@ public class Seq
     /** Increments the document counter.  Only SeqUI.doNew() or SeqUI.doLoad() should do this. */
     public static void incrementDocument() { document++; }
     /** Checks the document counter.  If it's larger than the motif's internal document counter, 
-    	it knows that we have a new document, so the motif's motif counter should be reset. */
+        it knows that we have a new document, so the motif's motif counter should be reset. */
     public static int getDocument() { return document; }
     }
 

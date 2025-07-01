@@ -104,27 +104,27 @@ public class AutomatonUI extends MotifUI
         //build();
         }
  
- 	public void doMakeStart()
- 		{
-		AutomatonButton button = getSelectedButton();
-		if (button == null)
-			{
-			sequi.showSimpleError("Cannot Make Start Node", "Select a node before making it the start node.");
-			return;
-			}
-		seq.push();
-		seq.getLock().lock();
-		try
-			{
-			automaton.setStart(button.getNode());
-			}
-		finally { seq.getLock().unlock(); }
-		
-		// reset all the buttons 
-		select(button);                 // redraws its inspector to reflect the change
-		resetStart();                   // re-assigns status to each of the buttons
-		redraw(false);
- 		}
+    public void doMakeStart()
+        {
+        AutomatonButton button = getSelectedButton();
+        if (button == null)
+            {
+            sequi.showSimpleError("Cannot Make Start Node", "Select a node before making it the start node.");
+            return;
+            }
+        seq.push();
+        seq.getLock().lock();
+        try
+            {
+            automaton.setStart(button.getNode());
+            }
+        finally { seq.getLock().unlock(); }
+                
+        // reset all the buttons 
+        select(button);                 // redraws its inspector to reflect the change
+        resetStart();                   // re-assigns status to each of the buttons
+        redraw(false);
+        }
  
     public void buildMenu()
         {
@@ -372,6 +372,7 @@ public class AutomatonUI extends MotifUI
                 doMakeStart();
                 }
             };
+        startButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
         startButton.getButton().setPreferredSize(new Dimension(24, 24));
         startButton.setToolTipText(START_BUTTON_TOOLTIP);
 
@@ -1047,13 +1048,13 @@ public class AutomatonUI extends MotifUI
         //seq.waitUntilStopped();
         }
 
-	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Node</b><br>" +
-		"Removes the selected node.</html>";
-	
-	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Node</b><br>" +
-		"Duplicates the selected node, inserting the new one in the next space available.</html>";
-		
-	static final String START_BUTTON_TOOLTIP = "<html><b>Make Start Node</b><br>" +
-		"Makes the selected node the start node.</html>";
-		
+    static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Node</b><br>" +
+        "Removes the selected node.</html>";
+        
+    static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Node</b><br>" +
+        "Duplicates the selected node, inserting the new one in the next space available.</html>";
+                
+    static final String START_BUTTON_TOOLTIP = "<html><b>Make Start Node</b><br>" +
+        "Makes the selected node the start node.</html>";
+                
     }

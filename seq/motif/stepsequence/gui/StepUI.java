@@ -88,7 +88,7 @@ public class StepUI extends JComponent
                 else
                     {
                     toggleOn();
-                	setDirty(true);
+                    setDirty(true);
                     }
                 if (oldStepNum != StepUI.this.stepNum || oldTrackNum != StepUI.this.trackNum)
                     {
@@ -191,12 +191,12 @@ public class StepUI extends JComponent
         }
 
 
-	static final String TOOLTIP = "<html><b>Step</b><br>" +
-		"Click on the step to enable or disable it and also select it.  Shift-Click or Right-Click<br>"+
-		"the step to just select it.  When selected, the step inspector is shown at right,<br>" +
-		"along with the step's track inspector.<br><br>" +
-		"The step color indicates its velocity.  Set the velocity in the step inspector, or set<br>" +
-		"the track's default velocity in the track inspector, or set the step sequence's default<br>" +
-		"velocity in the step sequencer inspector, all at right.";
-	
+    static final String TOOLTIP = "<html><b>Step</b><br>" +
+        "Click on the step to enable or disable it and also select it.  Shift-Click or Right-Click<br>"+
+        "the step to just select it.  When selected, the step inspector is shown at right,<br>" +
+        "along with the step's track inspector.<br><br>" +
+        "The step color indicates its velocity.  Set the velocity in the step inspector, or set<br>" +
+        "the track's default velocity in the track inspector, or set the step sequence's default<br>" +
+        "velocity in the step sequencer inspector, all at right.";
+        
     }

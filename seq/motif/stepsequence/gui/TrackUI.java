@@ -43,7 +43,7 @@ public class TrackUI extends JPanel
         }
                 
     public int getTrackNum() { return trackNum; }
-        		
+                        
     public TrackUI(Seq seq, StepSequence ss, StepSequenceUI ssui, int trackNum)
         {
         setOpaque(false);

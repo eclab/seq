@@ -81,11 +81,11 @@ public abstract class Motif implements Cloneable
         /** The current parameters */
         double[] parameters = new double[NUM_PARAMETERS];
 
-		/** Return the value of the given parameter*/
+        /** Return the value of the given parameter*/
         public double getParameter(int param) { return parameters[param]; }
-		/** Return the value of all parameter*/
+        /** Return the value of all parameter*/
         public double[] getParameters() { return parameters; }
-		/** Set the value of the given parameter */
+        /** Set the value of the given parameter */
         public void setParameter(int param, double val) { parameters[param] = val; }
 
 
@@ -109,8 +109,8 @@ public abstract class Motif implements Cloneable
         public void setRandomMax(double val) { randomMax = val; }
         /** Returns the maximum random value of the random parameter */
         public double getRandomMax() { return randomMax; }
-    	/** Produces a random value between the minimum and maximum values.  
-    		Note that these aren't randomMin and randomMax, which have special meaning when negative. */
+        /** Produces a random value between the minimum and maximum values.  
+            Note that these aren't randomMin and randomMax, which have special meaning when negative. */
         public double generateRandomValue(double min, double max)
             {
             return motif.generateRandomValue(min, max);
@@ -251,7 +251,7 @@ public abstract class Motif implements Cloneable
         name = "";
         }
 
-	/** Returns the Seq */
+    /** Returns the Seq */
     public Seq getSeq() { return seq; }
     /** Increments the play count, that is, how many clips are playing the motif right now. */
     public void incrementPlayCount() { playCount++; }
@@ -306,11 +306,11 @@ public abstract class Motif implements Cloneable
     /// FIXME: at present we're just gonna assume that this collapses the recordings to the last one,
     /// But we should change it to lazily let the user choose.
 /*
-    public void endArmed() 
-        { 
-        for(Child child : children)
-            child.motif.endArmed();
-        }
+  public void endArmed() 
+  { 
+  for(Child child : children)
+  child.motif.endArmed();
+  }
 */
         
         

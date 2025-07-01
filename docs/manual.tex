@@ -373,7 +373,7 @@ Some dials can be set to {\bf special values}.  These dials will have a little g
 If a dial has no special values available, no dot will appear.
 
 
-\subsection{The Motif List\quad(and the Edit, Motif, and File Menus)}
+\subsection{The Motif List\quad(and the Edit, Add, Motif, and File Menus)}
 
 \begin{wrapfigure}{r}{1.5in}
 \vspace{-2em}
@@ -390,7 +390,7 @@ When you select a motif, other motifs may appear in light blue.  These are the {
 
 When a motif is currently playing, its text will be highlighted in red.  Since a currently playing motif may also be playing its children, multiple motifs may appear in red at the same time.
 
-Below the Motif List are the {\bf Motif List Editing Buttons}, which let you add new motifs to the list, delete them, and copy them.   Most importantly, clicking the ``\(+\)'' button will pop up the a {\bf List of Available Motifs}, as shown at right in Figure~\ref{motiflist}.  Select a motif and a new one will appear in the Motif List. 
+Below the Motif List are the {\bf Motif List Editing Buttons}, which let you add new motifs to the list, delete them, and copy them.   Most importantly, clicking the ``\(+\)'' button will pop up the a {\bf List of Available Motifs}, as shown at right in Figure~\ref{motiflist}.  Select a motif and a new one will appear in the Motif List.   You can also choose the same motifs from the {\bf Add Menu}.
 
 Also below the Motif List are the {\bf Motif Stack Buttons}.  When you select a motif, the current motif display changes to reflect the newly selected motif.  The previously selected motif is pushed on the stack.  You can go back to previous motifs by pressing the ``\(<\)'' button, and return to later selected motifs with the ``\(>\)'' button.  These buttons only appear if there is a motif to go back (or forward) to.
 
@@ -674,7 +674,7 @@ Each Child in the Child Motifs can have a {\bf Nickname}, set in its Child Inspe
 
 When a Child finishes playing once, we can immediately go on to whatever is next to do, or we can first wait until some quantized time boundary (16th note, quarter note, or measure) before doing so.  This is set in the Inspector as {\bf End Quantization}.
 
-When a Child is played, it is played for some number of iterations or {\bf Fixed Repeats}.  You can set this value in the Inspector.  Thereafter, we flip a coin of {\bf Repeat Probability}, and each time it comes up heads, we play the Child once more. When it comes up tails, we stop playing the child, and go on to the next step (starting playing some other child, or finishing).  These two values are also displayed in the Child in the list, along with the number of iterations performed so far.
+When a Child is played, it is played once, and then for some number of additional iterations or {\bf Initial Repeats}.  You can set this value in the Inspector.  Thereafter, we flip a coin of {\bf Repeat Probability}, and each time it comes up heads, we play the Child once more. When it comes up tails, we stop playing the child, and go on to the next step (starting playing some other child, or finishing).  These two values are also displayed in the Child in the list, along with the number of iterations performed so far.
 
 Alternatively if you select {\bf Until Trigger 8}, both Repeats features are ignored and the Child  will repeat forever until the Series receives a Trigger on Parameter 8.  (For discussion of Parameters, see Section~\ref{parameters}).
 
@@ -727,14 +727,14 @@ Each Child has a {\bf Probability} in its Inspector.  This probability determine
 \begin{itemize}
 \item {\bf Independent}\quad Each child will play with its given its Probability (by default 1.0).  This is the default.
 \item {\bf 1...16}\quad Parallel will select some \(N\) (1...16) children at random given their Probabilities.  These will be the only children that play.
-\item {\bf All, Finish After First}\quad Every child will play, but after the first child in the list has finished playing, all children will immediately be terminated.
+\item {\bf All, Finish After First}\quad Every child will play with its given its Probability, except the first child in the list, which always plays.  After the first child in the list has finished playing, all children will immediately be terminated.
 \end{itemize}
 
 If a child has {\bf Override} set in its Inspector, then when it starts playing, it will immediately terminate all Children below it.  
 
 \paragraph{Delays and Quantization}
 
-Each Child can have the onset of its playing delayed.  Seq provides a {\bf Coarse Delay} in Beats and Measures, and a {\bf Fine Delay} in Ticks (192 Ticks per Beat).  The Fine Delay also has {\bf Presets} with common fractions of a Beat.
+Each Child can have the onset of its playing delayed.  Seq provides a {\bf Delay} in Parts, Bars, Beats, and Ticks, though you'll probably usually use Beats and Bars.
 
 When the last Child finishes playing once, we can finish Parallel immediately, or we can first wait until some quantized time boundary (16th note, quarter note, or measure) before doing so.  This is set in its Inspector as {\bf End Quantization}.
 
@@ -781,7 +781,7 @@ Edge are connected by dragging from an endpoint to a start point.  You can delet
 
 The Automaton is capable of playing multiple things at one time.  The process of playing a single item is called a {\bf Thread}.   In a Thread, a single Node is playing, and when it finished playing, it passes playing on to another Node, or if it passes to nothing, the Thread is terminated.  Threads operate independently.  There can be no more than 8 Threads playing at one time.  Normally Threads are created automatically, but you can manually start a Thread on any Node by selecting the Node and selecting {\bf Launch Thread at Node} in the {\bf Automaton} menu (if there are already 8 active threads, selecting this menu item does nothing).
 
-One Node is designated the {\bf Start Node}.  At present it's colored ugly Lime Green.  When the Automaton is started, it initiates a single Thread, playing the Start Node.  You can designate the Start Node by selecting it and then selecting {\bf Make Start Node} in the {\bf Automaton} menu.
+One Node is designated the {\bf Start Node}.  At present it's colored ugly Lime Green.  When the Automaton is started, it initiates a single Thread, playing the Start Node.  You can designate the Start Node by selecting it and then selecting {\bf Make Start Node} in the {\bf Automaton} menu.  You can do the same thing by pressing the {\bf Start Button} (the small button labelled ``S'' at the bottom right of the Motif Display).
 
 When a Node has finished playing, it will select one of its endpoints, and its Thread will start playing whatever is connected to that endpoint via an Edge.  If nothing is connected, then nothing new will play and the Thread will terminate.  If all Threads have terminated, then the Automaton itself will Finish: there's nothing left to play!
 
@@ -942,7 +942,7 @@ This means that if you had three Macro Children nodes in your macro's internal s
 
 What's the point of this?  It allows you to use Macros to create patterns or templates, and then populate the templates with different Children as you see fit later on. 
 
-The Child slots of a Macro are populated in the usual way: by dragging from the Motif List.  You can also clear a slot by pressing the {\bf Delete Button} below, or duplicate a Child to the next slot by selecting it and pressing the {\bf Duplicate Button}.  You can change the Name of the underlying Macro Child node: this is now the {\bf nickname} of the Child in its Inspector.
+The Child slots of a Macro are populated in the usual way: by dragging from the Motif List.  You can also clear a slot by pressing the {\bf Delete Button} below.  You can change the Name of the underlying Macro Child node: this is now the {\bf nickname} of the Child in its Inspector.
 
 \clearpage\section{Parameterization}
 \label{parameters}
@@ -985,7 +985,7 @@ But arguments can also {\it themselves be bound} to the parent's parameters.  Fo
 
 \paragraph{A Warning about Child Arguments}
 
-Consider the Series motif. Each of its children can have (for example) Fixed Repeats.  These can be bound to parameters.  But note that these features are not features of the Child: they are features of the Series, and thus they are bound to the Series's parameters, not to the Child parameters, and thus you don't set them with the Childs's arguments.
+Consider the Series motif. Each of its children can have (for example) Initial Repeats.  These can be bound to parameters.  But note that these features are not features of the Child: they are features of the Series, and thus they are bound to the Series's parameters, not to the Child parameters, and thus you don't set them with the Childs's arguments.
 
 This can be a little confusing.  In short, if a feature appears anywhere in {\it any Inspector} associated with a Motif (the Motif Inspector, one of its Child inspectors, etc.), that feature {\it belongs to the Motif} when it comes to parameterization.  
 

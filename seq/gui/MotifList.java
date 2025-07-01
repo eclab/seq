@@ -148,6 +148,7 @@ public class MotifList extends JPanel
         seq.motif.automaton.Automaton.class,
         seq.motif.silence.Silence.class,
         seq.motif.macro.MacroChild.class,
+        seq.motif.macro.Macro.class,
 //        seq.motif.modulation.Modulation.class,
         };
 
@@ -244,23 +245,8 @@ public class MotifList extends JPanel
         return null;
         }
         
-    public MotifList(Seq seq, SeqUI sequi)
-        {
-        this.seq = seq;
-        this.sequi = sequi;
-          
-        motifuis = new ArrayList<MotifUI>();
-        buttons = new ArrayList<MotifListButton>();
-        list = new Box(BoxLayout.Y_AXIS);
-        scroll = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setViewportView(list);
-
-        setLayout(new BorderLayout());
-        add(scroll, BorderLayout.CENTER);
-        console = new JPanel();
-        console.setLayout(new BorderLayout());
-        add(console, BorderLayout.SOUTH);
-
+    public JMenuItem[] buildAddMenu()
+    	{
         JMenuItem[] items = new JMenuItem[MOTIF_UIS.length];
         try
             {
@@ -282,8 +268,29 @@ public class MotifList extends JPanel
                     });     
                 }
             }
-        catch (Exception ex) { ex.printStackTrace(); }
-                
+        catch (Exception ex) { ex.printStackTrace(); return new JMenuItem[0]; }
+        return items;  
+    	}
+        
+    public MotifList(Seq seq, SeqUI sequi)
+        {
+        this.seq = seq;
+        this.sequi = sequi;
+          
+        motifuis = new ArrayList<MotifUI>();
+        buttons = new ArrayList<MotifListButton>();
+        list = new Box(BoxLayout.Y_AXIS);
+        list.setToolTipText(MOTIF_LIST_TOOLTIP);
+        scroll = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setViewportView(list);
+
+        setLayout(new BorderLayout());
+        add(scroll, BorderLayout.CENTER);
+        console = new JPanel();
+        console.setLayout(new BorderLayout());
+        add(console, BorderLayout.SOUTH);
+
+		JMenuItem[] items = buildAddMenu();
         addButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/plus.png")), items);
         addButton.setPopsUpAbove(true);
         addButton.getButton().setPreferredSize(new Dimension(24, 24));
@@ -353,11 +360,11 @@ public class MotifList extends JPanel
         setCompressed(sequi.getSmallButtons());
         
         // Tooltips
-		backButton.setToolTipText(BACK_BUTTON_TOOLTIP);
-		forwardButton.setToolTipText(FORWARD_BUTTON_TOOLTIP);
-		addButton.setToolTipText(ADD_BUTTON_TOOLTIP);
-		removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
-		copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
+        backButton.setToolTipText(BACK_BUTTON_TOOLTIP);
+        forwardButton.setToolTipText(FORWARD_BUTTON_TOOLTIP);
+        addButton.setToolTipText(ADD_BUTTON_TOOLTIP);
+        removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
+        copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
         }
     
     public void doBack()
@@ -526,6 +533,7 @@ public class MotifList extends JPanel
         motifuis.add(copy);
         sequi.setMotifUI(copy);
         MotifListButton button = new MotifListButton(sequi, copy, null);
+        button.setToolTipText(MOTIF_TOOLTIP);
         buttons.add(button);
         copy.setPrimaryButton(button);
         select(button);
@@ -547,6 +555,7 @@ public class MotifList extends JPanel
         motifuis.add(motifui);
 
         MotifListButton button = new MotifListButton(sequi, motifui, null);
+        button.setToolTipText(MOTIF_TOOLTIP);
         button.setDropTarget(new DropTarget(this, buildDropTargetListener()));
         buttons.add(button);
         motifui.setPrimaryButton(button);
@@ -575,6 +584,7 @@ public class MotifList extends JPanel
         motifuis.add(motifui);
 
         MotifListButton button = new MotifListButton(sequi, motifui, null);
+        button.setToolTipText(MOTIF_TOOLTIP);
         button.setDropTarget(new DropTarget(this, buildDropTargetListener()));
         buttons.add(button);
         motifui.setPrimaryButton(button);
@@ -772,153 +782,168 @@ public class MotifList extends JPanel
                 }
             else 
                 {
-                //if (sequi.showSimpleConfirm("Delete Root", "To delete the root, we'll need make something else the root first.", "Change Root", "Cancel"))
+                // Finally, we'll do the push
+                seq.push();
+                if (buttons.indexOf(selectedButton) == 0)
                     {
-                    // Finally, we'll do the push
-                    seq.push();
-                    if (buttons.indexOf(selectedButton) == 0)
-                        {
-                        setRoot(buttons.get(1));
-                        }
-                    else    
-                        {
-                        setRoot(buttons.get(0));
-                        }
+                    setRoot(buttons.get(1));
                     }
-                //else return;
+                else    
+                    {
+                    setRoot(buttons.get(0));
+                    }
                 }
-            }
+	        }
         
-        // At this point we can probably delete it.
-        selectedButton.getMotifUI().disconnect();
+    // At this point we can probably delete it.
+    selectedButton.getMotifUI().disconnect();
 
-        lock = seq.getLock();
-        lock.lock();
-        try 
-            {
-            Motif motif = selectedButton.getMotifUI().getMotif();
-            if (seq.removeMotif(motif))
-                {
-                motif.disconnect();
-                }
-            }
-        finally { lock.unlock(); }
-
-        int buttonPos = buttons.indexOf(selectedButton);
-        motifuis.remove(buttonPos);
-        list.remove(buttonPos);
-        buttons.remove(buttonPos);
-
-        // Figure new button to replace it
-                
-        if (buttonPos >= buttons.size())    // it was the last button so we have to back off
-            {
-            buttonPos--;
-            }
-                
-        // Select new MotifUI and button
-        selectedButton = null;
-        sequi.setMotifUI(motifuis.get(buttonPos));
-        }
-        
-    public void scrollTo(MotifUI ui)
+    lock = seq.getLock();
+    lock.lock();
+    try 
         {
-        Rectangle rect = new Rectangle();
-        ui.getPrimaryButton().getBounds(rect);
-        list.scrollRectToVisible(rect);
+        Motif motif = selectedButton.getMotifUI().getMotif();
+        if (seq.removeMotif(motif))
+            {
+            motif.disconnect();
+            }
         }
+    finally { lock.unlock(); }
+
+    int buttonPos = buttons.indexOf(selectedButton);
+    motifuis.remove(buttonPos);
+    list.remove(buttonPos);
+    buttons.remove(buttonPos);
+
+    // Figure new button to replace it
+                
+    if (buttonPos >= buttons.size())    // it was the last button so we have to back off
+        {
+        buttonPos--;
+        }
+                
+    // Select new MotifUI and button
+    selectedButton = null;
+    sequi.setMotifUI(motifuis.get(buttonPos));
+    }
+        
+public void scrollTo(MotifUI ui)
+    {
+    Rectangle rect = new Rectangle();
+    ui.getPrimaryButton().getBounds(rect);
+    list.scrollRectToVisible(rect);
+    }
 
       
-    //// DRAG AND DROP
+//// DRAG AND DROP
         
-    public DropTargetListener buildDropTargetListener() { return new MotifListUIDropTargetListener(); }
+public DropTargetListener buildDropTargetListener() { return new MotifListUIDropTargetListener(); }
         
-    class MotifListUIDropTargetListener extends DropTargetAdapter 
-        {                
-        public void drop(DropTargetDropEvent dtde) 
-            {
-            Object transferableObj = null;
+class MotifListUIDropTargetListener extends DropTargetAdapter 
+    {                
+    public void drop(DropTargetDropEvent dtde) 
+        {
+        Object transferableObj = null;
                 
-            try 
+        try 
+            {
+            if (dtde.getTransferable().isDataFlavorSupported(MotifListButton.dataFlavor))
                 {
-                if (dtde.getTransferable().isDataFlavorSupported(MotifListButton.dataFlavor))
-                    {
-                    transferableObj = dtde.getTransferable().getTransferData(MotifListButton.dataFlavor);
-                    } 
+                transferableObj = dtde.getTransferable().getTransferData(MotifListButton.dataFlavor);
                 } 
-            catch (Exception ex) {  System.err.println("Can't drag and drop that"); }
+            } 
+        catch (Exception ex) {  System.err.println("Can't drag and drop that"); }
                                 
-            if (transferableObj != null && transferableObj instanceof MotifListButton)
-                {
-                MotifListButton dropped = (MotifListButton)transferableObj;
+        if (transferableObj != null && transferableObj instanceof MotifListButton)
+            {
+            MotifListButton dropped = (MotifListButton)transferableObj;
                                                      
-                Component comp = dtde.getDropTargetContext().getComponent();
-                if (comp == null) return;
-                else if (comp instanceof MotifListButton)
+            Component comp = dtde.getDropTargetContext().getComponent();
+            if (comp == null) return;
+            else if (comp instanceof MotifListButton)
+                {
+                Component[] c = list.getComponents();
+                int at = -1;
+                for(int i = 0; i < c.length; i++)
                     {
-                    Component[] c = list.getComponents();
-                    int at = -1;
-                    for(int i = 0; i < c.length; i++)
-                        {
-                        if (c[i] == comp) { at = i; break; }
-                        }
-                    if (at != -1)
-                        {
-                        if (dropped instanceof MotifListButton)
-                            {
-                            // Where exactly are we putting it?
-                            Point p = dtde.getLocation();
-                            if (p.y < ((MotifListButton)dropped).getBounds().height / 2)
-                                {
-                                moveButton((MotifListButton)dropped, at);
-                                }
-                            else
-                                {
-                                moveButton((MotifListButton)dropped, at + 1);
-                                }
-                            }
-                        }
+                    if (c[i] == comp) { at = i; break; }
                     }
-                else if (comp instanceof Box)           // it's an empty space 
+                if (at != -1)
                     {
                     if (dropped instanceof MotifListButton)
                         {
-                        moveButton((MotifListButton)dropped, list.getComponentCount());
+                        // Where exactly are we putting it?
+                        Point p = dtde.getLocation();
+                        if (p.y < ((MotifListButton)dropped).getBounds().height / 2)
+                            {
+                            moveButton((MotifListButton)dropped, at);
+                            }
+                        else
+                            {
+                            moveButton((MotifListButton)dropped, at + 1);
+                            }
                         }
                     }
-                list.revalidate(); 
-                list.repaint();
                 }
+            else if (comp instanceof Box)           // it's an empty space 
+                {
+                if (dropped instanceof MotifListButton)
+                    {
+                    moveButton((MotifListButton)dropped, list.getComponentCount());
+                    }
+                }
+            list.revalidate(); 
+            list.repaint();
             }
         }
-
-
-
-	/*** Tooltips ***/
-	
-	static final String BACK_BUTTON_TOOLTIP = "<html><b>Go Back</b><br>" +
-		"Backs up to display the previous Motif.</html>";
-	
-	static final String FORWARD_BUTTON_TOOLTIP = "<html><b>Go Forward</b><br>" +
-		"Moves forward to display the Motif we previously backed up from.</html>";
-	
-	static final String ADD_BUTTON_TOOLTIP = "<html><b>Add Motif</b><br>" +
-		"Adds a motif to the list.  You may choose from:" + 
-		"<ul><li><b>Step Sequence</b>&nbsp;&nbsp;&nbsp;A step sequence." +
-        "<li><b>Notes</b>&nbsp;&nbsp;&nbsp;A track of MIDI notes or other events." + 
-        "<li><b>Select</b>&nbsp;&nbsp;&nbsp;A grid of motifs: you can manually select which ones are playing." + 
-        "<li><b>Series</b>&nbsp;&nbsp;&nbsp;A collection of motifs played in series or randomly." + 
-        "<li><b>Parallel</b>&nbsp;&nbsp;&nbsp;A collection of motifs played simultaneously." + 
-        "<li><b>Automaton</b>&nbsp;&nbsp;&nbsp;A finite-state automaton of motifs and playing rules." + 
-        "<li><b>Silence</b>&nbsp;&nbsp;&nbsp;An empty interval." + 
-        "<li><b>Macro Child</b>&nbsp;&nbsp;&nbsp;A stand-in for a child to a macro when used later." + 
-        "<li><b>Macro</b>&nbsp;&nbsp;&nbsp;A macro loaded from disk." + 
-        "</ul></html>";
-		
-	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
-		"Removes a motif from the list.</html>";
-	
-	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Motif</b><br>" +
-		"Duplicates a motif in the list.</html>";
-	
     }
+
+
+
+/*** Tooltips ***/
+        
+static final String BACK_BUTTON_TOOLTIP = "<html><b>Go Back</b><br>" +
+    "Backs up to display the previous Motif.</html>";
+        
+static final String FORWARD_BUTTON_TOOLTIP = "<html><b>Go Forward</b><br>" +
+    "Moves forward to display the Motif we previously backed up from.</html>";
+        
+static final String ADD_BUTTON_TOOLTIP = "<html><b>Add Motif</b><br>" +
+    "Adds a motif to the list.  You may choose from:" + 
+    "<ul><li><b>Step Sequence</b>&nbsp;&nbsp;&nbsp;A step sequence." +
+    "<li><b>Notes</b>&nbsp;&nbsp;&nbsp;A track of MIDI notes or other events." + 
+    "<li><b>Select</b>&nbsp;&nbsp;&nbsp;A grid of motifs: you can manually select which ones are playing." + 
+    "<li><b>Series</b>&nbsp;&nbsp;&nbsp;A collection of motifs played in series or randomly." + 
+    "<li><b>Parallel</b>&nbsp;&nbsp;&nbsp;A collection of motifs played simultaneously." + 
+    "<li><b>Automaton</b>&nbsp;&nbsp;&nbsp;A finite-state automaton of motifs and playing rules." + 
+    "<li><b>Silence</b>&nbsp;&nbsp;&nbsp;An empty interval." + 
+    "<li><b>Macro Child</b>&nbsp;&nbsp;&nbsp;A stand-in for a child to a macro when used later." + 
+    "<li><b>Macro</b>&nbsp;&nbsp;&nbsp;A macro loaded from disk." + 
+    "</ul></html>";
+                
+static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
+    "Removes a motif from the list.</html>";
+        
+static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Motif</b><br>" +
+    "Duplicates a motif in the list.</html>";
+
+static final String MOTIF_LIST_TOOLTIP = "<html><b>Motif List</b><br>" +
+    "This is a list of all the motifs in your sequence.  You can drag these motifs into<br>" +
+    "any collection Motif, such as Series, Parallel, and Automaton, among others.<br><br>" +
+    "When you select a Motif, other Motifs will turn <b>Pink</b>.  These are <b>children</b><br>" + 
+    "of the Motif.  Still other Motifs will turn <b>Light Blue</b>.  These are the <b>parents</b><br>" +
+    "of the Motif.<br><br>" +
+    "When a Motif is playing, its text will turn <b>Red</b>.<br><br>" +
+    "The <b>Root Motif</b> will be <b>boldfaced</b>.</html>";
+        
+static final String MOTIF_TOOLTIP = "<html><b>Motif</b><br>" +
+    "This a motif in the <b>Motif List</b>.  The Motif List is the list of all the motifs in your<br>" +
+    "sequence.  You can drag these motifs into any collection Motif, such as Series,<br>" +
+    "Parallel, and Automaton, among others.<br><br>" +
+    "When you select a Motif, other Motifs will turn <b>Pink</b>.  These are <b>children</b><br>" + 
+    "of the Motif.  Still other Motifs will turn <b>Light Blue</b>.  These are the <b>parents</b><br>" +
+    "of the Motif.<br><br>" +
+    "When a Motif is playing, its text will turn <b>Red</b>.<br><br>" +
+    "The <b>Root Motif</b> will be <b>boldfaced</b>.</html>";
+        
+}

@@ -236,21 +236,21 @@ public class ModulationUI extends MotifUI
         
         
         MotifList list = sequi.getMotifList();   
-		Motif motif = children.get(0).getMotif();
-		MotifUI motifui = list.getOrAddMotifUIFor(motif);
-			
-		ModulationButton newButton = new ModulationButton(sequi, motifui, ModulationUI.this);
-					
-		newButton.addActionListener(new ActionListener()
-			{
-			public void actionPerformed(ActionEvent e)
-				{
-				select(newButton);
-				}
-			});
-									
-		newButton.setAuxiliary(children.get(0));
-		modulationBox.add(newButton);
+        Motif motif = children.get(0).getMotif();
+        MotifUI motifui = list.getOrAddMotifUIFor(motif);
+                        
+        ModulationButton newButton = new ModulationButton(sequi, motifui, ModulationUI.this);
+                                        
+        newButton.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent e)
+                {
+                select(newButton);
+                }
+            });
+                                                                        
+        newButton.setAuxiliary(children.get(0));
+        modulationBox.add(newButton);
         }
         
 

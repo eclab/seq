@@ -181,7 +181,7 @@ public class SelectClip extends Clip
                 }
             else
                 {
-            	getChild(i);						// build the child.  FIXME   Is this too costly?
+                getChild(i);                                            // build the child.  FIXME   Is this too costly?
                 Node m = children.get(i);
                 if (m == null || m.clip.getMotif() instanceof Blank)
                     {
@@ -198,8 +198,8 @@ public class SelectClip extends Clip
     /// Clear Pads
     public void clearPads()
         {
-         Select motif = (Select)getMotif();
-       int out = motif.getOut();
+        Select motif = (Select)getMotif();
+        int out = motif.getOut();
         for(int i = 0; i < Select.MAX_CHILDREN; i++)
             {
             setPad(out, motif.getNoteForIndex(i), UNUSED);
@@ -221,53 +221,53 @@ public class SelectClip extends Clip
     // Given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
     void setPad(int out, int note, int state)
         {
-    	int gridDevice = ((Select)getMotif()).getGridDevice();
-    	if (gridDevice == Select.DEVICE_LAUNCHPAD_MKIII)
-    		{
-			if (state == UNUSED)
-				{
-				seq.forceNoteOn(out, note, PAD_UNUSED_MKIII, 1);                          // Turn the Light Off
-				}
-			else if (state == ON)                                                   
-				{
-				seq.forceNoteOn(out, note, PAD_ON_MKIII, 1);              // RED
-				}
-			else if (state == OFF)
-				{
-				seq.forceNoteOn(out, note, PAD_OFF_MKIII, 1);                             // Gray
-				}
-			else if (state == WAITING)
-				{
-				seq.forceNoteOn(out, note, PAD_WAITING_MKIII, 1);                         // BLUE
-				}
-			else if (state == STOPPING)
-				{
-				seq.forceNoteOn(out, note, PAD_STOPPING_MKIII, 1);                                // MAGENTA
-				}
-			}
-		else if (gridDevice == Select.DEVICE_LAUNCHPAD_MKI)
-    		{
-			if (state == UNUSED)
-				{
-				seq.forceNoteOn(out, note, PAD_UNUSED_MKI, 1);                          // Turn the Light Off
-				}
-			else if (state == ON)                                                   
-				{
-				seq.forceNoteOn(out, note, PAD_ON_MKI, 1);              // RED
-				}
-			else if (state == OFF)
-				{
-				seq.forceNoteOn(out, note, PAD_OFF_MKI, 1);                             // Green Low
-				}
-			else if (state == WAITING)
-				{
-				seq.forceNoteOn(out, note, PAD_WAITING_MKI, 1);                         // Yellow
-				}
-			else if (state == STOPPING)
-				{
-				seq.forceNoteOn(out, note, PAD_STOPPING_MKI, 1);                                // Amber
-				}
-    		}
+        int gridDevice = ((Select)getMotif()).getGridDevice();
+        if (gridDevice == Select.DEVICE_LAUNCHPAD_MKIII)
+            {
+            if (state == UNUSED)
+                {
+                seq.forceNoteOn(out, note, PAD_UNUSED_MKIII, 1);                          // Turn the Light Off
+                }
+            else if (state == ON)                                                   
+                {
+                seq.forceNoteOn(out, note, PAD_ON_MKIII, 1);              // RED
+                }
+            else if (state == OFF)
+                {
+                seq.forceNoteOn(out, note, PAD_OFF_MKIII, 1);                             // Gray
+                }
+            else if (state == WAITING)
+                {
+                seq.forceNoteOn(out, note, PAD_WAITING_MKIII, 1);                         // BLUE
+                }
+            else if (state == STOPPING)
+                {
+                seq.forceNoteOn(out, note, PAD_STOPPING_MKIII, 1);                                // MAGENTA
+                }
+            }
+        else if (gridDevice == Select.DEVICE_LAUNCHPAD_MKI)
+            {
+            if (state == UNUSED)
+                {
+                seq.forceNoteOn(out, note, PAD_UNUSED_MKI, 1);                          // Turn the Light Off
+                }
+            else if (state == ON)                                                   
+                {
+                seq.forceNoteOn(out, note, PAD_ON_MKI, 1);              // RED
+                }
+            else if (state == OFF)
+                {
+                seq.forceNoteOn(out, note, PAD_OFF_MKI, 1);                             // Green Low
+                }
+            else if (state == WAITING)
+                {
+                seq.forceNoteOn(out, note, PAD_WAITING_MKI, 1);                         // Yellow
+                }
+            else if (state == STOPPING)
+                {
+                seq.forceNoteOn(out, note, PAD_STOPPING_MKI, 1);                                // Amber
+                }
+            }
         }
 
 

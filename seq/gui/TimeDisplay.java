@@ -32,7 +32,7 @@ public class TimeDisplay extends JPanel
     int beatsPerBar;
     Seq seq;
         
-     public void setToolTipText(String text) 
+    public void setToolTipText(String text) 
         {
         super.setToolTipText(text);
         stepsDial.setToolTipText(text);
@@ -43,7 +43,7 @@ public class TimeDisplay extends JPanel
         }
         
 
-   // returns true if changed
+    // returns true if changed
     boolean reviseBeatsPerBar()
         {
         ReentrantLock lock = seq.getLock();
@@ -110,7 +110,7 @@ public class TimeDisplay extends JPanel
 
     public void revise()
         {
-        if (stepsDial == null) return;		// we're not quite ready yet
+        if (stepsDial == null) return;          // we're not quite ready yet
         
         stepsDial.setValue(steps / (double)maxSteps, false);
         beatsDial.setValue(beats / (double)Math.min(maxBeats, beatsPerBar - 1), false);
@@ -143,7 +143,7 @@ public class TimeDisplay extends JPanel
         "  2/6    1/3",
         "  3/6    1/2",
         "  4/6    2/3",
-		"  5/6",
+        "  5/6",
         };
 
     public static final int[] PRESETS = 
@@ -242,26 +242,26 @@ public class TimeDisplay extends JPanel
                 {
                 int ppq = (int)(val * maxSteps);
 
-				if (ppq == 12)	return "1|16";
-				else if  (ppq == 24)	return "1|8";
-					else if  (ppq == 32)	return "1|6";
-				else if  (ppq == 36)	return "3|16";
-				else if  (ppq == 48)	return "1|4";
-					else if  (ppq == 64)	return "1|3";
-				else if  (ppq == 60)	return "5|16";
-				else if  (ppq == 72)	return "3|8";
-				else if  (ppq == 84)	return "7|16";
-				else if  (ppq == 96)	return "1|2";
-				else if  (ppq == 108)	return "9|16";
-				else if  (ppq == 120)	return "5|8";
-					else if  (ppq == 128)	return "2|3";
-				else if  (ppq == 132)	return "11|16";
-				else if  (ppq == 144)	return "3|4";
-				else if  (ppq == 156)	return "13|16";
-					else if  (ppq == 160)	return "5|6";
-				else if  (ppq == 168)	return "7|8";
-				else if  (ppq == 180)	return "15|16";
-				else return String.valueOf(ppq);
+                if (ppq == 12)  return "1|16";
+                else if  (ppq == 24)    return "1|8";
+                else if  (ppq == 32)    return "1|6";
+                else if  (ppq == 36)    return "3|16";
+                else if  (ppq == 48)    return "1|4";
+                else if  (ppq == 64)    return "1|3";
+                else if  (ppq == 60)    return "5|16";
+                else if  (ppq == 72)    return "3|8";
+                else if  (ppq == 84)    return "7|16";
+                else if  (ppq == 96)    return "1|2";
+                else if  (ppq == 108)   return "9|16";
+                else if  (ppq == 120)   return "5|8";
+                else if  (ppq == 128)   return "2|3";
+                else if  (ppq == 132)   return "11|16";
+                else if  (ppq == 144)   return "3|4";
+                else if  (ppq == 156)   return "13|16";
+                else if  (ppq == 160)   return "5|6";
+                else if  (ppq == 168)   return "7|8";
+                else if  (ppq == 180)   return "15|16";
+                else return String.valueOf(ppq);
                 }
                                 
             public double getValue() 
@@ -352,7 +352,7 @@ public class TimeDisplay extends JPanel
         Box box = new Box(BoxLayout.X_AXIS);
         if (maxParts > 0) box.add(partsDial.getLabelledTitledDialVertical("Part", "15|16"));
         if (maxBars > 0) box.add(barsDial.getLabelledTitledDialVertical("Bar", "15|16"));
-        if (maxBeats > 0) box.add(beatsDial.getLabelledTitledDialVertical("Beat", "15|16"));		// slightly bigger than " 888 "
+        if (maxBeats > 0) box.add(beatsDial.getLabelledTitledDialVertical("Beat", "15|16"));            // slightly bigger than " 888 "
         if (maxSteps > 0) box.add(stepsDial.getLabelledTitledDialVertical("Tick", "15|16"));
         setLayout(new BorderLayout());
                 
@@ -386,6 +386,6 @@ public class TimeDisplay extends JPanel
             }
         add(pan, BorderLayout.CENTER);
         
-        revise();		// we're NOW ready to revise
+        revise();               // we're NOW ready to revise
         }
     }

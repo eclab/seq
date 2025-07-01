@@ -179,28 +179,28 @@ public class StepInspector extends WidgetList
         }
 
 
-	static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
-		"Sets the MIDI note output for this track.  This overrides the <b>Note</b> setting<br>" + 
-		"in the track inspector.  To return to the default, double-click the dial.</html>";
-			
-	static final String FLAM_TOOLTIP = "<html><b>Flams</b><br>" +
-		"Sets the number of <i>flams</i> (or <i>ratchets</i>) for this step.  This<br>" +
-		"overrides the <b>Flams</b> setting in the track inspector.  To return to<br>" +
-		"the default, double-click the dial.</html>";
-			
-	static final String WHEN_TOOLTIP = "<html><b>When</b><br>" +
-		"Sets the pattern value for this step to determine if it should play.  This overrides<br>" +
-		"the <b>When</b> setting in the track inspector.  To return to the default, double-click<br>" +
-		"the dial. There are many pattern options:<br>" +
-		"<ul><li>Always play." + 
-		"<li>Play with some probability." +
-		"<li>Play with the probability <i>1/Tracks</i> where <i>Tracks<i> is the number of tracks." +
-		"<li>Play with the probability <i>1/(1-Tracks)</i> where <i>Tracks<i> is the number of tracks." +
-		"<li>Play (X) or don't play (O) with a certain repeating pattern." +
-		"</ul>" +
-		"Regardless of the pattern, a step doesn't play if it hasn't been enabled in the sequencer grid.</html>";
-			
-	static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
-		"Sets the velocity value for this step.  This overridesthe <b>Velocity</b> setting<br>" +
-		"in the track inspector.  To return to the default, double-click the dial.</html>";
+    static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
+        "Sets the MIDI note output for this track.  This overrides the <b>Note</b> setting<br>" + 
+        "in the track inspector.  To return to the default, double-click the dial.</html>";
+                        
+    static final String FLAM_TOOLTIP = "<html><b>Flams</b><br>" +
+        "Sets the number of <i>flams</i> (or <i>ratchets</i>) for this step.  This<br>" +
+        "overrides the <b>Flams</b> setting in the track inspector.  To return to<br>" +
+        "the default, double-click the dial.</html>";
+                        
+    static final String WHEN_TOOLTIP = "<html><b>When</b><br>" +
+        "Sets the pattern value for this step to determine if it should play.  This overrides<br>" +
+        "the <b>When</b> setting in the track inspector.  To return to the default, double-click<br>" +
+        "the dial. There are many pattern options:<br>" +
+        "<ul><li>Always play." + 
+        "<li>Play with some probability." +
+        "<li>Play with the probability <i>1/Tracks</i> where <i>Tracks<i> is the number of tracks." +
+        "<li>Play with the probability <i>1/(1-Tracks)</i> where <i>Tracks<i> is the number of tracks." +
+        "<li>Play (X) or don't play (O) with a certain repeating pattern." +
+        "</ul>" +
+        "Regardless of the pattern, a step doesn't play if it hasn't been enabled in the sequencer grid.</html>";
+                        
+    static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+        "Sets the velocity value for this step.  This overridesthe <b>Velocity</b> setting<br>" +
+        "in the track inspector.  To return to the default, double-click the dial.</html>";
     }

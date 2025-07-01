@@ -893,8 +893,8 @@ public class StepSequence extends Motif
         {
         System.arraycopy(array, 0, to, 0, Math.min(array.length, to.length));        
         }
-	
-	static int document = 0;
+        
+    static int document = 0;
     static int counter = 1;
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
         
@@ -904,50 +904,50 @@ public class StepSequence extends Motif
     
     
     
-	
-	
-	// From https://github.com/ducroq/EuclidSeqNano/blob/master/src/EuclidRhythm.cpp
-	// Which is GPL 3
+        
+        
+    // From https://github.com/ducroq/EuclidSeqNano/blob/master/src/EuclidRhythm.cpp
+    // Which is GPL 3
 
 /*
-	bool bresenhamEuclidean(int n, int k, int o, uint8_t *s)
-	  Constructs a cyclic n-bit binary sequence with k 1s,
-	  such that the 1s are distributed as evenly as possible.
-	  @param n is the length of the sequence (beats or pulses)
-	  @param k is the number of 1s (onsets)
-	  @param o is the offset (shift)
-	  @param s is a pointer to store the resulting sequence
-	  returns true on success and false on failure
+  bool bresenhamEuclidean(int n, int k, int o, uint8_t *s)
+  Constructs a cyclic n-bit binary sequence with k 1s,
+  such that the 1s are distributed as evenly as possible.
+  @param n is the length of the sequence (beats or pulses)
+  @param k is the number of 1s (onsets)
+  @param o is the offset (shift)
+  @param s is a pointer to store the resulting sequence
+  returns true on success and false on failure
 
-		{
-		if (k > n)
-			return false;
+  {
+  if (k > n)
+  return false;
 
-		if (k == 0)
-			{
-			for(uint8_t i = 0; i < n; i++)
-				s[i] = 0;
-			return true;
-			}
-	
-		uint8_t c[n];
-		float slope = float(k) / float(n);
-		uint8_t prev_y = -1;
+  if (k == 0)
+  {
+  for(uint8_t i = 0; i < n; i++)
+  s[i] = 0;
+  return true;
+  }
+        
+  uint8_t c[n];
+  float slope = float(k) / float(n);
+  uint8_t prev_y = -1;
 
-		for (uint8_t i = 0; i < n; i++)
-			// approximate a pixelated line and mark vertical changes
-			{
-			uint8_t y = (uint8_t)floor((float(i) * slope));
-			c[i] = (y != prev_y) ? 1 : 0;
-			prev_y = y;
-			}
-		for (uint8_t i = 0; i < n; i++)
-			// shift the pattern to produce sequence
-			s[i] = (i - (int8_t)o >=  0) ? c[i - (int8_t)o] : c[i - (int8_t)o + n];
-		//      (i + o < n) ? c[i + o] : c[i + o - n];
+  for (uint8_t i = 0; i < n; i++)
+  // approximate a pixelated line and mark vertical changes
+  {
+  uint8_t y = (uint8_t)floor((float(i) * slope));
+  c[i] = (y != prev_y) ? 1 : 0;
+  prev_y = y;
+  }
+  for (uint8_t i = 0; i < n; i++)
+  // shift the pattern to produce sequence
+  s[i] = (i - (int8_t)o >=  0) ? c[i - (int8_t)o] : c[i - (int8_t)o + n];
+  //      (i + o < n) ? c[i + o] : c[i + o - n];
 
-		return true;
-		}
+  return true;
+  }
 */
 
     }

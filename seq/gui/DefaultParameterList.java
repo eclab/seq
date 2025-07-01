@@ -74,7 +74,8 @@ public class DefaultParameterList extends JPanel
             strs[i] = "Param " + (i + 1);
             }
         WidgetList list = new WidgetList(strs, comp);
-        list.setBorder(new javax.swing.border.TitledBorder("<html><i>Parameter Names</i></html>"));
+        list.makeBorder("Parameter Names");
+        //new javax.swing.border.TitledBorder("<html><i>Parameter Names</i></html>"));
         setLayout(new BorderLayout());
         DisclosurePanel disclosure = new DisclosurePanel("Parameter Names", list);
         disclosure.setParentComponent(sequi);

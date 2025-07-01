@@ -577,58 +577,58 @@ public class SelectUI extends MotifUI
         
         revalidate();
         sequi.getMotifList().rebuildClipsForMotif(getMotif());
-		updatePads();
+        updatePads();
         }
 
-	public void updatePads()
-		{
+    public void updatePads()
+        {
         Clip clip = getDisplayClip();
-		seq.getLock().lock();
-		try
-			{
+        seq.getLock().lock();
+        try
+            {
             if (clip instanceof SelectClip)
-            	{
-				SelectClip playingClip = (SelectClip)clip;
-				playingClip.updatePads();
-            	}
-			}
-		finally
-			{
-			seq.getLock().unlock();
-			}
-		}
-		
+                {
+                SelectClip playingClip = (SelectClip)clip;
+                playingClip.updatePads();
+                }
+            }
+        finally
+            {
+            seq.getLock().unlock();
+            }
+        }
+                
 
-	public void clearPads()
-		{
+    public void clearPads()
+        {
         Clip clip = getDisplayClip();
-		seq.getLock().lock();
-		try
-			{
+        seq.getLock().lock();
+        try
+            {
             if (clip instanceof SelectClip)
-            	{
-				SelectClip playingClip = (SelectClip)clip;
-				playingClip.clearPads();
-            	}
-			}
-		finally
-			{
-			seq.getLock().unlock();
-			}
-		}
-		
+                {
+                SelectClip playingClip = (SelectClip)clip;
+                playingClip.clearPads();
+                }
+            }
+        finally
+            {
+            seq.getLock().unlock();
+            }
+        }
+                
 
-	public void uiWasSet()
-		{
-		super.uiWasSet();
-		updatePads();
-		}
+    public void uiWasSet()
+        {
+        super.uiWasSet();
+        updatePads();
+        }
 
-	public void uiWasUnset()
-		{
-		super.uiWasUnset();
-		updatePads();
-		}
+    public void uiWasUnset()
+        {
+        super.uiWasUnset();
+        updatePads();
+        }
     
     //// DRAG AND DROP
         

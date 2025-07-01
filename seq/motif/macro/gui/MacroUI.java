@@ -237,15 +237,15 @@ public class MacroUI extends MotifUI
         removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
 
 /*
-        PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
-            {
-            public void perform()
-                {
-                doCopy();
-                }
-            };
-        copyButton.getButton().setPreferredSize(new Dimension(24, 24));
-        copyButton.setToolTipText("Copy selected motif in macro list");
+  PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
+  {
+  public void perform()
+  {
+  doCopy();
+  }
+  };
+  copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+  copyButton.setToolTipText("Copy selected motif in macro list");
 */
 
         JPanel console = new JPanel();
@@ -349,75 +349,75 @@ public class MacroUI extends MotifUI
         }
     
     /*     
-    public void doCopy()
-        {
-        // Where is the button?
-        Component[] c = macroGrid.getComponents();
-        int from = -1;
-        for(int i = 0; i < c.length; i++)
-            {
-            if (((MacroButton)c[i]).isSelected()) { from = i; break; }
-            }
-        if (from != -1)
-            {
-            // First make sure the copy is there
-            MotifUI original = ((MacroButton)c[from]).getMotifUI();
-            if (original == null) return;               // it's a blank button
+           public void doCopy()
+           {
+           // Where is the button?
+           Component[] c = macroGrid.getComponents();
+           int from = -1;
+           for(int i = 0; i < c.length; i++)
+           {
+           if (((MacroButton)c[i]).isSelected()) { from = i; break; }
+           }
+           if (from != -1)
+           {
+           // First make sure the copy is there
+           MotifUI original = ((MacroButton)c[from]).getMotifUI();
+           if (original == null) return;               // it's a blank button
 
-            // where do we put it?
+           // where do we put it?
 
-            int size = macro.getNumMacroChildren();
-            int to = -1;
-            for(int x = 1; x < size; x++)
-                {
-                int possibility = from + x;
-                if (possibility >= size) possibility -= size;
+           int size = macro.getNumMacroChildren();
+           int to = -1;
+           for(int x = 1; x < size; x++)
+           {
+           int possibility = from + x;
+           if (possibility >= size) possibility -= size;
            
-                // Next make sure that there is space
-                MotifUI neighbor = ((MacroButton)c[possibility]).getMotifUI();
-                if (neighbor == null) { to = possibility; break; }
-                }
+           // Next make sure that there is space
+           MotifUI neighbor = ((MacroButton)c[possibility]).getMotifUI();
+           if (neighbor == null) { to = possibility; break; }
+           }
             
-            // did we find a spot?
-            if (to == -1)
-                {
-                sequi.showSimpleError("Error Duplicating", "There was no space available to add a duplicate.");
-                return;
-                }
+           // did we find a spot?
+           if (to == -1)
+           {
+           sequi.showSimpleError("Error Duplicating", "There was no space available to add a duplicate.");
+           return;
+           }
                 
-            seq.push();
-            // okay, we can make the copy, go ahead and do it
-            seq.getLock().lock();
-            try
-                {
-                macro.copyChild(from, to);
-                }
-            finally
-                {
-                seq.getLock().unlock();
-                }
+           seq.push();
+           // okay, we can make the copy, go ahead and do it
+           seq.getLock().lock();
+           try
+           {
+           macro.copyChild(from, to);
+           }
+           finally
+           {
+           seq.getLock().unlock();
+           }
 
-            // Copy over the button
-            macroGrid.remove(to);
-            MacroButton newButton = new MacroButton(sequi, original, this, to);
+           // Copy over the button
+           macroGrid.remove(to);
+           MacroButton newButton = new MacroButton(sequi, original, this, to);
 
-            newButton.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    select(newButton);
-                    }
-                });
+           newButton.addActionListener(new ActionListener()
+           {
+           public void actionPerformed(ActionEvent e)
+           {
+           select(newButton);
+           }
+           });
                         
-            macroGrid.add(newButton, to);
-            select(newButton);            
-            macroGrid.revalidate();
-            sequi.getMotifList().rebuildClipsForMotif(getMotif());
-            }
-        else System.err.println("MacroUI.doCopy: button not in list");
-        }
-	*/
-	
+           macroGrid.add(newButton, to);
+           select(newButton);            
+           macroGrid.revalidate();
+           sequi.getMotifList().rebuildClipsForMotif(getMotif());
+           }
+           else System.err.println("MacroUI.doCopy: button not in list");
+           }
+    */
+        
     public void addChild(MotifUI motifui, int at)
         {  
         MacroButton newButton = new MacroButton(sequi, motifui, MacroUI.this, at);
@@ -629,8 +629,8 @@ public class MacroUI extends MotifUI
             }
         }
 
-	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
-		"Removes the selected motif from the Macro Child slot.</html>";
-	
+    static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
+        "Removes the selected motif from the Macro Child slot.</html>";
+        
 
     }

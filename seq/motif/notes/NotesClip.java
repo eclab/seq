@@ -96,16 +96,16 @@ public class NotesClip extends Clip
             boolean result = notes.setEvents(recording);
             final SeqUI sequi = seq.getSeqUI();
             if (result)
-            	{
-				SwingUtilities.invokeLater(new Runnable()
-					{
-					public void run()
-						{
-						sequi.showSimpleError("Errors in Converting to NRPN/RPN",
-							"There were errors in converting certain CC messages to NRPN or RPN.\nThese CC messages will be removed.");
-						}
-					});
-            	}
+                {
+                SwingUtilities.invokeLater(new Runnable()
+                    {
+                    public void run()
+                        {
+                        sequi.showSimpleError("Errors in Converting to NRPN/RPN",
+                            "There were errors in converting certain CC messages to NRPN or RPN.\nThese CC messages will be removed.");
+                        }
+                    });
+                }
             notes.clearRecording();
             updateIndex();
             setDidRecord(true);
@@ -389,7 +389,7 @@ public class NotesClip extends Clip
         seq.setCountInMode(Seq.COUNT_IN_RECORDING_ONLY);            // count in on recording only
         
         // Set up our module structure
-        	boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
+        boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
         Notes dSeq = new Notes(seq, autoArm);
 //        seq.setIn(0, new In(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
         seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
@@ -397,7 +397,7 @@ public class NotesClip extends Clip
         // Build Clip Tree
         seq.setData(dSeq);
 
-		// Wait for a little bit so the user can prepare to enter some notes.
+        // Wait for a little bit so the user can prepare to enter some notes.
         try
             {
             Thread.currentThread().sleep(1000);

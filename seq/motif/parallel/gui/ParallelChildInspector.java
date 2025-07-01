@@ -17,6 +17,7 @@ import java.util.concurrent.locks.*;
 public class ParallelChildInspector extends WidgetList
     {
     public static final double MAX_RATE_LOG = Math.log(Parallel.Data.MAX_RATE);
+    /*
     public static final String[] FINE_DELAY_OPTIONS = 
         { 
         "1/32",
@@ -42,6 +43,7 @@ public class ParallelChildInspector extends WidgetList
         2/3.0 + 1.0 / Seq.PPQ,
         3/4.0 + 1.0 / Seq.PPQ,
         };
+    */
 
     public static final String[] RATE_OPTIONS = 
         {
@@ -143,14 +145,15 @@ public class ParallelChildInspector extends WidgetList
     JCheckBox override;
     JCheckBox mute;
     JPanel gainPanel;
+    TimeDisplay delay;
     
-    SmallDial coarseDelay;
-    SmallDial fineDelay;
+    //SmallDial coarseDelay;
+    //SmallDial fineDelay;
     SmallDial transpose;
     SmallDial gain;
     SmallDial rate;
     SmallDial probability;
-    PushButton fineDelayPresets;
+    //PushButton fineDelayPresets;
     PushButton ratePresets;
     JComboBox out;
     StringField name;
@@ -252,7 +255,21 @@ public class ParallelChildInspector extends WidgetList
                     }
                 };
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
+            name.setToolTipText(NICKNAME_TOOLTIP);
 
+			delay = new TimeDisplay(getData().getDelay() , seq)
+                {
+                public void updateTime(int time)
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { getData().setDelay(time); }
+                    finally { lock.unlock(); }
+                    if (button != null) button.setDelay(time);
+                    }
+                };
+            delay.setToolTipText(DELAY_TOOLTIP);
+/*
             coarseDelay = new SmallDial((getData().getDelay() / Seq.PPQ) / Parallel.Data.MAX_DELAY)
                 {
                 protected String map(double val) 
@@ -374,7 +391,7 @@ public class ParallelChildInspector extends WidgetList
                     fineDelay.update(FINE_DELAYS[val], false);
                     }
                 };
-
+*/
 
             quantization = new JComboBox(QUANTIZATIONS);
             quantization.setSelectedIndex(getData().getEndingQuantization());
@@ -389,6 +406,7 @@ public class ParallelChildInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            quantization.setToolTipText(END_QUANTIZATION_TOOLTIP);
 
 
             // This requires some explanation.  We are mapping the values we receive (0...1) in the Dial
@@ -437,6 +455,7 @@ public class ParallelChildInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+            rate.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
                 
             ratePresets = new PushButton("Presets...", RATE_OPTIONS)
                 {
@@ -450,6 +469,7 @@ public class ParallelChildInspector extends WidgetList
                     rate.redraw();
                     }
                 };
+            ratePresets.setToolTipText(MIDI_CHANGES_RATE_PRESETS_TOOLTIP);
 
             transpose = new SmallDial(getData().getTranspose() / (double)Parallel.Data.MAX_TRANSPOSE / 2.0, defaults)
                 {
@@ -486,6 +506,7 @@ public class ParallelChildInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+            transpose.setToolTipText(MIDI_CHANGES_TRANSPOSE_TOOLTIP);
 
             gain = new SmallDial(getData().getGain() / Parallel.Data.MAX_GAIN, defaults)
                 {
@@ -521,6 +542,7 @@ public class ParallelChildInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+            gain.setToolTipText(MIDI_CHANGES_GAIN_TOOLTIP);
 
 
             mute = new JCheckBox("Mute");
@@ -539,11 +561,13 @@ public class ParallelChildInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            mute.setToolTipText(MIDI_CHANGES_MUTE_TOOLTIP);
 
             gainPanel = new JPanel();
             gainPanel.setLayout(new BorderLayout());
             gainPanel.add(gain.getLabelledDial("0.0000"), BorderLayout.CENTER);
             gainPanel.add(mute, BorderLayout.EAST);
+            gainPanel.setToolTipText(MIDI_CHANGES_GAIN_TOOLTIP);
 
 
             Out[] seqOuts = seq.getOuts();
@@ -569,7 +593,8 @@ public class ParallelChildInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
- 
+            out.setToolTipText(MIDI_CHANGES_OUT_TOOLTIP);
+
             probability = new SmallDial(-1, defaults)
                 {
                 public double getValue() 
@@ -606,6 +631,7 @@ public class ParallelChildInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+            probability.setToolTipText(PROBABILITY_TOOLTIP);
 
             override = new JCheckBox();
             override.setSelected(getData().getOverride());
@@ -621,6 +647,7 @@ public class ParallelChildInspector extends WidgetList
                     if (button != null) button.updateText();
                     }
                 });
+            override.setToolTipText(OVERRIDE_TOOLTIP);
 
             }
         finally { lock.unlock(); }
@@ -629,19 +656,21 @@ public class ParallelChildInspector extends WidgetList
         ratePanel.setLayout(new BorderLayout());
         ratePanel.add(rate.getLabelledDial("0.0000"), BorderLayout.CENTER);   // so it stretches
         ratePanel.add(ratePresets, BorderLayout.EAST);       
+        ratePanel.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
 
-        JPanel fineDelayPanel = new JPanel();
-        fineDelayPanel.setLayout(new BorderLayout());
-        fineDelayPanel.add(fineDelay.getLabelledDial("158 / 192 (79 / 96)"), BorderLayout.CENTER);   // so it stretches
-        fineDelayPanel.add(fineDelayPresets, BorderLayout.EAST);       
+//        JPanel fineDelayPanel = new JPanel();
+//        fineDelayPanel.setLayout(new BorderLayout());
+//        fineDelayPanel.add(fineDelay.getLabelledDial("158 / 192 (79 / 96)"), BorderLayout.CENTER);   // so it stretches
+//        fineDelayPanel.add(fineDelayPresets, BorderLayout.EAST);       
 
 
-        JPanel result = build(new String[] { "Nickname", "Coarse Delay", "Fine Delay", "Probability", "End Quantization", "Override", "MIDI Changes", "Rate", "Transpose", "Gain", "Out" }, 
+        JPanel result = build(new String[] { "Nickname", "Delay", /*"Coarse Delay", "Fine Delay",*/ "Probability", "End Quantization", "Override", "MIDI Changes", "Rate", "Transpose", "Gain", "Out" }, 
             new JComponent[] 
                 {
                 name,
-                coarseDelay.getLabelledDial("256 (64 . 4)"),
-                fineDelayPanel,
+                //coarseDelay.getLabelledDial("256 (64 . 4)"),
+                //fineDelayPanel,
+                delay,
                 probability.getLabelledDial("0.0000"),
                 quantization,
                 override,
@@ -685,9 +714,69 @@ public class ParallelChildInspector extends WidgetList
         name.update();
         rate.redraw();
         probability.redraw();
-        coarseDelay.redraw();
-        fineDelay.redraw();
+//        coarseDelay.redraw();
+//        fineDelay.redraw();
+        if (delay != null) delay.revise();
         transpose.redraw();
         gain.redraw();
         }
+
+
+
+
+    static final String NICKNAME_TOOLTIP = "<html><b>Nickname</b><br>" +
+        "Sets the nickname of the Parallel child.</html>";
+
+    static final String DELAY_TOOLTIP = "<html><b>Delay</b><br>" +
+        "Sets the how long we delay before playing the Parallel child.<br><br>" +
+        "<b>Note</b> that if the delay is very long (such as many Bars or longer)<br>" +
+        "it will slide out of view.  In fact, if you change the Parts, the child may<br>" +
+        "suddenly disappear (it has slid out of view).  You can scroll the Parallel<br>" +
+        "to see it again.</html>";
+
+    static final String PROBABILITY_TOOLTIP = "<html><b>Probability</b><br>" +
+        "Sets the probability for a child.  This is used, along with the <b>Children Playing</b><br>" +
+        "option in the Parallel Inspector above, to determine which children will play in parallel.</html>";
+
+    static final String END_QUANTIZATION_TOOLTIP = "<html><b>End Quantization</b><br>" +
+        "Sets the quantization for the ending of a child playing.  When a child finishes<br>" +
+        "playing, its actual termination will occur at the End Quantization.  If the child<br>" +
+        "is the longest playing child, this will impact on when the Parallel itself terminates.<br>"+
+        "One of:" +
+        "<ul>" +
+        "<li>None (playing ends immediately)" +
+        "<li>The next 16th note" +
+        "<li>The next quarter note" +
+        "<li>The next measure (bar) boundary" +
+        "</ul></html>";
+
+    static final String OVERRIDE_TOOLTIP = "<html><b>Override</b><br>" +
+        "Sets whether this is an <b>override node</b>.  When an override node begins playing,<br>" +
+        "all <b>later nodes</b> are immediately terminated and not allowed to play.<br><br>" +
+        "Override nodes are useful for creating <b>ending variations</b>.  A node plays<br>" +
+        "as normal, but we want to change its ending.  We do that by inserting a node with<br>" +
+        "the ending changes, delay it to occur at the right time, and set it to override the<br>" +
+        "original node.</html>";
+
+    static final String MIDI_CHANGES_RATE_TOOLTIP = "<html><b>MIDI Changes: Rate</b><br>" +
+        "Changes the rate of the motif node's playing (speeding it up or slowing it down)</html>";
+
+    static final String MIDI_CHANGES_RATE_PRESETS_TOOLTIP = "<html><b>MIDI Changes: Rate Presets</b><br>" +
+        "Presets for changing the rate of the motif node's playing (speeding it up or slowing it down).<br><br>" +
+        "The first preset is <b>Custom...</b>, which allows you to change the playing so that<br>" +
+        "Some number of quarter notes would be adjusted to squish or stretch them into a different number<br>" +
+        "of quarter notes.  For example you can speed up the playing so that 8 quarter notes would be played<br>" +
+        "in the time normally alloted for 4 quarter notes (that is, doubling the speed).</html>";
+        
+    static final String MIDI_CHANGES_TRANSPOSE_TOOLTIP = "<html><b>MIDI Changes: Transpose</b><br>" +
+        "Transposes the notes generated by the motif node's playing.</html>";
+
+    static final String MIDI_CHANGES_GAIN_TOOLTIP = "<html><b>MIDI Changes: Gain</b><br>" +
+        "Changes the gain (volume) of the notes generated by the motif node's playing.</html>";
+
+    static final String MIDI_CHANGES_MUTE_TOOLTIP = "<html><b>MIDI Changes: Mute</b><br>" +
+        "Mutes all the notes generated by the motif node's playing.</html>";
+
+    static final String MIDI_CHANGES_OUT_TOOLTIP = "<html><b>MIDI Changes: Out</b><br>" +
+        "Changes the designated output of the MIDI generated by the motif node's playing.</html>";
     }

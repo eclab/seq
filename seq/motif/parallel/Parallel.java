@@ -23,7 +23,7 @@ public class Parallel extends Motif
         {
         public static final int DISABLED = -1;
 
-        public static final double MAX_DELAY = 256.0;               // in beats
+        //public static final double MAX_DELAY = 256.0;               // in beats
         public static final int MAX_TRANSPOSE = 24;
         public static final double MAX_GAIN = 4.0;
         public static final double MAX_RATE = 16.0;
@@ -150,7 +150,7 @@ public class Parallel extends Motif
         obj.put("num", getNumChildrenToSelect());
         }
 
-	static int document = 0;
+    static int document = 0;
     static int counter = 1;
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
         

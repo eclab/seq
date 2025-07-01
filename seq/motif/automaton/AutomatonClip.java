@@ -204,13 +204,13 @@ public class AutomatonClip extends Clip
     boolean finished = false;
         
 
-	// AUTOMATON THREAD ITERATION COUNTS
-	// Iterations are per thread at present.  FIXME maybe this should be an option.
-			
-	static class Iterate		// Note this class used to be inside AutomatonThread, but Java 8 doesn't like that.
-		{
-		int count = -1;         // we'll get incremented the first time
-		}
+    // AUTOMATON THREAD ITERATION COUNTS
+    // Iterations are per thread at present.  FIXME maybe this should be an option.
+                        
+    static class Iterate            // Note this class used to be inside AutomatonThread, but Java 8 doesn't like that.
+        {
+        int count = -1;         // we'll get incremented the first time
+        }
                 
     // Set temporarily so the MIDI methods know what node is sending MIDI right now
     Automaton.MotifNode currentNode = null; 
@@ -448,7 +448,7 @@ public class AutomatonClip extends Clip
                         }
                     }
                 delayCount++;
-               if (delayCount >= d * achord.getTimeOn())        // stop playing the chord
+                if (delayCount >= d * achord.getTimeOn())        // stop playing the chord
                     {
                     int release = achord.getRelease();
                     int out = achord.getMIDIOut();
@@ -655,11 +655,11 @@ public class AutomatonClip extends Clip
                     thread.child.release();
                     thread.child.loop();
 
-					Automaton.Node node = thread.getNode();
-					if (node instanceof Automaton.MotifNode)
-						{
-		            	loadRandomValues(thread.getChild(), ((Automaton.MotifNode)(thread.getNode())).getChild());		// loop
-		            	}
+                    Automaton.Node node = thread.getNode();
+                    if (node instanceof Automaton.MotifNode)
+                        {
+                        loadRandomValues(thread.getChild(), ((Automaton.MotifNode)(thread.getNode())).getChild());              // loop
+                        }
 
                     moveThread();
                     }

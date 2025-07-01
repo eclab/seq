@@ -42,7 +42,7 @@ public class ParallelButton extends MotifButton
         updateText();
         int slide = val * BUTTON_DELAY_MULTIPLIER / Seq.PPQ;
         setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0,slide,0,0, originalBackground),
+                BorderFactory.createMatteBorder(0,slide,0,0, /*originalBackground*/ Color.GRAY),
                 originalBorder));
         }
     
@@ -91,7 +91,7 @@ public class ParallelButton extends MotifButton
                 {
                 ParallelClip.Node n = null;
                 try { n = clip.getNodes().get(at); } 
-                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); return false; }		// FIXME: This appears to be a bug...
+                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); return false; }                // FIXME: This appears to be a bug...
                 if (n != null)
                     {
                     playing = n.isPlaying();

@@ -6,9 +6,9 @@
 package seq;
 
 public class Seq
-	{
-	public static void main(String[] args) throws Exception
-		{
-    	seq.gui.SeqUI.main(args);
-		}
-	}
+    {
+    public static void main(String[] args) throws Exception
+        {
+        seq.gui.SeqUI.main(args);
+        }
+    }

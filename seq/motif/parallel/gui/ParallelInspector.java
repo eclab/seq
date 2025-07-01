@@ -60,6 +60,7 @@ public class ParallelInspector extends WidgetList
                     }
                 };
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
+            name.setToolTipText(NAME_TOOLTIP);
                 
             childrenToSelect = new JComboBox(CHILDREN_TO_SELECT_STRINGS);
             childrenToSelect.setSelectedIndex(parallel.getNumChildrenToSelect());
@@ -75,6 +76,7 @@ public class ParallelInspector extends WidgetList
                     }
                 });
             childrenToSelect.setMaximumRowCount(CHILDREN_TO_SELECT_STRINGS.length);
+            childrenToSelect.setToolTipText(CHILDREN_PLAYING_TOOLTIP);
             }
         finally { lock.unlock(); }
 
@@ -105,4 +107,23 @@ public class ParallelInspector extends WidgetList
 
         name.update();
         }
+
+
+    static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+        "Sets the name of the Parallel.  This will appear in the Motif List at left.</html>";
+
+    static final String CHILDREN_PLAYING_TOOLTIP = "<html><b>Children Playing</b><br>" +
+        "States how many children play in parallel (picked at random) when the Parallel plays.<br>" +
+        "The children not picked to play will be muted.  Which children are picked changes each<br>" +
+        "time the Parallel plays anew.  The options are:" +
+        "<ul>" +
+        "<li>All children may play (the default).  A child plays according to its <b>probability</b>." + 
+        "<li>N = 1 ... 16 children play.  The likelihood that a child is selected to play is<br>" +
+        "according to its <b>probability</b> compared to the probabilities of the other children.<br>" + 
+        "If there are fewer than N children, all of them play." +
+        "<li>All children may play, but all stop when the first child is finished.  The first child<br>" + 
+        "always plays.  Each of the other children plays according to its <b>probability</b>. " +
+        "</ul>" +
+        "The <b>probability</b> of each child is set in its inspector below.</html>";
+
     }

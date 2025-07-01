@@ -320,43 +320,43 @@ public class StepSequenceInspector extends WidgetList
         }
 
 
-	/*** Tooltips ***/
-	
-	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
-		"Sets the name of the Sequence.  This will appear in the <b>Motif List</b>.</html>";
-	
-	static final String DURATION_TOOLTIP = "<html><b>Duration</b><br>" +
-		"Sets the length of time (in sixteenth notes) that the entire sequence<br>" + 
-		"takes to complete one iteration.";
-	
-	static final String TRACK_LENGTH_TOOLTIP = "<html><b>Track Length</b><br>" +
-		"Changes the <i>initial</i> number of steps a new track will have.<br>" +
-		"After creating a track, you can change the number of steps it has<br>" +
-		"(its length) in the track's inspector." ;
-		
-	static final String SET_TRACK_LENGTH_TOOLTIP = "<html><b>Set All Track Length</b><br>" +
-		"Resets all tracks to the <b>Track Len</b> value at left.</html>";
-	
-	static final String SWING_TOOLTIP = "<html><b>Swing</b><br>" +
-		"Sets the <i>default</i> swing value for all tracks.  This can be overridden<br>" +
-		"in the track's inspector.</html>";
-	
-	static final String SET_SWING_TOOLTIP = "<html><b>Set All Swing</b><br>" +
-		"Resets all tracks to use the default swing value shown at left instead of" + 
-		"custom per-track swing values.</html>";
-	
-	static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
-		"Sets the <i>default</i> velocity value for all tracks.  This can be overridden<br>" +
-		"in the track's inspector.</html>";
-	
-	static final String SET_VELOCITY_TOOLTIP = "<html><b>Set All Velocity</b><br>" +
-		"Resets all tracks to use the default velocity value shown at left instead of" + 
-		"custom per-track velocity values.</html>";
+    /*** Tooltips ***/
+        
+    static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+        "Sets the name of the Sequence.  This will appear in the <b>Motif List</b>.</html>";
+        
+    static final String DURATION_TOOLTIP = "<html><b>Duration</b><br>" +
+        "Sets the length of time (in sixteenth notes) that the entire sequence<br>" + 
+        "takes to complete one iteration.";
+        
+    static final String TRACK_LENGTH_TOOLTIP = "<html><b>Track Length</b><br>" +
+        "Changes the <i>initial</i> number of steps a new track will have.<br>" +
+        "After creating a track, you can change the number of steps it has<br>" +
+        "(its length) in the track's inspector." ;
+                
+    static final String SET_TRACK_LENGTH_TOOLTIP = "<html><b>Set All Track Length</b><br>" +
+        "Resets all tracks to the <b>Track Len</b> value at left.</html>";
+        
+    static final String SWING_TOOLTIP = "<html><b>Swing</b><br>" +
+        "Sets the <i>default</i> swing value for all tracks.  This can be overridden<br>" +
+        "in the track's inspector.</html>";
+        
+    static final String SET_SWING_TOOLTIP = "<html><b>Set All Swing</b><br>" +
+        "Resets all tracks to use the default swing value shown at left instead of" + 
+        "custom per-track swing values.</html>";
+        
+    static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+        "Sets the <i>default</i> velocity value for all tracks.  This can be overridden<br>" +
+        "in the track's inspector.</html>";
+        
+    static final String SET_VELOCITY_TOOLTIP = "<html><b>Set All Velocity</b><br>" +
+        "Resets all tracks to use the default velocity value shown at left instead of" + 
+        "custom per-track velocity values.</html>";
 
-	static final String OUT_TOOLTIP = "<html><b>Set Out</b><br>" +
-		"Sets the <i>default</i> MIDI output for all tracks.  This can be overridden<br>" +
-		"in the track's inspector.</html>";
-	
-	static final String IN_TOOLTIP = "<html><b>Zoom Out</b><br>" +
-		"Sets the sequencer's MIDI input, used for a track's <b>Learn</b> functionality.</html>";
+    static final String OUT_TOOLTIP = "<html><b>Set Out</b><br>" +
+        "Sets the <i>default</i> MIDI output for all tracks.  This can be overridden<br>" +
+        "in the track's inspector.</html>";
+        
+    static final String IN_TOOLTIP = "<html><b>Zoom Out</b><br>" +
+        "Sets the sequencer's MIDI input, used for a track's <b>Learn</b> functionality.</html>";
     }

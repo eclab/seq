@@ -28,7 +28,7 @@ public class Ruler extends JPanel
         this.seq = seq;
         this.ss = ss;
         this.ssui = ssui;
-		setToolTipText(TOOLTIP);
+        setToolTipText(TOOLTIP);
         }
 
     public Dimension getMinimumSize()
@@ -53,8 +53,8 @@ public class Ruler extends JPanel
             }
         }
 
-	/*** Tooltips ***/
-	
-	static final String TOOLTIP = "<html><b>Ruler</b><br>" +
-		"Indicates the current time in the step sequence.</html>";
+    /*** Tooltips ***/
+        
+    static final String TOOLTIP = "<html><b>Ruler</b><br>" +
+        "Indicates the current time in the step sequence.</html>";
     }

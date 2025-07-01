@@ -21,7 +21,7 @@ public class Notes extends Motif
 
     public static final String MIDI_FILE_EXTENSION = ".mid";
 
-	int end = 0;
+    int end = 0;
 
     public abstract static class Event
         {
@@ -181,17 +181,17 @@ public class Notes extends Motif
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
-        	if (notes.wasRPN || notes.lastNRPN != parameter)
-    			{
-    			// Write out the parameter first
-    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 99, (parameter >>> 7)), when));
-    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 98, (parameter & 127)), when));
-    			notes.lastNRPN = parameter;
-    			notes.wasRPN = false;
-    			}
-    		// Now write out value, MSB first
-    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 6, (value >>> 7)), when));
-    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 38, (value & 127)), when));
+            if (notes.wasRPN || notes.lastNRPN != parameter)
+                {
+                // Write out the parameter first
+                track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 99, (parameter >>> 7)), when));
+                track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 98, (parameter & 127)), when));
+                notes.lastNRPN = parameter;
+                notes.wasRPN = false;
+                }
+            // Now write out value, MSB first
+            track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 6, (value >>> 7)), when));
+            track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 38, (value & 127)), when));
             }
         public JSONObject save() throws JSONException
             {
@@ -226,17 +226,17 @@ public class Notes extends Motif
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
-        	if (!notes.wasRPN || notes.lastNRPN != parameter)
-    			{
-    			// Write out the parameter first
-    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 101, (parameter >>> 7)), when));
-    			track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 100, (parameter & 127)), when));
-    			notes.lastNRPN = parameter;
-    			notes.wasRPN = true;
-    			}
-    		// Now write out value, MSB first
-    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 6, (value >>> 7)), when));
-    		track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 38, (value & 127)), when));
+            if (!notes.wasRPN || notes.lastNRPN != parameter)
+                {
+                // Write out the parameter first
+                track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 101, (parameter >>> 7)), when));
+                track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 100, (parameter & 127)), when));
+                notes.lastNRPN = parameter;
+                notes.wasRPN = true;
+                }
+            // Now write out value, MSB first
+            track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 6, (value >>> 7)), when));
+            track.add(new MidiEvent(new ShortMessage(ShortMessage.CONTROL_CHANGE, 38, (value & 127)), when));
             }
         public JSONObject save() throws JSONException
             {
@@ -326,136 +326,136 @@ public class Notes extends Motif
             return obj;
             }
         public String toString() { return "AT[" + 
-        	(pitch == Out.CHANNEL_AFTERTOUCH ? "" : 
-        		"" + (Note.NOTES[pitch % 12] + (pitch / 12)) + "->")  + value + "]"; }
+                    (pitch == Out.CHANNEL_AFTERTOUCH ? "" : 
+                    "" + (Note.NOTES[pitch % 12] + (pitch / 12)) + "->")  + value + "]"; }
         }
         
 
 
 // This class converts the CCs, when appropriate, into NRPN or RPN messages in an ArrayList of events.
-static class EventParser
-	{
-	boolean rpn = false;					// Whether the last NRPN/RPN parameter is RPN
-    int lastParamMSB = -1;					// The MSB of the last NRPN/RPN parameter
-    int lastParamLSB = -1;					// The LSB of the last NRPN/RPN parameter
-    int lastValueMSB = -1;					// The MSB of the last NRPN/RPN value
-    boolean bareValueMSB = false;			// True if an MSB for the NRPN/RPN value has been issued but not an LSB yet
-    int bareValueMSBWhen = 0;				// The timestamp of the last NRPN/RPN value
-    boolean error;
+    static class EventParser
+        {
+        boolean rpn = false;                                    // Whether the last NRPN/RPN parameter is RPN
+        int lastParamMSB = -1;                                      // The MSB of the last NRPN/RPN parameter
+        int lastParamLSB = -1;                                      // The LSB of the last NRPN/RPN parameter
+        int lastValueMSB = -1;                                      // The MSB of the last NRPN/RPN value
+        boolean bareValueMSB = false;                       // True if an MSB for the NRPN/RPN value has been issued but not an LSB yet
+        int bareValueMSBWhen = 0;                           // The timestamp of the last NRPN/RPN value
+        boolean error;
     
-    public boolean getError() { return error; }
+        public boolean getError() { return error; }
     
-    ArrayList<Event> parsed = new ArrayList<>();		// The resulting list of events
-	
-	// If there is a bare MSB value with no LSB pair, it is assumed to have LSB = 0.  Add it to the list.
-	void dumpBareMSBValue()
-		{
-		if (lastParamMSB > 0 && lastParamLSB > 0 && lastValueMSB > 0 && bareValueMSB)
-			{
-			if (rpn)
-				{
-				parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
-				}
-			else
-				{
-				parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
-				}
-			bareValueMSB = false;
-			lastValueMSB = -1;
-			bareValueMSBWhen = 0;
-			}
-		}
-		
-	public EventParser(ArrayList<Event> input, boolean convertNRPN)
-		{
-		for(Event evt : input)
-			{
-			if (convertNRPN && evt instanceof CC)
-				{
-				CC cc = (CC)evt;
-				if (cc.parameter == 99)
-					{
-					dumpBareMSBValue();
-					if (rpn) lastParamLSB = -1;
-					lastParamMSB = cc.value;
-					rpn = false;
-					}
-				else if (cc.parameter == 98)
-					{
-					dumpBareMSBValue();
-					if (rpn) lastParamMSB = -1;
-					lastParamLSB = cc.value;
-					rpn = false;
-					}
-				else if (cc.parameter == 101)
-					{
-					dumpBareMSBValue();
-					if (rpn) lastParamLSB = -1;
-					lastParamMSB = cc.value;
-					rpn = true;
-					}
-				else if (cc.parameter == 100)
-					{
-					dumpBareMSBValue();
-					if (rpn) lastParamMSB = -1;
-					lastParamLSB = cc.value;
-					rpn = true;
-					}
-				else if (cc.parameter == 6)
-					{
-					dumpBareMSBValue();
-					if (lastParamMSB > 0 && lastParamLSB > 0)
-						{
-						lastValueMSB = cc.value;
-						bareValueMSB = true;
-						bareValueMSBWhen = cc.when;
-						}
-					else	
-						{
-						error = true;
-						}
-					}
-				else if (cc.parameter == 38)
-					{
-					if (lastParamMSB > 0 && lastParamLSB > 0)
-						{
-						if (rpn)
-							{
-							parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
-							}
-						else
-							{
-							parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
-							}
-						bareValueMSB = false;
-						bareValueMSBWhen = 0;
-						}
-					else
-						{
-						error = true;
-						}
-					}
-				else  
-					{
-					dumpBareMSBValue();
-					parsed.add(evt);
-					}
-				}
-			else
-				{
-				dumpBareMSBValue();
-				parsed.add(evt);
-				}
-			}
-		dumpBareMSBValue();
-		}
-	
-	public ArrayList<Event> getParsedEvents()
-		{
-		return parsed;
-		}
-	}
-	        
+        ArrayList<Event> parsed = new ArrayList<>();                // The resulting list of events
+        
+        // If there is a bare MSB value with no LSB pair, it is assumed to have LSB = 0.  Add it to the list.
+        void dumpBareMSBValue()
+            {
+            if (lastParamMSB > 0 && lastParamLSB > 0 && lastValueMSB > 0 && bareValueMSB)
+                {
+                if (rpn)
+                    {
+                    parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
+                    }
+                else
+                    {
+                    parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
+                    }
+                bareValueMSB = false;
+                lastValueMSB = -1;
+                bareValueMSBWhen = 0;
+                }
+            }
+                
+        public EventParser(ArrayList<Event> input, boolean convertNRPN)
+            {
+            for(Event evt : input)
+                {
+                if (convertNRPN && evt instanceof CC)
+                    {
+                    CC cc = (CC)evt;
+                    if (cc.parameter == 99)
+                        {
+                        dumpBareMSBValue();
+                        if (rpn) lastParamLSB = -1;
+                        lastParamMSB = cc.value;
+                        rpn = false;
+                        }
+                    else if (cc.parameter == 98)
+                        {
+                        dumpBareMSBValue();
+                        if (rpn) lastParamMSB = -1;
+                        lastParamLSB = cc.value;
+                        rpn = false;
+                        }
+                    else if (cc.parameter == 101)
+                        {
+                        dumpBareMSBValue();
+                        if (rpn) lastParamLSB = -1;
+                        lastParamMSB = cc.value;
+                        rpn = true;
+                        }
+                    else if (cc.parameter == 100)
+                        {
+                        dumpBareMSBValue();
+                        if (rpn) lastParamMSB = -1;
+                        lastParamLSB = cc.value;
+                        rpn = true;
+                        }
+                    else if (cc.parameter == 6)
+                        {
+                        dumpBareMSBValue();
+                        if (lastParamMSB > 0 && lastParamLSB > 0)
+                            {
+                            lastValueMSB = cc.value;
+                            bareValueMSB = true;
+                            bareValueMSBWhen = cc.when;
+                            }
+                        else    
+                            {
+                            error = true;
+                            }
+                        }
+                    else if (cc.parameter == 38)
+                        {
+                        if (lastParamMSB > 0 && lastParamLSB > 0)
+                            {
+                            if (rpn)
+                                {
+                                parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
+                                }
+                            else
+                                {
+                                parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
+                                }
+                            bareValueMSB = false;
+                            bareValueMSBWhen = 0;
+                            }
+                        else
+                            {
+                            error = true;
+                            }
+                        }
+                    else  
+                        {
+                        dumpBareMSBValue();
+                        parsed.add(evt);
+                        }
+                    }
+                else
+                    {
+                    dumpBareMSBValue();
+                    parsed.add(evt);
+                    }
+                }
+            dumpBareMSBValue();
+            }
+        
+        public ArrayList<Event> getParsedEvents()
+            {
+            return parsed;
+            }
+        }
+                
         
         
     ArrayList<Event> events = new ArrayList<>();                // FIXME maybe this should be a list of lists to allow for fragmentation
@@ -520,9 +520,9 @@ static class EventParser
         return other;
         }
         
-    public Notes(Seq seq) { this(seq, false); }		// this version is called by the file loader
+    public Notes(Seq seq) { this(seq, false); }         // this version is called by the file loader
     
-    public Notes(Seq seq, boolean arm)				// this version is called when we make a Notes window
+    public Notes(Seq seq, boolean arm)                          // this version is called when we make a Notes window
         {
         super(seq);
 
@@ -541,18 +541,18 @@ static class EventParser
     public boolean setEvents(ArrayList<Event> val) 
         {
         if (getConvertNRPNRPN())
-        	{
-        	EventParser parser = new EventParser(val, true);
-        	events = parser.getParsedEvents();
-		    computeMaxTime();     
-		    return parser.getError();    
-        	}
+            {
+            EventParser parser = new EventParser(val, true);
+            events = parser.getParsedEvents();
+            computeMaxTime();     
+            return parser.getError();    
+            }
         else
-        	{
-        	events = val;
-		    computeMaxTime();     
-		    return true;    
-        	}
+            {
+            events = val;
+            computeMaxTime();     
+            return true;    
+            }
         }
 
     public void clearRecording()
@@ -611,12 +611,12 @@ static class EventParser
     //// If it is exactly at a certain beat, then wouldn't we actually be doing the first
     //// tick of the next motif AFTER that beat?  Same thing for end...
     public int getEndTime()
-    	{
-    	int endTime = (maxNoteOffPosition > end ? maxNoteOffPosition : (end >= 0 ? end : 0)) - 1;			// FIXME: So I'm subtracting 1....
-    	if (endTime < 0) endTime = 0;
-    	return endTime;
-    	}
-    	
+        {
+        int endTime = (maxNoteOffPosition > end ? maxNoteOffPosition : (end >= 0 ? end : 0)) - 1;                       // FIXME: So I'm subtracting 1....
+        if (endTime < 0) endTime = 0;
+        return endTime;
+        }
+        
     public void sortEvents(ArrayList<Event> events)
         {
         Collections.sort(events, new Comparator<Event>()
@@ -635,35 +635,35 @@ static class EventParser
         HashSet<Integer> hash = buildIndexHash(indices);
         
         for(int i = 0; i < events.size(); i++)
-        	{
-        	if (hash.contains(i))
-        		{
-            	Event event = events.get(i);
-            	cut.add(event);
-        		}
-        	else
-        		{
-            	Event event = events.get(i);
-            	newEvents.add(event);
-        		}
-        	}
+            {
+            if (hash.contains(i))
+                {
+                Event event = events.get(i);
+                cut.add(event);
+                }
+            else
+                {
+                Event event = events.get(i);
+                newEvents.add(event);
+                }
+            }
 
 /*
-        for(int i = 0; i < startIndex; i++)
-            {
-            Event event = events.get(i);
-            newEvents.add(event);
-            }
-        for(int i = startIndex; i <= endIndex; i++)
-            {
-            Event event = events.get(i);
-            cut.add(event);
-            }
-        for(int i = endIndex + 1; i < events.size(); i++)
-            {
-            Event event = events.get(i);
-            newEvents.add(event);
-            }
+  for(int i = 0; i < startIndex; i++)
+  {
+  Event event = events.get(i);
+  newEvents.add(event);
+  }
+  for(int i = startIndex; i <= endIndex; i++)
+  {
+  Event event = events.get(i);
+  cut.add(event);
+  }
+  for(int i = endIndex + 1; i < events.size(); i++)
+  {
+  Event event = events.get(i);
+  newEvents.add(event);
+  }
 */
 
         events = newEvents;
@@ -687,63 +687,63 @@ static class EventParser
         HashSet<Integer> hash = buildIndexHash(indices);
         
         for(int i = 0; i < events.size(); i++)
-        	{
-        	if (hash.contains(i))
-        		{
-				Event event = events.get(i);
-				if (
-					(event instanceof Note && removeNotes) ||
-					(event instanceof Bend && removeBend) ||
-					(event instanceof CC && removeCC) ||
-					(event instanceof Aftertouch && removeAftertouch) ||
-					(event instanceof NRPN && removeNRPN) ||
-					(event instanceof RPN && removeRPN)
-					)            
-					{
-					cut.add(event);
-					}
-				else        
-					{
-					newEvents.add(event);
-					}
-        		}
-        	else
-        		{
-            	Event event = events.get(i);
-            	newEvents.add(event);
-        		}
-        	}
-        	
-        /*
-        for(int i = 0; i < startIndex; i++)
             {
-            Event event = events.get(i);
-            newEvents.add(event);
-            }
-        for(int i = startIndex; i <= endIndex; i++)
-            {
-            Event event = events.get(i);
-            if (
-                (event instanceof Note && removeNotes) ||
-                (event instanceof Bend && removeBend) ||
-                (event instanceof CC && removeCC) ||
-                (event instanceof Aftertouch && removeAftertouch) ||
-                (event instanceof NRPN && removeNRPN) ||
-                (event instanceof RPN && removeRPN)
-                )            
+            if (hash.contains(i))
                 {
-                cut.add(event);
+                Event event = events.get(i);
+                if (
+                    (event instanceof Note && removeNotes) ||
+                    (event instanceof Bend && removeBend) ||
+                    (event instanceof CC && removeCC) ||
+                    (event instanceof Aftertouch && removeAftertouch) ||
+                    (event instanceof NRPN && removeNRPN) ||
+                    (event instanceof RPN && removeRPN)
+                    )            
+                    {
+                    cut.add(event);
+                    }
+                else        
+                    {
+                    newEvents.add(event);
+                    }
                 }
-            else        
+            else
                 {
+                Event event = events.get(i);
                 newEvents.add(event);
                 }
             }
-        for(int i = endIndex + 1; i < events.size(); i++)
-            {
-            Event event = events.get(i);
-            newEvents.add(event);
-            }
+                
+        /*
+          for(int i = 0; i < startIndex; i++)
+          {
+          Event event = events.get(i);
+          newEvents.add(event);
+          }
+          for(int i = startIndex; i <= endIndex; i++)
+          {
+          Event event = events.get(i);
+          if (
+          (event instanceof Note && removeNotes) ||
+          (event instanceof Bend && removeBend) ||
+          (event instanceof CC && removeCC) ||
+          (event instanceof Aftertouch && removeAftertouch) ||
+          (event instanceof NRPN && removeNRPN) ||
+          (event instanceof RPN && removeRPN)
+          )            
+          {
+          cut.add(event);
+          }
+          else        
+          {
+          newEvents.add(event);
+          }
+          }
+          for(int i = endIndex + 1; i < events.size(); i++)
+          {
+          Event event = events.get(i);
+          newEvents.add(event);
+          }
         */
         
         events = newEvents;
@@ -810,6 +810,20 @@ static class EventParser
                 {
                 copy.add(event);
                 }
+            }
+        computeMaxTime(); 
+        return copy;
+        }
+
+    public ArrayList<Event> copyEvents(int[] indices)
+        {
+        ArrayList<Event> copy = new ArrayList<Event>();
+        
+        for(int i : indices)
+            {
+            Event event = events.get(i);
+            
+            copy.add(event);
             }
         computeMaxTime(); 
         return copy;
@@ -903,7 +917,7 @@ static class EventParser
 
         // I don't think should be able to change the order, so we're probably still okay?
 //        for(int i = from; i <= to; i++)
-			for(int i : indices)
+        for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -929,7 +943,7 @@ static class EventParser
 //        if (from > to) { int temp = to; to = from; from = temp; }
 //        
 //        for(int i = from; i <= to; i++)
-		for(int i : indices)
+        for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -959,7 +973,7 @@ static class EventParser
         
         // I don't think should be able to change the order, so we're probably still okay?
 //        for(int i = from; i <= to; i++)
-			for(int i : indices)
+        for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1072,35 +1086,35 @@ static class EventParser
     
     // Build an array of indices from FROM to TO inclusive
     int[] buildIndices(int from, int to)
-    	{
-    	int[] idx = new int[to - from + 1];
-    	for(int i = from; i <= to; i++) idx[i] = i;
-    	return idx;
-    	}
+        {
+        int[] idx = new int[to - from + 1];
+        for(int i = from; i <= to; i++) idx[i] = i;
+        return idx;
+        }
 
-	// Return the minimum index among the provided indices
-	int minimum(int[] indices)
-		{
-		if (indices.length == 0) return 0; 	// uhm...
-		int min = indices[0];
-		for(int i = 1; i < indices.length; i++)
-			{
-			if (indices[i] < min) min = indices[i];
-			}
-		return min;
-		}
+    // Return the minimum index among the provided indices
+    int minimum(int[] indices)
+        {
+        if (indices.length == 0) return 0;      // uhm...
+        int min = indices[0];
+        for(int i = 1; i < indices.length; i++)
+            {
+            if (indices[i] < min) min = indices[i];
+            }
+        return min;
+        }
 
-	// Return as HashSet of the given indices
+    // Return as HashSet of the given indices
     HashSet<Integer> buildIndexHash(int[] indices)
-    	{
-    	HashSet<Integer> hash = new HashSet<>();
-    	for(int i : indices)
-    		{
-    		hash.add(i);
-    		}
-    	return hash;
-    	}
-    	         
+        {
+        HashSet<Integer> hash = new HashSet<>();
+        for(int i : indices)
+            {
+            hash.add(i);
+            }
+        return hash;
+        }
+                 
     
     /** Quantize all events to the nearest DIVISOR NOTE in ticks.  For each note we compute the DIVISOR NOTE
         that is LESS THAN OR EQUAL to the note.  Then if the note is less than DIVISOR * PERCENTAGE later
@@ -1125,7 +1139,7 @@ static class EventParser
 //        
         // I don't think should be able to change the order, so we're probably still okay?
 //        for(int i = from; i <= to; i++)
-			for(int i : indices)
+        for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1190,7 +1204,7 @@ static class EventParser
 //        if (from > to) { int temp = to; to = from; from = temp; }
 //
 //        for(int i = from; i <= to; i++)
-		for(int i : indices)
+        for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1231,7 +1245,7 @@ static class EventParser
 //        if (from > to) { int temp = to; to = from; from = temp; }
 //        
 //        for(int i = from; i <= to; i++)
-			for(int i : indices)
+        for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1266,7 +1280,7 @@ static class EventParser
 //        if (from > to) { int temp = to; to = from; from = temp; }
 //        
 //        for(int i = from; i <= to; i++)
-			for(int i : indices)
+        for(int i : indices)
             {
             Event event = events.get(i);
                 
@@ -1400,7 +1414,7 @@ static class EventParser
         obj.put("events", eventsArray);
         }
 
-	static int document = 0;
+    static int document = 0;
     static int counter = 1;
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
         

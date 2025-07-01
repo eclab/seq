@@ -20,6 +20,11 @@ public class WidgetList extends JPanel
     
     public WidgetList() { }
                 
+    public void makeBorder(String label)
+    	{
+        setBorder(new javax.swing.border.TitledBorder("<html><i>" + label + "</i></html>"));
+    	}
+    	
     public WidgetList(String[] labels, JComponent[] widgets)
         {
         build(labels, widgets);
@@ -74,12 +79,12 @@ public class WidgetList extends JPanel
         return panel;
         }
 
-	public void updateToolTips()
-		{
+    public void updateToolTips()
+        {
         for(int i = 0; i < labels.length; i++)
-        	{
+            {
             this.labels[i].setToolTipText(widgets[i] != null ? widgets[i].getToolTipText() : null);
-        	}
-		}
+            }
+        }
     }
         

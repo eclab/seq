@@ -56,7 +56,7 @@ public class MacroInspector extends WidgetList
             }
         finally { lock.unlock(); }
 
-             name.setToolTipText(NAME_TOOLTIP);
+        name.setToolTipText(NAME_TOOLTIP);
 
         build(new String[] { "Name" }, 
             new JComponent[] 
@@ -71,7 +71,7 @@ public class MacroInspector extends WidgetList
         name.update();
         }
 
-	static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
-		"Sets the name of the Macro.  This will appear in the Motif List at left.</html>";
+    static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+        "Sets the name of the Macro.  This will appear in the Motif List at left.</html>";
 
     }

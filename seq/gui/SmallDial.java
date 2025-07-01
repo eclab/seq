@@ -31,9 +31,9 @@ public abstract class SmallDial extends JPanel
         }
         
     public String getToolTipText()
-    	{
+        {
         return super.getToolTipText();
-    	}
+        }
 
     public static final int NO_DEFAULT = Dial.NO_DEFAULT;
     public static final int DEFAULT = Dial.DEFAULT;
@@ -168,10 +168,10 @@ public abstract class SmallDial extends JPanel
     public JPanel getLabelledTitledDialVertical(String title, String maximumLabel)
         {
         JPanel panel = new JPanel()
-        	{
-        	public String getToolTipText() { return SmallDial.this.getToolTipText(); }
-        	public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
-        	};
+            {
+            public String getToolTipText() { return SmallDial.this.getToolTipText(); }
+            public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
+            };
                         
         this.title = new JLabel(title, SwingConstants.CENTER);
         this.title.setFont(FONT);
@@ -207,10 +207,10 @@ public abstract class SmallDial extends JPanel
         JPanel panel = new JPanel();
         JPanel subpanel = new JPanel();
         JPanel superpanel = new JPanel()
-        	{
-        	public String getToolTipText() { return SmallDial.this.getToolTipText(); }
-        	public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
-        	};
+            {
+            public String getToolTipText() { return SmallDial.this.getToolTipText(); }
+            public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
+            };
                     
         this.title = new JLabel(title);
         this.title.setFont(FONT);
@@ -251,10 +251,10 @@ public abstract class SmallDial extends JPanel
         JPanel panel = new JPanel();
         JPanel subpanel = new JPanel();
         JPanel superpanel = new JPanel()
-        	{
-        	public String getToolTipText() { return SmallDial.this.getToolTipText(); }
-        	public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
-        	};
+            {
+            public String getToolTipText() { return SmallDial.this.getToolTipText(); }
+            public void setToolTipText(String val) { SmallDial.this.setToolTipText(val); }
+            };
 
         final JLabel temp = new JLabel(maximumLabel);
         
@@ -269,8 +269,8 @@ public abstract class SmallDial extends JPanel
                 }
             public Dimension getMinimumSize() { return getPreferredSize(); }
             public Dimension getMaximumSize() { return getPreferredSize(); }
-			};
-		data.setToolTipText(SmallDial.this.getToolTipText());
+            };
+        data.setToolTipText(SmallDial.this.getToolTipText());
                         
         panel.setLayout(new BorderLayout());
         subpanel.setLayout(new BorderLayout());

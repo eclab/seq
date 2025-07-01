@@ -165,9 +165,21 @@ public class ParallelClip extends Clip
                 else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
                 }
             }
-        else if (numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST || numChildren < children.size())
+        else if (numChildren < children.size())
+        	{
+        	// do nothing
+        	}
+        else if (numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST)
             {
-            // do nothing
+            int numRemainingChildren = children.size();
+            nodes.get(0).muted = false;
+            for(int i = 1; i < numRemainingChildren; i++)
+                {
+                double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
+                if (weight == 0.0) nodes.get(i).muted = true;
+                else if (weight == 1.0) nodes.get(i).muted = false;
+                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
+                }
             }
         else    // need to build distribution
             {

@@ -22,7 +22,9 @@ public class MacroChild extends Motif
         {
         if (name == null) name = "";
         name = name.trim();
+        boolean unique = true;
         
+        /*
         // First pass: use original name
         boolean unique = true;
         for(Motif motif : seq.getMotifs())
@@ -39,7 +41,7 @@ public class MacroChild extends Motif
                 }
             }
         if (unique) return name;
-
+*/
         // Second pass: build a unique name
         int c = 0;
         while(true)
@@ -112,7 +114,7 @@ public class MacroChild extends Motif
         index = from.getInt("index");
         }
         
-	static int document = 0;
+    static int document = 0;
     static int counter = 1;
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
 

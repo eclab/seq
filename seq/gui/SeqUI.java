@@ -29,11 +29,11 @@ import org.json.*;
 
 public class SeqUI extends JPanel
     {       
-static
-	{
-	ToolTipManager.sharedInstance().setDismissDelay(1000000);			// Our tooltips are long. We don't want an auto-dismiss unless the user navigates away
-	}
-	
+    static
+        {
+        ToolTipManager.sharedInstance().setDismissDelay(1000000);                       // Our tooltips are long. We don't want an auto-dismiss unless the user navigates away
+        }
+        
     /*  
         private static class MyEventQueue extends EventQueue {
         public void postEvent(AWTEvent theEvent) {
@@ -95,18 +95,18 @@ static
     // Arming
     boolean disarmsAllBeforeArming;
 
-	/** Sets whether we disarm all armed Motifs before arming a new one */
-	public void setDisarmsAllBeforeArming(boolean val)
-		{
-		disarmsAllBeforeArming = val;
-		}
-		
-	/** Returns whether we disarm all armed Motifs before arming a new one */
-	public boolean getDisarmsAllBeforeArming()
-		{
-		return disarmsAllBeforeArming;
-		}
-		
+    /** Sets whether we disarm all armed Motifs before arming a new one */
+    public void setDisarmsAllBeforeArming(boolean val)
+        {
+        disarmsAllBeforeArming = val;
+        }
+                
+    /** Returns whether we disarm all armed Motifs before arming a new one */
+    public boolean getDisarmsAllBeforeArming()
+        {
+        return disarmsAllBeforeArming;
+        }
+                
     public Transport getTransport() { return transport; }
     
     public SeqUI(Seq seq)
@@ -209,8 +209,8 @@ static
         smallButtons = Prefs.getLastBoolean("SmallMotifButtons", false);        // must be before MotifList
         showToolTips = Prefs.getLastBoolean("ShowToolTips", true);
 
-		// Arming
-		disarmsAllBeforeArming = Prefs.getLastBoolean("DisarmFirst", true);
+        // Arming
+        disarmsAllBeforeArming = Prefs.getLastBoolean("DisarmFirst", true);
 
         list = new MotifList(seq, this);
 
@@ -238,9 +238,9 @@ static
                 {
                 if (!(motif instanceof seq.motif.blank.Blank))
                     {
-                    //System.err.println("Mapping " + motif + " -> " + motifui);
                     MotifUI motifui = list.buildMotifUIFor(motif);
                     map.put(motif, motifui);
+                    //System.err.println("Mapping " + motif + " -> " + motifui);
                     //list.doAddSimple(motifui);
                     }
                 }
@@ -301,51 +301,51 @@ static
     public void doNew()
         {
         // First confirm
-    	if (showSimpleConfirm("New Sequence", "Create a new sequence?\n\nThis will erase the current sequence, which cannot be undone.", "New Sequence"))
-    		{
-			Seq s;
-			try
-				{
-				clearUndo();
+        if (showSimpleConfirm("New Sequence", "Create a new sequence?\n\nThis will erase the current sequence, which cannot be undone.", "New Sequence"))
+            {
+            Seq s;
+            try
+                {
+                clearUndo();
 
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try 
-					{ 
-					this.seq.stop();
-					this.seq.shutdown();            // kills timer in old sequence
-					}
-				finally { lock.unlock(); }
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    this.seq.stop();
+                    this.seq.shutdown();            // kills timer in old sequence
+                    }
+                finally { lock.unlock(); }
 
-				reset(new Seq(seq));
-				Seq.incrementDocument();
+                reset(new Seq(seq));
+                Seq.incrementDocument();
 
-				list.removeAll();  // delete old ones
+                list.removeAll();  // delete old ones
 
-				seq.setFile(null);
-				frame.setTitle("Untitled");
+                seq.setFile(null);
+                frame.setTitle("Untitled");
 
-				Motif dSeq = null;
-				Motif[] temp = new Motif[1];
-				MotifUI ssui = setupInitialMotif(temp, seq, this);
-				dSeq = temp[0];
+                Motif dSeq = null;
+                Motif[] temp = new Motif[1];
+                MotifUI ssui = setupInitialMotif(temp, seq, this);
+                dSeq = temp[0];
 
-		/*
-				// We'll start with a blank step sequence
-				seq.motif.stepsequence.StepSequence ss = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
-				seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, SeqUI.this, ss);
-		*/
-				addMotifUI(ssui);
-				list.setRoot(ssui.getPrimaryButton());		// this also calls setData, which builds the clip
-				revalidate();
-				repaint();
-				}
-			catch (Exception ex)
-				{
-				ex.printStackTrace();
-				showSimpleError("Error Creating New Sequence", "An error occurred creating the new sequence.");
-				}
-			}
+                /*
+                // We'll start with a blank step sequence
+                seq.motif.stepsequence.StepSequence ss = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
+                seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, SeqUI.this, ss);
+                */
+                addMotifUI(ssui);
+                list.setRoot(ssui.getPrimaryButton());          // this also calls setData, which builds the clip
+                revalidate();
+                repaint();
+                }
+            catch (Exception ex)
+                {
+                ex.printStackTrace();
+                showSimpleError("Error Creating New Sequence", "An error occurred creating the new sequence.");
+                }
+            }
         }
     
     /* Saves the sequence to an existing file. */
@@ -428,7 +428,7 @@ static
     
     void doLog()
         {
-        if (logFile != null)		// currently logging
+        if (logFile != null)            // currently logging
             {
             // clean up
             logItem.setText("Log MIDI ...");
@@ -445,11 +445,11 @@ static
         else
             {       
             int result = showSimpleChoice("Log MIDI ...", "Some DAWs (like Ableton) cannot properly load\na MIDI file with more than one channel.\n\nBreak out individual channels to separate MIDI files?",
-                 new String[] { "Keep One File", "Break Out", "Cancel" });
-        	if (result < 0 || result == 2) return;
-        	
+                new String[] { "Keep One File", "Break Out", "Cancel" });
+            if (result < 0 || result == 2) return;
+                
             if (seq != null) seq.stop();
-        	boolean multi = (result == 1);			// multi means we broke out to multiple files
+            boolean multi = (result == 1);                  // multi means we broke out to multiple files
 
             FileDialog fd = new FileDialog(getFrame(), "Log MIDI ...", FileDialog.SAVE);
                                 
@@ -606,7 +606,7 @@ static
 
                 seq = newSeq;                                
                 reset(seq);
-            	Seq.incrementDocument();
+                Seq.incrementDocument();
 
                 MotifUI motifui = list.getMotifUIFor(seq.getData());
                 list.setRoot(motifui);
@@ -684,6 +684,7 @@ static
             }
         }
 
+	public static final int[] ADD_ACCELERATORS = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
     /** Call this immediately after you create the SeqUI JFrame to prepare the menu. */
     public void setupMenu(JFrame frame)
         {
@@ -795,7 +796,19 @@ static
                 push();
                 }
             });
-                
+        
+        JMenu addMenu = new JMenu("Add");
+        JMenuItem[] items = getMotifList().buildAddMenu();
+        for(int i = 0; i < items.length; i++)
+        	{
+        	if (i < 10)
+        		{
+	        	items[i].setAccelerator(KeyStroke.getKeyStroke(ADD_ACCELERATORS[i], Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+	        	}
+        	addMenu.add(items[i]);
+        	}
+        menubar.add(addMenu);
+
         // MIDI Menu
         JMenu midiMenu = new JMenu("MIDI");
         menubar.add(midiMenu);
@@ -822,9 +835,9 @@ static
                         stopped = true;
                         }
                     else
-                    	{
-                    	return;
-                    	}
+                        {
+                        return;
+                        }
                     }
 
                 Midi midi = seq.getMIDI();
@@ -905,10 +918,10 @@ static
             });
         
 
-		JMenu initialMotifMenu = new JMenu("Startup Motif");
+        JMenu initialMotifMenu = new JMenu("Startup Motif");
         motifMenu.add(initialMotifMenu);
-		ButtonGroup group = new ButtonGroup();
-		
+        ButtonGroup group = new ButtonGroup();
+                
         JRadioButtonMenuItem initialMotifStepSequenceMenu = new JRadioButtonMenuItem("Step Sequence");
         initialMotifStepSequenceMenu.addActionListener(new ActionListener()
             {
@@ -958,15 +971,15 @@ static
         initialMotifMenu.add(initialMotifParallelMenu);
 
         initialMotif = Prefs.getLastInt("InitialMotif", STEP_SEQUENCE_INITIAL);
-		if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
-			{
-			initialMotif = STEP_SEQUENCE_INITIAL;
-			}
-			
-		if (initialMotif == STEP_SEQUENCE_INITIAL) initialMotifStepSequenceMenu.setSelected(true);
-		else if (initialMotif == NOTES_INITIAL) initialMotifNotesMenu.setSelected(true);
-		else if (initialMotif == SERIES_INITIAL) initialMotifSeriesMenu.setSelected(true);
-		else initialMotifParallelMenu.setSelected(true);
+        if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
+            {
+            initialMotif = STEP_SEQUENCE_INITIAL;
+            }
+                        
+        if (initialMotif == STEP_SEQUENCE_INITIAL) initialMotifStepSequenceMenu.setSelected(true);
+        else if (initialMotif == NOTES_INITIAL) initialMotifNotesMenu.setSelected(true);
+        else if (initialMotif == SERIES_INITIAL) initialMotifSeriesMenu.setSelected(true);
+        else initialMotifParallelMenu.setSelected(true);
 
         motifMenu.addSeparator();
 
@@ -1025,8 +1038,8 @@ static
                     lock.unlock();
                     }
                     
-                setMotifUI(motifui);	// rebuild
-				incrementRebuildInspectorsCount();		// show disarmed
+                setMotifUI(motifui);    // rebuild
+                incrementRebuildInspectorsCount();              // show disarmed
                 }
             });
 
@@ -1068,7 +1081,7 @@ static
     long lastUpdate = 0;
     
     /** Updates and redraws the MotifList and the current Motif.  If the redrawing is in response to a step,
-    	it is specified here.  Only redraws if NOT in response to a step, or if the last time
+        it is specified here.  Only redraws if NOT in response to a step, or if the last time
         this method was called was earlier than UPDATE_INTERVAL ago */
     public void redraw(boolean inResponseToStep) 
         { 
@@ -1078,33 +1091,33 @@ static
             lastUpdate = wallClocktime;
             
             
-			int time = 0;	
-			ReentrantLock lock = seq.getLock();
-			lock.lock();
-			try
-				{
-				time = seq.getTime();
-				}
-			finally
-				{
-				lock.unlock();
-				}
-						
-			for(MotifUI ui : list.getMotifUIs())
-				{
-				ui.updateText();
-				}
+            int time = 0;   
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                time = seq.getTime();
+                }
+            finally
+                {
+                lock.unlock();
+                }
+                                                
+            for(MotifUI ui : list.getMotifUIs())
+                {
+                ui.updateText();
+                }
 
-			if (motifui != null) 
-				{
-				motifui.redraw(inResponseToStep);
-				}
-		
-			if (transport != null) 
-				{
-				transport.updateClock(time);
-				}
-			}
+            if (motifui != null) 
+                {
+                motifui.redraw(inResponseToStep);
+                }
+                
+            if (transport != null) 
+                {
+                transport.updateClock(time);
+                }
+            }
         }
     
     /** This is used exclusively by Seq */
@@ -1309,13 +1322,13 @@ static
         }
         
     /** Displays all the given options.  The FIRST option will be the default option.  Returns the option
-    	selected by the user, or -1 if the user closed the window (this should be
-    	treated as a cancel) */
+        selected by the user, or -1 if the user closed the window (this should be
+        treated as a cancel) */
     public int showSimpleChoice(String title, String message, String[] options)
         {
         disableMenuBar();
         int ret = JOptionPane.showOptionDialog(SeqUI.this, message, title, JOptionPane.DEFAULT_OPTION, 
-        	JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         enableMenuBar();
         if (ret == JOptionPane.CLOSED_OPTION) return -1;
         return ret;
@@ -1374,23 +1387,23 @@ static
         inSimpleError = false;
         }
 
-	public static void addResizeListener(JFrame frame)
-		{
-		frame.addComponentListener(new ComponentAdapter()
-			{
-			public void componentResized(ComponentEvent event)
-				{
-				Dimension size = frame.getSize();
-				Prefs.setLastInt("InitialWidth", size.width);
-				Prefs.setLastInt("InitialHeight", size.height);
-				}
-			});
-		}
+    public static void addResizeListener(JFrame frame)
+        {
+        frame.addComponentListener(new ComponentAdapter()
+            {
+            public void componentResized(ComponentEvent event)
+                {
+                Dimension size = frame.getSize();
+                Prefs.setLastInt("InitialWidth", size.width);
+                Prefs.setLastInt("InitialHeight", size.height);
+                }
+            });
+        }
 
-	public void doQuit()
-		{
-		}
-		
+    public void doQuit()
+        {
+        }
+                
     void doAbout()
         {
         ImageIcon icon = new ImageIcon(SeqUI.class.getResource("about.png"));
@@ -1409,9 +1422,9 @@ static
         pane.setLayout(new BorderLayout());
 
 
-		JPanel text = new JPanel();
-		text.setBackground(Color.WHITE);
-		text.setLayout(new BorderLayout());
+        JPanel text = new JPanel();
+        text.setBackground(Color.WHITE);
+        text.setLayout(new BorderLayout());
         JLabel seq = new JLabel(" Seq ");
         seq.setBackground(Color.WHITE);
         seq.setFont(new Font(Font.SERIF, Font.PLAIN, 96));
@@ -1433,69 +1446,69 @@ static
         frame.setVisible(true);
         
         /*
-        ImageIcon icon = new ImageIcon(SeqUI.class.getResource("seq.png"));
-        JFrame frame = new JFrame("About Seq");
-        frame.getContentPane().setLayout(new BorderLayout());
-        frame.getContentPane().setBackground(Color.BLACK);
-        JLabel label = new JLabel(icon);
+          ImageIcon icon = new ImageIcon(SeqUI.class.getResource("seq.png"));
+          JFrame frame = new JFrame("About Seq");
+          frame.getContentPane().setLayout(new BorderLayout());
+          frame.getContentPane().setBackground(Color.BLACK);
+          JLabel label = new JLabel(icon);
 
-        frame.getContentPane().add(label, BorderLayout.CENTER);
+          frame.getContentPane().add(label, BorderLayout.CENTER);
 
-        JPanel pane = new JPanel()
-            {
-            public Insets getInsets() { return new Insets(10, 10, 10, 10); }
-            };
-        pane.setBackground(Color.WHITE);
-        pane.setLayout(new BorderLayout());
+          JPanel pane = new JPanel()
+          {
+          public Insets getInsets() { return new Insets(10, 10, 10, 10); }
+          };
+          pane.setBackground(Color.WHITE);
+          pane.setLayout(new BorderLayout());
 
-        JLabel edisyn = new JLabel("Seq Version 0, March 2025");
-        edisyn.setBackground(Color.WHITE);
-        edisyn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-        pane.add(edisyn, BorderLayout.SOUTH);
+          JLabel edisyn = new JLabel("Seq Version 0, March 2025");
+          edisyn.setBackground(Color.WHITE);
+          edisyn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+          pane.add(edisyn, BorderLayout.SOUTH);
         
-        frame.add(pane, BorderLayout.SOUTH);
-        frame.pack();
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+          frame.add(pane, BorderLayout.SOUTH);
+          frame.pack();
+          frame.setResizable(false);
+          frame.setLocationRelativeTo(null);
+          frame.setVisible(true);
         */
         }
         
         
     public static MotifUI setupInitialMotif(Motif[] motif, Seq seq, SeqUI ui)
-    	{
-    	MotifUI mui;
-    	
+        {
+        MotifUI mui;
+        
         int initialMotif = Prefs.getLastInt("InitialMotif", STEP_SEQUENCE_INITIAL);
-		if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
-			{
-			initialMotif = STEP_SEQUENCE_INITIAL;
-			}
-			
-		if (initialMotif == STEP_SEQUENCE_INITIAL) 
-			{
-         	motif[0]  = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
-        	mui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, (seq.motif.stepsequence.StepSequence)motif[0] );
-			}
-		else if (initialMotif == NOTES_INITIAL)
-			{
-        	boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
-			motif[0]  = new seq.motif.notes.Notes(seq, autoArm);
-			mui = new seq.motif.notes.gui.NotesUI(seq, ui, (seq.motif.notes.Notes)motif[0] );
-			}
-		else if (initialMotif == SERIES_INITIAL)
-			{
-			motif[0]  = new seq.motif.series.Series(seq);
-			mui = new seq.motif.series.gui.SeriesUI(seq, ui, (seq.motif.series.Series)motif[0] );
-			}
-		else // if (initialMotif == PARALLEL_INITIAL)
-			{
-			motif[0]  = new seq.motif.parallel.Parallel(seq);
-			mui = new seq.motif.parallel.gui.ParallelUI(seq, ui, (seq.motif.parallel.Parallel)motif[0] );
-			}
-		
-		return mui;
-    	}
+        if (initialMotif < STEP_SEQUENCE_INITIAL || initialMotif > PARALLEL_INITIAL) 
+            {
+            initialMotif = STEP_SEQUENCE_INITIAL;
+            }
+                        
+        if (initialMotif == STEP_SEQUENCE_INITIAL) 
+            {
+            motif[0]  = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
+            mui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, (seq.motif.stepsequence.StepSequence)motif[0] );
+            }
+        else if (initialMotif == NOTES_INITIAL)
+            {
+            boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
+            motif[0]  = new seq.motif.notes.Notes(seq, autoArm);
+            mui = new seq.motif.notes.gui.NotesUI(seq, ui, (seq.motif.notes.Notes)motif[0] );
+            }
+        else if (initialMotif == SERIES_INITIAL)
+            {
+            motif[0]  = new seq.motif.series.Series(seq);
+            mui = new seq.motif.series.gui.SeriesUI(seq, ui, (seq.motif.series.Series)motif[0] );
+            }
+        else // if (initialMotif == PARALLEL_INITIAL)
+            {
+            motif[0]  = new seq.motif.parallel.Parallel(seq);
+            mui = new seq.motif.parallel.gui.ParallelUI(seq, ui, (seq.motif.parallel.Parallel)motif[0] );
+            }
+                
+        return mui;
+        }
 
     // TESTING
     public static void main(String[] args) throws Exception
@@ -1516,8 +1529,8 @@ static
         Motif dSeq = null;
         Motif[] temp = new Motif[1];
         MotifUI ssui = setupInitialMotif(temp, seq, ui);
-		dSeq = temp[0];
-				
+        dSeq = temp[0];
+                                
         // Build Clip Tree
         seq.setData(dSeq);
 
@@ -1528,10 +1541,10 @@ static
         ui.setupMenu(frame);
         ui.addMotifUI(ssui);
         frame.getContentPane().add(ui);
-    	
-    	// figure out the right window size
-    	int minWidth = Prefs.getLastInt("InitialWidth", MIN_INITIAL_WIDTH);
-    	int minHeight = Prefs.getLastInt("InitialHeight", MIN_INITIAL_HEIGHT);
+        
+        // figure out the right window size
+        int minWidth = Prefs.getLastInt("InitialWidth", MIN_INITIAL_WIDTH);
+        int minHeight = Prefs.getLastInt("InitialHeight", MIN_INITIAL_HEIGHT);
         frame.pack();
         Dimension size = frame.getSize();
         if (size.width < minWidth) size.width = minWidth;
@@ -1546,9 +1559,9 @@ static
         
         
     public static final String SEQ_ABOUT_TEXT = 
-    	"<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
-    	"By Sean Luke<br>" + 
-    	"With Help from Filippo Carnovalini<br>" + 
-    	"<b><font color='#3498db'>Version 2</font></b>, July 2025<br>" + 
-    	"https://github.com/eclab/seq</html>";
+        "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
+        "By Sean Luke<br>" + 
+        "With Help from Filippo Carnovalini<br>" + 
+        "<b><font color='#3498db'>Version 2</font></b>, July 2025<br>" + 
+        "https://github.com/eclab/seq</html>";
     }

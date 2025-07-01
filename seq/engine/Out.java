@@ -50,10 +50,10 @@ public class Out
     public String getName() { return seq.tuple.outName[index]; }
     
     public Midi.MidiDeviceWrapper getWrapper() 
-    	{ 
-    	Midi.Tuple tuple = seq.tuple;
-		return tuple.outWrap[index]; 
-		}
+        { 
+        Midi.Tuple tuple = seq.tuple;
+        return tuple.outWrap[index]; 
+        }
     
     public String toString()
         {
@@ -166,13 +166,13 @@ public class Out
     // Send a two-byte voiced message
     boolean sendToChannel(int command, int data, int channel)
         {
-        return sendToChannel(command, data, 0, channel);		// the 0 is presumably ignored
+        return sendToChannel(command, data, 0, channel);                // the 0 is presumably ignored
         /*
-        try 
-            { 
-            return sendMIDI(new ShortMessage(command, channel - 1, data));
-            }
-        catch (InvalidMidiDataException ex) { return false; }
+          try 
+          { 
+          return sendMIDI(new ShortMessage(command, channel - 1, data));
+          }
+          catch (InvalidMidiDataException ex) { return false; }
         */
 
 /*

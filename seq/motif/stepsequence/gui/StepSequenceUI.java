@@ -48,21 +48,21 @@ public class StepSequenceUI extends MotifUI
 
     boolean allDirty = false;
     public void setAllDirty(boolean val) { allDirty = val; }
-	public boolean isAllDirty() { return allDirty; }
+    public boolean isAllDirty() { return allDirty; }
     public void setDirty(int track, int step, boolean val) { getTrack(track).getStep(step).setDirty(true); }
     
     int[] lastSteps = null;
     int[] currentSteps = null;
     
     public int getTrackWidth()
-    	{
-    	return getTrack(0).getWidth();
-    	}
-    	
+        {
+        return getTrack(0).getWidth();
+        }
+        
     public int getTrackX()
-    	{
-    	return primaryScroll.getViewport().getViewPosition().x;
-    	}
+        {
+        return primaryScroll.getViewport().getViewPosition().x;
+        }
 
     protected void paintComponent(Graphics g)
         {
@@ -309,7 +309,7 @@ public class StepSequenceUI extends MotifUI
                 super.paint(_g);
                 setAllDirty(false);
                 }
-           };
+            };
 //        trackBox.setBackground(Color.YELLOW);
         trackBoxOuter = new JPanel();
         trackBoxOuter.setOpaque(false);
@@ -675,14 +675,14 @@ public class StepSequenceUI extends MotifUI
     public void redraw(boolean inResponseToStep) 
         { 
         if (inResponseToStep)
-        	{
-			primaryScroll.getViewport().repaint();			// just repaint the viewport, not the scroll view
-			ruler.repaint();
-        	}
+            {
+            primaryScroll.getViewport().repaint();                  // just repaint the viewport, not the scroll view
+            ruler.repaint();
+            }
         else 
-        	{
-        	super.redraw(inResponseToStep);
-        	}
+            {
+            super.redraw(inResponseToStep);
+            }
         }
     
 
@@ -816,23 +816,23 @@ public class StepSequenceUI extends MotifUI
 
 
 
-	/*** Tooltips ***/
-	
-	static final String ADD_BUTTON_TOOLTIP = "<html><b>Add Track</b><br>" +
-		"Adds a new track to the bottom of the track list.</html>";
-	
-	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Track</b><br>" +
-		"Removes the selected track.<br><br>" +
-		"The selected track has a red track number and name, and a blue selected step.</html>";
-	
-	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Track</b><br>" +
-		"Duplicates the selected track, inserting the new one just under it.<br><br>" +
-		"The selected track has a red track number and name, and a blue selected step.</html>";
-		
-	static final String ZOOM_IN_BUTTON_TOOLTIP = "<html><b>Zoom In</b><br>" +
-		"Magnifies the view of the step sequence (in time).</html>";
-	
-	static final String ZOOM_OUT_BUTTON_TOOLTIP = "<html><b>Zoom Out</b><br>" +
-		"Demagnifies the view of the step sequence (in time).</html>";
-	
+    /*** Tooltips ***/
+        
+    static final String ADD_BUTTON_TOOLTIP = "<html><b>Add Track</b><br>" +
+        "Adds a new track to the bottom of the track list.</html>";
+        
+    static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Track</b><br>" +
+        "Removes the selected track.<br><br>" +
+        "The selected track has a red track number and name, and a blue selected step.</html>";
+        
+    static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Track</b><br>" +
+        "Duplicates the selected track, inserting the new one just under it.<br><br>" +
+        "The selected track has a red track number and name, and a blue selected step.</html>";
+                
+    static final String ZOOM_IN_BUTTON_TOOLTIP = "<html><b>Zoom In</b><br>" +
+        "Magnifies the view of the step sequence (in time).</html>";
+        
+    static final String ZOOM_OUT_BUTTON_TOOLTIP = "<html><b>Zoom Out</b><br>" +
+        "Demagnifies the view of the step sequence (in time).</html>";
+        
     }

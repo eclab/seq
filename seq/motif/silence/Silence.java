@@ -71,7 +71,7 @@ public class Silence extends Motif
         }
 
 
-	static int document = 0;
+    static int document = 0;
     static int counter = 1;
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
         

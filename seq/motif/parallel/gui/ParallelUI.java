@@ -662,10 +662,10 @@ public class ParallelUI extends MotifUI
         //seq.waitUntilStopped();
         }
 
-	static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
-		"Removes the selected motif from the Parallel.</html>";
-	
-	static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Motif</b><br>" +
-		"Duplicates the selected motif from in the Parallel.</html>";
-	
+    static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
+        "Removes the selected motif from the Parallel.</html>";
+        
+    static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Motif</b><br>" +
+        "Duplicates the selected motif from in the Parallel.</html>";
+        
     }

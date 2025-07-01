@@ -139,17 +139,17 @@ public class RootParameterList extends JPanel
         add(panel, BorderLayout.CENTER);
 
 
-		// tooltips
-		comp[0].setToolTipText(RAND_SEED_TOOLTIP);
-		comp[1].setToolTipText(RAND_MIN_TOOLTIP);
-		comp[2].setToolTipText(RAND_MAX_TOOLTIP);
-		for(int i = 1; i <= 8; i++)
-			{
-			comp[i + 2].setToolTipText("<html><b>Value of Parameter " + i + "</b><br>" +
-			"The value for <b>parameter " + i + "</b> passed into the <b>root motif</b>.</html>");			
-			}
-		list.updateToolTips();		// update the labels
-		panel.setToolTipText(ROOT_ARGUMENTS_TOOLTIP);
+        // tooltips
+        comp[0].setToolTipText(RAND_SEED_TOOLTIP);
+        comp[1].setToolTipText(RAND_MIN_TOOLTIP);
+        comp[2].setToolTipText(RAND_MAX_TOOLTIP);
+        for(int i = 1; i <= 8; i++)
+            {
+            comp[i + 2].setToolTipText("<html><b>Value of Parameter " + i + "</b><br>" +
+                "The value for <b>parameter " + i + "</b> passed into the <b>root motif</b>.</html>");                  
+            }
+        list.updateToolTips();          // update the labels
+        panel.setToolTipText(ROOT_ARGUMENTS_TOOLTIP);
         }
     
     public void revise()
@@ -165,30 +165,30 @@ public class RootParameterList extends JPanel
 
 
 
-	/*** Tooltips ***/
-	
-	static final String RAND_SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
-		"The initial number used to seed the random number generator<br>" +
-		"used to generate values for to the <b>random parameter</b><br>" +
-		"passed into the <b>root motif.</b><br><br>" +
-		"Starting from a given random number seed, the random sequence<br>" +
-		"will always be the same.  So to change the random sequence, just<br>" +
-		"pick a different seed.</html>";
-		
-	static final String RAND_MIN_TOOLTIP = "<html><b>Random Minimum Value</b><br>" +
-		"The minimum posssible value for the <b>random parameter</b><br>" +
-		"passed into the <b>root motif.</b></html>";
-	
-	static final String RAND_MAX_TOOLTIP = "<html><b>Random Maximum Value</b><br>" +
-		"The maximum posssible value for the <b>random parameter</b><br>" +
-		"passed into the <b>root motif.</b></html>";
+    /*** Tooltips ***/
+        
+    static final String RAND_SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
+        "The initial number used to seed the random number generator<br>" +
+        "used to generate values for to the <b>random parameter</b><br>" +
+        "passed into the <b>root motif.</b><br><br>" +
+        "Starting from a given random number seed, the random sequence<br>" +
+        "will always be the same.  So to change the random sequence, just<br>" +
+        "pick a different seed.</html>";
+                
+    static final String RAND_MIN_TOOLTIP = "<html><b>Random Minimum Value</b><br>" +
+        "The minimum posssible value for the <b>random parameter</b><br>" +
+        "passed into the <b>root motif.</b></html>";
+        
+    static final String RAND_MAX_TOOLTIP = "<html><b>Random Maximum Value</b><br>" +
+        "The maximum posssible value for the <b>random parameter</b><br>" +
+        "passed into the <b>root motif.</b></html>";
 
-	static final String ROOT_ARGUMENTS_TOOLTIP = "<html><b>Root Arguments</b><br>" +
-		"Settings for the root arguments.<br><br>" +
-		"Every motif can receive eight parameters values from its parent motif,<br>" +
-		"plus a random number drawn from a distribution with a minimum and maximum<br>" +
-		"value and an initial random number seed.<br><br>" +
-		"But the root motif has no parent.  So these root arguments specify what<br" +
-		"it will receive.</html>";
+    static final String ROOT_ARGUMENTS_TOOLTIP = "<html><b>Root Arguments</b><br>" +
+        "Settings for the root arguments.<br><br>" +
+        "Every motif can receive eight parameters values from its parent motif,<br>" +
+        "plus a random number drawn from a distribution with a minimum and maximum<br>" +
+        "value and an initial random number seed.<br><br>" +
+        "But the root motif has no parent.  So these root arguments specify what<br" +
+        "it will receive.</html>";
 
     }

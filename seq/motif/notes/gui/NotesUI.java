@@ -63,18 +63,18 @@ public class NotesUI extends MotifUI
         this.notes = notes;
         this.sequi = sequi;
   
-  		// disarm others
-		  if (notes.isArmed() && getSeqUI().getDisarmsAllBeforeArming())
-			{
-			ReentrantLock lock = seq.getLock();
-			lock.lock();
-			try
-				{
-				seq.disarmAll();
-				}
-			finally { lock.unlock(); }
-			getSeqUI().incrementRebuildInspectorsCount();		// show disarmed
-			}
+        // disarm others
+        if (notes.isArmed() && getSeqUI().getDisarmsAllBeforeArming())
+            {
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                seq.disarmAll();
+                }
+            finally { lock.unlock(); }
+            getSeqUI().incrementRebuildInspectorsCount();           // show disarmed
+            }
 
         //build();
         }
@@ -189,7 +189,7 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                doDelete();
+                doRemove();
                 }
             });
         menu.add(delete);
@@ -284,12 +284,12 @@ public class NotesUI extends MotifUI
         }
         
     public void uiWasSet()
-    	{
-    	super.uiWasSet();
-    	// revise arm menu
+        {
+        super.uiWasSet();
+        // revise arm menu
         autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
-    	}
-    	
+        }
+        
     public JMenu getMenu()
         {
         return menu;
@@ -323,7 +323,7 @@ public class NotesUI extends MotifUI
         JCheckBox range = new JCheckBox("");
 
         int[] indices = table.getSelectedIndices();
-		Notes.Event[] evts = table.getSelectedEvents(indices);
+        Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
         if (indices.length > 0)
@@ -390,8 +390,8 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("QuantizeBias", _bias);
             if (hasRange) Prefs.setLastBoolean("QuantizeRange", _range);
 
-            table.reload();		// we could change ordering
-			table.setSelectedEvents(evts);
+            table.reload();             // we could change ordering
+            table.setSelection(evts);
             }
         }
 
@@ -401,7 +401,7 @@ public class NotesUI extends MotifUI
         JCheckBox range = new JCheckBox("");
 
         int[] indices = table.getSelectedIndices();
-		Notes.Event[] evts = table.getSelectedEvents(indices);
+        Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
         if (indices.length > 0)
@@ -461,8 +461,8 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("RandomizeTimeVariance", _variance);
             if (hasRange) Prefs.setLastBoolean("RandomizeTimeRange", _range);
 
-            table.reload();					// we could change ordering
-			table.setSelectedEvents(evts);
+            table.reload();                                     // we could change ordering
+            table.setSelection(evts);
             }
         }
         
@@ -719,7 +719,7 @@ public class NotesUI extends MotifUI
             Prefs.setLastBoolean("FilterRemoveRPN", _removeRPN);
             if (hasRange) Prefs.setLastBoolean("FilterRange", _range);
 
-			// we could change everything
+            // we could change everything
             table.reload();
             }
         }
@@ -746,7 +746,7 @@ public class NotesUI extends MotifUI
         JCheckBox range = new JCheckBox("");
 
         int[] indices = table.getSelectedIndices();
-		Notes.Event[] evts = table.getSelectedEvents(indices);
+        Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
         if (indices.length > 0)
@@ -810,8 +810,8 @@ public class NotesUI extends MotifUI
             Prefs.setLastInt("ShiftTimeUnits", _units);
             if (hasRange) Prefs.setLastBoolean("ShiftTimeRange", _range);
             
-            table.reload();					// we could change ordering
-			table.setSelectedEvents(evts);
+            table.reload();                                     // we could change ordering
+            table.setSelection(evts);
             }
         }
 
@@ -821,7 +821,7 @@ public class NotesUI extends MotifUI
         JCheckBox range = new JCheckBox("");
 
         int[] indices = table.getSelectedIndices();
-		Notes.Event[] evts = table.getSelectedEvents(indices);
+        Notes.Event[] evts = table.getSelectedEvents(indices);
         boolean hasRange = false;
                 
         if (indices.length > 0)
@@ -886,58 +886,68 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("StretchTimeTo", to.getValue());
             if (hasRange) Prefs.setLastBoolean("StretchTimeRange", _range);
             
-            table.reload();					// we could change time
-			table.setSelectedEvents(evts);
+            table.reload();                                     // we could change time
+            table.setSelection(evts);
             }
         }
         
-	public static final int TYPE_NOTE = 0;
-	public static final int TYPE_AFTERTOUCH = 1;
-	public static final int TYPE_CC = 2;
-	public static final int TYPE_NRPN = 3;
-	public static final int TYPE_RPN = 4;
-	public static final int TYPE_BEND = 5;
-	
+    public static final int TYPE_NOTE = 0;
+    public static final int TYPE_AFTERTOUCH = 1;
+    public static final int TYPE_CC = 2;
+    public static final int TYPE_NRPN = 3;
+    public static final int TYPE_RPN = 4;
+    public static final int TYPE_BEND = 5;
+        
     public void doInsert(int type)
         {
         seq.push();
+        int where = 0;
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
-            switch(type)
+            // Insert after the selection point if possible
+            int[] indices = table.getSelectedIndices();
+            if (indices.length > 0)
             	{
-            	case TYPE_NOTE:
-    	         	notes.getEvents().add(0, new Notes.Note(60, 127, 0, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-					notes.computeMaxTime();
-	           	break;
-            	case TYPE_AFTERTOUCH:
-    	         	notes.getEvents().add(0, new Notes.Aftertouch(Out.CHANNEL_AFTERTOUCH, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-            	break;
-            	case TYPE_CC:
-    	         	notes.getEvents().add(0, new Notes.CC(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-            	break;
-            	case TYPE_NRPN:
-    	         	notes.getEvents().add(0, new Notes.NRPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-            	break;
-            	case TYPE_RPN:
-    	         	notes.getEvents().add(0, new Notes.RPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-            	break;
-            	case TYPE_BEND:
-    	         	notes.getEvents().add(0, new Notes.Bend(0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-            	break;
+            	where = indices[0] + 1;
             	}
+            
+            switch(type)
+                {
+                case TYPE_NOTE:
+                    notes.getEvents().add(where, new Notes.Note(60, 127, 0, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.computeMaxTime();
+                    break;
+                case TYPE_AFTERTOUCH:
+                    notes.getEvents().add(where, new Notes.Aftertouch(Out.CHANNEL_AFTERTOUCH, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    break;
+                case TYPE_CC:
+                    notes.getEvents().add(where, new Notes.CC(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    break;
+                case TYPE_NRPN:
+                    notes.getEvents().add(where, new Notes.NRPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    break;
+                case TYPE_RPN:
+                    notes.getEvents().add(where, new Notes.RPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    break;
+                case TYPE_BEND:
+                    notes.getEvents().add(where, new Notes.Bend(0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    break;
+                }
+            
+            // Select
             }
         finally
             {
             lock.unlock();
             }
             
-        table.reload();					// we will change the table
-        table.setSelection(0);
+        table.reload();                                 // we will change the table
+        table.setSelection(where);
         }
 
-    public void doDelete()
+    public void doRemove()
         {
         int[] indices = table.getSelectedIndices();
                 
@@ -956,7 +966,46 @@ public class NotesUI extends MotifUI
                 }
             }
             
-        table.reload();				// we will change events
+        table.reload();                         // we will change events
+        }
+
+
+    public void doCopy()
+        {
+        int[] indices = table.getSelectedIndices();
+        int[] newIndices = new int[indices.length];
+        
+        if (indices.length > 0)
+            {
+            seq.push();
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                ArrayList<Notes.Event> events = notes.getEvents();
+                ArrayList<Notes.Event> copy = notes.copyEvents(indices);
+                // Add in reverse order so we can insert them properly and retain the indices.
+                // This will be extremely costly, O(n^2)
+                for(int i = indices.length - 1; i >= 0; i--)
+                	{
+                	Notes.Event evt = copy.get(i);
+                	notes.getEvents().add(indices[i] + 1, evt);
+                	}
+                // find the events, O(n^2)
+        		int idx = 0;
+                for(Notes.Event evt : copy)
+                	{
+                	newIndices[idx++] = notes.getEvents().indexOf(evt);
+                	}
+                }
+            finally
+                {
+                lock.unlock();
+                }
+            }
+            
+        table.reload();                         // we will change events
+        table.setSelection(newIndices);
         }
 
 
@@ -1073,10 +1122,10 @@ public class NotesUI extends MotifUI
         }
     
     public EventTable getTable()
-    	{
-    	return table;
-    	}
-    	
+        {
+        return table;
+        }
+        
     public void buildPrimary(JScrollPane scroll)
         {
         table = new EventTable(notes, seq);
@@ -1103,8 +1152,123 @@ public class NotesUI extends MotifUI
                 
     public JPanel buildConsole()
         {
-        return new JPanel();
+        PushButton removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
+            {
+            public void perform()
+                {
+                doRemove();
+                }
+            };
+        removeButton.getButton().setPreferredSize(new Dimension(24, 24));
+        removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
+
+        PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
+            {
+            public void perform()
+                {
+                doCopy();
+                }
+            };
+        copyButton.getButton().setPreferredSize(new Dimension(24, 24));
+        copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
+
+	  Image addNoteIcon = getStaticIcon().getImage().getScaledInstance(16, 16,  java.awt.Image.SCALE_SMOOTH); 
+       PushButton addNoteButton = new PushButton("")
+            {
+            public void perform()
+                {
+                doInsert(TYPE_NOTE);
+                }
+            };
+        addNoteButton.getButton().setIcon(new ImageIcon(addNoteIcon));
+
+        addNoteButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        addNoteButton.getButton().setPreferredSize(new Dimension(24, 24));
+        addNoteButton.setToolTipText(ADD_NOTE_BUTTON_TOOLTIP);
+
+        PushButton addBendButton = new PushButton("B")
+            {
+            public void perform()
+                {
+                doInsert(TYPE_BEND);
+                }
+            };
+        addBendButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        addBendButton.getButton().setPreferredSize(new Dimension(24, 24));
+        addBendButton.setToolTipText(ADD_BEND_BUTTON_TOOLTIP);
+        JPanel console = new JPanel();
+        console.setLayout(new BorderLayout());
+                
+        PushButton addAftertouchButton = new PushButton("A")
+            {
+            public void perform()
+                {
+                doInsert(TYPE_AFTERTOUCH);
+                }
+            };
+        addAftertouchButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        addAftertouchButton.getButton().setPreferredSize(new Dimension(24, 24));
+        addAftertouchButton.setToolTipText(ADD_AFTERTOUCH_BUTTON_TOOLTIP);
+         console = new JPanel();
+        console.setLayout(new BorderLayout());
+                
+        PushButton addCCButton = new PushButton("C")
+            {
+            public void perform()
+                {
+                doInsert(TYPE_CC);
+                }
+            };
+        addCCButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        addCCButton.getButton().setPreferredSize(new Dimension(24, 24));
+        addCCButton.setToolTipText(ADD_CC_BUTTON_TOOLTIP);
+         console = new JPanel();
+        console.setLayout(new BorderLayout());
+                
+        PushButton addNRPNButton = new PushButton("N")
+            {
+            public void perform()
+                {
+                doInsert(TYPE_NRPN);
+                }
+            };
+        addNRPNButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        addNRPNButton.getButton().setPreferredSize(new Dimension(24, 24));
+        addNRPNButton.setToolTipText(ADD_NRPN_BUTTON_TOOLTIP);
+         console = new JPanel();
+        console.setLayout(new BorderLayout());
+                
+        PushButton addRPNButton = new PushButton("R")
+            {
+            public void perform()
+                {
+                doInsert(TYPE_RPN);
+                }
+            };
+        addRPNButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        addRPNButton.getButton().setPreferredSize(new Dimension(24, 24));
+        addRPNButton.setToolTipText(ADD_RPN_BUTTON_TOOLTIP);
+        console = new JPanel();
+        console.setLayout(new BorderLayout());
+                
+        Box addRemoveBox = new Box(BoxLayout.X_AXIS);
+        addRemoveBox.add(removeButton);
+        addRemoveBox.add(copyButton);
+        console.add(addRemoveBox, BorderLayout.WEST);   
+        
+        Box otherBox = new Box(BoxLayout.X_AXIS);
+        otherBox.add(addNoteButton);
+        otherBox.add(addBendButton);
+        otherBox.add(addAftertouchButton);
+        otherBox.add(addCCButton);
+        otherBox.add(addNRPNButton);
+        otherBox.add(addRPNButton);
+        console.add(otherBox, BorderLayout.EAST);
+                
+        return console; 
         }
+
+
 
 
     public void setChildInspector(EventInspector inspector)
@@ -1190,5 +1354,30 @@ public class NotesUI extends MotifUI
             }
         }
                           
+    static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Event</b><br>" +
+        "Removes the selected event or events from the Notes.</html>";
+        
+    static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Event</b><br>" +
+        "Duplicates the selected event or events from in the Notes.</html>";
+        
+    static final String ADD_NOTE_BUTTON_TOOLTIP = "<html><b>Add Note</b><br>" +
+        "Adds a note to the Notes.</html>";
+        
+    static final String ADD_BEND_BUTTON_TOOLTIP = "<html><b>Add Pitch Bend</b><br>" +
+        "Adds a Pitch Bend event to the Notes.</html>";
+        
+    static final String ADD_AFTERTOUCH_BUTTON_TOOLTIP = "<html><b>Add Aftertouch</b><br>" +
+        "Adds an Aftertouch (or Pressure) event to the Notes.</html>";
+        
+    static final String ADD_CC_BUTTON_TOOLTIP = "<html><b>Add CC</b><br>" +
+        "Adds a CC (Control Change) event to the Notes.</html>";
+        
+    static final String ADD_NRPN_BUTTON_TOOLTIP = "<html><b>Add NRPN</b><br>" +
+        "Adds an NRPN (Non-Registered Program Number) event to the Notes.</html>";
+        
+    static final String ADD_RPN_BUTTON_TOOLTIP = "<html><b>Add RPN</b><br>" +
+        "Adds an RPN (Registered Program Number) event to the Notes.</html>";
+        
+        
 
     }

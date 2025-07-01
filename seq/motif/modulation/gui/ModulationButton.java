@@ -83,7 +83,7 @@ public class ModulationButton extends MotifButton
         try 
             {
             ArrayList<Motif.Child> children = owner.getMotif().getChildren();
-            Motif.Child child = children.get(0);		// there's only one
+            Motif.Child child = children.get(0);                // there's only one
             Modulation.Data data = ((Modulation.Data)(child.getData()));
 
             subname = child.getNickname();                    // FIXME: could this be made just volatile?
