@@ -71,43 +71,61 @@ public abstract class Motif implements Cloneable
         
         /// PARAMETERS
         
-        /// parameter[x] can be one of several things:
-        /// >=0: a ground value
-        /// -1: bound to random
-        /// -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
-        /// FIXME: Maybe a MIDI CC or something later?
-        /// The default value is the parent parameter of the same number
-        public static final double PARAMETER_RANDOM = -1;
-        /** The current parameters */
+		//// ABOUT PARAMETERS
+		//// 
+		//// Before a Clip is processed, its parameters are updated.  There are Motif.NUM_PARAMETERS
+		//// total parameters plus a "random parameter".  The Clip can read its parameters and use
+		//// them to change features of the Clip, or even pass them down to various parameters of
+		//// its children.
+		////
+		//// See Clip.java's PARAMETERS section for more information on parameters.
+		////
+		//// The values for parameters are stored in the Motif.  These values are values from 0.0 to 1.0
+		//// inclusive, or they can be certain negative integers integers, whose value depends on the
+		//// current Clip:
+		////
+		////     -1:		The value is bound to the Clip's Parent's current random parameter value
+		////	 -N (< -1):	An integer. The value is bound to the current value of parameter -N - 2 
+		////                of the Clip's Parent [parameter numbers start at 0]
+		////
+		//// Thus the current value of parameter 4 can be the value of its parent's parameter 7, which
+		//// in turn is the value of ITS parent's parameter 6, which in turn could be the value of 
+		//// ITS parent's parameter 3, and so on, in theory clear up to one of the ROOT PARAMETERS.
+		////
+		//// The "random parameter" has a value which is a random number computed by the Clip and is
+		//// between "random min" and "random max".  The values of the min and max parameters, here 
+		//// in Motif, are stored just like standard parameters and their values likewise can be
+		//// from 0.0 to 1.0 or negative values as interpreted above.
+
+
+
+        // The parameter values
         double[] parameters = new double[NUM_PARAMETERS];
 
-        /** Return the value of the given parameter*/
+        /** Return the value of the given parameter.   This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2)*/
         public double getParameter(int param) { return parameters[param]; }
-        /** Return the value of all parameter*/
+        /** Return the value of all parameter.   These can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2)*/
         public double[] getParameters() { return parameters; }
-        /** Set the value of the given parameter */
+        /** Set the value of the given parameter.   This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2) */
         public void setParameter(int param, double val) { parameters[param] = val; }
 
 
         /// THE RANDOM PARAMETER
-        /// The Random Parameter is updated during clip.reset(), by calling Motif.Child.generateRandomValue()
-        /// and storing the result.  This value is computed by taking the Motif.Child's RANDOM MIN and MAX
-        // and selecting a value under the resulting distribution.
-        
-        /// random min and random max can each be one of several things:
-        /// >=0: a ground value
-        /// -1: bound to random
-        /// -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
 
+		// The value placeholder that indicates the random parameter
+        public static final double PARAMETER_RANDOM = -1;
+        // The min bound for the random value, inclusive.  This can be 0.0...1.0, or it can be a negative integer as discussed above
         double randomMin = 0.0;
+        // The max bound for the random value, inclusive.  This can be 0.0...1.0, or it can be a negative integer as discussed above
         double randomMax = 1.0;
-        /** Sets the minimum random value of the random parameter */
+        
+        /** Sets the minimum random value of the random parameter.  This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2) */
         public void setRandomMin(double val) { randomMin = val; }
-        /** Returns the minimum random value of the random parameter */
+        /** Returns the minimum random value of the random parameter.   This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2) */
         public double getRandomMin() { return randomMin; }
-        /** Sets the maximum random value of the random parameter */
+        /** Sets the maximum random value of the random parameter.   This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2) */
         public void setRandomMax(double val) { randomMax = val; }
-        /** Returns the maximum random value of the random parameter */
+        /** Returns the maximum random value of the random parameter.   This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2) */
         public double getRandomMax() { return randomMax; }
         /** Produces a random value between the minimum and maximum values.  
             Note that these aren't randomMin and randomMax, which have special meaning when negative. */
@@ -302,16 +320,6 @@ public abstract class Motif implements Cloneable
     public boolean isArmed() { return armed; }
     /** Sets whether the Motif is armed for recording */
     public void setArmed(boolean val) { armed = val; }
-        
-    /// FIXME: at present we're just gonna assume that this collapses the recordings to the last one,
-    /// But we should change it to lazily let the user choose.
-/*
-  public void endArmed() 
-  { 
-  for(Child child : children)
-  child.motif.endArmed();
-  }
-*/
         
         
     ///// PARAMETER NAMES
@@ -756,7 +764,7 @@ public abstract class Motif implements Cloneable
             }
         }
         
-    // Removes a Parent.  This is not public because it's only called by removeChild()
+    // Removes a Parent.  This is not public because it's only called by removeChild() and replaceChild()
     void removeParent(Motif parent)  
         { 
         parents.remove(parent);

@@ -71,6 +71,7 @@ public class EventTable extends JPanel
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
                 {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                ((JComponent)c).setBorder(null);	// irritating, gets rid of the "focus border".  See https://stackoverflow.com/questions/18801137/java-jtable-disable-single-cell-selection-border-highlight
                 if (row == index) 
                     {
                     c.setForeground(Color.WHITE);

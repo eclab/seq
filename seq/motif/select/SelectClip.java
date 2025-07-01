@@ -116,7 +116,7 @@ public class SelectClip extends Clip
 
     void reset(Node node)
         {
-        loadRandomValues(node.clip, node.getChild(this));
+        loadRandomValue(node.clip, node.getChild(this));
         loadParameterValues(node.clip, node.getChild(this));
         node.clip.reset();
         node.lastPos = -1;
@@ -125,7 +125,7 @@ public class SelectClip extends Clip
 
     void loop(Node node)
         {
-        loadRandomValues(node.clip, node.getChild(this));
+        loadRandomValue(node.clip, node.getChild(this));
         node.clip.loop();
         }
 

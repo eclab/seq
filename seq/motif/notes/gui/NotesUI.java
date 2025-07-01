@@ -902,6 +902,7 @@ public class NotesUI extends MotifUI
         {
         seq.push();
         int where = 0;
+        int when = 0;
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
@@ -911,28 +912,29 @@ public class NotesUI extends MotifUI
             if (indices.length > 0)
             	{
             	where = indices[0] + 1;
+            	when = notes.getEvents().get(indices[0]).when;
             	}
             
             switch(type)
                 {
                 case TYPE_NOTE:
-                    notes.getEvents().add(where, new Notes.Note(60, 127, 0, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.getEvents().add(where, new Notes.Note(60, 127, when, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
                     notes.computeMaxTime();
                     break;
                 case TYPE_AFTERTOUCH:
-                    notes.getEvents().add(where, new Notes.Aftertouch(Out.CHANNEL_AFTERTOUCH, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.getEvents().add(where, new Notes.Aftertouch(Out.CHANNEL_AFTERTOUCH, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
                     break;
                 case TYPE_CC:
-                    notes.getEvents().add(where, new Notes.CC(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.getEvents().add(where, new Notes.CC(0, 0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
                     break;
                 case TYPE_NRPN:
-                    notes.getEvents().add(where, new Notes.NRPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.getEvents().add(where, new Notes.NRPN(0, 0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
                     break;
                 case TYPE_RPN:
-                    notes.getEvents().add(where, new Notes.RPN(0, 0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.getEvents().add(where, new Notes.RPN(0, 0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
                     break;
                 case TYPE_BEND:
-                    notes.getEvents().add(where, new Notes.Bend(0, 0));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.getEvents().add(where, new Notes.Bend(0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
                     break;
                 }
             
