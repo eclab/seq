@@ -1102,7 +1102,8 @@ public class Seq
                             }
                         else
                             {
-                            releasing = true;
+                            root.release();
+                           	releasing = true;
                             if (noteOff.isEmpty())
                                 {
                                 releasing = false;
