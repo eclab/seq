@@ -65,8 +65,6 @@ Apple has made this much more annoying now, to everyone's consternation.  You'll
 
 Now you should be able to run Seq.  You only have to do this once.  This should work with earlier versions of OS X too. 
 
-If you want to use Seq in combination with a DAW, see the manual's section on doing that.
-
 You can also run Seq from its jar file from the command line: see "Running from the command line" at end of these instructions. 
 
 #### Rosetta and the M1
