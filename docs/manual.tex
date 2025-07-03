@@ -232,8 +232,8 @@
 \Large\bf Sean Luke\\
 {\large\rm 
 Department of Computer Science\\
-George Mason University}
-\\
+George Mason University\\
+sean@cs.gmu.edu}\\
 \\
 \\
 \large\rm {\bf Seq Version 2}\\
@@ -247,7 +247,7 @@ George Mason University}
 \clearpage
 
 \small 
-\noindent {\Large\bf Copyright }  2024 by Sean Luke.
+\noindent {\Large\bf Copyright }  2024, 2025 by Sean Luke.
 
 \vspace{0.25in}
 \noindent {\Large\bf Thanks to } Filippo Canovalini.
@@ -288,7 +288,7 @@ George Mason University}
 \paragraph{\color{red} Note} Seq is a research project and is a work in progress.  We built Seq to help answer questions we had about the feasibility of an approach such as Seq takes.  The jury is still out on that.  Seq is not entirely written, either\,---\,it's in a usable state but is not complete.  We will be gradually adding to and improving it.
 
 \paragraph{About Seq} 
-Seq was largely written in 2023 and 2024 by Sean Luke and Filippo Carnovalini.
+Seq was largely written from 2023--2025 by Sean Luke and Filippo Carnovalini.
 
 Seq is a sequencer quite different from most other sequencers.  Rather than lay out MIDI clips in a linear timeline, or play small iterations of patterns like a step sequencer, Seq groups clips into sequences, then groups sequences (and more clips) into even larger sequences, and so on, until it has formed a large sequence, essentially a program describing how the clips are to be played.  This Seq is creates a sequence in the form of a {\it hierarchy} of clips and subsequences.
 
@@ -567,7 +567,9 @@ Notes has a MIDI Out and a MIDI In.  The MIDI Out is of course where the MIDI ev
 
 You can select ranges of notes (for various menu actions), and when Notes is playing, it will highlight the last event played (and scroll to it).
 
-\paragraph{Notes and Events} The Notes object supports several kinds of events: Notes, Pitch Bend, CC, Aftertouch, RPN, and NRPN.  If you select an event, its inspector pops up.  All events have a time of onset called {\bf When}.  You can change this value, but you must press {\bf Set} to set it, because it will change the order of the note in the list.  Additionally:
+\paragraph{Notes and Events} The Notes object supports several kinds of events: Notes, Pitch Bend, CC, Aftertouch, RPN, and NRPN.  You can add events by clicking on the ``Notes'' button at bottom (to add a MIDI note), or the {\bf B, A, C, N,} or {\bf R} buttons (to add Bend, Aftertouch, CC, NRPN, and RPN respectively).  You can remove a note or duplicate a note by selecting it and pressing the buttons at bottom. 
+
+If you select an event, its inspector pops up.  All events have a time of onset called {\bf When}.  You can change this value, but you must press {\bf Set} to set it, because it will change the order of the note in the list.  Additionally:
 
 \begin{itemize}
 
@@ -636,6 +638,7 @@ When recording, you can filter out CC (which also filters out RPN and NRPN), Pit
 
 Silence is nothing more than a fixed-length chunk of silence.    You can specify the {\bf length} in parts, bars (measures), beats, and ticks.  There are 192 ticks per beat, and 256 bars per part.  The number of beats per bar depends on your clock settings.  As this is tedious, you can also select from some {\bf presets}.
 
+\clearpage
 
 \begin{figure}[t]
 \centering
@@ -645,7 +648,7 @@ Silence is nothing more than a fixed-length chunk of silence.    You can specify
 \label{series}
 \end{figure}
 
-\clearpage\subsection{Series}
+\subsection{Series}
 
 By default Series is exactly what it suggests: a series of child motifs played one after another.   By ``Play'' we mean that a Child Motif is played until it is finished, and then this is repeated some \(N\) times.  That is, Series is essentially Song Mode.  
 

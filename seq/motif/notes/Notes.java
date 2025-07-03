@@ -539,6 +539,26 @@ public class Notes extends Motif
         }
 
     public ArrayList<Event> getEvents() { return events; }
+    
+    public ArrayList<ArrayList<Note>> getNotesByPitch()
+    	{
+    	ArrayList<ArrayList<Note>> all = new ArrayList<>();
+    	for(int i = 0; i < 128; i++)
+    		{
+    		all.add(new ArrayList<Note>());
+    		} 
+    		
+    	for(Event event : getEvents())
+    		{
+    		if (event instanceof Note)
+    			{
+    			Note note = (Note) event;
+    			all.get(note.pitch).add(note);
+    			}
+    		}
+    	return all;
+    	}
+    
     public boolean setEvents(ArrayList<Event> val) 
         {
         if (getConvertNRPNRPN())

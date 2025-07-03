@@ -82,13 +82,13 @@ public abstract class MotifUI extends JPanel
         setLayout(new BorderLayout());  
         inspectorScroll.setBorder(null);
 //        primaryScroll.setDoubleBuffered(true);
-        buildPrimary(primaryScroll);
+        JComponent primary = buildPrimary();
         buildInspectors(inspectorScroll);
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setBackground(Color.BLUE);
         panel.setLayout(new BorderLayout());
-        panel.add(primaryScroll, BorderLayout.CENTER);
+        panel.add(primary, BorderLayout.CENTER);
         add(panel,BorderLayout.CENTER);
         header = buildHeader();
         if (header != null) panel.add(header, BorderLayout.NORTH);
@@ -150,9 +150,17 @@ public abstract class MotifUI extends JPanel
     /** This method should set inspector objects to be the viewport view of the scroll pane */
     public abstract void buildInspectors(JScrollPane scroll);
 
-    /** This method should set the viewport view of the primary scroll pane */
-    public abstract void buildPrimary(JScrollPane scroll);
-        
+    /** This method should set the viewport view of the primary scroll pane.  Alternatively, override buildPrimary(). */
+    public void buildPrimary(JScrollPane scroll) { }
+    
+    /** This creates a primary JComponent and returns it.  If your primary JComponent is just the primaryScroll, you should instead override buildPrimary(scroll); 
+    	You can still get the primary scroll, to use it somewhere, as getPrimaryScroll(). */
+    public JComponent buildPrimary()
+    	{
+    	buildPrimary(primaryScroll);
+    	return primaryScroll;
+    	}
+    	
     /** This method should build but not install any menu.  The menu should be returned with getMenu(). */
     public void buildMenu() { }
     

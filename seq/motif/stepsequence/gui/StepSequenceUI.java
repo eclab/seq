@@ -116,7 +116,7 @@ public class StepSequenceUI extends MotifUI
             }
         }
         
-    SimpleColorMap stepVelocityMap = new SimpleColorMap(0, 127, new Color(0, 0, 0, 0), Color.RED);
+    public static final SimpleColorMap stepVelocityMap = new SimpleColorMap(0, 127, new Color(0, 0, 0, 0), Color.RED);
 
     public static final Border matte = BorderFactory.createMatteBorder(0,0,1,0, Color.BLACK);
 

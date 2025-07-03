@@ -29,19 +29,25 @@ public class NotesUI extends MotifUI
     {
     Notes notes;
     
+    // Inspector stuff
     EventInspector childInspector;    
     JPanel childOuter;
     TitledBorder childBorder;
     JPanel inspectorPane;
-        
     JPanel notesOuter;
     TitledBorder notesBorder;
     NotesInspector notesInspector;
+    
+	// Menu
     JMenu menu;
     JCheckBoxMenuItem autoArmItem;
     
+    // The displays
     EventTable table;
-                
+    //GridUI gridui;
+    //JTabbedPane tabs;
+    
+    public Notes getNotes() { return notes; }
     public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/notes.png")); }        // don't ask
     public ImageIcon getIcon() { return getStaticIcon(); }
     public static String getType() { return "Notes"; }
@@ -1147,8 +1153,16 @@ public class NotesUI extends MotifUI
                     }
                 }
             });
-        
         loadEvents();
+        
+//        gridui = new GridUI(this);
+//        scroll.setViewportView(gridui);
+//        scroll.setRowHeaderView(gridui.getKeyboard());
+        
+        //tabs = new JTabbedPane();
+        //tabs.addTab("Roll", new JScrollPane(gridui));
+        //tabs.addTab("Notes", new JScrollPane(table.getTable())); 
+        
         scroll.setViewportView(table.getTable());
         }
                 
