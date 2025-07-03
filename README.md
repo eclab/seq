@@ -78,6 +78,8 @@ At present Seq only runs under Rosetta on the M1, because its package contains a
 
 ### Installation and Running on Windows
 
+**WARNING**: Seq's binaries have not been tested on Windows yet, and we won't be able to test them ourselves until late August.  If you are having difficulties, please let us know.  And try Seq on MacOS, where its binaries have been well tested!
+
 The following should work (but has not been tested):
 
 1. [Download and install at least Java 20](https://www.oracle.com/technetwork/java/javase/downloads).  The JRE should work fine.  Earlier versions of Java have a bug which causes Java apps (like Seq) to make teeny tiny windows on the latest high-resolution screens.
@@ -94,6 +96,8 @@ Seq makes heavy use of Java preferences.  There is a longstanding Java/Windows b
 
 
 ### Installation and Running on Linux
+
+**WARNING**: Seq's binaries have not been tested on Linux yet, and we won't be able to test them ourselves until late August.  If you are having difficulties, please let us know.  And try Seq on MacOS, where its binaries have been well tested!
 
 Seq should work fine if you have installed at least *Java 20*.
 
