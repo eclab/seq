@@ -687,7 +687,7 @@ public class SeqUI extends JPanel
             }
         }
 
-	public static final int[] ADD_ACCELERATORS = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
+    public static final int[] ADD_ACCELERATORS = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
     /** Call this immediately after you create the SeqUI JFrame to prepare the menu. */
     public void setupMenu(JFrame frame)
         {
@@ -803,13 +803,13 @@ public class SeqUI extends JPanel
         JMenu addMenu = new JMenu("Add");
         JMenuItem[] items = getMotifList().buildAddMenu();
         for(int i = 0; i < items.length; i++)
-        	{
-        	if (i < 10)
-        		{
-	        	items[i].setAccelerator(KeyStroke.getKeyStroke(ADD_ACCELERATORS[i], Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-	        	}
-        	addMenu.add(items[i]);
-        	}
+            {
+            if (i < 10)
+                {
+                items[i].setAccelerator(KeyStroke.getKeyStroke(ADD_ACCELERATORS[i], Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                }
+            addMenu.add(items[i]);
+            }
         menubar.add(addMenu);
 
         // MIDI Menu

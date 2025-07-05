@@ -21,10 +21,10 @@ public class WidgetList extends JPanel
     public WidgetList() { }
                 
     public void makeBorder(String label)
-    	{
+        {
         setBorder(new javax.swing.border.TitledBorder("<html><i>" + label + "</i></html>"));
-    	}
-    	
+        }
+        
     public WidgetList(String[] labels, JComponent[] widgets)
         {
         build(labels, widgets);

@@ -216,20 +216,20 @@ public class KeyDisplay extends JPanel
         double _x = x / (double)innerBounds.getWidth();
         double _y =  y / (double)innerBounds.getHeight();
         if (isVertical()) 
-        	{ 
-        	double val = _x; 
-        	_x = _y; 
-        	_y = val; 
-        	
-        	if (!isFlipped())
-        		{
-        		_y = 1.0 - _y;
-        		}
-        	}
+            { 
+            double val = _x; 
+            _x = _y; 
+            _y = val; 
+                
+            if (!isFlipped())
+                {
+                _y = 1.0 - _y;
+                }
+            }
         else if (isFlipped())
-        	{
-        		_y = 1.0 - _y;
-        	}
+            {
+            _y = 1.0 - _y;
+            }
         
         for(int i = 0; i < blackKeys.length; i++)
             {
@@ -466,8 +466,8 @@ public class KeyDisplay extends JPanel
                     ypos = (rect.height * whiteKeys[i].getX());
                     xpos2 = rect.width;
                     ypos2 = ypos;
-					}
-					                        
+                    }
+                                                                
                 Line2D.Double line = new Line2D.Double(xpos, ypos, xpos2, ypos2);
                 graphics.draw(line);
                 }
@@ -486,15 +486,15 @@ public class KeyDisplay extends JPanel
                     yheight = Math.ceil(rect.height * blackKeys[i].getWidth());
                     xpos = rect.width - xwidth;
                     ypos = Math.ceil(rect.height * blackKeys[i].getX());
-					if (isFlipped())
-						{
-						xpos = 0;
-						}
-					}
-				else if (isFlipped())
-						{
-						ypos = rect.height - yheight;
-						}
+                    if (isFlipped())
+                        {
+                        xpos = 0;
+                        }
+                    }
+                else if (isFlipped())
+                    {
+                    ypos = rect.height - yheight;
+                    }
 
                 Rectangle2D.Double r = new Rectangle2D.Double(xpos, ypos, xwidth, yheight);
                 

@@ -47,7 +47,7 @@ public class EventTable extends JPanel
         }
 
 
-	static final Border paddingBorder = BorderFactory.createEmptyBorder(0, 4, 0, 4);		// small padding on both sides of text
+    static final Border paddingBorder = BorderFactory.createEmptyBorder(0, 4, 0, 4);                // small padding on both sides of text
     public EventTable(Notes notes, Seq seq)
         {
         this.notes = notes;
@@ -73,8 +73,8 @@ public class EventTable extends JPanel
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
                 {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                // ((JComponent)c).setBorder(null);	// irritating, gets rid of the "focus border".  See https://stackoverflow.com/questions/18801137/java-jtable-disable-single-cell-selection-border-highlight
-                ((JComponent)c).setBorder(paddingBorder);	// irritating, gets rid of the "focus border".  See https://stackoverflow.com/questions/18801137/java-jtable-disable-single-cell-selection-border-highlight
+                // ((JComponent)c).setBorder(null);     // irritating, gets rid of the "focus border".  See https://stackoverflow.com/questions/18801137/java-jtable-disable-single-cell-selection-border-highlight
+                ((JComponent)c).setBorder(paddingBorder);       // irritating, gets rid of the "focus border".  See https://stackoverflow.com/questions/18801137/java-jtable-disable-single-cell-selection-border-highlight
                 if (row == index) 
                     {
                     c.setForeground(Color.WHITE);
@@ -232,8 +232,8 @@ public class EventTable extends JPanel
         }
 
 
-	public void setSelection(int[] indices)
-		{
+    public void setSelection(int[] indices)
+        {
         ListSelectionModel model = table.getSelectionModel();
         model.clearSelection();
         Arrays.sort(indices);
@@ -258,7 +258,7 @@ public class EventTable extends JPanel
                 }
             }
         model.setValueIsAdjusting(false);
-		}
+        }
 
     // Selects the provided Events in the table
     public void setSelection(Notes.Event[] events)

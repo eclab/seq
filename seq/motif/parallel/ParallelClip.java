@@ -166,9 +166,9 @@ public class ParallelClip extends Clip
                 }
             }
         else if (numChildren < children.size())
-        	{
-        	// do nothing
-        	}
+            {
+            // do nothing
+            }
         else if (numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST)
             {
             int numRemainingChildren = children.size();

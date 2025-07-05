@@ -738,7 +738,7 @@ public class Seq
         lock.lock();
         try
             {
-            uniqueOuts = gatherUniqueOuts();		// Load so we can use them in step() and stop()
+            uniqueOuts = gatherUniqueOuts();            // Load so we can use them in step() and stop()
 
             // This should be first so we can send MIDI during reset()
             playing = true;
@@ -752,13 +752,13 @@ public class Seq
                 resuming = false;
                 }
             else 
-            	{
+                {
                 resuming = true;
-            	if (currentCountIn > 0)        // we're currently counting in, the behavior at present should be to reset the count
-					{
-					currentCountIn = (countInMode != COUNT_IN_NONE ? 1 : 0) * bar * PPQ;                // reset, we're counting in
-					}
-				}
+                if (currentCountIn > 0)        // we're currently counting in, the behavior at present should be to reset the count
+                    {
+                    currentCountIn = (countInMode != COUNT_IN_NONE ? 1 : 0) * bar * PPQ;                // reset, we're counting in
+                    }
+                }
             beep.setAmplitude(0);
             beep.setRunning(true);
             
@@ -998,50 +998,50 @@ public class Seq
                         setCountIn(currentCountIn / PPQ);
                     currentCountIn--;
                     
-					// send out clock even though we've not started yet as a good measure 
-					if (currentCountIn % (PPQ / 24) == 0)		// issue a pulse
-						{
-						for(int i = 0; i < uniqueOuts.length; i++)
-							{
-							uniqueOuts[i].clockPulse();
-							}
-						}
+                    // send out clock even though we've not started yet as a good measure 
+                    if (currentCountIn % (PPQ / 24) == 0)           // issue a pulse
+                        {
+                        for(int i = 0; i < uniqueOuts.length; i++)
+                            {
+                            uniqueOuts[i].clockPulse();
+                            }
+                        }
                     }
 
                 else
                     {
-					if (currentCountIn == 0)
-                    	{
-                    	setCountIn(currentCountIn);
-                    	currentCountIn--;							// we're done with count-ins
-                    	}
+                    if (currentCountIn == 0)
+                        {
+                        setCountIn(currentCountIn);
+                        currentCountIn--;                                                       // we're done with count-ins
+                        }
                     
                     if (clock == CLOCK_OUT)
-                    	{
-                    	if (isResuming())
-                    		{
-							for(int i = 0; i < uniqueOuts.length; i++)
-								{
-								uniqueOuts[i].clockContinue();
-								}
-                    		}
-                    	else if (time == 0)		// issue a start
-                    		{
-							for(int i = 0; i < uniqueOuts.length; i++)
-								{
-								uniqueOuts[i].clockStart();
-								}
-							}
-							
-                    	if (time % (PPQ / 24) == 0)		// issue a pulse
-							{
-							for(int i = 0; i < uniqueOuts.length; i++)
-								{
-								uniqueOuts[i].clockPulse();
-								}
-							}
-						}
-                 	resuming = false;			// we're done resuming
+                        {
+                        if (isResuming())
+                            {
+                            for(int i = 0; i < uniqueOuts.length; i++)
+                                {
+                                uniqueOuts[i].clockContinue();
+                                }
+                            }
+                        else if (time == 0)             // issue a start
+                            {
+                            for(int i = 0; i < uniqueOuts.length; i++)
+                                {
+                                uniqueOuts[i].clockStart();
+                                }
+                            }
+                                                        
+                        if (time % (PPQ / 24) == 0)             // issue a pulse
+                            {
+                            for(int i = 0; i < uniqueOuts.length; i++)
+                                {
+                                uniqueOuts[i].clockPulse();
+                                }
+                            }
+                        }
+                    resuming = false;                       // we're done resuming
                                                
                     if (time == notificationTime && notificationTime != -1) 
                         {
@@ -1103,7 +1103,7 @@ public class Seq
                         else
                             {
                             root.release();
-                           	releasing = true;
+                            releasing = true;
                             if (noteOff.isEmpty())
                                 {
                                 releasing = false;

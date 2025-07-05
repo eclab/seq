@@ -86,9 +86,9 @@ public abstract class Clip
     public abstract void rebuild();
 
     /** Rebuilds the clip, or rebuilds any children and further descendant clips, only if they belong to the given Motif.
-    	The code should look something like:
-    	-  If this is MY MOTIF, then rebuild();
-    	-  Else for each child in my children, child.rebuild(motif);
+        The code should look something like:
+        -  If this is MY MOTIF, then rebuild();
+        -  Else for each child in my children, child.rebuild(motif);
     */ 
     public abstract void rebuild(Motif motif);
     
@@ -157,9 +157,9 @@ public abstract class Clip
     public int getPosition() { return position; }
 
     /** Plays the clip for the sliver of time at its current position.  The clip has already
-    	been set as its motif's playing clip, and the parameters have already been loaded. 
-    	Returns TRUE if the Clip believes it is FINISHED at the conclusion of this processing 
-    	(or beforehand). */
+        been set as its motif's playing clip, and the parameters have already been loaded. 
+        Returns TRUE if the Clip believes it is FINISHED at the conclusion of this processing 
+        (or beforehand). */
     public abstract boolean process();
                    
     /** Processes the current step and then advances the time.
@@ -200,7 +200,7 @@ public abstract class Clip
     //// total parameters plus a "random parameter".  The Clip can read its parameters and use
     //// them to change features of the Clip, or even pass them down to various parameters of
     //// its children.
-	////
+    ////
     //// Parameters are doubles between 0.0 and 1.0 inclusive.  A Clip has access to the current
     //// value of each of its parameters and also to the PREVIOUS value, primarily to compare
     //// against the current value to see if it has changed.
@@ -213,14 +213,14 @@ public abstract class Clip
     //// When the parameter "goes low" nothing happens.
     ////
     //// Parameter values are set as follows:
-    //// 	- If the parameter is bound to "Rand", it is set to a random value from 0.0 to 1.0
+    ////        - If the parameter is bound to "Rand", it is set to a random value from 0.0 to 1.0
     ////    - Else if the parameter is bound to a parent parameter, the Clip's parent is queried
     ////      as to the value of its paranet parameter, and the parameter is then set to that value.
     ////    - Else the parameter is set to a fixed value as specified by the user.
     ////
-	//// Unlike other parameters, the "random parameter" is only updated when the Clip is reset,
-	//// not when it is processed.  The value is chosen between the Clip's "min" and "max" random 
-	//// parameter values, which the user can specify.
+    //// Unlike other parameters, the "random parameter" is only updated when the Clip is reset,
+    //// not when it is processed.  The value is chosen between the Clip's "min" and "max" random 
+    //// parameter values, which the user can specify.
     ////
     //// The "random parameter" cannot be set -- it's set at random -- but the "min" and "max"
     //// values can be set, in exactly the same way as the Parameter Values above.
@@ -235,17 +235,17 @@ public abstract class Clip
     //// and the values of these variables are stored in the clip's MOTIF.  These values can be
     //// doubles or ints, and are either values >= 0.0, or they are set to specific negative integers:
     ////
-    ////     -1:		The value is bound to the Clip's current random parameter value
-    ////	 -N (< -1):	An integer. The value is bound to the current value of parameter -N - 2 
+    ////     -1:                The value is bound to the Clip's current random parameter value
+    ////         -N (< -1):     An integer. The value is bound to the current value of parameter -N - 2 
     ////                [parameter numbers start at 0]
     ////
     //// To determine the current value of an exposed variable, you can call getCorrectedValInt()
     //// or getCorrectedValDouble(), which will return the "revised" value if the value is negative.
     
      
-	// The CURRENT values of the parameters
+    // The CURRENT values of the parameters
     double[] parameterValues = new double[Motif.NUM_PARAMETERS];
-	// The PREVIOUS values of the parameters
+    // The PREVIOUS values of the parameters
     double[] lastParameterValues = new double[Motif.NUM_PARAMETERS];
     // Are the triggers set?
     boolean[] triggers = new boolean[Motif.NUM_PARAMETERS];
@@ -307,7 +307,7 @@ public abstract class Clip
         child.setRandomValue(child.getMotif().generateRandomValue(randomMin, randomMax));
         }
 
-	/** Loads the random value of this clip, assuming it is a root, and thus using the root's random min and max */
+    /** Loads the random value of this clip, assuming it is a root, and thus using the root's random min and max */
     public void loadRootRandomValue()
         {
         double min = seq.getRandomMin();
@@ -365,7 +365,7 @@ public abstract class Clip
             }
         }
 
-	/** Sets a parameter to a given value. */
+    /** Sets a parameter to a given value. */
     public void setParameterValue(int param, double val) 
         { 
         lastParameterValues[param] = parameterValues[param];
@@ -374,25 +374,25 @@ public abstract class Clip
             triggers[param] = true;
         }
                 
-	/** Returns the previous setting of this parameter. */
-	public double getLastParameterValue(int param) 
+    /** Returns the previous setting of this parameter. */
+    public double getLastParameterValue(int param) 
         { 
         return lastParameterValues[param];
         }
 
-	/** Returns the current setting of this parameter. */
+    /** Returns the current setting of this parameter. */
     public double getParameterValue(int param) 
         { 
         return parameterValues[param]; 
         }
                 
-	/** Resets the trigger (turns it off). */
+    /** Resets the trigger (turns it off). */
     public void resetTrigger(int param)
         {
         triggers[param] = false;
         }
 
-	/** Resets all triggers (turns them off). */
+    /** Resets all triggers (turns them off). */
     public void resetTriggers()
         {
         for(int i = 0; i < triggers.length; i++) 
@@ -401,13 +401,13 @@ public abstract class Clip
             }
         }
 
-	/** Returns true if the trigger is ON. */
+    /** Returns true if the trigger is ON. */
     public boolean isTriggered(int param)
         {
         return triggers[param];
         }
 
-	/** Returns true if the trigger is ON, and turns it off.  Else returns false. */
+    /** Returns true if the trigger is ON, and turns it off.  Else returns false. */
     public boolean checkAndResetTrigger(int param)
         {
         boolean val = triggers[param];
@@ -416,11 +416,11 @@ public abstract class Clip
         }
 
 
-     // This is a little trick for a tiny bit of inlining.
-     // basicVal can be any of:
-     //   -  >=0: a ground value
-     //   -   -1: bound to random
-     //   -   -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+    // This is a little trick for a tiny bit of inlining.
+    // basicVal can be any of:
+    //   -  >=0: a ground value
+    //   -   -1: bound to random
+    //   -   -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
     double getCorrectedValueDouble2(double basicVal)
         {
         if (basicVal == Motif.Child.PARAMETER_RANDOM)
@@ -438,7 +438,7 @@ public abstract class Clip
             }
         }
 
-   /** 
+    /** 
         Corrects the given basic value, loading parameter values. Current options are:
         -  >=0: a ground value
         -   -1: bound to random
@@ -453,7 +453,7 @@ public abstract class Clip
         else return getCorrectedValueDouble2(basicVal);
         }
     
-   /** 
+    /** 
         Corrects the given basic value, loading parameter values. Current options are:
         -  >=0: a ground value
         -   -1: bound to random
@@ -469,10 +469,10 @@ public abstract class Clip
         }
     
     // This is a little trick for a tiny bit of inlining
-     // basicVal can be any of:
-     //   -  >=0: a ground value
-     //   -   -1: bound to random
-     //   -   -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+    // basicVal can be any of:
+    //   -  >=0: a ground value
+    //   -   -1: bound to random
+    //   -   -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
     int getCorrectedValueInt2(int basicVal, int maxVal)
         {
         if (basicVal == Motif.Child.PARAMETER_RANDOM)
@@ -494,7 +494,7 @@ public abstract class Clip
             }
         }
 
-   /** 
+    /** 
         Corrects the given basic value, loading parameter values. Current options are:
         -  >=0: a ground value
         -   -1: bound to random

@@ -28,20 +28,20 @@ public class MacroChild extends Motif
         // First pass: use original name
         boolean unique = true;
         for(Motif motif : seq.getMotifs())
-            {
-            if (this == motif) continue;    // not me
-            if (motif instanceof MacroChild)
-                {
-                MacroChild other = (MacroChild) motif;
-                if (other.getName().trim().equals(name))        // shoot!
-                    {
-                    unique = false; 
-                    break;
-                    }
-                }
-            }
+        {
+        if (this == motif) continue;    // not me
+        if (motif instanceof MacroChild)
+        {
+        MacroChild other = (MacroChild) motif;
+        if (other.getName().trim().equals(name))        // shoot!
+        {
+        unique = false; 
+        break;
+        }
+        }
+        }
         if (unique) return name;
-*/
+        */
         // Second pass: build a unique name
         int c = 0;
         while(true)

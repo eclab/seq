@@ -71,31 +71,31 @@ public abstract class Motif implements Cloneable
         
         /// PARAMETERS
         
-		//// ABOUT PARAMETERS
-		//// 
-		//// Before a Clip is processed, its parameters are updated.  There are Motif.NUM_PARAMETERS
-		//// total parameters plus a "random parameter".  The Clip can read its parameters and use
-		//// them to change features of the Clip, or even pass them down to various parameters of
-		//// its children.
-		////
-		//// See Clip.java's PARAMETERS section for more information on parameters.
-		////
-		//// The values for parameters are stored in the Motif.  These values are values from 0.0 to 1.0
-		//// inclusive, or they can be certain negative integers integers, whose value depends on the
-		//// current Clip:
-		////
-		////     -1:		The value is bound to the Clip's Parent's current random parameter value
-		////	 -N (< -1):	An integer. The value is bound to the current value of parameter -N - 2 
-		////                of the Clip's Parent [parameter numbers start at 0]
-		////
-		//// Thus the current value of parameter 4 can be the value of its parent's parameter 7, which
-		//// in turn is the value of ITS parent's parameter 6, which in turn could be the value of 
-		//// ITS parent's parameter 3, and so on, in theory clear up to one of the ROOT PARAMETERS.
-		////
-		//// The "random parameter" has a value which is a random number computed by the Clip and is
-		//// between "random min" and "random max".  The values of the min and max parameters, here 
-		//// in Motif, are stored just like standard parameters and their values likewise can be
-		//// from 0.0 to 1.0 or negative values as interpreted above.
+        //// ABOUT PARAMETERS
+        //// 
+        //// Before a Clip is processed, its parameters are updated.  There are Motif.NUM_PARAMETERS
+        //// total parameters plus a "random parameter".  The Clip can read its parameters and use
+        //// them to change features of the Clip, or even pass them down to various parameters of
+        //// its children.
+        ////
+        //// See Clip.java's PARAMETERS section for more information on parameters.
+        ////
+        //// The values for parameters are stored in the Motif.  These values are values from 0.0 to 1.0
+        //// inclusive, or they can be certain negative integers integers, whose value depends on the
+        //// current Clip:
+        ////
+        ////     -1:            The value is bound to the Clip's Parent's current random parameter value
+        ////     -N (< -1):     An integer. The value is bound to the current value of parameter -N - 2 
+        ////                of the Clip's Parent [parameter numbers start at 0]
+        ////
+        //// Thus the current value of parameter 4 can be the value of its parent's parameter 7, which
+        //// in turn is the value of ITS parent's parameter 6, which in turn could be the value of 
+        //// ITS parent's parameter 3, and so on, in theory clear up to one of the ROOT PARAMETERS.
+        ////
+        //// The "random parameter" has a value which is a random number computed by the Clip and is
+        //// between "random min" and "random max".  The values of the min and max parameters, here 
+        //// in Motif, are stored just like standard parameters and their values likewise can be
+        //// from 0.0 to 1.0 or negative values as interpreted above.
 
 
 
@@ -112,7 +112,7 @@ public abstract class Motif implements Cloneable
 
         /// THE RANDOM PARAMETER
 
-		// The value placeholder that indicates the random parameter
+        // The value placeholder that indicates the random parameter
         public static final double PARAMETER_RANDOM = -1;
         // The min bound for the random value, inclusive.  This can be 0.0...1.0, or it can be a negative integer as discussed above
         double randomMin = 0.0;

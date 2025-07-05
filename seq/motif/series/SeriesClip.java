@@ -40,88 +40,88 @@ public class SeriesClip extends Clip
             switch(type)
                 {
                 case Series.NONE:
-                    {
-                    // do nothing
-                    break;
-                    }
+                {
+                // do nothing
+                break;
+                }
                 case Series.CC7:
+                {
+                int val = (int)(getParameterValue(i) * 128);
+                if (val > 127) val = 127;
+                if (midiValues[i] != val)
                     {
-                    int val = (int)(getParameterValue(i) * 128);
-                    if (val > 127) val = 127;
-                    if (midiValues[i] != val)
-                        {
-                        cc(midiOut, series.getMIDIParameter(i), val);
-                        midiValues[i] = val;
-                        }
-                    break;
+                    cc(midiOut, series.getMIDIParameter(i), val);
+                    midiValues[i] = val;
                     }
+                break;
+                }
                 case Series.CC14:
+                {
+                int val = (int)(getParameterValue(i) * 16384);
+                if (val > 16383) val = 16383;
+                if (midiValues[i] != val)
                     {
-                    int val = (int)(getParameterValue(i) * 16384);
-                    if (val > 16383) val = 16383;
-                    if (midiValues[i] != val)
-                        {
-                        cc(midiOut, series.getMIDIParameter(i), val / 128);     // grrr, MSB must be first
-                        cc(midiOut, series.getMIDIParameter(i), val % 128);
-                        midiValues[i] = val;
-                        }
-                    break;
+                    cc(midiOut, series.getMIDIParameter(i), val / 128);     // grrr, MSB must be first
+                    cc(midiOut, series.getMIDIParameter(i), val % 128);
+                    midiValues[i] = val;
                     }
+                break;
+                }
                 case Series.NRPN:
+                {
+                int val = (int)(getParameterValue(i) * 16384);
+                if (val > 16383) val = 16383;
+                if (midiValues[i] != val)
                     {
-                    int val = (int)(getParameterValue(i) * 16384);
-                    if (val > 16383) val = 16383;
-                    if (midiValues[i] != val)
-                        {
-                        nrpn(midiOut, series.getMIDIParameter(i), val);
-                        midiValues[i] = val;
-                        }
-                    break;
+                    nrpn(midiOut, series.getMIDIParameter(i), val);
+                    midiValues[i] = val;
                     }
+                break;
+                }
                 case Series.NRPN_COARSE:
+                {
+                int val = (int)(getParameterValue(i) * 128);
+                if (val > 127) val = 127;
+                if (midiValues[i] != val)
                     {
-                    int val = (int)(getParameterValue(i) * 128);
-                    if (val > 127) val = 127;
-                    if (midiValues[i] != val)
-                        {
-                        nrpnCoarse(midiOut, series.getMIDIParameter(i), val);
-                        midiValues[i] = val;
-                        }
-                    break;
+                    nrpnCoarse(midiOut, series.getMIDIParameter(i), val);
+                    midiValues[i] = val;
                     }
+                break;
+                }
                 case Series.RPN:
+                {
+                int val = (int)(getParameterValue(i) * 16384);
+                if (val > 16383) val = 16383;
+                if (midiValues[i] != val)
                     {
-                    int val = (int)(getParameterValue(i) * 16384);
-                    if (val > 16383) val = 16383;
-                    if (midiValues[i] != val)
-                        {
-                        rpn(midiOut, series.getMIDIParameter(i), val);
-                        midiValues[i] = val;
-                        }
-                    break;
+                    rpn(midiOut, series.getMIDIParameter(i), val);
+                    midiValues[i] = val;
                     }
+                break;
+                }
                 case Series.BEND:
+                {
+                int val = (int)(getParameterValue(i) * 16384);
+                if (val > 16383) val = 16383;
+                if (midiValues[i] != val)
                     {
-                    int val = (int)(getParameterValue(i) * 16384);
-                    if (val > 16383) val = 16383;
-                    if (midiValues[i] != val)
-                        {
-                        bend(midiOut, val - 8192);
-                        midiValues[i] = val;
-                        }
-                    break;
+                    bend(midiOut, val - 8192);
+                    midiValues[i] = val;
                     }
+                break;
+                }
                 case Series.AFTERTOUCH:
+                {
+                int val = (int)(getParameterValue(i) * 128.0);
+                if (val > 127) val = 127;
+                if (midiValues[i] != val)
                     {
-                    int val = (int)(getParameterValue(i) * 128.0);
-                    if (val > 127) val = 127;
-                    if (midiValues[i] != val)
-                        {
-                        aftertouch(midiOut, Out.CHANNEL_AFTERTOUCH, val);
-                        midiValues[i] = val;
-                        }
-                    break;
+                    aftertouch(midiOut, Out.CHANNEL_AFTERTOUCH, val);
+                    midiValues[i] = val;
                     }
+                break;
+                }
                 }
             }
         }

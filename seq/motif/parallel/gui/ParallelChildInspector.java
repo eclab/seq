@@ -18,31 +18,31 @@ public class ParallelChildInspector extends WidgetList
     {
     public static final double MAX_RATE_LOG = Math.log(Parallel.Data.MAX_RATE);
     /*
-    public static final String[] FINE_DELAY_OPTIONS = 
-        { 
-        "1/32",
-        "1/16",
-        "1/8",
-        "1/6",
-        "1/4",
-        "1/3",
-        "1/2",
-        "2/3",
-        "3/4"
-        };
+      public static final String[] FINE_DELAY_OPTIONS = 
+      { 
+      "1/32",
+      "1/16",
+      "1/8",
+      "1/6",
+      "1/4",
+      "1/3",
+      "1/2",
+      "2/3",
+      "3/4"
+      };
 
-    public static final double[] FINE_DELAYS = 
-        {
-        1/32.0 + 1.0 / Seq.PPQ, 
-        1/16.0 + 1.0 / Seq.PPQ,
-        1/8.0 + 1.0 / Seq.PPQ,
-        1/6.0 + 1.0 / Seq.PPQ,
-        1/4.0 + 1.0 / Seq.PPQ,
-        1/3.0 + 1.0 / Seq.PPQ,
-        1/2.0 + 1.0 / Seq.PPQ,
-        2/3.0 + 1.0 / Seq.PPQ,
-        3/4.0 + 1.0 / Seq.PPQ,
-        };
+      public static final double[] FINE_DELAYS = 
+      {
+      1/32.0 + 1.0 / Seq.PPQ, 
+      1/16.0 + 1.0 / Seq.PPQ,
+      1/8.0 + 1.0 / Seq.PPQ,
+      1/6.0 + 1.0 / Seq.PPQ,
+      1/4.0 + 1.0 / Seq.PPQ,
+      1/3.0 + 1.0 / Seq.PPQ,
+      1/2.0 + 1.0 / Seq.PPQ,
+      2/3.0 + 1.0 / Seq.PPQ,
+      3/4.0 + 1.0 / Seq.PPQ,
+      };
     */
 
     public static final String[] RATE_OPTIONS = 
@@ -257,7 +257,7 @@ public class ParallelChildInspector extends WidgetList
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
             name.setToolTipText(NICKNAME_TOOLTIP);
 
-			delay = new TimeDisplay(getData().getDelay() , seq)
+            delay = new TimeDisplay(getData().getDelay() , seq)
                 {
                 public void updateTime(int time)
                     {
@@ -270,127 +270,127 @@ public class ParallelChildInspector extends WidgetList
                 };
             delay.setToolTipText(DELAY_TOOLTIP);
 /*
-            coarseDelay = new SmallDial((getData().getDelay() / Seq.PPQ) / Parallel.Data.MAX_DELAY)
-                {
-                protected String map(double val) 
-                    {
-                    int beats = (int)(val * Parallel.Data.MAX_DELAY);
-                    int beatsPerBar = 0;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { beatsPerBar = seq.getBar(); }
-                    finally { lock.unlock(); }
-                    return String.valueOf("" + beats + " (" + (beats / beatsPerBar) + " . " + (beats % beatsPerBar) + ")");
-                    }
-                public double getValue() 
-                    {
-                    double val = 0;
-                    int delay = 0;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try 
-                        {
-                        delay = getData().getDelay();
-                        val = (delay / Seq.PPQ) / Parallel.Data.MAX_DELAY; 
-                        }
-                    finally { lock.unlock(); }
-                    if (button != null) button.setDelay(delay);
-                    return val;
-                    }
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    int delay = 0;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try 
-                        { 
-                        int oldDelay = getData().getDelay();
-                        int oldBeats = oldDelay / Seq.PPQ;
-                        int oldPPQ = oldDelay - (oldBeats * Seq.PPQ);           // Faster than %
-                        delay = oldPPQ + (int)(val * Parallel.Data.MAX_DELAY) * Seq.PPQ;
-                        getData().setDelay(delay);
-                        }
-                    finally { lock.unlock(); }
-                    if (button != null) button.setDelay(delay);
-                    }
-                };
+  coarseDelay = new SmallDial((getData().getDelay() / Seq.PPQ) / Parallel.Data.MAX_DELAY)
+  {
+  protected String map(double val) 
+  {
+  int beats = (int)(val * Parallel.Data.MAX_DELAY);
+  int beatsPerBar = 0;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { beatsPerBar = seq.getBar(); }
+  finally { lock.unlock(); }
+  return String.valueOf("" + beats + " (" + (beats / beatsPerBar) + " . " + (beats % beatsPerBar) + ")");
+  }
+  public double getValue() 
+  {
+  double val = 0;
+  int delay = 0;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try 
+  {
+  delay = getData().getDelay();
+  val = (delay / Seq.PPQ) / Parallel.Data.MAX_DELAY; 
+  }
+  finally { lock.unlock(); }
+  if (button != null) button.setDelay(delay);
+  return val;
+  }
+  public void setValue(double val) 
+  { 
+  if (seq == null) return;
+  int delay = 0;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try 
+  { 
+  int oldDelay = getData().getDelay();
+  int oldBeats = oldDelay / Seq.PPQ;
+  int oldPPQ = oldDelay - (oldBeats * Seq.PPQ);           // Faster than %
+  delay = oldPPQ + (int)(val * Parallel.Data.MAX_DELAY) * Seq.PPQ;
+  getData().setDelay(delay);
+  }
+  finally { lock.unlock(); }
+  if (button != null) button.setDelay(delay);
+  }
+  };
 
-            fineDelay = new SmallDial((getData().getDelay() % Seq.PPQ) / (double)(Seq.PPQ - 1))
-                {
-                protected String map(double val) 
-                    {
-                    int ppq = (int)(val * (Seq.PPQ - 1));
-                    String ppqVal = String.valueOf(ppq) + " / " + Seq.PPQ;
-                    if (ppq == 0) return ppqVal;
-                    if (ppq % (Seq.PPQ / 2) == 0)       // divisible by 2
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 2)) + " / 2" + ")";
-                    else if (ppq % (Seq.PPQ / 3) == 0)  // divisible by 3
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 3)) + " / 3" + ")";
-                    else if (ppq % (Seq.PPQ / 4) == 0)  // divisible by 4
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 4)) + " / 4" + ")";
-                    else if (ppq % (Seq.PPQ / 6) == 0)  // divisible by 6
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 6)) + " / 6" + ")";
-                    else if (ppq % (Seq.PPQ / 8) == 0)  // divisible by 8
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 8)) + " / 8" + ")";
-                    else if (ppq % (Seq.PPQ / 12) == 0) // divisible by 12
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 12)) + " / 12" + ")";
-                    else if (ppq % (Seq.PPQ / 16) == 0) // divisible by 16
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 16)) + " / 16" + ")";
-                    else if (ppq % (Seq.PPQ / 24) == 0) // divisible by 24
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 24)) + " / 24" + ")";
-                    else if (ppq % (Seq.PPQ / 32) == 0) // divisible by 32
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 32)) + " / 32" + ")";
-                    else if (ppq % (Seq.PPQ / 36) == 0) // divisible by 36
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 36)) + " / 36" + ")";
-                    else if (ppq % (Seq.PPQ / 48) == 0) // divisible by 48
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 48)) + " / 48" + ")";
-                    else if (ppq % (Seq.PPQ / 96) == 0) // divisible by 96
-                        return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 96)) + " / 96" + ")";
-                    else return String.valueOf(ppq) + " / " + Seq.PPQ;
-                    }
-                public double getValue() 
-                    { 
-                    double val = 0;
-                    int delay = 0;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try 
-                        {
-                        delay = getData().getDelay();
-                        val = (delay % Seq.PPQ) / (double)(Seq.PPQ - 1); 
-                        }
-                    finally { lock.unlock(); }
-                    if (button != null) button.setDelay(delay);
-                    return val;
-                    }
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    int delay = 0;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try 
-                        { 
-                        int oldDelay = getData().getDelay();
-                        int oldBeats = oldDelay / Seq.PPQ;
-                        int oldPPQ = oldDelay - (oldBeats * Seq.PPQ);           // Faster than %
-                        delay = oldBeats * Seq.PPQ + (int)(val * (Seq.PPQ - 1));
-                        getData().setDelay(delay);
-                        }
-                    finally { lock.unlock(); }
-                    if (button != null) button.setDelay(delay);
-                    }
-                };
+  fineDelay = new SmallDial((getData().getDelay() % Seq.PPQ) / (double)(Seq.PPQ - 1))
+  {
+  protected String map(double val) 
+  {
+  int ppq = (int)(val * (Seq.PPQ - 1));
+  String ppqVal = String.valueOf(ppq) + " / " + Seq.PPQ;
+  if (ppq == 0) return ppqVal;
+  if (ppq % (Seq.PPQ / 2) == 0)       // divisible by 2
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 2)) + " / 2" + ")";
+  else if (ppq % (Seq.PPQ / 3) == 0)  // divisible by 3
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 3)) + " / 3" + ")";
+  else if (ppq % (Seq.PPQ / 4) == 0)  // divisible by 4
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 4)) + " / 4" + ")";
+  else if (ppq % (Seq.PPQ / 6) == 0)  // divisible by 6
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 6)) + " / 6" + ")";
+  else if (ppq % (Seq.PPQ / 8) == 0)  // divisible by 8
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 8)) + " / 8" + ")";
+  else if (ppq % (Seq.PPQ / 12) == 0) // divisible by 12
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 12)) + " / 12" + ")";
+  else if (ppq % (Seq.PPQ / 16) == 0) // divisible by 16
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 16)) + " / 16" + ")";
+  else if (ppq % (Seq.PPQ / 24) == 0) // divisible by 24
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 24)) + " / 24" + ")";
+  else if (ppq % (Seq.PPQ / 32) == 0) // divisible by 32
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 32)) + " / 32" + ")";
+  else if (ppq % (Seq.PPQ / 36) == 0) // divisible by 36
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 36)) + " / 36" + ")";
+  else if (ppq % (Seq.PPQ / 48) == 0) // divisible by 48
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 48)) + " / 48" + ")";
+  else if (ppq % (Seq.PPQ / 96) == 0) // divisible by 96
+  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 96)) + " / 96" + ")";
+  else return String.valueOf(ppq) + " / " + Seq.PPQ;
+  }
+  public double getValue() 
+  { 
+  double val = 0;
+  int delay = 0;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try 
+  {
+  delay = getData().getDelay();
+  val = (delay % Seq.PPQ) / (double)(Seq.PPQ - 1); 
+  }
+  finally { lock.unlock(); }
+  if (button != null) button.setDelay(delay);
+  return val;
+  }
+  public void setValue(double val) 
+  { 
+  if (seq == null) return;
+  int delay = 0;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try 
+  { 
+  int oldDelay = getData().getDelay();
+  int oldBeats = oldDelay / Seq.PPQ;
+  int oldPPQ = oldDelay - (oldBeats * Seq.PPQ);           // Faster than %
+  delay = oldBeats * Seq.PPQ + (int)(val * (Seq.PPQ - 1));
+  getData().setDelay(delay);
+  }
+  finally { lock.unlock(); }
+  if (button != null) button.setDelay(delay);
+  }
+  };
 
-            fineDelayPresets = new PushButton("Presets...", FINE_DELAY_OPTIONS)
-                {
-                public void perform(int val)
-                    {
-                    if (seq == null) return;
-                    fineDelay.update(FINE_DELAYS[val], false);
-                    }
-                };
+  fineDelayPresets = new PushButton("Presets...", FINE_DELAY_OPTIONS)
+  {
+  public void perform(int val)
+  {
+  if (seq == null) return;
+  fineDelay.update(FINE_DELAYS[val], false);
+  }
+  };
 */
 
             quantization = new JComboBox(QUANTIZATIONS);

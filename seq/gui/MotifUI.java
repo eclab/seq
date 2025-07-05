@@ -113,23 +113,23 @@ public abstract class MotifUI extends JPanel
         textScroll.setMinimumSize(new Dimension(0, 22));
         textScroll.setPreferredSize(textScroll.getMinimumSize());
         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, inspectorScroll, textScroll);
-    	split.setResizeWeight(1.0);     // on resizing, top gets everything
+        split.setResizeWeight(1.0);     // on resizing, top gets everything
         add(split, BorderLayout.EAST);
         buildMenu();
         }     
         
     public void displayNotes()
-    	{
-    	String txt = text.getText();
+        {
+        String txt = text.getText();
         if (txt != null && txt.length() > 0)
-        	{
-        	split.setDividerLocation((int)(sequi.getFrame().getContentPane().getSize().getHeight()) * 3 / 4);
-        	}
+            {
+            split.setDividerLocation((int)(sequi.getFrame().getContentPane().getSize().getHeight()) * 3 / 4);
+            }
         else
-        	{
-	        split.setDividerLocation(-1);           // Honor the top area
-	        }
-    	}  
+            {
+            split.setDividerLocation(-1);           // Honor the top area
+            }
+        }  
         
     public Motif getMotif() { return motif; }
         
@@ -157,13 +157,13 @@ public abstract class MotifUI extends JPanel
     public void buildPrimary(JScrollPane scroll) { }
     
     /** This creates a primary JComponent and returns it.  If your primary JComponent is just the primaryScroll, you should instead override buildPrimary(scroll); 
-    	You can still get the primary scroll, to use it somewhere, as getPrimaryScroll(). */
+        You can still get the primary scroll, to use it somewhere, as getPrimaryScroll(). */
     public JComponent buildPrimary()
-    	{
-    	buildPrimary(primaryScroll);
-    	return primaryScroll;
-    	}
-    	
+        {
+        buildPrimary(primaryScroll);
+        return primaryScroll;
+        }
+        
     /** This method should build but not install any menu.  The menu should be returned with getMenu(). */
     public void buildMenu() { }
     

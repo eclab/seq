@@ -115,17 +115,17 @@ public class SeriesInspector extends WidgetList
                             switch(series.getMIDIType(_i))
                                 {
                                 case Series.CC7:
-                                    {
-                                    return param / 127.0;
-                                    }
+                                {
+                                return param / 127.0;
+                                }
                                 case Series.CC14:
-                                    {
-                                    return param / 31.0;
-                                    }
+                                {
+                                return param / 31.0;
+                                }
                                 default:
-                                    {
-                                    return 0;                       // should not happen
-                                    }
+                                {
+                                return 0;                       // should not happen
+                                }
                                 }
                             }
                         finally { lock.unlock(); }
@@ -141,19 +141,19 @@ public class SeriesInspector extends WidgetList
                             switch(series.getMIDIType(_i))
                                 {
                                 case Series.CC7:
-                                    {
-                                    series.setMIDIParameter(_i, (int)(val * 127.0));
-                                    break;
-                                    }
+                                {
+                                series.setMIDIParameter(_i, (int)(val * 127.0));
+                                break;
+                                }
                                 case Series.CC14:
-                                    {
-                                    series.setMIDIParameter(_i, (int)(val * 31.0));
-                                    break;
-                                    }
+                                {
+                                series.setMIDIParameter(_i, (int)(val * 31.0));
+                                break;
+                                }
                                 default:
-                                    {
-                                    break;
-                                    }
+                                {
+                                break;
+                                }
                                 }
                             }
                         finally { lock.unlock(); }
@@ -164,17 +164,17 @@ public class SeriesInspector extends WidgetList
                         switch(series.getMIDIType(_i))
                             {
                             case Series.CC7:
-                                {
-                                return "" + (int)series.getMIDIParameter(_i);
-                                }
+                            {
+                            return "" + (int)series.getMIDIParameter(_i);
+                            }
                             case Series.CC14:
-                                {
-                                return "" + (int)series.getMIDIParameter(_i);
-                                }
+                            {
+                            return "" + (int)series.getMIDIParameter(_i);
+                            }
                             default:
-                                {
-                                return "Foo";                   // should not happen
-                                }
+                            {
+                            return "Foo";                   // should not happen
+                            }
                             }
                         }
                     };              //.getLabelledDial("127");
@@ -196,13 +196,13 @@ public class SeriesInspector extends WidgetList
                                 case Series.NRPN:
                                 case Series.NRPN_COARSE:
                                 case Series.RPN:
-                                    {
-                                    return (param / 128) / 127.0;
-                                    }
+                                {
+                                return (param / 128) / 127.0;
+                                }
                                 default:
-                                    {
-                                    return 0;                       // should not happen
-                                    }
+                                {
+                                return 0;                       // should not happen
+                                }
                                 }
                             }
                         finally { lock.unlock(); }
@@ -220,16 +220,16 @@ public class SeriesInspector extends WidgetList
                                 case Series.NRPN:
                                 case Series.NRPN_COARSE:
                                 case Series.RPN:
-                                    {
-                                    int lsb = series.getMIDIParameter(_i) % 128;
-                                    series.setMIDIParameter(_i, ((int)(val * 127.0)) * 128 + lsb);
-                                    ((SmallDial)paramsLSB[_i]).redraw();
-                                    break;
-                                    }
+                                {
+                                int lsb = series.getMIDIParameter(_i) % 128;
+                                series.setMIDIParameter(_i, ((int)(val * 127.0)) * 128 + lsb);
+                                ((SmallDial)paramsLSB[_i]).redraw();
+                                break;
+                                }
                                 default:
-                                    {
-                                    break;
-                                    }
+                                {
+                                break;
+                                }
                                 }
                             }
                         finally { lock.unlock(); }
@@ -259,13 +259,13 @@ public class SeriesInspector extends WidgetList
                                 case Series.NRPN:
                                 case Series.NRPN_COARSE:
                                 case Series.RPN:
-                                    {
-                                    return (param % 128) / 127.0;
-                                    }
+                                {
+                                return (param % 128) / 127.0;
+                                }
                                 default:
-                                    {
-                                    return 0;                       // should not happen
-                                    }
+                                {
+                                return 0;                       // should not happen
+                                }
                                 }
                             }
                         finally { lock.unlock(); }
@@ -283,15 +283,15 @@ public class SeriesInspector extends WidgetList
                                 case Series.NRPN:
                                 case Series.NRPN_COARSE:
                                 case Series.RPN:
-                                    {
-                                    int msb = series.getMIDIParameter(_i) / 128;
-                                    series.setMIDIParameter(_i, ((int)(val * 127.0)) + msb * 128);
-                                    break;
-                                    }
+                                {
+                                int msb = series.getMIDIParameter(_i) / 128;
+                                series.setMIDIParameter(_i, ((int)(val * 127.0)) + msb * 128);
+                                break;
+                                }
                                 default:
-                                    {
-                                    break;
-                                    }
+                                {
+                                break;
+                                }
                                 }
                             }
                         finally { lock.unlock(); }
@@ -304,13 +304,13 @@ public class SeriesInspector extends WidgetList
                             case Series.NRPN:
                             case Series.NRPN_COARSE:
                             case Series.RPN:
-                                {
-                                return "" + series.getMIDIParameter(_i);
-                                }
+                            {
+                            return "" + series.getMIDIParameter(_i);
+                            }
                             default:
-                                {
-                                return "Bar";
-                                }
+                            {
+                            return "Bar";
+                            }
                             }
                         }
                     };              //.getLabelledDial("00000");

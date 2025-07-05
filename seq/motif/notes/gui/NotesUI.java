@@ -38,7 +38,7 @@ public class NotesUI extends MotifUI
     TitledBorder notesBorder;
     NotesInspector notesInspector;
     
-	// Menu
+    // Menu
     JMenu menu;
     JCheckBoxMenuItem autoArmItem;
     
@@ -58,10 +58,10 @@ public class NotesUI extends MotifUI
         }
 
 /*
-	public NoteUI getNoteUIFor(Notes.Note note, int pitch)
-		{
-		return gridui.getNoteUIFor(note, pitch);
-		} 
+  public NoteUI getNoteUIFor(Notes.Note note, int pitch)
+  {
+  return gridui.getNoteUIFor(note, pitch);
+  } 
 */
 
     public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
@@ -925,10 +925,10 @@ public class NotesUI extends MotifUI
             // Insert after the selection point if possible
             int[] indices = table.getSelectedIndices();
             if (indices.length > 0)
-            	{
-            	where = indices[0] + 1;
-            	when = notes.getEvents().get(indices[0]).when;
-            	}
+                {
+                where = indices[0] + 1;
+                when = notes.getEvents().get(indices[0]).when;
+                }
             
             switch(type)
                 {
@@ -964,12 +964,12 @@ public class NotesUI extends MotifUI
         table.reload();                                 // we will change the table
         table.setSelection(where);
         /*
-        gridui.rebuild();
-        if (insertedNote != null)
-        	{
-        	gridui.removeAllSelected();
-        	gridui.addSelected(getNoteUIFor(insertedNote, insertedPitch));
-        	}
+          gridui.rebuild();
+          if (insertedNote != null)
+          {
+          gridui.removeAllSelected();
+          gridui.addSelected(getNoteUIFor(insertedNote, insertedPitch));
+          }
         */
         }
 
@@ -1013,16 +1013,16 @@ public class NotesUI extends MotifUI
                 // Add in reverse order so we can insert them properly and retain the indices.
                 // This will be extremely costly, O(n^2)
                 for(int i = indices.length - 1; i >= 0; i--)
-                	{
-                	Notes.Event evt = copy.get(i);
-                	notes.getEvents().add(indices[i] + 1, evt);
-                	}
+                    {
+                    Notes.Event evt = copy.get(i);
+                    notes.getEvents().add(indices[i] + 1, evt);
+                    }
                 // find the events, O(n^2)
-        		int idx = 0;
+                int idx = 0;
                 for(Notes.Event evt : copy)
-                	{
-                	newIndices[idx++] = notes.getEvents().indexOf(evt);
-                	}
+                    {
+                    newIndices[idx++] = notes.getEvents().indexOf(evt);
+                    }
                 }
             finally
                 {
@@ -1174,18 +1174,18 @@ public class NotesUI extends MotifUI
         loadEvents();
         
         /*
-        gridui = new GridUI(this);
-        scroll.setViewportView(gridui);
-        scroll.setRowHeaderView(gridui.getKeyboard());
-        scroll.setVerticalScrollBar(new JScrollBar()
-        	{
-        	public void setValue(int value)
-        		{
-        		super.setValue((value / 16) * 16);
-        		}
-        	});
+          gridui = new GridUI(this);
+          scroll.setViewportView(gridui);
+          scroll.setRowHeaderView(gridui.getKeyboard());
+          scroll.setVerticalScrollBar(new JScrollBar()
+          {
+          public void setValue(int value)
+          {
+          super.setValue((value / 16) * 16);
+          }
+          });
         */
-        			        
+                                        
         //tabs = new JTabbedPane();
         //tabs.addTab("Roll", new JScrollPane(gridui));
         //tabs.addTab("Notes", new JScrollPane(table.getTable())); 
@@ -1215,8 +1215,8 @@ public class NotesUI extends MotifUI
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
         copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
 
-	  Image addNoteIcon = getStaticIcon().getImage().getScaledInstance(16, 16,  java.awt.Image.SCALE_SMOOTH); 
-       PushButton addNoteButton = new PushButton("")
+        Image addNoteIcon = getStaticIcon().getImage().getScaledInstance(16, 16,  java.awt.Image.SCALE_SMOOTH); 
+        PushButton addNoteButton = new PushButton("")
             {
             public void perform()
                 {
@@ -1252,7 +1252,7 @@ public class NotesUI extends MotifUI
         addAftertouchButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
         addAftertouchButton.getButton().setPreferredSize(new Dimension(24, 24));
         addAftertouchButton.setToolTipText(ADD_AFTERTOUCH_BUTTON_TOOLTIP);
-         console = new JPanel();
+        console = new JPanel();
         console.setLayout(new BorderLayout());
                 
         PushButton addCCButton = new PushButton("C")
@@ -1265,7 +1265,7 @@ public class NotesUI extends MotifUI
         addCCButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
         addCCButton.getButton().setPreferredSize(new Dimension(24, 24));
         addCCButton.setToolTipText(ADD_CC_BUTTON_TOOLTIP);
-         console = new JPanel();
+        console = new JPanel();
         console.setLayout(new BorderLayout());
                 
         PushButton addNRPNButton = new PushButton("N")
@@ -1278,7 +1278,7 @@ public class NotesUI extends MotifUI
         addNRPNButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
         addNRPNButton.getButton().setPreferredSize(new Dimension(24, 24));
         addNRPNButton.setToolTipText(ADD_NRPN_BUTTON_TOOLTIP);
-         console = new JPanel();
+        console = new JPanel();
         console.setLayout(new BorderLayout());
                 
         PushButton addRPNButton = new PushButton("R")
