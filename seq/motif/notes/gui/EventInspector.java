@@ -132,11 +132,13 @@ public class EventInspector extends WidgetList
                     {
                     public void actionPerformed(ActionEvent evt)
                         {
+                        int pitch = -1;
                         ReentrantLock lock = seq.getLock();
                         lock.lock();
                         try
                             {
                             event.when = time;
+                            if (event instanceof Notes.Note) { pitch = ((Notes.Note) event).pitch; }
                             notes.computeMaxTime();       // note on/off time has just changed
                             notes.sortEvents(notes.getEvents());
                             }
@@ -146,6 +148,10 @@ public class EventInspector extends WidgetList
                             }
                         notesui.getTable().reload();
                         notesui.getTable().setSelection(notes.getEvents().indexOf(event));              // re-select the event after sorting and reloading
+                        if (pitch != -1)
+                        	{
+                        	notesui.getNoteUIFor(((Notes.Note)event), pitch).reload();
+                			}
                         }
                     });
                 setWhen.setToolTipText(SET_WHEN_TOOLTIP);

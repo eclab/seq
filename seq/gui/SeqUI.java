@@ -613,6 +613,9 @@ public class SeqUI extends JPanel
                 list.select(list.getRoot());
                 setMotifUI(motifui);
                 revalidate();
+                
+                // Change the notes split
+                motifui.displayNotes();
                 repaint();
                 }
             catch (Exception ex)

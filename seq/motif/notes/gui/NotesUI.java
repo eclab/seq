@@ -57,6 +57,13 @@ public class NotesUI extends MotifUI
         return new NotesUI(seq, ui, new Notes(seq, autoArm));
         }
 
+/*
+	public NoteUI getNoteUIFor(Notes.Note note, int pitch)
+		{
+		return gridui.getNoteUIFor(note, pitch);
+		} 
+*/
+
     public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
         {
         return new NotesUI(seq, ui, (Notes)motif);
@@ -909,6 +916,8 @@ public class NotesUI extends MotifUI
         seq.push();
         int where = 0;
         int when = 0;
+        Notes.Note insertedNote = null;
+        int insertedPitch = 0;
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
@@ -924,8 +933,9 @@ public class NotesUI extends MotifUI
             switch(type)
                 {
                 case TYPE_NOTE:
-                    notes.getEvents().add(where, new Notes.Note(60, 127, when, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
+                    notes.getEvents().add(where, insertedNote = new Notes.Note(60, 127, when, 192, 0x40));                // guarantee it's first. It's at time 0 too so we don't need to sort.
                     notes.computeMaxTime();
+                    insertedPitch = insertedNote.pitch;
                     break;
                 case TYPE_AFTERTOUCH:
                     notes.getEvents().add(where, new Notes.Aftertouch(Out.CHANNEL_AFTERTOUCH, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
@@ -953,6 +963,14 @@ public class NotesUI extends MotifUI
             
         table.reload();                                 // we will change the table
         table.setSelection(where);
+        /*
+        gridui.rebuild();
+        if (insertedNote != null)
+        	{
+        	gridui.removeAllSelected();
+        	gridui.addSelected(getNoteUIFor(insertedNote, insertedPitch));
+        	}
+        */
         }
 
     public void doRemove()
@@ -1155,10 +1173,19 @@ public class NotesUI extends MotifUI
             });
         loadEvents();
         
-//        gridui = new GridUI(this);
-//        scroll.setViewportView(gridui);
-//        scroll.setRowHeaderView(gridui.getKeyboard());
-        
+        /*
+        gridui = new GridUI(this);
+        scroll.setViewportView(gridui);
+        scroll.setRowHeaderView(gridui.getKeyboard());
+        scroll.setVerticalScrollBar(new JScrollBar()
+        	{
+        	public void setValue(int value)
+        		{
+        		super.setValue((value / 16) * 16);
+        		}
+        	});
+        */
+        			        
         //tabs = new JTabbedPane();
         //tabs.addTab("Roll", new JScrollPane(gridui));
         //tabs.addTab("Notes", new JScrollPane(table.getTable())); 

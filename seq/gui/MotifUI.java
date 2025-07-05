@@ -22,6 +22,7 @@ public abstract class MotifUI extends JPanel
     public static final int PARAMETER_LIST_NAME_DEFAULT_SIZE = 8;
     public static final int INSPECTOR_NAME_DEFAULT_SIZE = 8;
     public static final Color BACKGROUND = new Color(128, 128, 128);
+    public static final double MINIMUM_DIVIDER_LOCATION_WITH_TEXT = 0.3;
     
     protected Seq seq; 
     protected SeqUI sequi;     
@@ -30,6 +31,7 @@ public abstract class MotifUI extends JPanel
     JPanel footer;
     JPanel header;
     JTextArea text;
+    JSplitPane split;
     MotifListButton primaryButton;
     ArrayList<MotifButton> buttons = new ArrayList<>();
         
@@ -81,7 +83,6 @@ public abstract class MotifUI extends JPanel
         {       
         setLayout(new BorderLayout());  
         inspectorScroll.setBorder(null);
-//        primaryScroll.setDoubleBuffered(true);
         JComponent primary = buildPrimary();
         buildInspectors(inspectorScroll);
         JPanel panel = new JPanel();
@@ -94,15 +95,6 @@ public abstract class MotifUI extends JPanel
         if (header != null) panel.add(header, BorderLayout.NORTH);
         footer = buildConsole();
         if (footer != null) panel.add(footer, BorderLayout.SOUTH);
-        //header = new JPanel();
-        //header.setLayout(new BorderLayout());
-        //header.add(buildHeader(), BorderLayout.WEST);
-        //header = buildHeader();
-        //panel.add(header, BorderLayout.NORTH);
-        //footer = new JPanel();
-        //footer.setLayout(new BorderLayout());
-        //footer.add(buildConsole(), BorderLayout.CENTER);
-        //panel.add(footer, BorderLayout.SOUTH);
         
         String txt = "";
         ReentrantLock lock = seq.getLock();
@@ -120,13 +112,24 @@ public abstract class MotifUI extends JPanel
         JScrollPane textScroll = new JScrollPane(text);
         textScroll.setMinimumSize(new Dimension(0, 22));
         textScroll.setPreferredSize(textScroll.getMinimumSize());
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true,
-            inspectorScroll, textScroll);
-        split.setResizeWeight(1.0);     // on resizing, top gets everything
-        split.setDividerLocation(-1);           // Honor the top area
+        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, inspectorScroll, textScroll);
+    	split.setResizeWeight(1.0);     // on resizing, top gets everything
         add(split, BorderLayout.EAST);
         buildMenu();
-        }       
+        }     
+        
+    public void displayNotes()
+    	{
+    	String txt = text.getText();
+        if (txt != null && txt.length() > 0)
+        	{
+        	split.setDividerLocation((int)(sequi.getFrame().getContentPane().getSize().getHeight()) * 3 / 4);
+        	}
+        else
+        	{
+	        split.setDividerLocation(-1);           // Honor the top area
+	        }
+    	}  
         
     public Motif getMotif() { return motif; }
         
