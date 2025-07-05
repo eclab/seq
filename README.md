@@ -50,6 +50,8 @@ Sadly, it's a whopping 60MB because it includes the Java VM.  :-(
 
 MacOS has lately locked down the ability to run an application that's not from a commercial, paying Apple Developer.  And GMU is not one.  So you will have to instruct Sierra to permit Seq to run.
 
+Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
+
 #### Installing under MacOS X Prior to Sequoia
 
 This is pretty easy. CONTROL-Click on Seq's App Icon, and while holding Control down, select "Open".  Now instead of telling you that Seq cannot be opened because it's from an unidentified developer, you'll be given the option to do so. You probably will only have to do this once.
@@ -88,6 +90,9 @@ The following should work (but has not been tested):
 
 4. See **Running from the command line** below for more glitch-free options.
 
+Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
+
+
 #### Note
 
 Seq makes heavy use of Java preferences.  There is a longstanding Java/Windows bug which breaks Java preferences and will cause Seq to be unable to make any of your preferences persistent.  As of Java 11 the bug should be fixed, but if it's not, please let us know.
@@ -108,6 +113,8 @@ Seq should work fine if you have installed at least *Java 20*.
 4. Thereafter you should be able to just double-click on the file to launch Seq.
 
 6. See **Running from the command line** below for more glitch-free options.
+
+Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
 
 
 ### Running from the command line (MacOS, Windows, Linux)
