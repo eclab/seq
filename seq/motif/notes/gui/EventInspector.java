@@ -148,10 +148,12 @@ public class EventInspector extends WidgetList
                             }
                         notesui.getTable().reload();
                         notesui.getTable().setSelection(notes.getEvents().indexOf(event));              // re-select the event after sorting and reloading
+/*
                         if (pitch != -1)
                             {
                             notesui.getNoteUIFor(((Notes.Note)event), pitch).reload();
                             }
+*/
                         }
                     });
                 setWhen.setToolTipText(SET_WHEN_TOOLTIP);
