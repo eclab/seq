@@ -44,7 +44,7 @@ public class NotesUI extends MotifUI
     
     // The displays
     EventTable table;
-    //GridUI gridui;
+    GridUI gridui;
     //JTabbedPane tabs;
     
     public Notes getNotes() { return notes; }
@@ -57,13 +57,11 @@ public class NotesUI extends MotifUI
         return new NotesUI(seq, ui, new Notes(seq, autoArm));
         }
 
-/*
   public NoteUI getNoteUIFor(Notes.Note note, int pitch)
   {
   return gridui.getNoteUIFor(note, pitch);
   } 
-*/
-
+     
     public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
         {
         return new NotesUI(seq, ui, (Notes)motif);
@@ -963,14 +961,13 @@ public class NotesUI extends MotifUI
             
         table.reload();                                 // we will change the table
         table.setSelection(where);
-        /*
+
           gridui.rebuild();
           if (insertedNote != null)
           {
           gridui.removeAllSelected();
           gridui.addSelected(getNoteUIFor(insertedNote, insertedPitch));
           }
-        */
         }
 
     public void doRemove()
@@ -1173,10 +1170,13 @@ public class NotesUI extends MotifUI
             });
         loadEvents();
         
-        /*
           gridui = new GridUI(this);
           scroll.setViewportView(gridui);
           scroll.setRowHeaderView(gridui.getKeyboard());
+          
+          // FIXME
+          // This isn't working with two-finger trackpad scrolling.  :-(
+          /*
           scroll.setVerticalScrollBar(new JScrollBar()
           {
           public void setValue(int value)
@@ -1184,13 +1184,13 @@ public class NotesUI extends MotifUI
           super.setValue((value / 16) * 16);
           }
           });
-        */
+          */
                                         
         //tabs = new JTabbedPane();
         //tabs.addTab("Roll", new JScrollPane(gridui));
         //tabs.addTab("Notes", new JScrollPane(table.getTable())); 
         
-        scroll.setViewportView(table.getTable());
+        //scroll.setViewportView(table.getTable());
         }
                 
     public JPanel buildConsole()
