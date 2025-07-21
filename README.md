@@ -35,7 +35,7 @@ This is an early release of Seq, and it's got lots of wires sticking out here an
 [A Hierarchical, Modular Sequencer](https://cs.gmu.edu/~sean/papers/audiomostly24.pdf).  With Filippo Carnovalini. Presented at Audio Mostly 2024.
 
 
-## Resources
+## Manual
 
 * Seq has an [initial manual](https://cs.gmu.edu/~eclab/projects/seq/seq.pdf) which explains the basics of using it.
 
