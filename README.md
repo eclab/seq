@@ -1,3 +1,6 @@
+**Please Vote** for Seq in the [MIDI Innovation Awards!](https://midi.org/innovation-awards) (Prototype/noncommercial software category)  
+
+
 ![Seq Splash Banner](docs/web/seq.png)
 
 # Seq  
