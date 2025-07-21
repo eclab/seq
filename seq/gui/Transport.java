@@ -208,6 +208,15 @@ public class Transport extends JPanel implements SeqListener
                     lock.lock();
                     try { seq.setBar((int)(val * 15.0) + 1); }
                     finally { lock.unlock(); }
+                    SwingUtilities.invokeLater(new Runnable()
+                        {
+                        public void run()
+                            {
+                            // Update the motif
+                            MotifUI motifui = sequi.getMotifUI();
+                            if (motifui != null) motifui.redraw(false);
+                            }
+                        });
                     }
                 };
                 
@@ -318,13 +327,13 @@ public class Transport extends JPanel implements SeqListener
         finally { lock.unlock(); }
                 
         if (val <= 0) val = 0;
-        int ticks = val % Seq.PPQ;
+        int ticks = 1 + val % Seq.PPQ;
         if (val < 0) val = 0;
-        int beats = val % (Seq.PPQ * beatsPerBar) / Seq.PPQ;
+        int beats = 1 + val % (Seq.PPQ * beatsPerBar) / Seq.PPQ;
         if (val < 0) val = 0;
-        int bars = val % (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART) / (Seq.PPQ * beatsPerBar);
+        int bars = 1 + val % (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART) / (Seq.PPQ * beatsPerBar);
         if (val <= 0) val = 0;
-        int parts = val / (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART);
+        int parts = 1 + val / (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART);
         
         time.setText("  " + parts + "  :  " + bars + "  :  " + beats + "  :  " + ticks);
         }

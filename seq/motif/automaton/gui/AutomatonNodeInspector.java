@@ -194,7 +194,12 @@ public class AutomatonNodeInspector extends WidgetList
                     final Automaton.Delay ndelay = (Automaton.Delay)node;
                     delay = new TimeDisplay(ndelay.getDelay(), seq)
                         {
-                        public void updateTime(int time)
+                        public int getTime()
+                            {
+                            return ndelay.getDelay(); 
+                            }
+                        
+                        public void setTime(int time)
                             {
                             // called from inside lock
                             ndelay.setDelay(time);
@@ -215,7 +220,12 @@ public class AutomatonNodeInspector extends WidgetList
 
                     delay = new TimeDisplay(nchord.getLength(), seq)
                         {
-                        public void updateTime(int time)
+                        public int getTime()
+                            {
+                            return nchord.getLength();
+                            }
+                        
+                        public void setTime(int time)
                             {
                             // called from inside lock
                             nchord.setLength(time);

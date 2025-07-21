@@ -349,9 +349,9 @@ public class SeqUI extends JPanel
         }
     
     /* Saves the sequence to an existing file. */
-    void doSave()
+    boolean doSave()
         {
-        if (seq.getFile() == null) { doSaveAs(); return; }
+        if (seq.getFile() == null) { return doSaveAs(); }
         
         // Inform MotifUIs so they can update stuff to save out
         for(MotifUI ui : list.getMotifUIs())
@@ -377,10 +377,11 @@ public class SeqUI extends JPanel
             {
             try { if (p != null) p.close(); } catch (Exception ex) { }
             }
+        return true;
         }
 
     /* Pops up the save dialog. */
-    void doSaveAs()
+    boolean doSaveAs()
         {
         FileDialog fd = new FileDialog(getFrame(), "Save Sequence As...", FileDialog.SAVE);
                 
@@ -420,6 +421,11 @@ public class SeqUI extends JPanel
                 {
                 try { if (p != null) p.close(); } catch (Exception ex) { }
                 }
+            return true;
+            }
+        else
+            {
+            return false;
             }
         }
         
@@ -1093,7 +1099,6 @@ public class SeqUI extends JPanel
             {
             lastUpdate = wallClocktime;
             
-            
             int time = 0;   
             ReentrantLock lock = seq.getLock();
             lock.lock();
@@ -1271,20 +1276,24 @@ public class SeqUI extends JPanel
             try
                 {
                 Track[] tracks = seq.getTracks();
-                if (tracks[1] != null) // multi
+                if (tracks == null)
+                    {
+                    System.err.println("SeqUI stopped() ERROR: tracks is null when it should not be.");
+                    }
+                else if (tracks[1] != null) // multi
                     {
                     for(int i = 0; i < Seq.NUM_OUTS; i++)
                         {
                         if (seq.isValidTrack(i))
                             {
                             File file = new File(logFile.getCanonicalPath() + "." + (i + 1) + ".mid");
-                            javax.sound.midi.MidiSystem.write(logs[i], 1, file);
+                            javax.sound.midi.MidiSystem.write(logs[i], 0, file);
                             }
                         }
                     }
                 else
                     {
-                    javax.sound.midi.MidiSystem.write(logs[0], 1, logFile);
+                    javax.sound.midi.MidiSystem.write(logs[0], 0, logFile);
                     }
                 }
             catch (IOException ex)
@@ -1403,8 +1412,21 @@ public class SeqUI extends JPanel
             });
         }
 
-    public void doQuit()
+    public boolean doQuit()
         {
+        int choice = showSimpleChoice("Quit Seq", "Save sequence before quitting?", new String[] { "Cancel", "Save", "Quit" });
+        if (choice == 0)        // cancel
+            {
+            return false;
+            }
+        else if (choice == 1)   // save
+            {
+            return doSave();
+            }
+        else                                    // Quit
+            {
+            return true;
+            }
         }
                 
     void doAbout()
@@ -1447,34 +1469,6 @@ public class SeqUI extends JPanel
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
-        /*
-          ImageIcon icon = new ImageIcon(SeqUI.class.getResource("seq.png"));
-          JFrame frame = new JFrame("About Seq");
-          frame.getContentPane().setLayout(new BorderLayout());
-          frame.getContentPane().setBackground(Color.BLACK);
-          JLabel label = new JLabel(icon);
-
-          frame.getContentPane().add(label, BorderLayout.CENTER);
-
-          JPanel pane = new JPanel()
-          {
-          public Insets getInsets() { return new Insets(10, 10, 10, 10); }
-          };
-          pane.setBackground(Color.WHITE);
-          pane.setLayout(new BorderLayout());
-
-          JLabel edisyn = new JLabel("Seq Version 0, March 2025");
-          edisyn.setBackground(Color.WHITE);
-          edisyn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-          pane.add(edisyn, BorderLayout.SOUTH);
-        
-          frame.add(pane, BorderLayout.SOUTH);
-          frame.pack();
-          frame.setResizable(false);
-          frame.setLocationRelativeTo(null);
-          frame.setVisible(true);
-        */
         }
         
         
@@ -1513,6 +1507,23 @@ public class SeqUI extends JPanel
         return mui;
         }
 
+    static JFrame buildFrame(SeqUI sequi)
+        {
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter()
+            {
+            public void windowClosing(WindowEvent e)
+                {
+                if (sequi.doQuit())
+                    {
+                    System.exit(0);
+                    }
+                }
+            });
+        return frame;
+        }
+
     // TESTING
     public static void main(String[] args) throws Exception
         {
@@ -1538,7 +1549,7 @@ public class SeqUI extends JPanel
         seq.setData(dSeq);
 
         seq.sequi = ui;
-        JFrame frame = new JFrame();
+        JFrame frame = buildFrame(seq.sequi);
         seq.setFile(null);
         frame.setTitle("Untitled");
         ui.setupMenu(frame);
@@ -1565,6 +1576,6 @@ public class SeqUI extends JPanel
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 
         "With Help from Filippo Carnovalini<br>" + 
-        "<b><font color='#3498db'>Version 2</font></b>, July 2025<br>" + 
+        "<b><font color='#3498db'>Version 3</font></b>, July 2025<br>" + 
         "https://github.com/eclab/seq</html>";
     }

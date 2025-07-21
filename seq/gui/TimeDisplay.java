@@ -14,7 +14,7 @@ import java.util.concurrent.locks.*;
 import seq.engine.*;
 
 
-public class TimeDisplay extends JPanel
+public abstract class TimeDisplay extends JPanel
     {
     SmallDial stepsDial;            // 0...191
     SmallDial beatsDial;            // 0...N, where N is 0...255 and can vary
@@ -31,6 +31,11 @@ public class TimeDisplay extends JPanel
     int maxParts;
     int beatsPerBar;
     Seq seq;
+    boolean displaysTime = false;
+    boolean initializing;
+    
+    public boolean getDisplaysTime() { return displaysTime; }
+    public void setDisplaysTime(boolean val) { displaysTime = val; revise(); }
         
     public void setToolTipText(String text) 
         {
@@ -53,64 +58,88 @@ public class TimeDisplay extends JPanel
             int val = seq.getBar();
             if (val != beatsPerBar)
                 { 
-                int time = getTime();
+                int time = getCurrentTime();
                 beatsPerBar = val;
-                setTime(time);
+                revise();
                 return true; 
                 }
             else return false;
             }
         finally { lock.unlock(); }              
         }
-                                
-    public int getTime()
+                    
+    int getCurrentTime()
         {
         return steps + beats * Seq.PPQ + bars * beatsPerBar * Seq.PPQ + parts * Seq.NUM_BARS_PER_PART * beatsPerBar * Seq.PPQ;
         }
-                
-    /** Override this.  It will be called inside the lock. */
-    public void updateTime(int time) { } 
         
-    /** Called from inside lock */
-    void updateTime()
+    /** Override this.  It will be called inside the lock. */
+    abstract protected int getTime();
+        
+    /** Override this.  It will be called inside the lock. */
+    abstract protected void setTime(int time);
+          
+    /** Optionally override this.  It will be called OUTSIDE the lock after setTime is called.
+        Also note that this method will NOT be called when initializing the timeDisplay, though
+        setTime(...) WILL be called. */
+    protected void setTimeOutside(int time) { }
+          
+    /** Changes the underlying time to the time set on the Time Display */
+    public void reviseTime()
         {
-        updateTime(getTime());
-        }
-                     
-    /** Handles lock internally */
-    public void setTime(int time)
-        {
-        // break out
+        int time = getCurrentTime();
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
-            int b = seq.getBar();
-
-            // FIXME: We have to max out the legal time
-            int _maxBeats = Math.min(maxBeats, b);
-            int maxTime = 
-                (maxSteps - 1) + 
-                (_maxBeats - 1) * Seq.PPQ + 
-                (maxBars - 1) * _maxBeats * Seq.PPQ + 
-                (maxParts - 1) * maxBars * _maxBeats * Seq.PPQ;
-            time = Math.min(maxTime, time);
-
-            parts = Math.min(maxParts, time/(Seq.PPQ * b * Seq.NUM_BARS_PER_PART));
-            time -= (parts * Seq.PPQ * seq.getBar() * Seq.NUM_BARS_PER_PART);
-            bars = Math.min(maxBars, time/(Seq.PPQ * b));
-            time -= (bars * Seq.PPQ * b);
-            beats = Math.min(beatsPerBar, Math.min(maxBeats, time/Seq.PPQ));
-            time -= (beats * Seq.PPQ);
-            steps = Math.min(maxSteps, time);
+            setTime(time);
             }
         finally { lock.unlock(); }
-        SwingUtilities.invokeLater(new Runnable() { public void run() { revise(); } });
+        
+        /// This is a hack which prevents constant calls to setTimeOutside when setting up
+        if (!initializing)
+            {
+            setTimeOutside(time);
+            }
         }
 
-    public void revise()
+    // Changes the Time Display to the underlying time.  Called by revise()
+    void updateTime()
+        {
+        int time = 0;
+        int bar = 0;
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            time = getTime();
+            bar = seq.getBar();
+            }
+        finally { lock.unlock(); }
+
+        // FIXME: We have to max out the legal time
+        int _maxBeats = Math.min(maxBeats, bar);
+        int maxTime = 
+            (maxSteps - 1) + 
+            (_maxBeats - 1) * Seq.PPQ + 
+            (maxBars - 1) * _maxBeats * Seq.PPQ + 
+            (maxParts - 1) * maxBars * _maxBeats * Seq.PPQ;
+        time = Math.min(maxTime, time);
+
+        parts = Math.min(maxParts, time/(Seq.PPQ * bar * Seq.NUM_BARS_PER_PART));
+        time -= (parts * Seq.PPQ * seq.getBar() * Seq.NUM_BARS_PER_PART);
+        bars = Math.min(maxBars, time/(Seq.PPQ * bar));
+        time -= (bars * Seq.PPQ * bar);
+        beats = Math.min(beatsPerBar, Math.min(maxBeats, time/Seq.PPQ));
+        time -= (beats * Seq.PPQ);
+        steps = Math.min(maxSteps, time);
+        }
+
+    void revise(boolean update)
         {
         if (stepsDial == null) return;          // we're not quite ready yet
+                
+        if (update) updateTime();
         
         stepsDial.setValue(steps / (double)maxSteps, false);
         beatsDial.setValue(beats / (double)Math.min(maxBeats, beatsPerBar - 1), false);
@@ -120,6 +149,11 @@ public class TimeDisplay extends JPanel
         beatsDial.redraw();
         barsDial.redraw();
         partsDial.redraw();
+        }
+
+    public void revise()
+        {
+        revise(true);
         }
                 
     public static final String[] PRESET_OPTIONS = 
@@ -176,9 +210,27 @@ public class TimeDisplay extends JPanel
         this(time, maxSteps, maxBeats, maxBars, maxParts, seq, true);
         }
         
+    public TimeDisplay(int time, int maxSteps, int maxBeats, int maxBars, int maxParts, Seq seq, boolean showPresets)
+        {
+        this(0, maxSteps, 0, maxBeats, 0, maxBars, 0, maxParts, seq, showPresets);
+        initializing = true;
+        setTime(time);
+        revise(true);
+        initializing = false;
+        }
+                
     public TimeDisplay(int time, Seq seq)
         {
         this(time, seq, true);
+        }
+                
+    public TimeDisplay(int time, Seq seq, boolean showPresets)
+        {
+        this(0, 0, 0, 0, seq, showPresets);
+        initializing = true;
+        setTime(time);
+        revise(true);
+        initializing = false;
         }
                 
     public TimeDisplay(Seq seq)
@@ -199,18 +251,6 @@ public class TimeDisplay extends JPanel
         this(steps, maxSteps, beats, maxBeats, bars, maxBars, parts, maxParts, seq, true); 
         }
 
-    public TimeDisplay(int time, int maxSteps, int maxBeats, int maxBars, int maxParts, Seq seq, boolean showPresets)
-        {
-        this(0, maxSteps, 0, maxBeats, 0, maxBars, 0, maxParts, seq, showPresets);
-        setTime(time);
-        }
-                
-    public TimeDisplay(int time, Seq seq, boolean showPresets)
-        {
-        this(0, 0, 0, 0, seq, showPresets);
-        setTime(time);
-        }
-                
     public TimeDisplay(Seq seq, boolean showPresets)
         {
         this(0, seq, showPresets);
@@ -226,6 +266,7 @@ public class TimeDisplay extends JPanel
         int bars, int maxBars, 
         int parts, int maxParts, Seq seq, boolean showPresets)
         {
+        initializing = true;
         this.seq = seq;
         this.maxSteps = maxSteps;
         this.steps = steps;
@@ -235,7 +276,7 @@ public class TimeDisplay extends JPanel
         this.bars = bars;
         this.maxParts = maxParts;
         this.parts = parts;
-
+        
         stepsDial = new SmallDial(steps)
             {
             protected String map(double val) 
@@ -261,7 +302,7 @@ public class TimeDisplay extends JPanel
                 else if  (ppq == 160)   return "5|6";
                 else if  (ppq == 168)   return "7|8";
                 else if  (ppq == 180)   return "15|16";
-                else return String.valueOf(ppq);
+                else return String.valueOf((displaysTime ? 1 : 0) + ppq);
                 }
                                 
             public double getValue() 
@@ -278,14 +319,14 @@ public class TimeDisplay extends JPanel
                 reviseBeatsPerBar();
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
-                try { TimeDisplay.this.steps = (int)(val * maxSteps); updateTime(); }
+                try { TimeDisplay.this.steps = (int)(val * maxSteps); reviseTime(); }
                 finally { lock.unlock(); }
                 }
             };
 
         beatsDial = new SmallDial(beats)
             {
-            protected String map(double val) { return String.valueOf((int)(val * Math.min(maxBeats, beatsPerBar - 1))); }
+            protected String map(double val) { return String.valueOf((displaysTime ? 1 : 0) + (int)(val * Math.min(maxBeats, beatsPerBar - 1))); }
             public double getValue() 
                 { 
                 reviseBeatsPerBar();
@@ -300,14 +341,14 @@ public class TimeDisplay extends JPanel
                 reviseBeatsPerBar();
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
-                try { TimeDisplay.this.beats = (int)(val * Math.min(maxBeats, beatsPerBar - 1));  updateTime(); }
+                try { TimeDisplay.this.beats = (int)(val * Math.min(maxBeats, beatsPerBar - 1));  reviseTime(); }
                 finally { lock.unlock(); }
                 }
             };
                 
         barsDial = new SmallDial(bars)
             {
-            protected String map(double val) { return String.valueOf((int)(val * maxBars)); }
+            protected String map(double val) { return String.valueOf((displaysTime ? 1 : 0) + (int)(val * maxBars)); }
             public double getValue() 
                 { 
                 reviseBeatsPerBar();
@@ -322,14 +363,14 @@ public class TimeDisplay extends JPanel
                 reviseBeatsPerBar();
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
-                try { TimeDisplay.this.bars = (int)(val * maxBars);  updateTime(); }
+                try { TimeDisplay.this.bars = (int)(val * maxBars);  reviseTime(); }
                 finally { lock.unlock(); }
                 }
             };
 
         partsDial = new SmallDial(parts)
             {
-            protected String map(double val) { return String.valueOf((int)(val *  maxParts)); }
+            protected String map(double val) { return String.valueOf((displaysTime ? 1 : 0) + (int)(val *  maxParts)); }
             public double getValue() 
                 { 
                 reviseBeatsPerBar();
@@ -344,7 +385,7 @@ public class TimeDisplay extends JPanel
                 reviseBeatsPerBar();
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
-                try { TimeDisplay.this.parts = (int)(val * maxParts);  updateTime(); }
+                try { TimeDisplay.this.parts = (int)(val * maxParts);  reviseTime(); }
                 finally { lock.unlock(); }
                 }
             };
@@ -386,6 +427,7 @@ public class TimeDisplay extends JPanel
             }
         add(pan, BorderLayout.CENTER);
         
-        revise();               // we're NOW ready to revise
+        revise(false);               // we're NOW ready to revise
+        initializing = false;
         }
     }

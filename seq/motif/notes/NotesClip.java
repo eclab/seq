@@ -24,11 +24,13 @@ public class NotesClip extends Clip
     boolean didRecord;
     boolean parseRPNNRPN;
 
-    public static final int NO_MIDI_VALUE = -1;
-    int[] lastMIDIValue = new int[Notes.NUM_PARAMETERS];
-    public int getLastMIDIValue(int param) { return lastMIDIValue[param]; }
-    public void setLastMIDIValue(int param, int val) { lastMIDIValue[param] = val; }
-    public void resetMIDIValues() { for(int i = 0; i < Notes.NUM_PARAMETERS; i++) { lastMIDIValue[i] = NO_MIDI_VALUE; } }
+/*
+  public static final int NO_MIDI_VALUE = -1;
+  int[] lastMIDIValue = new int[Notes.NUM_PARAMETERS];
+  public int getLastMIDIValue(int param) { return lastMIDIValue[param]; }
+  public void setLastMIDIValue(int param, int val) { lastMIDIValue[param] = val; }
+  public void resetMIDIValues() { for(int i = 0; i < Notes.NUM_PARAMETERS; i++) { lastMIDIValue[i] = NO_MIDI_VALUE; } }
+*/
     
     public boolean getDidRecord() { return didRecord; }
     public void setDidRecord(boolean val) { didRecord = val; }
@@ -149,79 +151,81 @@ public class NotesClip extends Clip
                 }
             }
         }
-        
-    public void outputMIDIValues(Notes notes)
-        {
-        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-            {
-            int type = notes.getMIDIParameterType(i);
+    
+    /*
+      public void outputMIDIValues(Notes notes)
+      {
+      for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+      {
+      int type = notes.getMIDIParameterType(i);
                         
-            if (type != Notes.NO_MIDI_PARAMETER)
-                {
-                int msb = notes.getMIDIParameterMSB(i);
-                int lsb = notes.getMIDIParameterLSB(i);
+      if (type != Notes.NO_MIDI_PARAMETER)
+      {
+      int msb = notes.getMIDIParameterMSB(i);
+      int lsb = notes.getMIDIParameterLSB(i);
                                 
-                double paramVal = getParameterValue(i);
-                int last = getLastMIDIValue(i);
+      double paramVal = getParameterValue(i);
+      int last = getLastMIDIValue(i);
                                 
-                if (type == Notes.BEND) // it's PITCH BEND
-                    {
-                    int val = (int)(paramVal * 16383 - 8192);
-                    if (val != last)
-                        {
-                        bend(notes.getOut(), val);
-                        setLastMIDIValue(i, val);
-                        }
-                    }
-                else if (type == Notes.CC_7)    // it's CC_7
-                    {
-                    int val = (int)(paramVal * 127);
-                    if (val != last)
-                        {
-                        cc(notes.getOut(), msb, val);
-                        setLastMIDIValue(i, val);
-                        }
-                    }
-                else if (type == Notes.CC_14) // it's CC_14
-                    {
-                    int val = (int)(paramVal * 16383);
-                    if (val != last)
-                        {
-                        cc(notes.getOut(), msb, val >>> 7);
-                        cc(notes.getOut(), msb + 32, val & 127);
-                        setLastMIDIValue(i, val);
-                        }
-                    }
-                else if (type == Notes.NRPN) // it's NRPN
-                    {
-                    int val = (int)(paramVal * 16383);
-                    if (val != last)
-                        {
-                        nrpn(notes.getOut(), msb * 128 + lsb, val);
-                        setLastMIDIValue(i, val);
-                        }
-                    }
-                else                    // it's RPN
-                    {
-                    int val = (int)(paramVal * 16383);
-                    if (val != last)
-                        {
-                        rpn(notes.getOut(), msb * 128 + lsb, val);
-                        setLastMIDIValue(i, val);
-                        }
-                    }
-                }
-            }
-        }
-                
+      if (type == Notes.BEND) // it's PITCH BEND
+      {
+      int val = (int)(paramVal * 16383 - 8192);
+      if (val != last)
+      {
+      bend(notes.getOut(), val);
+      setLastMIDIValue(i, val);
+      }
+      }
+      else if (type == Notes.CC_7)    // it's CC_7
+      {
+      int val = (int)(paramVal * 127);
+      if (val != last)
+      {
+      cc(notes.getOut(), msb, val);
+      setLastMIDIValue(i, val);
+      }
+      }
+      else if (type == Notes.CC_14) // it's CC_14
+      {
+      int val = (int)(paramVal * 16383);
+      if (val != last)
+      {
+      cc(notes.getOut(), msb, val >>> 7);
+      cc(notes.getOut(), msb + 32, val & 127);
+      setLastMIDIValue(i, val);
+      }
+      }
+      else if (type == Notes.NRPN) // it's NRPN
+      {
+      int val = (int)(paramVal * 16383);
+      if (val != last)
+      {
+      nrpn(notes.getOut(), msb * 128 + lsb, val);
+      setLastMIDIValue(i, val);
+      }
+      }
+      else                    // it's RPN
+      {
+      int val = (int)(paramVal * 16383);
+      if (val != last)
+      {
+      rpn(notes.getOut(), msb * 128 + lsb, val);
+      setLastMIDIValue(i, val);
+      }
+      }
+      }
+      }
+      }
+    */
+         
     public boolean process()
         {
         Notes notes = (Notes) getMotif();
         int out = notes.getOut();
         int pos = getPosition();
         
-        if (getPosition() == 0) resetMIDIValues();
-        outputMIDIValues(notes);
+//        if (getPosition() == 0) resetMIDIValues();
+//        outputMIDIValues(notes);
 
         
         if (notes.isArmed() && seq.isRecording())

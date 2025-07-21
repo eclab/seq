@@ -30,6 +30,21 @@ public class Mac
                         ui.doAbout();
                         }
                     });
+
+                java.awt.Desktop.getDesktop().setQuitHandler(new java.awt.desktop.QuitHandler()
+                    {
+                    public void handleQuitRequestWith(java.awt.desktop.QuitEvent e, java.awt.desktop.QuitResponse response)
+                        {
+                        if (ui.doQuit())
+                            {
+                            response.performQuit();
+                            }
+                        else
+                            {
+                            response.cancelQuit();
+                            }
+                        }
+                    });
                 }
             catch (Exception e)
                 {

@@ -225,7 +225,7 @@
 %\begin{wrapfigure}{r}[2.5in]{4in}
 %\vspace{-1.1in}\includegraphics[height=11in]{Flockers.pdf}\end{wrapfigure}
 
-\noindent\huge\bf \booktitle\\
+\noindent\Huge\bf \booktitle\\
 \\
 %{\large\rm A User Manual for the MASON Multiagent Simulation Toolkit}\\
 \\
@@ -236,8 +236,8 @@ George Mason University\\
 sean@cs.gmu.edu}\\
 \\
 \\
-\large\rm {\bf Seq Version 2}\\
-\large\rm {\bf Manual Version 2.0}\\
+\large\rm {\bf Seq Version 3}\\
+\large\rm {\bf Manual Version 3.0}\\
 \large\rm  July 2025\\
 
 \vspace{5in}
@@ -544,9 +544,140 @@ You can also set the default {\bf Swing}, {\bf Velocity}, and {\bf Out}, and Tra
 If you arm one or more Tracks, set their Notes, and set the Sequence's MIDI Input accordingly, then you can record in Notes to those tracks when you press Record on Seq.   You will find this easier if you turn on the metronome and if you set the Step Sequence to be the Root, so it records immediately.  Remember that if your Step Sequence motif is not a descendant of the Root, it will never be reached to do Recording.
 }
 
-
 \clearpage
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=6.5in]{Notes}
+\vspace{-2em}
+\caption{Notes Motif.}
+\label{notes}
+\end{figure}
+
+\subsection{Notes}
+ 
+Notes is simply a collection of MIDI events: MIDI Notes, Pitch Bend events, CC events, NRPN/RPN events, and Aftertouch Events.  Notes are not stored as MIDI Note On/Note Off, but as entire notes with an onset, pitch, velocity, length, and release velocity.   Other events are simply stored as their time stamp and value.  
+
+Like other Motifs, you can give your Notes a {\bf Name} in the Notes Inspector.  
+
+\paragraph{The Note and Event Displays}
+
+Notes are displayed using a {\bf piano player roll} with scroll bars: the Y axis is pitch (with a little keyboard display at left to help you out) and the X axis is time.  The color of the note is its {\bf velocity}.  
+
+Other events are {\bf optionally displayed} above the piano player roll.  In the image above, you can see the time-stream of four such events. You select up to four event types to display with the {\bf Other MIDI Messages} in the Notes Inspector at right.
+
+The color of a non-note event is (at present) its {\bf value}.   The value is also shown with the {\it vertical position} of the event.
+
+ You can change the {\bf maximum length of time} of the piano player roll with a pop-up menu at the bottom of the window, anywhere from 64 to 65536 bars.  Making the length longer doesn't consume more resources, and it's not slower.  But it will make horizontal scrolling more annoying.  So you'd like to keep it reasonably short when possible.
+
+You can {\bf zoom} the piano player roll in and out with the magnifying glass buttons at the bottom of the window.
+
+At the top of the display is the {\bf Ruler}.  Depending on the zoom amount, will display ticks for Bars, Beats, and 16th notes.  It will also show numbers for Bars.
+
+\paragraph{Creating Notes and Events}
+
+The create a note or an event, just double click in its region where you want it to be.
+
+The position of the note or event, and the size of the note, are governed by the {\bf snap} value, which you can set via a pop-up menu at the bottom of the window:
+
+\begin{itemize}
+\item {\bf No Snap}\qquad The note/event onset will be placed right where you clicked.  The note will be a quarter note (a beat).
+\item {\bf Snap to/by 64th}\qquad The note/event onset will be placed at the nearest 64th note.  The note will be a 64th note.
+\item {\bf Snap to/by 16th}\qquad The note/event onset will be placed at the nearest 16th note.  The note will be a 16th note.
+\item {\bf Snap to/by Triplet}\qquad The note/event onset will be placed at the nearest triplet.  The note will be a triplet.
+\item {\bf Snap to/by Beat}\qquad The note/event onset will be placed at the nearest quarter note (beat).  The note will be a quarter note.
+\end{itemize}
+
+\paragraph{Selecting and Adjusting Notes}
+
+You can select a note by clicking on it.  It will get a highlighted selection border in blue.  Once you have selected a note, you can drag it to change its pitch or time.  You can also change the length of the note by clicking and dragging the note near its right end.
+
+You can also select multiple notes by clicking on the display and dragging a rubber-band around them.  
+
+If you hold down the {\bf shift key} you can add and remove notes to your selection by clicking them or rubber-band dragging around them.
+
+If you have selected only one note, its Inspector will appear, and you can change its timestamp, length, pitch, velocity, and release velocity manually.
+
+When you change the time or length of a note and you have {\bf Snap To} turned on (see the pop-up menu at the bottom of the screen), it will {\bf snap} to the nearest 64th note, 16th note, triplet, or beat.  If instead you have {\bf Snap By} turned on, it will {\bf jump} forward or backward by one 64th note, 16th note, triplet, or beat in distance.
+
+If you have lost your notes, just play the {\bf Show Notes} button (the {\bf ``S''} at the bottom of the window, and the piano player roll will scroll to show your selected notes, or any notes at all (if you have nothing selected).
+
+\paragraph{Selecting and Adjusting Non-Note Events}
+
+Just like notes, you can select events by clicking on them, rubber-band selecting them (the rubber band will be a 1-dimensional range, not two-dimensional), and using the {\bf shift key} in the same way.  And if you have selected only one event, its Inspector will appear allowing you to change it more precisely.
+
+You probably don't want to change both the time and value of a non-note event, so there are some constraints to help you out.  When you drag a non-note event what happens depends on what keys you are holding down:
+
+\begin{itemize}
+\item {\bf [Nothing]}\qquad Adjusts value but not time.
+\item {\bf Meta}\qquad Adjusts time but not value.
+\item {\bf Alt/Option}\qquad Adjusts both time and value.
+\item {\bf Control}\qquad If adjusting value, all selected events are set to the same value.
+\end{itemize}        
+
+Adjusting non-note Events in time follow the same {\bf Snap To} and {\bf Snap By} rules as for Notes.  And the {\bf Show Notes} facility also works for selected events.
+
+\paragraph{Deleting and Duplicating}
+
+You can delete your selection with the {\bf Delete Button} (the minus sign) at the bottom of the window.  You can duplicate your selection with the {\bf Duplicate Button} next to it.  You can also delete from an option in the {\bf Notes Menu}  
+
+\paragraph{Playing Notes (and other Events)}
+
+When Notes is played, it plays through and emits all its events in order exactly once, then stops.  You can optionally set an {\bf End} point in the Inspector sometime {\it after} the last notes and events.  This will tell the Notes to stop at an End point later than the notes and events.  If you set the End point earlier than the last notes and events, it does nothing.
+
+All notes and events are emitted out the same MIDI output specified by the {\bf Out} in the Notes Inspector.
+
+\paragraph{Recording Notes (and other Events)}
+
+You can record notes from MIDI into the Notes.  To do this you must first {\bf Arm} the Notes: check the {\bf Armed} checkbox in the Notes Inspector.  Then start recording by pressing the record button.  Recording will only start once it's the Notes's time to play.  Notes will record MIDI from the MIDI Input specified by the {\bf In} in the Notes Inspector.
+
+If you check the {\bf Echo} checkbox in the Notes Inspector, Notes will play to its Output all the notes it receives at its Input while recording.
+
+If you check the {\bf Record Bend}, {\bf Record Aftertouch}, or {\bf Record CC} checkboxes, Notes will record these events: otherwise it will ignore and discard them while recording. 
+
+Finally, if you check the {\bf Make NRPN/RPN} checkbox, Notes will attempt to build NRPN or RPN parameters as it receives them.  NRPN and RPN parameters are made up of collections of CC messages, so if those CC messages are used to build a parameter, the CC messages will not be recorded as CC messages but as NRPN or RPN.  
+
+
+
+\paragraph{The Notes Menu} Notes has a number of items under its menu.  Many of these items are applied to either all events or to a subset of them, depending on how you have selected notes or non-note events: 
+
+\begin{itemize}
+\item {\bf Selecting Notes or Events} will cause the menu item to only apply to the selection.
+\item {\bf Setting a Range in the Ruler}.  You can drag in the ruler to create a range of time.  Menu items will apply to {\it all events}, both note and non-note events, within that range.  You can deactivate the ruler range by clicking in the ruler.  Note that the ruler range does not effect Deletion or Copying: they require selection.
+\item {\bf All Events and Notes}.  If nothing is selected, and there is no ruler range set, then the menu item will apply to all notes.
+\end{itemize}
+
+\noindent The menu items are:
+
+\begin{itemize}
+
+\item{\bf Load MIDI File...}\quad will load MIDI data from a MIDI file, replacing the existing data.
+
+\item{\bf Quantize...}\quad gives options for quantizing all or a selection/ruler range of your notes or event data. 
+
+ A note about  the {\bf quantization bias}.  What is this?  Normally quantizers just round the notes up or down to the nearest quantized position, but this is often wrong.  As a human, you may tend to play more notes early than late (or vice versa), resulting in an error distribution which is {\it ought} to favor the earlier quantized positions more than the later one (or vice versa).  You can set the bias to match your personal tendencies.
+
+\item{\bf Stretch Time...}\quad stretches the time of all of your data or the selection/ruler range.
+
+\item{\bf Trim Blank Time from Start}\quad removes empty time from the start of your data.  Your first event will start at timestep 0 in the Notes.
+
+\item{\bf Randomize Time...}\quad gives options for adding noise to the onset and optionally the duration of all of your data or the selection/ruler range.
+
+\item{\bf Set Velocity...}\quad lets you set the velocity of all notes or those in the selection/ruler range.
+
+\item{\bf Randomize Velocity...}\quad gives options for adding noise to the velocity of all notes or those in the selection/ruler range.
+
+\item{\bf Delete Selection}\quad deletes the selected events.
+
+\item{\bf Filter...}\quad gives options for filtering out (deleting) notes, bend data, CC data, RPN and NRPN data, or aftertouch data.  Since selection is applied to a single kind of data, Filter is really is only appropriate for filtering all data, or data within the ruler range (not selection).
+
+\item{\bf Arm New Notes Motifs}\quad sets it so that new Notes Motifs will automatically be armed (or not).
+
+\end{itemize}
+
+
+\ignore
+{
 \begin{figure}[t]
 \centering
 \includegraphics[width=6.5in]{Notes}
@@ -622,6 +753,7 @@ When recording, you can filter out CC (which also filters out RPN and NRPN), Pit
 \item{\bf Arm New Notes Motifs}\quad sets it so that new Notes Motifs will automatically be armed (or not).
 
 \end{itemize}
+}
 
 
 \clearpage
@@ -636,7 +768,7 @@ When recording, you can filter out CC (which also filters out RPN and NRPN), Pit
 
 \subsection{Silence}
 
-Silence is nothing more than a fixed-length chunk of silence.    You can specify the {\bf length} in parts, bars (measures), beats, and ticks.  There are 192 ticks per beat, and 256 bars per part.  The number of beats per bar depends on your clock settings.  As this is tedious, you can also select from some {\bf presets}.
+Silence is nothing more than a fixed-length chunk of silence.    You can specify the {\bf length} in parts, bars (measures), beats, and ticks.  There are 192 ticks per beat, and 256 bars per part.  The number of beats per bar depends on your clock settings.
 
 \clearpage
 

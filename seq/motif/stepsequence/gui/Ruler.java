@@ -18,7 +18,9 @@ import java.util.*;
 public class Ruler extends JPanel
     {
     public static final int RULER_HEIGHT = 16;
-    Dimension minSize = new Dimension(0, RULER_HEIGHT);
+    public static final Color PLAY_COLOR = Color.BLACK;
+    public static final BasicStroke PLAY_STROKE = new BasicStroke(3.0f);
+    public static final Dimension minSize = new Dimension(0, RULER_HEIGHT);
     Seq seq;
     StepSequenceUI ssui;
     StepSequence ss;
@@ -41,15 +43,27 @@ public class Ruler extends JPanel
         super.paint(_g);
         int width = ssui.getTrackWidth();
         int x = ssui.getTrackX();
+        double pos = 0;
         
         StepSequenceClip clip = (StepSequenceClip)(ssui.getDisplayClip());
         if (clip != null)
             {
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                pos = clip.getCurrentPos(0);
+                }
+            finally
+                {
+                lock.unlock();
+                }
+
             Graphics2D g = (Graphics2D) _g;
-            g.setPaint(Color.BLACK);
-            g.setStroke(new BasicStroke(3.0f));
-            double pos = width * clip.getCurrentPos(0) - x;         // FIXME this is wrong
-            g.draw(new Line2D.Double(pos, 0, pos, getBounds().height));
+            g.setPaint(PLAY_COLOR);
+            g.setStroke(PLAY_STROKE);
+            double gpos = width * pos - x;
+            g.draw(new Line2D.Double(gpos, 0, gpos, getBounds().height));
             }
         }
 

@@ -125,13 +125,16 @@ public class Out
         javax.sound.midi.Track[] tracks = seq.getTracks();
         if (tracks != null)
             {
+            System.err.println("Tracks not null");
             if (tracks[1] != null)  // it's multi
                 {
+                System.err.println("Tracks multi");
                 tracks[index].add(new javax.sound.midi.MidiEvent(message, seq.getTime()));
                 seq.setValidTrack(index, true);
                 }
             else
                 {
+                System.err.println("Tracks single");
                 tracks[0].add(new javax.sound.midi.MidiEvent(message, seq.getTime()));
                 }
             }

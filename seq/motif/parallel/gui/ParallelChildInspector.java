@@ -259,12 +259,14 @@ public class ParallelChildInspector extends WidgetList
 
             delay = new TimeDisplay(getData().getDelay() , seq)
                 {
-                public void updateTime(int time)
+                public int getTime()
                     {
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { getData().setDelay(time); }
-                    finally { lock.unlock(); }
+                    return getData().getDelay(); 
+                    }
+                        
+                public void setTime(int time)
+                    {
+                    getData().setDelay(time);
                     if (button != null) button.setDelay(time);
                     }
                 };

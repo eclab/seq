@@ -33,49 +33,40 @@ public class EventInspector extends WidgetList
     SmallDial parameterLSB;
     SmallDial valueMSB;
     SmallDial valueLSB;
-    JButton setWhen;
-    JPanel whenPanel;
+    JButton setParameter;
     JLabel parameterResult;
     JLabel valueResult;
     PushButton valuePresets;
-    int time;
-    
+    int param;    
+    int pitchTemp;
+    int typeTemp;
+    int type;
 
     public static final String[] BEND_OPTIONS = new String[] { "-4096", "-1024", "-256", "-64", "-16", "-8", "-4", "-2", "-1", "0", "1", "2", "4", "8", "16", "64", "256", "1024", "4096" };
     public static final int[] BEND_VALUES = new int[] { -4096, -1024, -256, -64, -16, -8, -4, -2, -1, 0, 1, 2, 4, 8, 16, 64, 256, 1024, 4096 };
         
     public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-    /** Returns the index for the event, or -1 if it does not appear to exist. */
-    public int getIndex() 
-        { 
-        // Find the index, it may have changed
-        ReentrantLock lock = seq.getLock();
-        lock.lock();
-        try
-            {
-            ArrayList<Notes.Event> events = notes.getEvents();
-            for(int i = 0; i < events.size(); i++)
-                {
-                if (events.get(i) == event)     // got it
-                    {
-                    return i;
-                    }
-                }
-            }
-        finally
-            {
-            lock.unlock();
-            }
-        return -1;                      // couldn't find it!
-        }
-    
+    public Notes.Event getEvent() { return event; }
+
     void updateTable()
         {
         notesui.repaint();
         }
+        
+    public String getName() 
+        { 
+        if (type < Notes.TYPE_CC)  // it's a note, don't show the pitch
+            {
+            return Notes.getTypeInitial(type); 
+            }
+        else
+            {
+            return Notes.getTypeName(type); 
+            }
+        }
     
-    public EventInspector(Seq seq, Notes notes, NotesUI notesui, int index)
+    public EventInspector(Seq seq, Notes notes, NotesUI notesui, Notes.Event event)
         {
         String[] strs = null;
         JComponent[] comps = null;
@@ -83,111 +74,102 @@ public class EventInspector extends WidgetList
         this.seq = seq;
         this.notes = notes;
         this.notesui = notesui;
-
-        ReentrantLock lock = seq.getLock();
-        lock.lock();
-        try
-            {
-            ArrayList<Notes.Event> evts = notes.getEvents();
-            if (index < 0 || index >= evts.size())
-                {
-                this.event = null;
-                }
-            else
-                {
-                this.event = evts.get(index);
-                }
-            }
-        finally
-            {
-            lock.unlock();
-            }
-
+        this.type = event.getType();
+        this.event = event;
 
         if (event == null)
             {
-            strs = new String[] { "Type" };
-            comps = new JComponent[] { new JLabel("Missing") };
-            build(strs, comps);
+            //strs = new String[] { "Type" };
+            //comps = new JComponent[] { new JLabel("Missing") };
+            //build(strs, comps);
             }
         else
             {
+            ReentrantLock lock = seq.getLock();
             lock = seq.getLock();
             lock.lock();
             try
                 {
-                time = event.when;
                 when = new TimeDisplay(event.when, seq)
                     {
-                    public void updateTime(int time)
+                    public int getTime()
+                        {
+                        return event.when;
+                        }
+
+                    public void setTime(int time)
                         {
                         // this is already inside the lock but whatever
-                        EventInspector.this.time = time;
+                        event.when = time; 
+                        notes.computeMaxTime();       // note off time has just changed
+                        if (event instanceof Notes.Note)
+                            {
+                            pitchTemp = ((Notes.Note)event).pitch;
+                            }
+                        typeTemp = event.getType();
+                        }
+                        
+                    public void setTimeOutside(int time)
+                        {
+                        updateTable();
+                        if (event instanceof Notes.Note)
+                            {
+                            NoteUI noteui = notesui.getNoteUIFor((Notes.Note)event, pitchTemp);
+                            if (noteui != null) 
+                                {
+                                noteui.reload();
+                                notesui.getGridUI().getPitchUIs().get(pitchTemp).repaint();
+                                }
+                            }
+                        else
+                            {
+                            EventUI eventui = notesui.getEventUIFor(event, typeTemp);
+                            if (eventui != null) 
+                                {
+                                eventui.reload();
+                                ParameterUI parameterui = notesui.getEventsUI().getParameterUIFor(typeTemp);
+                                if (parameterui != null)
+                                    {
+                                    parameterui.repaint();
+                                    }
+                                }
+                            }
                         }
                     };
                 when.setToolTipText(WHEN_TOOLTIP);
-                                        
-                setWhen = new JButton("Set");
-                setWhen.addActionListener(new ActionListener()
-                    {
-                    public void actionPerformed(ActionEvent evt)
-                        {
-                        int pitch = -1;
-                        ReentrantLock lock = seq.getLock();
-                        lock.lock();
-                        try
-                            {
-                            event.when = time;
-                            if (event instanceof Notes.Note) { pitch = ((Notes.Note) event).pitch; }
-                            notes.computeMaxTime();       // note on/off time has just changed
-                            notes.sortEvents(notes.getEvents());
-                            }
-                        finally
-                            {
-                            lock.unlock();
-                            }
-                        notesui.getTable().reload();
-                        notesui.getTable().setSelection(notes.getEvents().indexOf(event));              // re-select the event after sorting and reloading
-/*
-                        if (pitch != -1)
-                            {
-                            notesui.getNoteUIFor(((Notes.Note)event), pitch).reload();
-                            }
-*/
-                        }
-                    });
-                setWhen.setToolTipText(SET_WHEN_TOOLTIP);
+                when.setDisplaysTime(true);
 
                 JPanel vert = new JPanel();
                 vert.setLayout(new BorderLayout());
                 JLabel temp = new JLabel(" ");
                 temp.setFont(SmallDial.FONT);
                 vert.add(temp, BorderLayout.NORTH);
-                vert.add(setWhen, BorderLayout.CENTER);
+                vert.add(when, BorderLayout.CENTER);
                 temp = new JLabel(" ");
                 temp.setFont(SmallDial.FONT);
                 vert.add(temp, BorderLayout.SOUTH);
-                                        
-                whenPanel = new JPanel();
-                whenPanel.setLayout(new BorderLayout());
-                whenPanel.add(when, BorderLayout.WEST);
-                whenPanel.add(vert, BorderLayout.EAST);
-                whenPanel.setToolTipText(WHEN_TOOLTIP);
-
-
-
                                         
                 if (event instanceof Notes.Note)
                     {
                     Notes.Note note = (Notes.Note) event;
                     length = new TimeDisplay(note.length, seq)
                         {
-                        public void updateTime(int time)
+                        public int getTime()
+                            {
+                            return note.length;
+                            }
+                        
+                        public void setTime(int time)
                             {
                             // this is already inside the lock but whatever
                             note.length = time; 
                             notes.computeMaxTime();       // note off time has just changed
+                            }
+                        
+                        public void setTimeOutside(int time)
+                            {
                             updateTable();
+                            notesui.getGridUI().reloadSelected();
                             }
                         };
                     length.setToolTipText(LENGTH_TOOLTIP);
@@ -214,6 +196,7 @@ public class EventInspector extends WidgetList
                             try { note.pitch = (int)(val * 127.0); }
                             finally { lock.unlock(); }
                             updateTable(); 
+                            notesui.getGridUI().reloadSelected();
                             }
                         };
                     pitch.setToolTipText(PITCH_TOOLTIP);
@@ -236,6 +219,7 @@ public class EventInspector extends WidgetList
                             try { note.velocity = (int)(val * 126.0) + 1;  }
                             finally { lock.unlock(); }
                             updateTable(); 
+                            notesui.getGridUI().reloadSelected();
                             }
                         };
                     velocity.setToolTipText(VELOCITY_TOOLTIP);
@@ -258,15 +242,16 @@ public class EventInspector extends WidgetList
                             try { note.release = (int)(val * 127.0);  }
                             finally { lock.unlock(); }
                             updateTable(); 
+                            notesui.getGridUI().reloadSelected();               // Maybe not necessary?
                             }
                         };
                     release.setToolTipText(RELEASE_VELOCITY_TOOLTIP);
 
-                    strs = new String[] { "Type", "When", "Length", "Pitch", "Velocity", "Release" };
+                    strs = new String[] { /*"Type",*/ "When", "Length", "Pitch", "Velocity", "Release" };
                     comps = new JComponent[] 
                         {
-                        new JLabel("Note"),
-                        whenPanel,
+                        //new JLabel("Note"),
+                        when,
                         length,
                         pitch.getLabelledDial("A#"),
                         velocity.getLabelledDial("127"),
@@ -294,6 +279,8 @@ public class EventInspector extends WidgetList
                             try { bend.value = (((int)(val * 16383.0)) - 8192);  }
                             finally { lock.unlock(); }
                             updateTable(); 
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     value.setScale(512.0);      // increase resolution
@@ -320,11 +307,11 @@ public class EventInspector extends WidgetList
                     valuePanel.add(valuePresets, BorderLayout.EAST); 
                     valuePanel.setToolTipText(VALUE_TOOLTIP);
         
-                    strs = new String[] { "Type", "When", "Bend" };
+                    strs = new String[] { /*"Type",*/ "When", "Bend" };
                     comps = new JComponent[] 
                         {
-                        new JLabel("Bend"),
-                        whenPanel,
+                        //new JLabel("Bend"),
+                        when,
                         valuePanel,
                         //value.getLabelledDial("-8192")
                         };
@@ -351,6 +338,7 @@ public class EventInspector extends WidgetList
                             try { cc.parameter = (int)(val * 127.0); }
                             finally { lock.unlock(); }
                             updateTable();  
+//                            notesui.getEventsUI().rebuild();
                             }
                         };
                     parameter.setToolTipText(PARAMETER_TOOLTIP);
@@ -373,16 +361,18 @@ public class EventInspector extends WidgetList
                             try { cc.value = (int)(val * 127.0); }
                             finally { lock.unlock(); }
                             updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     value.setToolTipText(VALUE_TOOLTIP);
 
-                    strs = new String[] { "Type", "When", "Parameter", "Value" };
+                    strs = new String[] { /*"Type",*/ "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
-                        new JLabel("CC"),
-                        whenPanel,
-                        parameter.getLabelledDial("127"),
+                        //new JLabel("CC"),
+                        when,
+                        //parameter.getLabelledDial("127"),
                         value.getLabelledDial("127")
                         };
                     }
@@ -413,6 +403,7 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             parameterResult.setText(" " + param);
                             updateTable();  
+//                            notesui.getEventsUI().rebuild();
                             }
                         };
                     parameterMSB.setToolTipText(PARAMETER_MSB_TOOLTIP);
@@ -437,6 +428,8 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             parameterResult.setText(" " + param);
                             updateTable();  
+                            // WARNING: this causes the EventUI to be rebuilt multiple times
+//                            notesui.getEventsUI().rebuild();
                             }
                         };
                     parameterLSB.setToolTipText(PARAMETER_LSB_TOOLTIP);
@@ -461,6 +454,8 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             valueResult.setText(" " + value);
                             updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     valueMSB.setToolTipText(VALUE_MSB_TOOLTIP);
@@ -485,6 +480,8 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             valueResult.setText(" " + value);
                             updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     valueLSB.setToolTipText(VALUE_LSB_TOOLTIP);
@@ -513,12 +510,12 @@ public class EventInspector extends WidgetList
                     pan3.add(pan4, BorderLayout.CENTER);
                     pan3.setToolTipText(VALUE_RESULT_TOOLTIP);
 
-                    strs = new String[] { "Type", "When", "Parameter", "Value" };
+                    strs = new String[] { /*"Type",*/ "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
-                        new JLabel("NRPN"),
-                        whenPanel,
-                        pan1,
+                        //new JLabel("NRPN"),
+                        when,
+                        //pan1,
                         pan3,
                         };
                     }
@@ -549,7 +546,8 @@ public class EventInspector extends WidgetList
                             try { param = rpn.parameter = (((int)(val * 127.0)) << 7) + (rpn.parameter & 127); }
                             finally { lock.unlock(); }
                             parameterResult.setText(" " + param);
-                            updateTable();  
+                            updateTable();
+//                            notesui.getEventsUI().rebuild();
                             }
                         };
                     parameterMSB.setToolTipText(PARAMETER_MSB_TOOLTIP);
@@ -574,6 +572,7 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             parameterResult.setText(" " + param);
                             updateTable();  
+//                            notesui.getEventsUI().rebuild();
                             }
                         };
                     parameterLSB.setToolTipText(PARAMETER_LSB_TOOLTIP);
@@ -598,6 +597,8 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             valueResult.setText(" " + value);
                             updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     valueMSB.setToolTipText(VALUE_MSB_TOOLTIP);
@@ -622,6 +623,8 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             valueResult.setText(" " + value);
                             updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     valueLSB.setToolTipText(VALUE_LSB_TOOLTIP);
@@ -650,12 +653,12 @@ public class EventInspector extends WidgetList
                     pan3.add(pan4, BorderLayout.CENTER);
                     pan3.setToolTipText(VALUE_RESULT_TOOLTIP);
 
-                    strs = new String[] { "Type", "When", "Parameter", "Value" };
+                    strs = new String[] { /*"Type",*/ "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
-                        new JLabel("RPN"),
-                        whenPanel,
-                        pan1,
+                        //new JLabel("RPN"),
+                        when,
+                        //pan1,
                         pan3,
                         };
                     }
@@ -693,7 +696,7 @@ public class EventInspector extends WidgetList
 
                     value = new SmallDial(aftertouch.value / 127.0)
                         {
-                        protected String map(double val) { return "" + (int)(aftertouch.value * 127.0); }
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
@@ -709,15 +712,17 @@ public class EventInspector extends WidgetList
                             try { aftertouch.value = (int)(val * 127.0); }
                             finally { lock.unlock(); }
                             updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     value.setToolTipText(VALUE_TOOLTIP);
 
-                    strs = new String[] { "Type", "When", "Pitch", "Value" };
+                    strs = new String[] { /*"Type",*/ "When", "Pitch", "Value" };
                     comps = new JComponent[] 
                         {
-                        new JLabel("Aftertouch"),
-                        whenPanel,
+                        //new JLabel("Aftertouch"),
+                        when,
                         pitch.getLabelledDial("A#"),
                         value.getLabelledDial("127")
                         };
@@ -755,18 +760,6 @@ public class EventInspector extends WidgetList
         if (valueResult != null) valueResult.repaint();
         }
  
- 
-    /*
-      static final String TYPE_TOOLTIP = "<html><b>Type</b><br>" +
-      "The type of the event.  Types can be any of:</br>" +
-      "<ul>" + 
-      "<li> Notes" + 
-      "<li> Aftertouch Events, both Polyphonic (per-note) and Channel (whole-keyboard)" + 
-      "<li> Pitch Bend Events, each with a value" + 
-      "<li> Control Change (CC) Messages, each with a parameter and value" + 
-      "<li> Non-Registered Parameter Number (NRPN) Messages, each with a parameter and value." + 
-      "<li> Registered Parameter Number (RPN) Messages, each with a parameter and value.</html>";
-    */
  
     static final String WHEN_TOOLTIP = "<html><b>When</b><br>" +
         "Adjusts when this event occurs.  To set it, press <b>Set</b>.</html>";

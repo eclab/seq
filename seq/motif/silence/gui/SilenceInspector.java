@@ -28,6 +28,7 @@ public class SilenceInspector extends WidgetList
         this.silence = silence;
         this.silenceui = silenceui;
 
+        
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
@@ -55,15 +56,20 @@ public class SilenceInspector extends WidgetList
                 };
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
 
-
-            time = new TimeDisplay(seq)
+            time = new TimeDisplay(silence.getLength(), seq)
                 {
-                public void updateTime(int time)
+                public int getTime()
+                    {
+                    return silence.getLength();
+                    }
+                        
+                public void setTime(int time)
                     {
                     silence.setLength(time);
                     }
                 };
-
+                
+            time.revise();
             }
         finally { lock.unlock(); }
 

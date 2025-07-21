@@ -20,14 +20,111 @@ public class Notes extends Motif
     private static final long serialVersionUID = 1;
 
     public static final String MIDI_FILE_EXTENSION = ".mid";
-
+    public static final int NUM_EVENT_PARAMETERS = 4;
     int end = 0;
+
+        
+    // TYPES are in the following order:
+    // 0-127            Note by Pitch
+    // 128-255          CC
+    // 256-383          Poly Aftertouch by Pitch
+    // 384                      Channel Aftertouch
+    // 385                      Pitch Bend
+    // 386-16383        [RESERVED] -- future use, 16-bit CC, PC, and sysex perhaps
+    // 16384-32767      NRPN
+    // 32768-49151      RPN
+    
+    public static final int TYPE_NOTE = 0;
+    public static final int TYPE_CC = 128;
+    public static final int TYPE_POLYPHONIC_AFTERTOUCH = 256;
+    public static final int TYPE_CHANNEL_AFTERTOUCH = 384;
+    public static final int TYPE_PITCH_BEND = 385;
+    public static final int TYPE_NRPN = 16384;
+    public static final int TYPE_RPN = 32768;
+    
+    public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+    
+    public static Event buildEvent(int type, int when, double value)
+        {
+        if (!isValidType(type)) return null;
+        if (type < TYPE_CC) return new Note(type - TYPE_NOTE, (int)(value * 128), when, 0);
+        if (type < TYPE_POLYPHONIC_AFTERTOUCH) return new CC(type - TYPE_CC, (int)(value * 128), when);
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch(type - TYPE_POLYPHONIC_AFTERTOUCH, (int)(value * 128), when);
+        if (type == TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch((int)(value * 128), when);
+        if (type == TYPE_PITCH_BEND) return new Bend((int)(value * 16384) - 8192, when);
+        if (type < TYPE_RPN) return new NRPN(type - TYPE_NRPN, (int)(value * 16384), when);
+        return new RPN(type - TYPE_RPN, (int)(value * 16384), when);
+        }
+    
+    public static String getTypeInitialShort(int type)  
+        {
+        if (!isValidType(type)) return "ERR";
+        if (type < TYPE_CC) return "Note";
+        if (type < TYPE_POLYPHONIC_AFTERTOUCH) return "CC";
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return "P AT";
+        if (type == TYPE_CHANNEL_AFTERTOUCH) return "Ch AT";
+        if (type == TYPE_PITCH_BEND) return "Bend";
+        if (type < TYPE_RPN) return "NRPN";
+        return "RPN";
+        }
+
+    public static String getTypeInitial(int type)       
+        {
+        if (!isValidType(type)) return "<error>";
+        if (type < TYPE_CC) return "Note";
+        if (type < TYPE_POLYPHONIC_AFTERTOUCH) return "Control Change";
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return "Polyphonic Aftertouch";
+        if (type == TYPE_CHANNEL_AFTERTOUCH) return "Channel Aftertouch";
+        if (type == TYPE_PITCH_BEND) return "Pitch Bend";
+        if (type < TYPE_RPN) return "NRPN";
+        return "RPN";
+        }
+
+    public static String getTypeFinal(int type) 
+        {
+        if (!isValidType(type)) return "<error>";
+        if (type < TYPE_CC) return "" + (type - TYPE_NOTE);
+        if (type < TYPE_POLYPHONIC_AFTERTOUCH) return "" + (type - TYPE_CC);
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return NOTES[(type - TYPE_POLYPHONIC_AFTERTOUCH) % 12] + ((type - TYPE_POLYPHONIC_AFTERTOUCH) / 12);
+        if (type == TYPE_CHANNEL_AFTERTOUCH) return "";
+        if (type == TYPE_PITCH_BEND) return "";
+        if (type < TYPE_RPN) return "" + (type - TYPE_NRPN);
+        return "" + (type - TYPE_RPN);
+        }
+
+    public static String getTypeName(int type)   
+        {
+        if (!isValidType(type)) return "<error>";
+
+        String header = getTypeInitial(type);
+        String footer = getTypeFinal(type);
+        
+        if (type < TYPE_CC) return header + " " + footer;
+        if (type < TYPE_POLYPHONIC_AFTERTOUCH) return header + " " + footer;
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return header + " " + footer;
+        if (type == TYPE_CHANNEL_AFTERTOUCH) return header;
+        if (type == TYPE_PITCH_BEND) return header;
+        if (type < TYPE_RPN) return header + " " + footer;
+        return header + " " + footer;
+        }
+        
+
+    public static boolean isValidType(int type)
+        {
+        if (type < TYPE_NOTE) return false;
+        if (type > TYPE_PITCH_BEND && type < TYPE_NRPN) return false;
+        if (type > TYPE_RPN + 16384) return false;
+        return true;
+        }
 
     public abstract static class Event
         {
         public static final int MAX_LENGTH = Seq.PPQ * 256;
         public int when;
         public int length;
+        // Is this event selected?  This is stored here even though it's not part of the model
+        // because the NoteUI etc. objects where it would more naturally be stored can get
+        // destroyed and rebuilt from the Event at any time and need to recover this information.
         public boolean selected;
         public Event(int when, int length)
             {
@@ -51,9 +148,9 @@ public class Notes extends Motif
                 return new CC(obj);
             else if (type.equals("a"))
                 return new Aftertouch(obj);
-            else if (type.equals("n"))
+            else if (type.equals("N"))
                 return new NRPN(obj);
-            else if (type.equals("r"))
+            else if (type.equals("R"))
                 return new RPN(obj);
             else 
                 {
@@ -72,6 +169,11 @@ public class Notes extends Motif
             }
         
         public abstract Event copy();
+        
+        public abstract double getNormalizedValue();
+        public abstract void setNormalizedValue(double value);
+        public abstract int getParameter();
+        public abstract int getType();
         }
 
     public static class Note extends Event
@@ -123,8 +225,12 @@ public class Notes extends Motif
             return obj;
             }
         
-        static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
         public String toString() { return NOTES[pitch % 12] + (pitch / 12) + " : " +  velocity; }       // We don't include Length because it would appear in the table
+
+        public double getNormalizedValue() { return velocity / 128.0; }
+        public void setNormalizedValue(double value) { velocity = (int)(value * 128); }
+        public int getParameter() { return pitch; }
+        public int getType() { return TYPE_NOTE + pitch; }
         }
         
     public static class Bend extends Event
@@ -157,6 +263,11 @@ public class Notes extends Motif
             return obj;
             }
         public String toString() { return "Bend[" + value + "]"; }
+
+        public double getNormalizedValue() { return (value + 8192) / 16384.0; }
+        public void setNormalizedValue(double value) { this.value = ((int)(value * 16384) - 8192); }
+        public int getParameter() { return 0; }
+        public int getType() { return TYPE_PITCH_BEND; }
         }
 
     public static class NRPN extends Event
@@ -196,12 +307,17 @@ public class Notes extends Motif
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
-            obj.put("t", "n");
+            obj.put("t", "N");
             obj.put("p", parameter);
             obj.put("v", value);
             return obj;
             }
         public String toString() { return "NRPN[" + parameter + "->" + value + "]"; }
+
+        public double getNormalizedValue() { return value / 16384.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 16384); }
+        public int getParameter() { return parameter; }
+        public int getType() { return TYPE_NRPN + parameter; }
         }
 
     public static class RPN extends Event
@@ -241,12 +357,17 @@ public class Notes extends Motif
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
-            obj.put("t", "r");
+            obj.put("t", "R");
             obj.put("p", parameter);
             obj.put("v", value);
             return obj;
             }
         public String toString() { return "RPN[" + parameter + "->" + value + "]"; }
+
+        public double getNormalizedValue() { return value / 16384.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 16384); }
+        public int getParameter() { return parameter; }
+        public int getType() { return TYPE_RPN + parameter; }
         }
 
     public static class CC extends Event
@@ -276,12 +397,17 @@ public class Notes extends Motif
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
-            obj.put("t", "b");
+            obj.put("t", "c");
             obj.put("p", parameter);
             obj.put("v", value);
             return obj;
             }
         public String toString() { return "CC[" + parameter + "->" + value + "]"; }
+
+        public double getNormalizedValue() { return value / 128.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 128); }
+        public int getParameter() { return parameter; }
+        public int getType() { return TYPE_CC + parameter; }
         }
 
     public static class Aftertouch extends Event
@@ -327,7 +453,12 @@ public class Notes extends Motif
             }
         public String toString() { return "AT[" + 
                     (pitch == Out.CHANNEL_AFTERTOUCH ? "" : 
-                    "" + (Note.NOTES[pitch % 12] + (pitch / 12)) + "->")  + value + "]"; }
+                    "" + (NOTES[pitch % 12] + (pitch / 12)) + "->")  + value + "]"; }
+
+        public double getNormalizedValue() { return value / 128.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 128); }
+        public int getParameter() { return pitch; }
+        public int getType() { return (pitch == Out.CHANNEL_AFTERTOUCH ? 384 : TYPE_POLYPHONIC_AFTERTOUCH + pitch); }
         }
         
 
@@ -472,23 +603,47 @@ public class Notes extends Motif
     // Do I play out notes as I am recording them?
     boolean echo = true;
         
-        
-    public static final int NO_MIDI_PARAMETER = 0;
-    public static final int BEND = 1;
-    public static final int CC_7 = 2;
-    public static final int CC_14 = 3;
-    public static final int NRPN = 4;
-    public static final int RPN = 5;
-    int[] midiParameterType = new int[NUM_PARAMETERS];
-    int[] midiParameterMSB = new int[NUM_PARAMETERS];
-    int[] midiParameterLSB = new int[NUM_PARAMETERS];
     
-    public int getMIDIParameterType(int param) { return midiParameterType[param]; }
-    public void setMIDIParameterType(int param, int val) { midiParameterType[param] = val; }
-    public int getMIDIParameterMSB(int param) { return midiParameterMSB[param]; }
-    public void setMIDIParameterMSB(int param, int val) { midiParameterMSB[param] = val; }
-    public int getMIDIParameterLSB(int param) { return midiParameterLSB[param]; }
-    public void setMIDIParameterLSB(int param, int val) { midiParameterLSB[param] = val; }
+    /*
+      public static final int NO_MIDI_PARAMETER = 0;
+      public static final int BEND = 1;
+      public static final int CC_7 = 2;
+      public static final int CC_14 = 3;
+      public static final int NRPN = 4;
+      public static final int RPN = 5;
+      int[] midiParameterType = new int[NUM_PARAMETERS];
+      int[] midiParameterMSB = new int[NUM_PARAMETERS];
+      int[] midiParameterLSB = new int[NUM_PARAMETERS];
+    */
+
+    public static final int EVENT_PARAMETER_NONE = 0;
+    public static final int EVENT_PARAMETER_CC = 1;
+    public static final int EVENT_PARAMETER_POLY_AT = 2;
+    public static final int EVENT_PARAMETER_CHANNEL_AT = 3;
+    public static final int EVENT_PARAMETER_BEND = 4;
+    public static final int EVENT_PARAMETER_NRPN = 5;
+    public static final int EVENT_PARAMETER_RPN = 6;
+    
+    int[] eventParameterType = new int[NUM_EVENT_PARAMETERS];
+    int[] eventParameterMSB = new int[NUM_EVENT_PARAMETERS];
+    int[] eventParameterLSB = new int[NUM_EVENT_PARAMETERS];
+
+    /*
+      public int getMIDIParameterType(int param) { return midiParameterType[param]; }
+      public void setMIDIParameterType(int param, int val) { midiParameterType[param] = val; }
+      public int getMIDIParameterMSB(int param) { return midiParameterMSB[param]; }
+      public void setMIDIParameterMSB(int param, int val) { midiParameterMSB[param] = val; }
+      public int getMIDIParameterLSB(int param) { return midiParameterLSB[param]; }
+      public void setMIDIParameterLSB(int param, int val) { midiParameterLSB[param] = val; }
+    */
+        
+    public int getEventParameterType(int param) { return eventParameterType[param]; }
+    public void setEventParameterType(int param, int val) { eventParameterType[param] = val; }
+    public int getEventParameterMSB(int param) { return eventParameterMSB[param]; }
+    public void setEventParameterMSB(int param, int val) { eventParameterMSB[param] = val; }
+    public int getEventParameterLSB(int param) { return eventParameterLSB[param]; }
+    public void setEventParameterLSB(int param, int val) { eventParameterLSB[param] = val; }
+
     
     public boolean getRecordBend() { return recordBend; }
     public void setRecordBend(boolean val) { recordBend = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordbend", val); }
@@ -535,10 +690,84 @@ public class Notes extends Motif
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
         convertNRPNRPN = Prefs.getLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", true); 
-        for(int i = 0; i < NUM_PARAMETERS; i++) { midiParameterType[i] = NO_MIDI_PARAMETER; }
+        // for(int i = 0; i < NUM_PARAMETERS; i++) { midiParameterType[i] = NO_MIDI_PARAMETER; }
         }
 
+    /** Returns all events */
     public ArrayList<Event> getEvents() { return events; }
+    
+    /** Builds and returns a LinkedHashMap of ArrayLists of events by type, for all events stored
+        in the Notes object. */
+    public LinkedHashMap<Integer, ArrayList<Event>> getEventsByType()
+        {
+        LinkedHashMap<Integer, ArrayList<Event>> map = new LinkedHashMap<>();
+        for(Event event : getEvents())
+            {
+            int type = event.getType();
+            ArrayList<Event> events = map.get(type);
+            if (events == null)
+                {
+                events = new ArrayList<>();
+                map.put(type, events);
+                }
+            events.add(event);
+            }
+        return map;
+        }
+        
+    /** Builds and returns a sorted list of unique types included among the Notes, 
+        including Note objects if includeNotes is true. */
+    public ArrayList<Integer> getTypes(boolean includeNotes)
+        {
+        HashSet<Integer> set = new HashSet<>();
+        for(Event event : getEvents())
+            {
+            int type = event.getType();
+            if (type >= TYPE_CC || includeNotes)
+                {
+                set.add(type);
+                }
+            }
+        ArrayList<Integer> list = new ArrayList<>(set);
+        Collections.sort(list);
+        return list;
+        }
+
+    /** Builds and returns all events of the given types, divided up by type.  
+        This is an O(n * m) operation.  If types[i] is not a valid type,
+        null will be provided for it. */
+    public ArrayList<ArrayList<Event>> getEventsOfTypes(int[] types)
+        {
+        ArrayList<ArrayList<Event>> list = new ArrayList<>();
+        for(int type : types)
+            {
+            list.add(getEventsOfType(type));
+            }
+        return list;
+        }
+
+    /** Builds and returns all events of the given type,
+        If types is not a valid type, null will be provided for it. */
+    public ArrayList<Event> getEventsOfType(int type)
+        {
+        if (isValidType(type))
+            {
+            ArrayList<Event> evt = new ArrayList<>();
+            for(Event event : getEvents())
+                {
+                int t = event.getType();
+                if (t == type)
+                    {
+                    evt.add(event);
+                    }
+                }
+            return evt;
+            }
+        else
+            {
+            return null;
+            }
+        }
     
     public ArrayList<ArrayList<Note>> getNotesByPitch()
         {
@@ -642,6 +871,12 @@ public class Notes extends Motif
         return endTime;
         }
         
+    public void sortEvents()
+        {
+        sortEvents(events);
+        }
+    
+
     public void sortEvents(ArrayList<Event> events)
         {
         Collections.sort(events, new Comparator<Event>()
@@ -652,70 +887,92 @@ public class Notes extends Motif
         }
     
     /** Removes elements by index, not by time */
-    public ArrayList<Event> remove(int[] indices)        // endIndex is inclusive
-        {
-        ArrayList<Event> newEvents = new ArrayList<Event>();
-        ArrayList<Event> cut = new ArrayList<Event>();
-
-        HashSet<Integer> hash = buildIndexHash(indices);
-        
-        for(int i = 0; i < events.size(); i++)
-            {
-            if (hash.contains(i))
-                {
-                Event event = events.get(i);
-                cut.add(event);
-                }
-            else
-                {
-                Event event = events.get(i);
-                newEvents.add(event);
-                }
-            }
-
 /*
-  for(int i = 0; i < startIndex; i++)
+  public ArrayList<Event> remove(int[] indices)        // endIndex is inclusive
   {
-  Event event = events.get(i);
-  newEvents.add(event);
-  }
-  for(int i = startIndex; i <= endIndex; i++)
+  ArrayList<Event> newEvents = new ArrayList<Event>();
+  ArrayList<Event> cut = new ArrayList<Event>();
+
+  HashSet<Integer> hash = buildIndexHash(indices);
+        
+  for(int i = 0; i < events.size(); i++)
+  {
+  if (hash.contains(i))
   {
   Event event = events.get(i);
   cut.add(event);
   }
-  for(int i = endIndex + 1; i < events.size(); i++)
+  else
   {
   Event event = events.get(i);
   newEvents.add(event);
   }
+  }
+  events = newEvents;
+  computeMaxTime();
+  return cut;
+  }
 */
+
+    /** Remove multiple elements */
+    public void remove(HashSet<Event> cut)
+        {
+        ArrayList<Event> newEvents = new ArrayList<>();
+        
+        for(Event event : events)
+            {
+            if (!cut.contains(event))
+                {
+                newEvents.add(event);
+                }
+            }
 
         events = newEvents;
         computeMaxTime();
-        return cut;
         }
 
     /** Removes elements by index, not by time */
     public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)
         {
-        if (events.size() == 0) return new ArrayList<Event>();
-        else return filter(buildIndices(0, events.size() - 1), removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch);
+        ArrayList<Event> newEvents = new ArrayList<Event>();
+        ArrayList<Event> cut = new ArrayList<Event>();
+        
+        for(Event event : events)
+            {
+            if (
+                (event instanceof Note && removeNotes) ||
+                (event instanceof Bend && removeBend) ||
+                (event instanceof CC && removeCC) ||
+                (event instanceof Aftertouch && removeAftertouch) ||
+                (event instanceof NRPN && removeNRPN) ||
+                (event instanceof RPN && removeRPN)
+                )            
+                {
+                cut.add(event);
+                }
+            else        
+                {
+                newEvents.add(event);
+                }
+            }
+        
+        events = newEvents;
+        computeMaxTime();
+        return cut;
         }
     
     /** Removes elements by index, not by time */
-    public ArrayList<Event> filter(int[] indices, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)        // endIndex is inclusive
+    public ArrayList<Event> filter(ArrayList<Event> eventsIn, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)        // endIndex is inclusive
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
         
-        HashSet<Integer> hash = buildIndexHash(indices);
+        HashSet<Event> hash = new HashSet(eventsIn);
         
-        for(int i = 0; i < events.size(); i++)
+        for(Event event : events)
             {
-            if (hash.contains(i))
+            if (hash.contains(event))
                 {
-                Event event = events.get(i);
                 if (
                     (event instanceof Note && removeNotes) ||
                     (event instanceof Bend && removeBend) ||
@@ -734,42 +991,9 @@ public class Notes extends Motif
                 }
             else
                 {
-                Event event = events.get(i);
                 newEvents.add(event);
                 }
             }
-                
-        /*
-          for(int i = 0; i < startIndex; i++)
-          {
-          Event event = events.get(i);
-          newEvents.add(event);
-          }
-          for(int i = startIndex; i <= endIndex; i++)
-          {
-          Event event = events.get(i);
-          if (
-          (event instanceof Note && removeNotes) ||
-          (event instanceof Bend && removeBend) ||
-          (event instanceof CC && removeCC) ||
-          (event instanceof Aftertouch && removeAftertouch) ||
-          (event instanceof NRPN && removeNRPN) ||
-          (event instanceof RPN && removeRPN)
-          )            
-          {
-          cut.add(event);
-          }
-          else        
-          {
-          newEvents.add(event);
-          }
-          }
-          for(int i = endIndex + 1; i < events.size(); i++)
-          {
-          Event event = events.get(i);
-          newEvents.add(event);
-          }
-        */
         
         events = newEvents;
         computeMaxTime();
@@ -919,59 +1143,51 @@ public class Notes extends Motif
             }
         }
 
-    public boolean shift(int by)
+    public void shift(int by)
         {
-        if (events.size() == 0) return true;
-        else return shift(buildIndices(0, events.size() - 1), by);
+        shift(events, by, false);
         }
-        
-    public boolean shift(int[] indices, int by)
+    
+    public void shift(ArrayList<Event> events, int by)
         {
-        if (events.isEmpty()) return true;
-        if (indices.length == 0) return true;
-        if (by == 0) return true;
-        
-        int from = minimum(indices);
-        
-//        if (from > to) { int temp = to; to = from; from = temp; }
-        
-        if (!events.isEmpty() && events.get(from).when < (0 - by)) // uh oh, can't do it backwards by far enough
-            {
-            return false;           // cannot shift
-            }
-
-        // I don't think should be able to change the order, so we're probably still okay?
-//        for(int i = from; i <= to; i++)
-        for(int i : indices)
-            {
-            Event event = events.get(i);
-                
-            event.when += by;
-            }
-        
-        sortEvents(events);
-        computeMaxTime(); 
-        return true;
+        shift(events, by, true);
         }
 
-    public void stretch(int stretchFrom, int stretchTo)
+    void shift(ArrayList<Event> events, int by, boolean sort)
         {
         if (events.size() == 0) return;
-        else stretch(buildIndices(0, events.size() - 1), stretchFrom, stretchTo);
+        if (by == 0) return;
+        
+        for(Event event : events)
+            {
+            event.when += by;
+            if (event.when < 0)     // uh on
+                {
+                event.when = 0;
+                }
+            /// FIXME: we don't have an upper bound
+            }
+        // Need to sort
+        sortEvents(events);
         }
-
-    public void stretch(int[] indices, int stretchFrom, int stretchTo)
+        
+    public void stretch(ArrayList<Event> events, int stretchFrom, int stretchTo, boolean lockToStart)
         {
         if (stretchFrom == stretchTo) return;
         if (events.isEmpty()) return;
         
-//        if (from > to) { int temp = to; to = from; from = temp; }
-//        
-//        for(int i = from; i <= to; i++)
-        for(int i : indices)
+        int startTime = -1;
+        Event startEvent = null;
+        for(Event event : events)
             {
-            Event event = events.get(i);
-                
+            if (lockToStart)
+                {
+                if (startTime == -1 || event.when < startTime)
+                    {
+                    startTime = event.when;
+                    startEvent = event;
+                    }
+                }
             event.when = (int)Math.round((event.when * stretchTo) / (double)stretchFrom);
             if (event instanceof Note)
                 {
@@ -979,47 +1195,19 @@ public class Notes extends Motif
                 note.length = (int)Math.round((event.length * stretchTo) / (double)stretchFrom);
                 }
             }
+            
+        if (lockToStart && startTime != -1)
+            {
+            for(Event event : events)
+                {
+                event.when -= (startEvent.when - startTime);    // reset to start time
+                }
+            }
         
         sortEvents(events);
         computeMaxTime(); 
         }
 
-    public void transpose(int by)
-        {
-        if (events.size() == 0) return;
-        else transpose(buildIndices(0, events.size() - 1), by);
-        }
-
-    public void transpose(int[] indices, int by)
-        {
-//        if (from > to) { int temp = to; to = from; from = temp; }
- 
-        if (by == 0) return;
-        
-        // I don't think should be able to change the order, so we're probably still okay?
-//        for(int i = from; i <= to; i++)
-        for(int i : indices)
-            {
-            Event event = events.get(i);
-                
-            if (event instanceof Note)
-                {
-                Note note = (Note) event;
-                note.pitch += by;
-                if (note.pitch > 127) // uh oh
-                    {
-                    note.pitch = 127;
-                    note.velocity = 0;
-                    }
-                if (note.pitch < 0) // uh oh
-                    {
-                    note.pitch = 0;
-                    note.velocity = 0;
-                    }
-                }
-            }
-        }
-                        
     public Clip buildClip(Clip parent)
         {
         return new NotesClip(seq, this, parent);
@@ -1037,7 +1225,7 @@ public class Notes extends Motif
                 
         Notes.Note[] recordedNoteOn = new Notes.Note[128];
         ArrayList<Notes.Event> readEvents = new ArrayList<>();  
-
+        
         // FIXME: At present we only load a single track
         for(int i = 0; i < tracks[0].size(); i++)
             {
@@ -1139,35 +1327,18 @@ public class Notes extends Motif
             }
         return hash;
         }
-                 
+        
     
-    /** Quantize all events to the nearest DIVISOR NOTE in ticks.  For each note we compute the DIVISOR NOTE
-        that is LESS THAN OR EQUAL to the note.  Then if the note is less than DIVISOR * PERCENTAGE later
-        than the DIVISOR NOTE, we push it to the divisor note, else we push it to the next divisor note.
-        Optionally also quantize the ends, and non-notes.  Percentage can be any value 0.0 to 1.0 inclusive.
-    */
-    public void quantize(int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
-        {
-        if (events.size() == 0) return;
-        else quantize(buildIndices(0, events.size() - 1), divisor, quantizeEnds, quantizeNonNotes, percentage);
-        }
-
     /** Quantize all events in the given from...to range (inclusive)
         to the nearest DIVISOR NOTE in ticks.  For each note we compute the DIVISOR NOTE
         that is LESS THAN OR EQUAL to the note.  Then if the note is less than DIVISOR * PERCENTAGE later
         than the DIVISOR NOTE, we push it to the divisor note, else we push it to the next divisor note.
         Optionally also quantize the ends, and non-notes.  Percentage can be any value 0.0 to 1.0 inclusive.
     */
-    public void quantize(int[] indices, int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
+    public void quantize(ArrayList<Event> events, int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
         {
-//        if (from > to) { int temp = to; to = from; from = temp; }
-//        
-        // I don't think should be able to change the order, so we're probably still okay?
-//        for(int i = from; i <= to; i++)
-        for(int i : indices)
+        for(Event event: events)
             {
-            Event event = events.get(i);
-                
             // Zero, stash the note off position for later use
             int noteOffPos = 0;
             if (event instanceof Note && quantizeEnds)
@@ -1210,29 +1381,15 @@ public class Notes extends Motif
     int getRandomTimeNoise(Random random, double max)
         {
 //              return (int)Math.round(random.nextGaussian() * stdev);
-        return (int)(random.nextDouble() * max * Seq.PPQ);              // Go up to 1 beat max
+        return (int)((random.nextDouble() * 2.0 - 1.0) * max * Seq.PPQ);              // Go up to 1 beat max
         }
                 
-    /** Quantize the onset, and possibly release time, of all events, possibly including non-notes, by the given
-        variance (in ticks).
-    */
-    public void randomizeTime(double stdev, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
-        {
-        if (events.size() == 0) return;
-        else randomizeTime(buildIndices(0, events.size() - 1), stdev, randomizeLengths, randomizeNonNotes, random);
-        }
-
     /** Quantize the onset, and possibly release time, of all events, possibly including non-notes, by the given
         variance (in ticks), in the event range from FROM to TO. */
-    public void randomizeTime(int[] indices, double max, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
+    public void randomizeTime(ArrayList<Event> events, double max, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
         {
-//        if (from > to) { int temp = to; to = from; from = temp; }
-//
-//        for(int i = from; i <= to; i++)
-        for(int i : indices)
+        for(Event event : events)
             {
-            Event event = events.get(i);
-                
             // First handle onsets
             if (event instanceof Note || randomizeNonNotes)
                 {
@@ -1261,19 +1418,13 @@ public class Notes extends Motif
 
     public void setVelocity(int val)
         {
-        if (events.size() == 0) return;
-        else setVelocity(buildIndices(0, events.size() - 1), val);
+        setVelocity(events, val);
         }
 
-    public void setVelocity(int[] indices, int val)
+    public void setVelocity(ArrayList<Event> events, int val)
         {
-//        if (from > to) { int temp = to; to = from; from = temp; }
-//        
-//        for(int i = from; i <= to; i++)
-        for(int i : indices)
+        for(Event event : events)
             {
-            Event event = events.get(i);
-                
             // First handle onsets (which CANNOT have 0 velocity)
             if (event instanceof Note)
                 {
@@ -1292,23 +1443,17 @@ public class Notes extends Motif
         variance (from 0..255). */
     public void randomizeVelocity(double max, boolean randomizeReleases, Random random)
         {
-        if (events.size() == 0) return;
-        else randomizeVelocity(buildIndices(0, events.size() - 1), max, randomizeReleases, random);
+        randomizeVelocity(events, max, randomizeReleases, random);
         }
 
     static final int NUM_TRIES = 8;
         
     /** Quantize the velocity, and possibly release velocity, of all events, possibly including non-notes, by the given
         variance (from 0..255), in the event range from FROM to TO. */
-    public void randomizeVelocity(int[] indices, double max, boolean randomizeReleases, Random random)
+    public void randomizeVelocity(ArrayList<Event> events, double max, boolean randomizeReleases, Random random)
         {
-//        if (from > to) { int temp = to; to = from; from = temp; }
-//        
-//        for(int i = from; i <= to; i++)
-        for(int i : indices)
+        for(Event event : events)
             {
-            Event event = events.get(i);
-                
             // First handle onsets (which CANNOT have 0 velocity)
             if (event instanceof Note)
                 {
@@ -1349,6 +1494,122 @@ public class Notes extends Motif
         }
 
 
+    // FIXME: UNTESTED
+    public int indexOf(Event event)
+        {
+        if (events.size() == 0) return -1;
+        
+        int low = 0;
+        int high = events.size() - 1;
+        Event mid = null;
+        while(low <= high)
+            {
+            int middle = (low + high) / 2;
+            mid = events.get(middle);
+            if (mid.when == event.when)
+                {
+                return middle;
+                }
+            else if (mid.when < event.when)
+                {
+                low = middle + 1;
+                }
+            else
+                {
+                high = middle - 1;
+                }
+            }
+        return -1;              // FAILURE
+        }
+
+    // FIXME: UNTESTED
+    public int firstEventStartingAtOrAfter(int time)
+        {
+        if (events.size() == 0) return -1;
+        if (events.get(events.size() - 1).when > time) return -1;
+        
+        // First find an event at 
+        int low = 0;
+        int high = events.size() - 1;
+        Event mid = null;
+        while(low <= high)
+            {
+            int middle = (low + high) / 2;
+            mid = events.get(middle);
+            if (mid.when == time)
+                {
+                break;
+                }
+            else if (mid.when < time)
+                {
+                low = middle + 1;
+                }
+            else
+                {
+                high = middle - 1;
+                }
+            }
+                
+        while (low < events.size() - 1 && events.get(low).when < time)
+            {
+            low++;
+            }
+                
+        while (low > 0 && events.get(low).when > time)
+            {
+            low--;
+            }
+                
+        while (low > 0 && events.get(low).when == time)
+            {
+            if (events.get(low).when == time) low--;
+            }
+                
+        return low;
+        }
+
+    // FIXME: UNTESTED
+    public int lastEventEndingLessThan(int time)
+        {
+        if (events.size() == 0) return -1;
+        
+        // First find an event at 
+        int low = 0;
+        int high = events.size() - 1;
+        Event mid = null;
+        while(low <= high)
+            {
+            int middle = (low + high) / 2;
+            mid = events.get(middle);
+            int point = mid.when + (mid instanceof Note ? ((Note)mid).length : 0);
+            if (point == time)
+                {
+                break;
+                }
+            else if (point < time)
+                {
+                low = middle + 1;
+                }
+            else
+                {
+                high = middle - 1;
+                }
+            }
+                
+        while (low > 0 && events.get(low).when + (mid instanceof Note ? ((Note)mid).length : 0) > time)
+            {
+            low--;
+            }
+                
+        while (low < events.size() - 1 && events.get(low).when + (mid instanceof Note ? ((Note)mid).length : 0) < time)
+            {
+            if (events.get(low).when + (mid instanceof Note ? ((Note)mid).length : 0) >= time) break;
+            low++;
+            }
+                
+        return low;
+        }
+
     
     int lastNRPN = -1;
     boolean wasRPN = false;
@@ -1378,59 +1639,112 @@ public class Notes extends Motif
 
     public void load(JSONObject obj) throws JSONException
         {
+        setEnd(obj.optInt("end", 0));
         setEcho(obj.optBoolean("echo", false));
         setOut(obj.optInt("out", 0));
         setIn(obj.optInt("in", 0));
-        JSONArray typeArray = obj.optJSONArray("mtype");
-        if (typeArray != null)
+        
+        /*
+          JSONArray typeArray = obj.optJSONArray("mtype");
+          if (typeArray != null)
+          {
+          for(int i = 0; i < NUM_PARAMETERS; i++)
+          {
+          midiParameterType[i] = typeArray.optInt(i, 0);
+          }
+          JSONArray msbArray = obj.getJSONArray("msb");
+          for(int i = 0; i < NUM_PARAMETERS; i++)
+          {
+          midiParameterMSB[i] = msbArray.optInt(i, 0);
+          }
+          JSONArray lsbArray = obj.getJSONArray("lsb");
+          for(int i = 0; i < NUM_PARAMETERS; i++)
+          {
+          midiParameterLSB[i] = lsbArray.optInt(i, 0);
+          }
+          }
+        */
+            
+        JSONArray etypeArray = obj.optJSONArray("eparam");
+        if (etypeArray != null)
             {
-            for(int i = 0; i < NUM_PARAMETERS; i++)
+            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
                 {
-                midiParameterType[i] = typeArray.optInt(i, 0);
+                eventParameterType[i] = etypeArray.optInt(i, 0);
                 }
-            JSONArray msbArray = obj.getJSONArray("msb");
-            for(int i = 0; i < NUM_PARAMETERS; i++)
+            JSONArray emsbArray = obj.getJSONArray("emsb");
+            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
                 {
-                midiParameterMSB[i] = msbArray.optInt(i, 0);
+                eventParameterMSB[i] = emsbArray.optInt(i, 0);
                 }
-            JSONArray lsbArray = obj.getJSONArray("lsb");
-            for(int i = 0; i < NUM_PARAMETERS; i++)
+            JSONArray elsbArray = obj.getJSONArray("elsb");
+            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
                 {
-                midiParameterLSB[i] = lsbArray.optInt(i, 0);
+                eventParameterLSB[i] = elsbArray.optInt(i, 0);
                 }
             }
+            
         JSONArray eventsArray = obj.getJSONArray("events");
         events = new ArrayList<Event>();
         for(int i = 0; i < eventsArray.length(); i++)
             {
-            events.add(Event.load(eventsArray.getJSONObject(i)));
+            Event event = Event.load(eventsArray.getJSONObject(i));
+            events.add(event);
             }
         computeMaxTime();               // computs maxNoteOnPosition and maxNoteOffPosition
         }
         
     public void save(JSONObject obj) throws JSONException
         {
+        obj.put("end", getEnd());
         obj.put("echo", getEcho());
         obj.put("out", getOut());
         obj.put("in", getIn());
+        
+        /*
+        // MIDI Parameters
         JSONArray typeArray = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            typeArray.put(i, midiParameterType[i]);
-            }
+        {
+        typeArray.put(i, midiParameterType[i]);
+        }
         obj.put("mtype", typeArray);
         JSONArray msbArray = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            msbArray.put(i, midiParameterMSB[i]);
-            }
+        {
+        msbArray.put(i, midiParameterMSB[i]);
+        }
         obj.put("msb", msbArray);
         JSONArray lsbArray = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            lsbArray.put(i, midiParameterLSB[i]);
-            }
+        {
+        lsbArray.put(i, midiParameterLSB[i]);
+        }
         obj.put("lsb", lsbArray);
+        */
+
+        // Event Display Parameters
+        JSONArray etypeArray = new JSONArray();
+        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+            {
+            etypeArray.put(i, eventParameterType[i]);
+            }
+        obj.put("eparam", etypeArray);
+        JSONArray emsbArray = new JSONArray();
+        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+            {
+            emsbArray.put(i, eventParameterMSB[i]);
+            }
+        obj.put("emsb", emsbArray);
+        JSONArray elsbArray = new JSONArray();
+        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+            {
+            elsbArray.put(i, eventParameterLSB[i]);
+            }
+        obj.put("elsb", elsbArray);
+
+
+        // All Events and Notes
         JSONArray eventsArray = new JSONArray();
         for(Event event : events)
             {
