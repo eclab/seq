@@ -36,7 +36,7 @@ public class Transport extends JPanel implements SeqListener
     SmallDial beepVolume;
     SmallDial beepPitch;
     JComboBox countIn;
-    JCheckBox metronome;
+    JComboBox metronome;
     JComboBox clock;
     WidgetList options;
     JLabel time;
@@ -44,6 +44,7 @@ public class Transport extends JPanel implements SeqListener
     
     public static final String[] CLOCK_STRINGS = { "Internal", "Emit Clock" };          // FIXME: need to add  "External" };
     public static final String[] COUNT_IN_STRINGS = { "None", "Record", "Rec/Play" };
+    public static final String[] METRONOME_STRINGS = { "None", "Record", "Rec/Play" };
                 
     static ImageIcon playing = buildIcon("icons/playing2.png");
     static ImageIcon notPlaying = buildIcon("icons/notplaying2.png");
@@ -233,7 +234,22 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
+                
+            metronome = new JComboBox(METRONOME_STRINGS);
+            metronome.setSelectedIndex(seq.getMetronome());
+            metronome.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { seq.setMetronome(metronome.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
 
+/*
             metronome = new JCheckBox();
             metronome.setSelected(seq.getMetronome());
             metronome.addActionListener(new ActionListener()
@@ -247,7 +263,7 @@ public class Transport extends JPanel implements SeqListener
                     finally { lock.unlock(); }                              
                     }
                 });
-
+*/
             beepVolume = new SmallDial(seq.getBeepVolume())
                 {
                 public double getValue() 

@@ -243,15 +243,18 @@ public class Seq
     public static final int COUNT_IN_NONE = 0;
     public static final int COUNT_IN_RECORDING_ONLY = 1;
     public static final int COUNT_IN_RECORDING_AND_PLAYING = 2;
+    public static final int METRONOME_NONE = 0;
+    public static final int METRONOME_RECORDING_ONLY = 1;
+    public static final int METRONOME_RECORDING_AND_PLAYING = 2;
         
     public static final int DEFAULT_BAR = 4;
     
     // How many beats per bar there are
     int bar = DEFAULT_BAR;
-    // What our count-in state is
+    // What our count-in mode is
     int countInMode = COUNT_IN_RECORDING_ONLY;          //COUNT_IN_NONE;
-    // Is the metronome on?
-    boolean metronome = false;
+    // What is our metronome mode?
+    int metronome = COUNT_IN_RECORDING_ONLY;
     // The current count-in count-down, in PPQ
     int currentCountIn;
     
@@ -535,10 +538,10 @@ public class Seq
     public void setBar(int val) { bar = Math.min(Math.max(1, val), MAX_BEATS_PER_BAR); }
     /** Returns the number of beats per measure for purposes count-in and for looping quantization. */
     public int getBar() { return bar; }
-    /** Returns whether the metronome is turned on. */
-    public boolean getMetronome() { return metronome; }
-    /** Sets whether the metronome is turned on.  */
-    public void setMetronome(boolean val) { metronome = val; }
+    /** Returns the metronome mode. */
+    public int getMetronome() { return metronome; }
+    /** Sets the metronome mode.  */
+    public void setMetronome(int val) { metronome = val; }
     /** Returns the count-in mode, one of COUNT_IN_NONE, COUNT_IN_RECORDING_ONLY, or COUNT_IN_RECORDING_AND_PLAYING.
         The length of the count-in is one BAR as determined by getBar(). The metronome must be ON in order
         to get a count-in.  */
@@ -1061,7 +1064,11 @@ public class Seq
                         }
                                                                 
                     // Handle beep
-                    if (metronome) doBeep(time, getBeepBarFrequency(), getBeepBarFrequency() * 2);
+                    if (metronome == METRONOME_RECORDING_AND_PLAYING ||
+                    	(metronome == METRONOME_RECORDING_ONLY && recording))
+                    	{
+                    	doBeep(time, getBeepBarFrequency(), getBeepBarFrequency() * 2);
+                    	}
                         
                     processNoteOffs(false);
 //                    playingClips.clear();
@@ -1483,7 +1490,7 @@ public class Seq
         seq.clock = obj.optInt("clock", CLOCK_IGNORE);
         seq.bar = obj.optInt("bar", DEFAULT_BAR);
         seq.countInMode = obj.optInt("countin", COUNT_IN_RECORDING_ONLY);
-        seq.metronome = obj.optBoolean("metronome", false);
+        seq.metronome = obj.optInt("metronome", METRONOME_RECORDING_ONLY);
         seq.beepVolume = obj.optDouble("beepvolume", 1.0);
         seq.beepPitch = obj.optInt("beeppitch", 0);
         seq.macroChildCounter = obj.getInt("macrochildcounter");                // note not optInt
