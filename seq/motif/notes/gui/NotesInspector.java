@@ -32,6 +32,7 @@ public class NotesInspector extends WidgetList
     JCheckBox recordCC;
     JCheckBox recordAftertouch;
     JCheckBox convertNRPNRPN;
+    JCheckBox logBend;
     
     WidgetList widgetList = new WidgetList();
     
@@ -466,7 +467,21 @@ public class NotesInspector extends WidgetList
                 eventParameterType[i].setSelectedIndex(notes.getEventParameterType(i));
                 }
 
-           
+            logBend = new JCheckBox();
+            logBend.setSelected(notes.getLog());
+            logBend.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setLog(logBend.isSelected()); }
+                    finally { lock.unlock(); }  
+                    notesui.getEventsUI().reload();					// gotta redraw the bends!                            
+                    notesui.getEventsUI().repaint();					// gotta redraw the bends!                            
+                    }
+                });
             }
         finally { lock.unlock(); }
 
@@ -515,6 +530,9 @@ public class NotesInspector extends WidgetList
         widgetList2.build(new String[] { "1", "2", "3", "4" },
             new JComponent[] { eventParameterPanel[0], eventParameterPanel[1], eventParameterPanel[2], eventParameterPanel[3] });
         widgetList2.makeBorder("Other MIDI Messages");
+        
+        WidgetList widgetList3 = new WidgetList();
+        widgetList3.build(new String[] { "Logarithmic Pitch Bend" }, new JComponent[] { logBend });
 
         // DisclosurePanel disclosure2 = new DisclosurePanel("Other MIDI Messages", widgetList2);
         // disclosure2.setParentComponent(this);
@@ -523,7 +541,7 @@ public class NotesInspector extends WidgetList
         finalPanel.setLayout(new BorderLayout());
         finalPanel.add(recordPanel, BorderLayout.NORTH);
         finalPanel.add(widgetList2, BorderLayout.CENTER);
-        //finalPanel.add(disclosure, BorderLayout.SOUTH);
+        finalPanel.add(widgetList3, BorderLayout.SOUTH);
         add(finalPanel, BorderLayout.SOUTH);
         }
     
@@ -745,6 +763,7 @@ public class NotesInspector extends WidgetList
             recordCC.setSelected(notes.getRecordCC()); 
             recordAftertouch.setSelected(notes.getRecordAftertouch()); 
             convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
+        	logBend.setSelected(notes.getLog());
             
             /*
               for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
