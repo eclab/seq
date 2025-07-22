@@ -36,6 +36,7 @@ public class SilenceClip extends Clip
     // infinite zero-length cycles
     public boolean process()
         {
-        return getPosition() > 0;
+        int length = ((Silence)getMotif()).getLength();
+        return getPosition() >= length - 1;
         }
     }
