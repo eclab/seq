@@ -33,6 +33,7 @@ public class NotesInspector extends WidgetList
     JCheckBox recordAftertouch;
     JCheckBox convertNRPNRPN;
     JCheckBox logBend;
+    JComboBox parameterHeight;
     
     WidgetList widgetList = new WidgetList();
     
@@ -92,7 +93,9 @@ public class NotesInspector extends WidgetList
     public static final boolean[] EVENT_HAS_LSB = { false, false, false, false, false, true, true };
     public static final boolean[] EVENT_HAS_MSB = { false, true, true, false, false, true, true };
 
-
+	public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
+	public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
+	
     public NotesInspector(Seq seq, Notes notes, NotesUI notesui)
         {
         this.seq = seq;
@@ -482,8 +485,23 @@ public class NotesInspector extends WidgetList
                     notesui.getEventsUI().repaint();					// gotta redraw the bends!                            
                     }
                 });
+
+			parameterHeight = new JComboBox(PARAMETER_HEIGHT_STRINGS);
+			parameterHeight.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					notesui.getEventsUI().setParameterHeight(PARAMETER_HEIGHTS[parameterHeight.getSelectedIndex()]);
+					notesui.getEventsUI().rebuild();
+					notesui.getGridUI().clearSelected();
+					}
+				});
+
             }
         finally { lock.unlock(); }
+
+            int height = notesui.getEventsUI().getParameterHeight();
+            parameterHeight.setSelectedIndex(height == 32 ? 0 : (height == 64 ? 1 : 2));
 
         name.setToolTipText(NAME_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
@@ -532,7 +550,7 @@ public class NotesInspector extends WidgetList
         widgetList2.makeBorder("Other MIDI Messages");
         
         WidgetList widgetList3 = new WidgetList();
-        widgetList3.build(new String[] { "Logarithmic Pitch Bend" }, new JComponent[] { logBend });
+        widgetList3.build(new String[] { "Logarithmic Pitch Bend", "Parameter Height" }, new JComponent[] { logBend, parameterHeight });
 
         // DisclosurePanel disclosure2 = new DisclosurePanel("Other MIDI Messages", widgetList2);
         // disclosure2.setParentComponent(this);
@@ -776,6 +794,8 @@ public class NotesInspector extends WidgetList
                 {
                 eventParameterType[i].setSelectedIndex(notes.getEventParameterType(i));
                 }
+            int height = notesui.getEventsUI().getParameterHeight();
+            parameterHeight.setSelectedIndex(height == 32 ? 0 : (height == 64 ? 1 : 2));
             }
         finally { lock.unlock(); }                              
         seq = old;

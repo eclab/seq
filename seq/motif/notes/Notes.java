@@ -1698,6 +1698,7 @@ public class Notes extends Motif
         setEcho(obj.optBoolean("echo", false));
         setOut(obj.optInt("out", 0));
         setIn(obj.optInt("in", 0));
+        setLog(obj.optBoolean("log", true));
         
         /*
           JSONArray typeArray = obj.optJSONArray("mtype");
@@ -1755,6 +1756,7 @@ public class Notes extends Motif
         obj.put("echo", getEcho());
         obj.put("out", getOut());
         obj.put("in", getIn());
+        obj.put("log", getLog());
         
         /*
         // MIDI Parameters
