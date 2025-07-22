@@ -170,8 +170,8 @@ public class Notes extends Motif
         
         public abstract Event copy();
         
-        public abstract double getNormalizedValue();
-        public abstract void setNormalizedValue(double value);
+        public abstract double getNormalizedValue(boolean log);
+        public abstract void setNormalizedValue(double value, boolean log);
         public abstract int getParameter();
         public abstract int getType();
         }
@@ -227,8 +227,8 @@ public class Notes extends Motif
         
         public String toString() { return NOTES[pitch % 12] + (pitch / 12) + " : " +  velocity; }       // We don't include Length because it would appear in the table
 
-        public double getNormalizedValue() { return velocity / 128.0; }
-        public void setNormalizedValue(double value) { velocity = (int)(value * 128); }
+        public double getNormalizedValue(boolean log) { return velocity / 128.0; }
+        public void setNormalizedValue(double value, boolean log) { velocity = (int)(value * 128); }
         public int getParameter() { return pitch; }
         public int getType() { return TYPE_NOTE + pitch; }
         }
@@ -264,8 +264,43 @@ public class Notes extends Motif
             }
         public String toString() { return "Bend[" + value + "]"; }
 
-        public double getNormalizedValue() { return (value + 8192) / 16384.0; }
-        public void setNormalizedValue(double value) { this.value = ((int)(value * 16384) - 8192); }
+		/** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
+			have much bigger impact.  This is useful for displaying */
+		public static double toNormalizedLog(double value) 
+			{ 
+			if (value == 0) return 0.5;
+			else if (value > 0) return Math.min(1.0, Math.log(value + 1) / Math.log(2.0) / 13.0) / 2.0 + 0.5;
+			else return (Math.max(-1.0, 0 - Math.log((0 - value) + 1) / Math.log(2.0) / 13.0) / 2.0) + 0.5;
+			}
+			
+		/** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
+			have much bigger impact.  This is useful for displaying */
+		public double fromNormalizedLog(double value)
+			{
+			double v = 0.0;
+			value = value - 0.5;
+			if (value == 0) v = 0.0;
+			else if (value > 0) v = Math.pow(2.0, value * 2.0 * 13.0) - 1;
+			else v = 0 - (Math.pow(2.0, (0.0 - value) * 2.0 * 13.0) - 1);
+			return v;
+			}
+
+		/** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
+			have much bigger impact.  This is useful for displaying */
+		public double getNormalizedLogValue() 
+			{ 
+			return toNormalizedLog(value);
+			}
+			
+		/** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
+			have much bigger impact.  This is useful for displaying */
+		public void setNormalizedLogValue(double value)
+			{
+			this.value = (int)fromNormalizedLog(value);
+			}
+			
+        public double getNormalizedValue(boolean log) { if (log) return getNormalizedLogValue(); else return (value + 8192) / 16384.0; }
+        public void setNormalizedValue(double value, boolean log) { if (log) setNormalizedLogValue(value); else this.value = ((int)(value * 16384) - 8192); }
         public int getParameter() { return 0; }
         public int getType() { return TYPE_PITCH_BEND; }
         }
@@ -314,8 +349,8 @@ public class Notes extends Motif
             }
         public String toString() { return "NRPN[" + parameter + "->" + value + "]"; }
 
-        public double getNormalizedValue() { return value / 16384.0; }
-        public void setNormalizedValue(double value) { this.value = (int)(value * 16384); }
+        public double getNormalizedValue(boolean log) { return value / 16384.0; }
+        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_NRPN + parameter; }
         }
@@ -364,8 +399,8 @@ public class Notes extends Motif
             }
         public String toString() { return "RPN[" + parameter + "->" + value + "]"; }
 
-        public double getNormalizedValue() { return value / 16384.0; }
-        public void setNormalizedValue(double value) { this.value = (int)(value * 16384); }
+        public double getNormalizedValue(boolean log) { return value / 16384.0; }
+        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_RPN + parameter; }
         }
@@ -404,8 +439,8 @@ public class Notes extends Motif
             }
         public String toString() { return "CC[" + parameter + "->" + value + "]"; }
 
-        public double getNormalizedValue() { return value / 128.0; }
-        public void setNormalizedValue(double value) { this.value = (int)(value * 128); }
+        public double getNormalizedValue(boolean log) { return value / 128.0; }
+        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_CC + parameter; }
         }
@@ -455,8 +490,8 @@ public class Notes extends Motif
                     (pitch == Out.CHANNEL_AFTERTOUCH ? "" : 
                     "" + (NOTES[pitch % 12] + (pitch / 12)) + "->")  + value + "]"; }
 
-        public double getNormalizedValue() { return value / 128.0; }
-        public void setNormalizedValue(double value) { this.value = (int)(value * 128); }
+        public double getNormalizedValue(boolean log) { return value / 128.0; }
+        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
         public int getParameter() { return pitch; }
         public int getType() { return (pitch == Out.CHANNEL_AFTERTOUCH ? 384 : TYPE_POLYPHONIC_AFTERTOUCH + pitch); }
         }
@@ -602,6 +637,11 @@ public class Notes extends Motif
     int maxNoteOffPosition = 0;
     // Do I play out notes as I am recording them?
     boolean echo = true;
+    // Do I display bend as a log or linearly?
+    boolean log = true;
+    
+    public boolean getLog() { return log; }
+    public void setLog(boolean val) { log = val; }
         
     
     /*
@@ -1139,18 +1179,8 @@ public class Notes extends Motif
         {
         if (events.size() > 0) 
             {
-            shift(0 - events.get(0).when);
+            shift(events, 0 - events.get(0).when, false);
             }
-        }
-
-    public void shift(int by)
-        {
-        shift(events, by, false);
-        }
-    
-    public void shift(ArrayList<Event> events, int by)
-        {
-        shift(events, by, true);
         }
 
     void shift(ArrayList<Event> events, int by, boolean sort)
@@ -1171,6 +1201,31 @@ public class Notes extends Motif
         sortEvents(events);
         }
         
+
+    public void transpose(ArrayList<Event> events, int by)
+        {
+        if (by == 0) return;
+        
+        // I don't think should be able to change the order, so we're probably still okay?
+        for(Event event : events)
+            {
+            if (event instanceof Note)
+                {
+                Note note = (Note) event;
+                note.pitch += by;
+                if (note.pitch > 127) // uh oh
+                    {
+                    note.pitch = 127;
+                    }
+                if (note.pitch < 0) // uh oh
+                    {
+                    note.pitch = 0;
+                    }
+                }
+            }
+        }
+              
+
     public void stretch(ArrayList<Event> events, int stretchFrom, int stretchTo, boolean lockToStart)
         {
         if (stretchFrom == stretchTo) return;
