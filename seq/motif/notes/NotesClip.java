@@ -17,22 +17,18 @@ public class NotesClip extends Clip
     {
     private static final long serialVersionUID = 1;
 
+	// When notes are recorded, they are stored here when receiving a NOTE ON
+	// and then completed and removed when receiving a NOTE OFF
     Notes.Note[] recordedNoteOn = new Notes.Note[128];
     
     // Where in notes.events was my LAST EVENT.  If I have NO EVENTS, then this value is -1  
     int index = -1;  
+    // Did we just record notes?
     boolean didRecord;
-    boolean parseRPNNRPN;
 
-/*
-  public static final int NO_MIDI_VALUE = -1;
-  int[] lastMIDIValue = new int[Notes.NUM_PARAMETERS];
-  public int getLastMIDIValue(int param) { return lastMIDIValue[param]; }
-  public void setLastMIDIValue(int param, int val) { lastMIDIValue[param] = val; }
-  public void resetMIDIValues() { for(int i = 0; i < Notes.NUM_PARAMETERS; i++) { lastMIDIValue[i] = NO_MIDI_VALUE; } }
-*/
-    
+	/** Returns if we just recorded notes. */
     public boolean getDidRecord() { return didRecord; }
+ 	/** Sets if we just recorded notes. */
     public void setDidRecord(boolean val) { didRecord = val; }
     
     public NotesClip(Seq seq, Motif motif, Clip parent)
@@ -41,6 +37,7 @@ public class NotesClip extends Clip
         rebuild();
         }
 
+	/** Updates the version. */
     public void rebuild(Motif motif)
         {
         if (this.getMotif() == motif)
@@ -49,6 +46,7 @@ public class NotesClip extends Clip
             }
         }
                 
+	/** Updates the version. */
     public void rebuild()
         {
         version = getMotif().getVersion();
@@ -57,8 +55,10 @@ public class NotesClip extends Clip
     /** Returns -1 if we've not yet started. */
     public int getIndex() { return index; }
     
+    /** Returns the number of notes and events in the Notes. */
     public int getSize() { return ((Notes) getMotif()).events.size(); }
         
+    /** Updates the index to the first note at the given position in time. */
     void updateIndex()
         {
         Notes notes = (Notes) getMotif();
@@ -75,19 +75,22 @@ public class NotesClip extends Clip
             }
         }
 
+	/** Updates the index */
     public void loop()
         {
         super.loop();
         updateIndex();
         }
                 
+	/** Updates the index and moves over recorded notes */
     public void reset()  
         {
         super.reset();
         moveRecording();                // also calls updateIndex() if nonempty
         updateIndex();
         }
-        
+
+	// Moves over recorded notes, including converting NPN and RPN         
     void moveRecording()
         {
         // Move the recorded notes over 
@@ -95,6 +98,15 @@ public class NotesClip extends Clip
         ArrayList<Notes.Event> recording = notes.getRecording();
         if (!recording.isEmpty())
             {
+            if (Prefs.getLastBoolean("QuantizeOnRecord", false))
+            	{
+	            notes.quantize(recording, 	
+    	         	Notes.QUANTIZE_DIVISORS[Prefs.getLastInt("QuantizeToOnRecord", 1)],
+        		    Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false),
+           			Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false),
+            		Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5));
+            	}
+            	
             boolean result = notes.setEvents(recording);
             final SeqUI sequi = seq.getSeqUI();
             if (result)
@@ -115,6 +127,7 @@ public class NotesClip extends Clip
         else setDidRecord(false);
         }
 
+	/** Updates the index and moves over recorded notes. */
     public void terminate()  
         {
         super.terminate();
@@ -122,6 +135,7 @@ public class NotesClip extends Clip
         updateIndex();
         }
         
+	/** Cuts all current echoed notes. */
     public void clear()
         {
         Notes notes = (Notes) getMotif();
@@ -137,6 +151,7 @@ public class NotesClip extends Clip
             }
         }
 
+	/** Moves all current echoed to the release queue. */
     public void release()
         {
         Notes notes = (Notes) getMotif();
@@ -152,81 +167,11 @@ public class NotesClip extends Clip
             }
         }
     
-    /*
-      public void outputMIDIValues(Notes notes)
-      {
-      for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-      {
-      int type = notes.getMIDIParameterType(i);
-                        
-      if (type != Notes.NO_MIDI_PARAMETER)
-      {
-      int msb = notes.getMIDIParameterMSB(i);
-      int lsb = notes.getMIDIParameterLSB(i);
-                                
-      double paramVal = getParameterValue(i);
-      int last = getLastMIDIValue(i);
-                                
-      if (type == Notes.BEND) // it's PITCH BEND
-      {
-      int val = (int)(paramVal * 16383 - 8192);
-      if (val != last)
-      {
-      bend(notes.getOut(), val);
-      setLastMIDIValue(i, val);
-      }
-      }
-      else if (type == Notes.CC_7)    // it's CC_7
-      {
-      int val = (int)(paramVal * 127);
-      if (val != last)
-      {
-      cc(notes.getOut(), msb, val);
-      setLastMIDIValue(i, val);
-      }
-      }
-      else if (type == Notes.CC_14) // it's CC_14
-      {
-      int val = (int)(paramVal * 16383);
-      if (val != last)
-      {
-      cc(notes.getOut(), msb, val >>> 7);
-      cc(notes.getOut(), msb + 32, val & 127);
-      setLastMIDIValue(i, val);
-      }
-      }
-      else if (type == Notes.NRPN) // it's NRPN
-      {
-      int val = (int)(paramVal * 16383);
-      if (val != last)
-      {
-      nrpn(notes.getOut(), msb * 128 + lsb, val);
-      setLastMIDIValue(i, val);
-      }
-      }
-      else                    // it's RPN
-      {
-      int val = (int)(paramVal * 16383);
-      if (val != last)
-      {
-      rpn(notes.getOut(), msb * 128 + lsb, val);
-      setLastMIDIValue(i, val);
-      }
-      }
-      }
-      }
-      }
-    */
-         
     public boolean process()
         {
         Notes notes = (Notes) getMotif();
         int out = notes.getOut();
         int pos = getPosition();
-        
-//        if (getPosition() == 0) resetMIDIValues();
-//        outputMIDIValues(notes);
-
         
         if (notes.isArmed() && seq.isRecording())
             {
@@ -379,6 +324,7 @@ public class NotesClip extends Clip
             }
         }
         
+	/** Returns true if we have finished playing. */
     public boolean finishedPlaying() { return getPosition() >= ((Notes) getMotif()).getEndTime(); }
 
     // TESTING
@@ -389,13 +335,12 @@ public class NotesClip extends Clip
         seq.setupForMIDI(Notes.class, args, 1, 1);   // sets up MIDI in and out
         
         seq.setBar(4);
-        seq.setMetronome(true);
+        seq.setMetronome(Seq.METRONOME_RECORDING_ONLY);
         seq.setCountInMode(Seq.COUNT_IN_RECORDING_ONLY);            // count in on recording only
         
         // Set up our module structure
         boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
         Notes dSeq = new Notes(seq, autoArm);
-//        seq.setIn(0, new In(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
         seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
     
         // Build Clip Tree

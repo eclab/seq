@@ -19,11 +19,24 @@ public class Notes extends Motif
     {
     private static final long serialVersionUID = 1;
 
+	/** What do MIDI files end with? */
     public static final String MIDI_FILE_EXTENSION = ".mid";
+    
+    /** The maximum number of permitted event parameters displayed.
+    	This is here because the current event parameters displayed are
+    	stored with the Notes object when saved. */
     public static final int NUM_EVENT_PARAMETERS = 4;
-    int end = 0;
+    /** A list of note strings */
+    public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-        
+
+
+
+
+
+	//// NOTE TYPES
+	//
+	//        
     // TYPES are in the following order:
     // 0-127            Note by Pitch
     // 128-255          CC
@@ -42,8 +55,7 @@ public class Notes extends Motif
     public static final int TYPE_NRPN = 16384;
     public static final int TYPE_RPN = 32768;
     
-    public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-    
+    /** Creates a new Event for the given type, onset, and value (or pitch) */
     public static Event buildEvent(int type, int when, double value)
         {
         if (!isValidType(type)) return null;
@@ -56,6 +68,7 @@ public class Notes extends Motif
         return new RPN(type - TYPE_RPN, (int)(value * 16384), when);
         }
     
+    /** Returns the short name for this type */
     public static String getTypeInitialShort(int type)  
         {
         if (!isValidType(type)) return "ERR";
@@ -68,6 +81,7 @@ public class Notes extends Motif
         return "RPN";
         }
 
+    /** Returns the long name for this type */
     public static String getTypeInitial(int type)       
         {
         if (!isValidType(type)) return "<error>";
@@ -80,6 +94,7 @@ public class Notes extends Motif
         return "RPN";
         }
 
+    /** Returns, as a string, the parameter for the type to be attached to the Initial. */
     public static String getTypeFinal(int type) 
         {
         if (!isValidType(type)) return "<error>";
@@ -92,6 +107,7 @@ public class Notes extends Motif
         return "" + (type - TYPE_RPN);
         }
 
+    /** Returns, as a string, the (long) initial and final together. */
     public static String getTypeName(int type)   
         {
         if (!isValidType(type)) return "<error>";
@@ -109,6 +125,7 @@ public class Notes extends Motif
         }
         
 
+    /** Returns TRUE if the given type number is in the valid range. */
     public static boolean isValidType(int type)
         {
         if (type < TYPE_NOTE) return false;
@@ -117,26 +134,46 @@ public class Notes extends Motif
         return true;
         }
 
+
+
+
+
+
+
+	/// EVENTS
+	//
+	// There are event classes for each event type: Notes, Bend, CC, NRPN, RPN, Aftertouch
+
+
+
+	// Used by NRPN and RPN to determine if we need to rewrite the parameter when writing to a sequence
+    int lastNRPN = -1;
+    boolean wasRPN = false;
+    
+
+
     public abstract static class Event
         {
+        // The longest permissible event length
         public static final int MAX_LENGTH = Seq.PPQ * 256;
+        // The onset of the event
         public int when;
-        public int length;
         // Is this event selected?  This is stored here even though it's not part of the model
         // because the NoteUI etc. objects where it would more naturally be stored can get
         // destroyed and rebuilt from the Event at any time and need to recover this information.
         public boolean selected;
-        public Event(int when, int length)
+        
+        public Event(int when)
             {
             this.when = when;
-            this.length = length;
             }
+            
         public Event(JSONObject obj)
             {
             when = obj.optInt("w", 0);
-            length = obj.optInt("l", 0);
             }
-                        
+        
+        /** Loads the Event from JSON */
         public static Event load(JSONObject obj) throws JSONException
             {
             String type = obj.getString("t");
@@ -158,54 +195,75 @@ public class Notes extends Motif
                 return null;
                 }
             }
-        public abstract void write(Track track, Notes notes) throws InvalidMidiDataException;
+ 
+       /** Writes the Event to the given MIDI File Track. */
+       public abstract void write(Track track, Notes notes) throws InvalidMidiDataException;
                         
         public JSONObject save() throws JSONException
             {
             JSONObject obj = new JSONObject();
             obj.put("w", when);
-            obj.put("l", length);
             return obj;
             }
         
+       /** Copies the event. */
         public abstract Event copy();
         
+       /** Converts and sets the event's parameter value (or velocity in the case of Notes) from a value [0.0, 1.0). */
         public abstract double getNormalizedValue(boolean log);
+       /** Returns the event's parameter value (or velocity in the case of Notes) as a value [0.0, 1.0). */
         public abstract void setNormalizedValue(double value, boolean log);
+       /** Returns the event's parameter value. */
         public abstract int getParameter();
+        /** Returns the event's type (see NOTE TYPES above) */
         public abstract int getType();
+        /** Returns the event's length in time. */
+        public int getLength() { return 0; }
         }
 
     public static class Note extends Event
         {
+        // The note pitch
         public int pitch;
+        // The note velocity, cannot be 0
         public int velocity;
-        public int release;             // release velocity, default is 0x40 (64)
+        // The note release velocity, default is 0x40 (64)
+        public int release;
+        // Returns the note length, should be > 0
+        public int length;
+        
         public Note(int pitch, int velocity, int when, int length, int release)
             {
-            super(when, length);
+            super(when);
             this.pitch = pitch;
             this.velocity = velocity;
             this.release = release;
+            this.length = length;
             }
+            
         public Note(int pitch, int velocity, int when, int length)
             {
-            super(when, length);
+            super(when);
             this.pitch = pitch;
             this.velocity = velocity;
             this.release = 64;
+            this.length = length;
             }
+            
         public Note(JSONObject obj)
             {
             super(obj);
             pitch = obj.optInt("p", 0);
             velocity = obj.optInt("v", 64);
             release = obj.optInt("r", 64);
+            length = obj.optInt("l", 0);
             }
+            
         public Event copy()
             {
             return new Note(pitch, velocity, when, length, release);
             }
+            
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
             track.add(new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON, pitch, velocity), when));
@@ -222,6 +280,7 @@ public class Notes extends Motif
             obj.put("p", pitch);
             obj.put("v", velocity);
             obj.put("r", release);
+            obj.put("l", length);
             return obj;
             }
         
@@ -231,14 +290,17 @@ public class Notes extends Motif
         public void setNormalizedValue(double value, boolean log) { velocity = (int)(value * 128); }
         public int getParameter() { return pitch; }
         public int getType() { return TYPE_NOTE + pitch; }
+        public int getLength() { return length; }
         }
         
     public static class Bend extends Event
         {
+        // Bend value from -8192 to +8191
         public int value;
+        
         public Bend(int value, int when)
             {
-            super(when, 0);
+            super(when);
             this.value = value;
             }
         public Bend(JSONObject obj)
@@ -307,11 +369,14 @@ public class Notes extends Motif
 
     public static class NRPN extends Event
         {
+        // NRPN parameter number from 0 to 16383
         public int parameter;
+        // NRPN value from 0 to 16383
         public int value;
+        
         public NRPN(int parameter, int value, int when)
             {
-            super(when, 0);
+            super(when);
             this.value = value;
             this.parameter = parameter;
             }
@@ -357,11 +422,14 @@ public class Notes extends Motif
 
     public static class RPN extends Event
         {
+        // RPN parameter number from 0 to 16383
         public int parameter;
+        // RPN parameter value from 0 to 16383
         public int value;
+
         public RPN(int parameter, int value, int when)
             {
-            super(when, 0);
+            super(when);
             this.value = value;
             this.parameter = parameter;
             }
@@ -407,11 +475,14 @@ public class Notes extends Motif
 
     public static class CC extends Event
         {
+        // CC parameter number from 0 to 127.  We do not yet support 14-bit CC in Notes
         public int parameter;
+        // CC parameter value from 0 to 127.  We do not yet support 14-bit CC in Notes
         public int value;
+
         public CC(int parameter, int value, int when)
             {
-            super(when, 0);
+            super(when);
             this.value = value;
             this.parameter = parameter;
             }
@@ -447,17 +518,19 @@ public class Notes extends Motif
 
     public static class Aftertouch extends Event
         {
+        // Aftertouch note pitch, or Out.CHANNEL_AFTERTOUCH if this is channel aftertouch.
         public int pitch;
+        // Aftertouch value
         public int value;
         public Aftertouch(int pitch, int value, int when)
             {
-            super(when, 0);
+            super(when);
             this.value = value;
             this.pitch = pitch;
             }
         public Aftertouch(int value, int when)
             {
-            super(when, 0);
+            super(when);
             this.value = value;
             this.pitch = Out.CHANNEL_AFTERTOUCH;
             }
@@ -496,9 +569,13 @@ public class Notes extends Motif
         public int getType() { return (pitch == Out.CHANNEL_AFTERTOUCH ? 384 : TYPE_POLYPHONIC_AFTERTOUCH + pitch); }
         }
         
-
-
-// This class converts the CCs, when appropriate, into NRPN or RPN messages in an ArrayList of events.
+        
+        
+	/// THE EVENT CC->NRPN/RPN PARSER        
+	//
+	//
+	// This class converts the CCs, when appropriate, into NRPN or RPN messages in an ArrayList of events.
+	
     static class EventParser
         {
         boolean rpn = false;                                    // Whether the last NRPN/RPN parameter is RPN
@@ -624,38 +701,10 @@ public class Notes extends Motif
                 
         
         
-    ArrayList<Event> events = new ArrayList<>();                // FIXME maybe this should be a list of lists to allow for fragmentation
-    ArrayList<Event> recording = new ArrayList<>();
-    boolean recordBend;
-    boolean recordCC;
-    boolean recordAftertouch;
-    boolean convertNRPNRPN;
-    int out;
-    int in;
-    int maxEventPosition = 0;
-    int maxNoteOnPosition = 0;
-    int maxNoteOffPosition = 0;
-    // Do I play out notes as I am recording them?
-    boolean echo = true;
-    // Do I display bend as a log or linearly?
-    boolean log = true;
     
-    public boolean getLog() { return log; }
-    public void setLog(boolean val) { log = val; }
-        
+    /// NOTES VARIABLES    
     
-    /*
-      public static final int NO_MIDI_PARAMETER = 0;
-      public static final int BEND = 1;
-      public static final int CC_7 = 2;
-      public static final int CC_14 = 3;
-      public static final int NRPN = 4;
-      public static final int RPN = 5;
-      int[] midiParameterType = new int[NUM_PARAMETERS];
-      int[] midiParameterMSB = new int[NUM_PARAMETERS];
-      int[] midiParameterLSB = new int[NUM_PARAMETERS];
-    */
-
+    // Event Parameter Indices.  Not to be confused with EVENT TYPES above.
     public static final int EVENT_PARAMETER_NONE = 0;
     public static final int EVENT_PARAMETER_CC = 1;
     public static final int EVENT_PARAMETER_POLY_AT = 2;
@@ -664,54 +713,121 @@ public class Notes extends Motif
     public static final int EVENT_PARAMETER_NRPN = 5;
     public static final int EVENT_PARAMETER_RPN = 6;
     
+    // Types of event parameters
     int[] eventParameterType = new int[NUM_EVENT_PARAMETERS];
+    // MSB parameter of event parameters
     int[] eventParameterMSB = new int[NUM_EVENT_PARAMETERS];
+    // LSB parameter of event parameters
     int[] eventParameterLSB = new int[NUM_EVENT_PARAMETERS];
-
-    /*
-      public int getMIDIParameterType(int param) { return midiParameterType[param]; }
-      public void setMIDIParameterType(int param, int val) { midiParameterType[param] = val; }
-      public int getMIDIParameterMSB(int param) { return midiParameterMSB[param]; }
-      public void setMIDIParameterMSB(int param, int val) { midiParameterMSB[param] = val; }
-      public int getMIDIParameterLSB(int param) { return midiParameterLSB[param]; }
-      public void setMIDIParameterLSB(int param, int val) { midiParameterLSB[param] = val; }
-    */
         
+    // All events in the Notes
+    ArrayList<Event> events = new ArrayList<>();
+    // Events currently being recorded, to be moved to the main events
+    ArrayList<Event> recording = new ArrayList<>();
+    
+    // Do we record pitch bend?
+    boolean recordBend;
+    // Do we record CC?
+    boolean recordCC;
+    // Do we record aftertouch?
+    boolean recordAftertouch;
+    // Do we convert CC to NRP and RPN after recording?
+    boolean convertNRPNRPN;
+    // The out device
+    int out;
+    // The in device
+    int in;
+    // The highest timestamp for any event
+    int maxEventPosition = 0;
+    // The highest timestamp for a note
+    int maxNoteOnPosition = 0;
+	// The highest time for a note OFF
+    int maxNoteOffPosition = 0;
+    // Do I play out notes as I am recording them?
+    boolean echo = true;
+    // Do I display bend as a log or linearly?
+    boolean log = true;
+    // The end marker for the Notes
+    int end = 0;
+
+	/** Returns whether pitch bend is displayed logarithmicaly */
+    public boolean getLog() { return log; }
+	/** Sets whether pitch bend is displayed logarithmicaly */
+    public void setLog(boolean val) { log = val; }
+        
+ 	/** Returns the given event parameter type. */
     public int getEventParameterType(int param) { return eventParameterType[param]; }
+ 	/** Sets the given event parameter type. */
     public void setEventParameterType(int param, int val) { eventParameterType[param] = val; }
+    
+ 	/** Returns the given event parameter MSB. */
     public int getEventParameterMSB(int param) { return eventParameterMSB[param]; }
+ 	/** Sets the given event parameter MSB. */
     public void setEventParameterMSB(int param, int val) { eventParameterMSB[param] = val; }
+    
+ 	/** Returns the given event parameter LSB. */
     public int getEventParameterLSB(int param) { return eventParameterLSB[param]; }
+ 	/** Sets the given event parameter LSB. */
     public void setEventParameterLSB(int param, int val) { eventParameterLSB[param] = val; }
 
-    
+ 	/** Returns whether we record pitch bend. */
     public boolean getRecordBend() { return recordBend; }
+ 	/** Sets whether we record pitch bend. */
     public void setRecordBend(boolean val) { recordBend = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordbend", val); }
 
+ 	/** Returns whether we record CC. */
     public boolean getRecordCC() { return recordCC; }
+ 	/** Sets whether we record CC. */
     public void setRecordCC(boolean val) { recordCC = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordcc", val); }
 
-    public boolean getConvertNRPNRPN() { return convertNRPNRPN; }
-    public void setConvertNRPNRPN(boolean val) { convertNRPNRPN = val; Prefs.setLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", val); }
-
+ 	/** Returns whether we record Aftertouch. */
     public boolean getRecordAftertouch() { return recordAftertouch; }
+ 	/** Sets whether we record Aftertouich. */
     public void setRecordAftertouch(boolean val) { recordAftertouch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordaftertouch", val); }
 
+ 	/** Returns whether we convert CC to NRPN/RPN after recording. */
+    public boolean getConvertNRPNRPN() { return convertNRPNRPN; }
+ 	/** Sets whether we convert CC to NRPN/RPN after recording. */
+    public void setConvertNRPNRPN(boolean val) { convertNRPNRPN = val; Prefs.setLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", val); }
+
+ 	/** Returns the output device. */
     public int getOut() { return out; }
+ 	/** Sets the output device. */
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.notes.Notes"); }
 
+ 	/** Returns the input device. */
     public int getIn() { return in; }
+ 	/** Sets the input device. */
     public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.notes.Notes"); }
         
+ 	/** Returns whether we echo when recording. */
     public boolean getEcho() { return echo; }
+ 	/** Sets whether we echo when recording. */
     public void setEcho(boolean val) { echo = val; }
     
+ 	/** Returns the endpoint. */
+    public void setEnd(int end) { this.end = end; }
+ 	/** Sets the endpoint. */
+    public int getEnd() { return end; }
+    
+    /** Returns the highest timestamp of the onset of any event. */
+    public int getMaxEventPosition() { return maxEventPosition; }
+    /** Returns the highest timestamp of the onset of any note. */
+    public int getMaxNoteOnPosition() { return maxNoteOnPosition; }
+    /** Returns the highest time of the NOTE OFF of any note. */
+    public int getMaxNoteOffPosition() { return maxNoteOffPosition; }
+        
+
+    /** Copies the Notes */
     public Motif copy()
         {
         Notes other = (Notes)(super.copy());
         other.events = new ArrayList();
         for(Event event : events)
             other.events.add(event.copy());
+		System.arraycopy(eventParameterType, 0, other.eventParameterType, 0, eventParameterType.length);
+		System.arraycopy(eventParameterMSB, 0, other.eventParameterMSB, 0, eventParameterMSB.length);
+		System.arraycopy(eventParameterLSB, 0, other.eventParameterLSB, 0, eventParameterLSB.length);
         clearRecording();
         return other;
         }
@@ -730,7 +846,6 @@ public class Notes extends Motif
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
         convertNRPNRPN = Prefs.getLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", true); 
-        // for(int i = 0; i < NUM_PARAMETERS; i++) { midiParameterType[i] = NO_MIDI_PARAMETER; }
         }
 
     /** Returns all events */
@@ -809,6 +924,7 @@ public class Notes extends Motif
             }
         }
     
+    /** Returns all Notes, broken out by pitch.  */
     public ArrayList<ArrayList<Note>> getNotesByPitch()
         {
         ArrayList<ArrayList<Note>> all = new ArrayList<>();
@@ -828,6 +944,7 @@ public class Notes extends Motif
         return all;
         }
     
+    /** Sets the events, converting CC to NRPN/RPN if we are set up to do that.  */
     public boolean setEvents(ArrayList<Event> val) 
         {
         if (getConvertNRPNRPN())
@@ -845,19 +962,19 @@ public class Notes extends Motif
             }
         }
 
+    /** Erases recorded events.  */
     public void clearRecording()
         {
         recording = new ArrayList<Event>();
         }
 
+    /** Returns the recorded events.  */
     public ArrayList<Event> getRecording()
         {
         return recording;
         }
         
-    public void setEnd(int end) { this.end = end; }
-    public int getEnd() { return end; }
-    
+    /** Sets whether we are armed.  This may also clear the recording.  */
     public void setArmed(boolean val) 
         {
         boolean wasArmed = isArmed();
@@ -876,7 +993,8 @@ public class Notes extends Motif
             clearRecording();
             }
         }
-        
+    
+    /** Recomputes and stores the maxNoteOnPosition, maxNoteOffPosition, and maxEventPosition */
     public void computeMaxTime()
         {
         maxNoteOnPosition = 0;
@@ -893,16 +1011,14 @@ public class Notes extends Motif
                 }
             }
         }
-                
-    public int getMaxEventPosition() { return maxEventPosition; }
-    public int getMaxNoteOnPosition() { return maxNoteOnPosition; }
-    public int getMaxNoteOffPosition() { return maxNoteOffPosition; }
-        
+            
     /// FIXME: did I break this?
     
     //// FIXME: This feels wrong.  maxNoteOffPosition is the time we do a release.
     //// If it is exactly at a certain beat, then wouldn't we actually be doing the first
     //// tick of the next motif AFTER that beat?  Same thing for end...
+
+    /** Returns the time at which we should declare we are no longer playing.   */
     public int getEndTime()
         {
         int maxPos = (maxNoteOffPosition > maxEventPosition ? maxNoteOffPosition : maxEventPosition);
@@ -911,12 +1027,13 @@ public class Notes extends Motif
         return endTime;
         }
         
+    /** Sorts the events by onset time. */
     public void sortEvents()
         {
         sortEvents(events);
         }
     
-
+    /** Sorts the provided events by onset time. */
     public void sortEvents(ArrayList<Event> events)
         {
         Collections.sort(events, new Comparator<Event>()
@@ -926,35 +1043,8 @@ public class Notes extends Motif
             });
         }
     
-    /** Removes elements by index, not by time */
-/*
-  public ArrayList<Event> remove(int[] indices)        // endIndex is inclusive
-  {
-  ArrayList<Event> newEvents = new ArrayList<Event>();
-  ArrayList<Event> cut = new ArrayList<Event>();
 
-  HashSet<Integer> hash = buildIndexHash(indices);
-        
-  for(int i = 0; i < events.size(); i++)
-  {
-  if (hash.contains(i))
-  {
-  Event event = events.get(i);
-  cut.add(event);
-  }
-  else
-  {
-  Event event = events.get(i);
-  newEvents.add(event);
-  }
-  }
-  events = newEvents;
-  computeMaxTime();
-  return cut;
-  }
-*/
-
-    /** Remove multiple elements */
+    /** Remove the given events. */
     public void remove(HashSet<Event> cut)
         {
         ArrayList<Event> newEvents = new ArrayList<>();
@@ -971,7 +1061,7 @@ public class Notes extends Motif
         computeMaxTime();
         }
 
-    /** Removes elements by index, not by time */
+    /** Filters events from all events. */
     public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
@@ -1001,7 +1091,7 @@ public class Notes extends Motif
         return cut;
         }
     
-    /** Removes elements by index, not by time */
+    /** Filters events from the given events. */
     public ArrayList<Event> filter(ArrayList<Event> eventsIn, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)        // endIndex is inclusive
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
@@ -1040,6 +1130,7 @@ public class Notes extends Motif
         return cut;
         }
     
+    /** Removes and returns events between start and end. */
     public ArrayList<Event> cut(int start, int end, boolean allowStartOverlaps, boolean allowEndOverlaps)
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
@@ -1050,16 +1141,16 @@ public class Notes extends Motif
             {
             Event event = events.get(i);
             // If fully outside...
-            if (event.when + event.length < start || event.when >= end)
+            if (event.when + event.getLength() < start || event.when >= end)
                 {
                 newEvents.add(event);
                 }
             // if started early but we're allowing start overlaps
-            else if (event.when < start && event.when + event.length >= start && allowStartOverlaps)
+            else if (event.when < start && event.when + event.getLength() >= start && allowStartOverlaps)
                 {
                 newEvents.add(event);
                 }
-            else if (event.when < end && event.when + event.length >= end && allowEndOverlaps)
+            else if (event.when < end && event.when + event.getLength() >= end && allowEndOverlaps)
                 {
                 newEvents.add(event);
                 }
@@ -1073,6 +1164,7 @@ public class Notes extends Motif
         return cut;
         }
 
+    /** Copies and returns events between start and end. */
     public ArrayList<Event> copy(int start, int end, boolean allowStartOverlaps, boolean allowEndOverlaps)
         {
         ArrayList<Event> copy = new ArrayList<Event>();
@@ -1082,16 +1174,16 @@ public class Notes extends Motif
             {
             Event event = events.get(i);
             // If fully outside...
-            if (event.when + event.length < start || event.when >= end)
+            if (event.when + event.getLength() < start || event.when >= end)
                 {
                 // do nothing
                 }
             // if started early but we're allowing start overlaps
-            else if (event.when < start && event.when + event.length >= start && allowStartOverlaps)
+            else if (event.when < start && event.when + event.getLength() >= start && allowStartOverlaps)
                 {
                 // do nothing
                 }
-            else if (event.when < end && event.when + event.length >= end && allowEndOverlaps)
+            else if (event.when < end && event.when + event.getLength() >= end && allowEndOverlaps)
                 {
                 // do nothing
                 }
@@ -1103,7 +1195,7 @@ public class Notes extends Motif
         computeMaxTime(); 
         return copy;
         }
-
+/*
     public ArrayList<Event> copyEvents(int[] indices)
         {
         ArrayList<Event> copy = new ArrayList<Event>();
@@ -1117,7 +1209,9 @@ public class Notes extends Motif
         computeMaxTime(); 
         return copy;
         }
+*/
 
+	/** Inserts the given events in sorted order. */
     public void merge(ArrayList<Event> from)
         {
         if (from.isEmpty()) return;
@@ -1160,21 +1254,23 @@ public class Notes extends Motif
         events = newEvents;
         }
 
-    public void overwrite(ArrayList<Event> from, boolean allowStartOverlaps, boolean allowEndOverlaps)
+	/** Replaces with the given events all events whose timestamp overlaps with them.  Returns the replaced events. */
+    public ArrayList<Event> overwrite(ArrayList<Event> from, boolean allowStartOverlaps, boolean allowEndOverlaps)
         {
-        if (from.isEmpty()) return;
+        if (from.isEmpty()) return new ArrayList<Event>();
         int start = Integer.MAX_VALUE;
         int end = 0;
         for(Event event : from)
             {
             if (start > event.when) start = event.when;
-            if (end < event.when + event.length) end = event.when + event.length;
+            if (end < event.when + event.getLength()) end = event.when + event.getLength();
             }
-        cut(start, end, allowStartOverlaps, allowEndOverlaps);
+        ArrayList<Event> cut = cut(start, end, allowStartOverlaps, allowEndOverlaps);
         merge(from);
+        return cut;
         }
 
-
+	/** Shifts all events in time so that the first event's onset is at timestep 0. */
     public void trim()
         {
         if (events.size() > 0) 
@@ -1183,6 +1279,7 @@ public class Notes extends Motif
             }
         }
 
+	// Shifts the provided events in time so that the first event's onset is at timestep 0.
     void shift(ArrayList<Event> events, int by, boolean sort)
         {
         if (events.size() == 0) return;
@@ -1201,7 +1298,7 @@ public class Notes extends Motif
         sortEvents(events);
         }
         
-
+	/** Transposes the given events by the provided semitones. */
     public void transpose(ArrayList<Event> events, int by)
         {
         if (by == 0) return;
@@ -1226,6 +1323,9 @@ public class Notes extends Motif
         }
               
 
+	/** Stretches the onset and length of the provided events so that the previous time interval STRETCHFROM
+		is stretched to fill the time interval STRETCHTO.  If LOCKTOSTART is true, then the stretched events
+		are shifted in time afterwards so that the first event's onset is the same as it originally was. */
     public void stretch(ArrayList<Event> events, int stretchFrom, int stretchTo, boolean lockToStart)
         {
         if (stretchFrom == stretchTo) return;
@@ -1247,7 +1347,7 @@ public class Notes extends Motif
             if (event instanceof Note)
                 {
                 Note note = (Note)event;
-                note.length = (int)Math.round((event.length * stretchTo) / (double)stretchFrom);
+                note.length = (int)Math.round((event.getLength() * stretchTo) / (double)stretchFrom);
                 }
             }
             
@@ -1263,14 +1363,208 @@ public class Notes extends Motif
         computeMaxTime(); 
         }
 
+
+	/// Some quantization divisors
+    public static final int[] QUANTIZE_DIVISORS = { 
+        Seq.PPQ / 12,           // 32 Triplet
+        Seq.PPQ / 8,            // 32
+        Seq.PPQ / 6,            // 16 Triplet
+        Seq.PPQ / 4,            // 16
+        Seq.PPQ / 3,            // 8 Triplet
+        Seq.PPQ / 2,            // 8
+        (Seq.PPQ * 2) / 3,      // 4 Triplet
+        Seq.PPQ                         // 4
+        };
+        
+    // Standard quantization divisor strings
+    public static final String[] QUANTIZE_STRINGS = { "32nd Trip", "32nd Note", "16th Trip", "16th Note", "8th Trip", "8th Note", "Quarter Trip", "Quarter Note" };
+    
+    /** Quantize all events in the given from...to range (inclusive)
+        to the nearest DIVISOR NOTE in ticks.  For each note we compute the DIVISOR NOTE
+        that is LESS THAN OR EQUAL to the note.  Then if the note is less than DIVISOR * PERCENTAGE later
+        than the DIVISOR NOTE, we push it to the divisor note, else we push it to the next divisor note.
+        Optionally also quantize the ends, and non-notes.  Percentage can be any value 0.0 to 1.0 inclusive.
+    */
+    public void quantize(ArrayList<Event> events, int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
+        {
+        for(Event event: events)
+            {
+            // Zero, stash the note off position for later use
+            int noteOffPos = 0;
+            if (event instanceof Note && quantizeEnds)
+                {
+                noteOffPos = event.when + event.getLength();
+                }
+                        
+            // First handle onsets
+            if (event instanceof Note || quantizeNonNotes)
+                {
+                int quantizedTime = (event.when / divisor) * divisor;
+                double pivot = (event.when - quantizedTime) / (double)divisor;
+                        
+                if (pivot < percentage) event.when = quantizedTime; // pull down
+                else event.when = quantizedTime + divisor;                // push up
+                }
+                
+            // Next handle NOTE OFF
+            if (event instanceof Note && quantizeEnds)
+                {
+                int quantizedTime = (noteOffPos / divisor) * divisor;
+                double pivot = (noteOffPos - quantizedTime) / (double)divisor;
+                        
+                if (pivot < percentage) noteOffPos = quantizedTime; // pull down
+                else noteOffPos = quantizedTime + divisor;                // push up
+                        
+                // change back to length
+                ((Note)event).length = noteOffPos - event.when;
+                if (event.getLength() < 0)
+                    {
+                    System.err.println("QUANTIZE ERROR: event length went negative: " + event.getLength()); 
+                    ((Note)event).length = 0;
+                    }
+                }
+            }
+        sortEvents(events);
+        computeMaxTime(); 
+        }
+
+	// Provide a random number of ticks scaled for randomizing time
+    int getRandomTimeNoise(Random random, double max)
+        {
+//              return (int)Math.round(random.nextGaussian() * stdev);
+        return (int)((random.nextDouble() * 2.0 - 1.0) * max * Seq.PPQ);              // Go up to 1 beat max
+        }
+                
+    /** Quantize the onset, and possibly release time, of all events, possibly including non-notes, by the given
+        variance (in ticks), in the event range from FROM to TO. */
+    public void randomizeTime(ArrayList<Event> events, double max, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
+        {
+        for(Event event : events)
+            {
+            // First handle onsets
+            if (event instanceof Note || randomizeNonNotes)
+                {
+                int val = event.when + getRandomTimeNoise(random, max);
+                while(val < 0)
+                    {
+                    val = event.when + getRandomTimeNoise(random, max);
+                    }
+                event.when = val;
+                }
+                
+            // Next handle LENGTHS
+            if (event instanceof Note && randomizeLengths)
+                {
+                int val = event.getLength() + getRandomTimeNoise(random, max);
+                while(val < 0)
+                    {
+                    val = event.getLength() + getRandomTimeNoise(random, max);
+                    }
+                ((Note)event).length = val;
+                }
+            }
+        sortEvents(events);     
+        computeMaxTime(); 
+        }
+
+	/** Sets the velocity of all events to the given value */
+    public void setVelocity(int val)
+        {
+        setVelocity(events, val);
+        }
+
+	/** Sets the velocity of the provided events to the given value */
+    public void setVelocity(ArrayList<Event> events, int val)
+        {
+        for(Event event : events)
+            {
+            // First handle onsets (which CANNOT have 0 velocity)
+            if (event instanceof Note)
+                {
+                Note note = (Note)event;
+                note.velocity = val;
+                }
+            }
+        }
+
+	// Provide a random velocity delta
+    int getRandomVelocityNoise(Random random, double max)
+        {
+        return (int)((random.nextDouble() * 127 - 63) * max);           // So we have enough space to fit in above 1...
+        }
+                
+    /** Randomize the velocity, and possibly release velocity, of all events, by the given
+        variance (from 0..255). */
+    public void randomizeVelocity(double max, boolean randomizeReleases, Random random)
+        {
+        randomizeVelocity(events, max, randomizeReleases, random);
+        }
+
+	// How often should we try to randomize the note velocity and stay in the proper time?
+    static final int NUM_TRIES = 8;
+        
+    /** Randomize the velocity, and possibly release velocity, of the provided events, by the given
+        variance (from 0..255). */
+    public void randomizeVelocity(ArrayList<Event> events, double max, boolean randomizeReleases, Random random)
+        {
+        for(Event event : events)
+            {
+            // First handle onsets (which CANNOT have 0 velocity)
+            if (event instanceof Note)
+                {
+                Note note = (Note)event;
+                int val = 0;
+                boolean success = false;
+                for(int tries = 0; tries < NUM_TRIES; tries++)
+                    {
+                    int rnd = getRandomVelocityNoise(random, max);
+                    val = note.velocity + rnd;
+                    if (val >= 1 && val <= 127) { success = true; break; }
+                                        
+                    val = note.velocity - rnd;      // let's try flipping
+                    if (val >= 1 && val <= 127) { success = true; break; }
+                    }
+                if (success) note.velocity = val;
+                else {System.err.println("Panic"); note.velocity = random.nextInt(127) + 1;     }       // I don't think this can happen?
+
+                // Next handle releases (which can have 0 velocity)
+                if (randomizeReleases)
+                    {
+                    val = 0;
+                    success = false;
+                    for(int tries = 0; tries < NUM_TRIES; tries++)
+                        {
+                        int rnd = getRandomVelocityNoise(random, max);
+                        val = note.release + rnd;
+                        if (val >= 0 && val <= 127) { success = true; break; }
+                                                
+                        val = note.release - rnd;       // let's try flipping
+                        if (val >= 0 && val <= 127) { success = true; break; }
+                        }
+                    if (success) note.release = val;
+                    else {System.err.println("Panic"); note.release = random.nextInt(128);  }       // I don't think this can happen?
+                    }
+                }
+            }
+        }
+
+
+	/** Builds the clip. */
     public Clip buildClip(Clip parent)
         {
         return new NotesClip(seq, this, parent);
         }
 
+	/** Read Notes from a MIDI File, displacing the originals. */
     public void read(File midiFile) { try { read(MidiSystem.getSequence(midiFile)); } catch (InvalidMidiDataException ex) { }  catch (IOException ex) { }}
+
+	/** Read Notes from an InputStream, displacing the originals. */
     public void read(InputStream stream) { try { read(MidiSystem.getSequence(stream));  } catch (InvalidMidiDataException ex) { }  catch (IOException ex) { }}
+
+	/** Read Notes from a URL, displacing the originals. */
     public void read(URL url) { try { read(MidiSystem.getSequence(url));  } catch (InvalidMidiDataException ex) { } catch (IOException ex) { }}
+
+	/** Read Notes from a Sequence, displacing the originals. */
     public void read(javax.sound.midi.Sequence sequence)
         {
         Track[] tracks = sequence.getTracks();
@@ -1350,206 +1644,136 @@ public class Notes extends Motif
         computeMaxTime();
         } 
     
-    //// INDEX SET MANIPULATION
     
-    // Build an array of indices from FROM to TO inclusive
-    int[] buildIndices(int from, int to)
+    
+    /** Writes Notes to a Sequence */
+    public Sequence write() throws InvalidMidiDataException
         {
-        int[] idx = new int[to - from + 1];
-        for(int i = from; i <= to; i++) idx[i] = i;
-        return idx;
+        javax.sound.midi.Sequence sequence = new javax.sound.midi.Sequence(javax.sound.midi.Sequence.PPQ, Seq.PPQ);
+        Track track = sequence.createTrack();
+        lastNRPN = -1;
+        wasRPN = false;
+        for(Event event : events)
+            {
+            event.write(track, this);
+            }
+        return sequence;
         }
 
-    // Return the minimum index among the provided indices
-    int minimum(int[] indices)
+	/** Writes notes to a MIDI File */
+    public void write(File out) throws IOException, InvalidMidiDataException
         {
-        if (indices.length == 0) return 0;      // uhm...
-        int min = indices[0];
-        for(int i = 1; i < indices.length; i++)
-            {
-            if (indices[i] < min) min = indices[i];
-            }
-        return min;
+        MidiSystem.write(write(), 0, out);
         }
 
-    // Return as HashSet of the given indices
-    HashSet<Integer> buildIndexHash(int[] indices)
+	/** Writes notes to an Output Stream */
+    public void write(OutputStream out) throws IOException, InvalidMidiDataException
         {
-        HashSet<Integer> hash = new HashSet<>();
-        for(int i : indices)
+        MidiSystem.write(write(), 0, out);
+        }
+
+	/** Loads the Notes object from JSON */
+    public void load(JSONObject obj) throws JSONException
+        {
+        setEnd(obj.optInt("end", 0));
+        setEcho(obj.optBoolean("echo", false));
+        setOut(obj.optInt("out", 0));
+        setIn(obj.optInt("in", 0));
+        setLog(obj.optBoolean("log", true));
+        
+        JSONArray etypeArray = obj.optJSONArray("eparam");
+        if (etypeArray != null)
             {
-            hash.add(i);
+            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+                {
+                eventParameterType[i] = etypeArray.optInt(i, 0);
+                }
+            JSONArray emsbArray = obj.getJSONArray("emsb");
+            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+                {
+                eventParameterMSB[i] = emsbArray.optInt(i, 0);
+                }
+            JSONArray elsbArray = obj.getJSONArray("elsb");
+            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+                {
+                eventParameterLSB[i] = elsbArray.optInt(i, 0);
+                }
             }
-        return hash;
+            
+        JSONArray eventsArray = obj.getJSONArray("events");
+        events = new ArrayList<Event>();
+        for(int i = 0; i < eventsArray.length(); i++)
+            {
+            Event event = Event.load(eventsArray.getJSONObject(i));
+            events.add(event);
+            }
+        computeMaxTime();               // computs maxNoteOnPosition and maxNoteOffPosition
         }
         
-    
-    /** Quantize all events in the given from...to range (inclusive)
-        to the nearest DIVISOR NOTE in ticks.  For each note we compute the DIVISOR NOTE
-        that is LESS THAN OR EQUAL to the note.  Then if the note is less than DIVISOR * PERCENTAGE later
-        than the DIVISOR NOTE, we push it to the divisor note, else we push it to the next divisor note.
-        Optionally also quantize the ends, and non-notes.  Percentage can be any value 0.0 to 1.0 inclusive.
-    */
-    public void quantize(ArrayList<Event> events, int divisor, boolean quantizeEnds, boolean quantizeNonNotes, double percentage)
+	/** Saves the Notes object to JSON */
+    public void save(JSONObject obj) throws JSONException
         {
-        for(Event event: events)
-            {
-            // Zero, stash the note off position for later use
-            int noteOffPos = 0;
-            if (event instanceof Note && quantizeEnds)
-                {
-                noteOffPos = event.when + event.length;
-                }
-                        
-            // First handle onsets
-            if (event instanceof Note || quantizeNonNotes)
-                {
-                int quantizedTime = (event.when / divisor) * divisor;
-                double pivot = (event.when - quantizedTime) / (double)divisor;
-                        
-                if (pivot < percentage) event.when = quantizedTime; // pull down
-                else event.when = quantizedTime + divisor;                // push up
-                }
-                
-            // Next handle NOTE OFF
-            if (event instanceof Note && quantizeEnds)
-                {
-                int quantizedTime = (noteOffPos / divisor) * divisor;
-                double pivot = (noteOffPos - quantizedTime) / (double)divisor;
-                        
-                if (pivot < percentage) noteOffPos = quantizedTime; // pull down
-                else noteOffPos = quantizedTime + divisor;                // push up
-                        
-                // change back to length
-                event.length = noteOffPos - event.when;
-                if (event.length < 0)
-                    {
-                    System.err.println("QUANTIZE ERROR: event length went negative: " + event.length); 
-                    event.length = 0;
-                    }
-                }
-            }
-        sortEvents(events);
-        computeMaxTime(); 
-        }
-
-    int getRandomTimeNoise(Random random, double max)
-        {
-//              return (int)Math.round(random.nextGaussian() * stdev);
-        return (int)((random.nextDouble() * 2.0 - 1.0) * max * Seq.PPQ);              // Go up to 1 beat max
-        }
-                
-    /** Quantize the onset, and possibly release time, of all events, possibly including non-notes, by the given
-        variance (in ticks), in the event range from FROM to TO. */
-    public void randomizeTime(ArrayList<Event> events, double max, boolean randomizeLengths, boolean randomizeNonNotes, Random random)
-        {
-        for(Event event : events)
-            {
-            // First handle onsets
-            if (event instanceof Note || randomizeNonNotes)
-                {
-                int val = event.when + getRandomTimeNoise(random, max);
-                while(val < 0)
-                    {
-                    val = event.when + getRandomTimeNoise(random, max);
-                    }
-                event.when = val;
-                }
-                
-            // Next handle LENGTHS
-            if (event instanceof Note && randomizeLengths)
-                {
-                int val = event.length + getRandomTimeNoise(random, max);
-                while(val < 0)
-                    {
-                    val = event.length + getRandomTimeNoise(random, max);
-                    }
-                event.length = val;
-                }
-            }
-        sortEvents(events);     
-        computeMaxTime(); 
-        }
-
-    public void setVelocity(int val)
-        {
-        setVelocity(events, val);
-        }
-
-    public void setVelocity(ArrayList<Event> events, int val)
-        {
-        for(Event event : events)
-            {
-            // First handle onsets (which CANNOT have 0 velocity)
-            if (event instanceof Note)
-                {
-                Note note = (Note)event;
-                note.velocity = val;
-                }
-            }
-        }
-
-    int getRandomVelocityNoise(Random random, double max)
-        {
-        return (int)((random.nextDouble() * 127 - 63) * max);           // So we have enough space to fit in above 1...
-        }
-                
-    /** Quantize the velocity, and possibly release velocity, of all events, possibly including non-notes, by the given
-        variance (from 0..255). */
-    public void randomizeVelocity(double max, boolean randomizeReleases, Random random)
-        {
-        randomizeVelocity(events, max, randomizeReleases, random);
-        }
-
-    static final int NUM_TRIES = 8;
+        obj.put("end", getEnd());
+        obj.put("echo", getEcho());
+        obj.put("out", getOut());
+        obj.put("in", getIn());
+        obj.put("log", getLog());
         
-    /** Quantize the velocity, and possibly release velocity, of all events, possibly including non-notes, by the given
-        variance (from 0..255), in the event range from FROM to TO. */
-    public void randomizeVelocity(ArrayList<Event> events, double max, boolean randomizeReleases, Random random)
-        {
+        // Event Display Parameters
+        JSONArray etypeArray = new JSONArray();
+        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+            {
+            etypeArray.put(i, eventParameterType[i]);
+            }
+        obj.put("eparam", etypeArray);
+        JSONArray emsbArray = new JSONArray();
+        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+            {
+            emsbArray.put(i, eventParameterMSB[i]);
+            }
+        obj.put("emsb", emsbArray);
+        JSONArray elsbArray = new JSONArray();
+        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+            {
+            elsbArray.put(i, eventParameterLSB[i]);
+            }
+        obj.put("elsb", elsbArray);
+
+
+        // All Events and Notes
+        JSONArray eventsArray = new JSONArray();
         for(Event event : events)
             {
-            // First handle onsets (which CANNOT have 0 velocity)
-            if (event instanceof Note)
-                {
-                Note note = (Note)event;
-                int val = 0;
-                boolean success = false;
-                for(int tries = 0; tries < NUM_TRIES; tries++)
-                    {
-                    int rnd = getRandomVelocityNoise(random, max);
-                    val = note.velocity + rnd;
-                    if (val >= 1 && val <= 127) { success = true; break; }
-                                        
-                    val = note.velocity - rnd;      // let's try flipping
-                    if (val >= 1 && val <= 127) { success = true; break; }
-                    }
-                if (success) note.velocity = val;
-                else {System.err.println("Panic"); note.velocity = random.nextInt(127) + 1;     }       // I don't think this can happen?
-
-                // Next handle releases (which can have 0 velocity)
-                if (randomizeReleases)
-                    {
-                    val = 0;
-                    success = false;
-                    for(int tries = 0; tries < NUM_TRIES; tries++)
-                        {
-                        int rnd = getRandomVelocityNoise(random, max);
-                        val = note.release + rnd;
-                        if (val >= 0 && val <= 127) { success = true; break; }
-                                                
-                        val = note.release - rnd;       // let's try flipping
-                        if (val >= 0 && val <= 127) { success = true; break; }
-                        }
-                    if (success) note.release = val;
-                    else {System.err.println("Panic"); note.release = random.nextInt(128);  }       // I don't think this can happen?
-                    }
-                }
+            eventsArray.put(event.save());
             }
+        obj.put("events", eventsArray);
         }
+
+
+
+    static int document = 0;
+    static int counter = 1;
+    public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
+        
+    public String getBaseName() { return "Notes"; }
+
+
+
+
+
+
+
+
+
+
+	////// UNTESTED
+	////// BINARY SEARCH METHODS
+
+
 
 
     // FIXME: UNTESTED
+    // Finds the index of the given event using binary search
     public int indexOf(Event event)
         {
         if (events.size() == 0) return -1;
@@ -1578,6 +1802,7 @@ public class Notes extends Motif
         }
 
     // FIXME: UNTESTED
+    // Finds the first event whose onset is at or after the given time, using binary search
     public int firstEventStartingAtOrAfter(int time)
         {
         if (events.size() == 0) return -1;
@@ -1624,6 +1849,7 @@ public class Notes extends Motif
         }
 
     // FIXME: UNTESTED
+    // Finds the last event whose onset is before the given time, using binary search
     public int lastEventEndingLessThan(int time)
         {
         if (events.size() == 0) return -1;
@@ -1666,153 +1892,5 @@ public class Notes extends Motif
         }
 
     
-    int lastNRPN = -1;
-    boolean wasRPN = false;
     
-    Sequence write() throws InvalidMidiDataException
-        {
-        javax.sound.midi.Sequence sequence = new javax.sound.midi.Sequence(javax.sound.midi.Sequence.PPQ, Seq.PPQ);
-        Track track = sequence.createTrack();
-        lastNRPN = -1;
-        wasRPN = false;
-        for(Event event : events)
-            {
-            event.write(track, this);
-            }
-        return sequence;
         }
-
-    public void write(File out) throws IOException, InvalidMidiDataException
-        {
-        MidiSystem.write(write(), 0, out);
-        }
-
-    public void write(OutputStream out) throws IOException, InvalidMidiDataException
-        {
-        MidiSystem.write(write(), 0, out);
-        }
-
-    public void load(JSONObject obj) throws JSONException
-        {
-        setEnd(obj.optInt("end", 0));
-        setEcho(obj.optBoolean("echo", false));
-        setOut(obj.optInt("out", 0));
-        setIn(obj.optInt("in", 0));
-        setLog(obj.optBoolean("log", true));
-        
-        /*
-          JSONArray typeArray = obj.optJSONArray("mtype");
-          if (typeArray != null)
-          {
-          for(int i = 0; i < NUM_PARAMETERS; i++)
-          {
-          midiParameterType[i] = typeArray.optInt(i, 0);
-          }
-          JSONArray msbArray = obj.getJSONArray("msb");
-          for(int i = 0; i < NUM_PARAMETERS; i++)
-          {
-          midiParameterMSB[i] = msbArray.optInt(i, 0);
-          }
-          JSONArray lsbArray = obj.getJSONArray("lsb");
-          for(int i = 0; i < NUM_PARAMETERS; i++)
-          {
-          midiParameterLSB[i] = lsbArray.optInt(i, 0);
-          }
-          }
-        */
-            
-        JSONArray etypeArray = obj.optJSONArray("eparam");
-        if (etypeArray != null)
-            {
-            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
-                {
-                eventParameterType[i] = etypeArray.optInt(i, 0);
-                }
-            JSONArray emsbArray = obj.getJSONArray("emsb");
-            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
-                {
-                eventParameterMSB[i] = emsbArray.optInt(i, 0);
-                }
-            JSONArray elsbArray = obj.getJSONArray("elsb");
-            for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
-                {
-                eventParameterLSB[i] = elsbArray.optInt(i, 0);
-                }
-            }
-            
-        JSONArray eventsArray = obj.getJSONArray("events");
-        events = new ArrayList<Event>();
-        for(int i = 0; i < eventsArray.length(); i++)
-            {
-            Event event = Event.load(eventsArray.getJSONObject(i));
-            events.add(event);
-            }
-        computeMaxTime();               // computs maxNoteOnPosition and maxNoteOffPosition
-        }
-        
-    public void save(JSONObject obj) throws JSONException
-        {
-        obj.put("end", getEnd());
-        obj.put("echo", getEcho());
-        obj.put("out", getOut());
-        obj.put("in", getIn());
-        obj.put("log", getLog());
-        
-        /*
-        // MIDI Parameters
-        JSONArray typeArray = new JSONArray();
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-        {
-        typeArray.put(i, midiParameterType[i]);
-        }
-        obj.put("mtype", typeArray);
-        JSONArray msbArray = new JSONArray();
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-        {
-        msbArray.put(i, midiParameterMSB[i]);
-        }
-        obj.put("msb", msbArray);
-        JSONArray lsbArray = new JSONArray();
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-        {
-        lsbArray.put(i, midiParameterLSB[i]);
-        }
-        obj.put("lsb", lsbArray);
-        */
-
-        // Event Display Parameters
-        JSONArray etypeArray = new JSONArray();
-        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
-            {
-            etypeArray.put(i, eventParameterType[i]);
-            }
-        obj.put("eparam", etypeArray);
-        JSONArray emsbArray = new JSONArray();
-        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
-            {
-            emsbArray.put(i, eventParameterMSB[i]);
-            }
-        obj.put("emsb", emsbArray);
-        JSONArray elsbArray = new JSONArray();
-        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
-            {
-            elsbArray.put(i, eventParameterLSB[i]);
-            }
-        obj.put("elsb", elsbArray);
-
-
-        // All Events and Notes
-        JSONArray eventsArray = new JSONArray();
-        for(Event event : events)
-            {
-            eventsArray.put(event.save());
-            }
-        obj.put("events", eventsArray);
-        }
-
-    static int document = 0;
-    static int counter = 1;
-    public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
-        
-    public String getBaseName() { return "Notes"; }
-    }

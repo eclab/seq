@@ -27,64 +27,97 @@ import java.awt.datatransfer.*;
 
 public class NotesUI extends MotifUI
     {
+    // The default velocity of new notes
     public static final int DEFAULT_NOTE_VELOCITY = 64;
+    // The default length of new notes (1 beat)
     public static final int DEFAULT_NOTE_LENGTH = 192;
+    // Options for snapping to or by
     public static final String[] SNAP_OPTIONS = { "No Snap", "Snap to 64th", "Snap to 16th", "Snap to Triplet", "Snap to Beat", "Snap by 64th", "Snap by 16th", "Snap by Triplet", "Snap by Beat" };
+    // Quantizations for the snap options
     public static final int[] SNAP_QUANTIZATIONS = { 192 / 192, 192 / 16, 192 / 4, 192 / 3, 192, -192 / 16, -192 / 4, -192 / 3, -192 };
+    // The default snap option index ("Snap to Beat")
     public static final int SNAP_DEFAULT_OPTION = 4;
+    // Options for total grid length
     public static final String[] MAX_OPTIONS = { "64 Bars", "256 Bars", "1024 Bars", "4096 Bars", "16384 Bars", "65536 Bars" };
+    // Grid lengths corresponding to the grid length options
     public static final int[] MAX_MEASURES = { 192 * 4 * 64, 192 * 4 * 256, 192 * 4 * 1024, 192 * 4 * 4096, 192 * 4 * 16384, 192 * 4 * 65536 };
+    // The default grid length option ("256 Bars"
     public static final int MAX_DEFAULT_OPTION = 1;
     
+    // The Notes motif
     Notes notes;
     
-    // Inspector stuff
-    EventInspector childInspector;    
+    // INSPECTOR STUFF
+    // The child inspector
+    EventInspector childInspector;
+    // Outer storage for the child inspector
     JPanel childOuter;
+    // Border for the child inspector
     TitledBorder childBorder;
+    // Holds all inspectors
     JPanel inspectorPane;
-    JPanel notesOuter;
-    TitledBorder notesBorder;
+    // The notes inspector
     NotesInspector notesInspector;
+    // Outer storage for the notes inspector
+    JPanel notesOuter;
+    // Border for the notes inspector
+    TitledBorder notesBorder;
     
     // Menu
     JMenu menu;
+    // Menu for automatically arming Notes on creation
     JCheckBoxMenuItem autoArmItem;
     
-    // The displays
-    Ruler ruler;
-    //EventTable table;
-    GridUI gridui;
-    EventsUI eventsui;
-    JScrollPane scroll;
-    //JTabbedPane tabs;
+    // DISPLAYS
     
+    // The ruler
+    Ruler ruler;
+    // The gridui
+    GridUI gridui;
+    // The eventsui
+    EventsUI eventsui;
+    // The primary scrollbar
+    JScrollPane scroll;
+    // The Snap combo
     JComboBox snapBox;
+    // The Maximum Size combo
     JComboBox maxBox;
     
+    /** Returns the Notes */
     public Notes getNotes() { return notes; }
     public EventsUI getEventsUI() { return eventsui; }
+    
+    /** Returns the NotesUI icon */
     public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/notes.png")); }        // don't ask
+    /** Returns the NotesUI icon */
     public ImageIcon getIcon() { return getStaticIcon(); }
+    
+    /** Returns the name of the Motif */
     public static String getType() { return "Notes"; }
+    
+    /** Builds a new NotesUI */
     public static MotifUI create(Seq seq, SeqUI ui)
         {
         boolean autoArm = Prefs.getLastBoolean("ArmNewNotesMotifs", false);
         return new NotesUI(seq, ui, new Notes(seq, autoArm));
         }
 
+	/** Returns the NoteUI corresponding to the given note and its pitch.  We specify pitch so we can look it up in the PitchUI. */
     public NoteUI getNoteUIFor(Notes.Note note, int pitch)
         {
         return gridui.getNoteUIFor(note, pitch);
         } 
 
+	/** Returns the EventUI corresponding to the given event and its parameter type.  We specify parameter type so we can look it up in the ParameterUI. */
     public EventUI getEventUIFor(Notes.Event event, int type)
         {
         return eventsui.getEventUIFor(event, type);
         } 
      
+    /** Returns the Ruler */
     public Ruler getRuler() { return ruler; }
      
+     /** Builds a new NotesUI */
     public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
         {
         return new NotesUI(seq, ui, (Notes)motif);
@@ -109,10 +142,9 @@ public class NotesUI extends MotifUI
             finally { lock.unlock(); }
             getSeqUI().incrementRebuildInspectorsCount();           // show disarmed
             }
-
-        //build();
         }
     
+    /** Constructs the menu for the NotesUI */
     public void buildMenu()
         {
         menu = new JMenu("Notes");
@@ -121,7 +153,7 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                loadMIDIFile();
+                doLoadMIDIFile();
                 }
             });
         
@@ -139,18 +171,6 @@ public class NotesUI extends MotifUI
             });
         menu.add(quantize);
 
-/*
-  JMenuItem shiftTime = new JMenuItem("Shift Time...");
-  shiftTime.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent event)
-  {
-  doShiftTime();
-  }
-  });
-  menu.add(shiftTime);
-*/
-  
         JMenuItem stretchTime = new JMenuItem("Stretch Time...");
         stretchTime.addActionListener(new ActionListener()
             {
@@ -184,18 +204,6 @@ public class NotesUI extends MotifUI
 
         menu.addSeparator();
         
-        /*
-          JMenuItem transpose = new JMenuItem("Transpose...");
-          transpose.addActionListener(new ActionListener()
-          {
-          public void actionPerformed(ActionEvent event)
-          {
-          doTranspose();
-          }
-          });
-          menu.add(transpose);
-        */
-
         JMenuItem setVelocity = new JMenuItem("Set Velocity...");
         setVelocity.addActionListener(new ActionListener()
             {
@@ -216,10 +224,7 @@ public class NotesUI extends MotifUI
                 
         menu.add(randomizeVelocity);
                 
-
-
         menu.addSeparator();
-        
 
         JMenuItem delete = new JMenuItem("Delete Selection");
         delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -241,71 +246,6 @@ public class NotesUI extends MotifUI
                 }
             });
         menu.add(filter);
-/*
-  JMenuItem insertNote = new JMenuItem("Add Note");
-  insertNote.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-  insertNote.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent event)
-  {
-  doInsert(TYPE_NOTE);
-  }
-  });
-  menu.add(insertNote);
-        
-  JMenuItem insert = new JMenu("Add...");
-  menu.add(insert);
-
-  JMenuItem insertBend = new JMenuItem("Bend");
-  insertBend.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent event)
-  {
-  doInsert(TYPE_BEND);
-  }
-  });
-  insert.add(insertBend);
-
-  JMenuItem insertAftertouch = new JMenuItem("Aftertouch");
-  insertAftertouch.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent event)
-  {
-  doInsert(TYPE_AFTERTOUCH);
-  }
-  });
-  insert.add(insertAftertouch);
-
-  JMenuItem insertCC = new JMenuItem("CC");
-  insertCC.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent event)
-  {
-  doInsert(TYPE_CC);
-  }
-  });
-  insert.add(insertCC);
-
-  JMenuItem insertNRPN = new JMenuItem("NRPN");
-  insertNRPN.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent event)
-  {
-  doInsert(TYPE_NRPN);
-  }
-  });
-  insert.add(insertNRPN);
-
-  JMenuItem insertRPN = new JMenuItem("RPN");
-  insertRPN.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent event)
-  {
-  doInsert(TYPE_RPN);
-  }
-  });
-  insert.add(insertRPN);
-*/
 
         menu.addSeparator();
 
@@ -319,62 +259,116 @@ public class NotesUI extends MotifUI
                 Prefs.setLastBoolean("ArmNewNotesMotifs", autoArmItem.isSelected());
                 }
             });
-
         }
-        
+    
+    /** Re-caches the NoteUI or EventUI objects for all Notes and all non-Note Events, and repaints the GridUI, EventsUI, and ruler. */
     public void reload()
         {
         reload(notes.getEvents());
-        
-        // at this point nothing has repainted yet, so we do it in bulk
-        gridui.repaint();
-        ruler.repaint();
-        eventsui.repaint();
         }
     
+     /** Re-caches the NoteUI or EventUI objects for the given events, and repaints the GridUI, EventsUI, and ruler. */
     public void reload(ArrayList<Notes.Event> events)
         {
         HashSet<Notes.Event> hash = new HashSet(events);
         gridui.reload(hash);
         eventsui.reload(hash);
         updateChildInspector(true);
+
+        // at this point nothing has repainted yet, so we do it in bulk
+        gridui.repaint();
+        ruler.repaint();
+        eventsui.repaint();
         }
         
+	/** Sets the auto-arm menu option */
     public void uiWasSet()
         {
         super.uiWasSet();
         // revise arm menu
         autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
         }
-        
+    
+    /** Returns the NotesUI menu */
     public JMenu getMenu()
         {
         return menu;
         }
+    
+    /** Returns the GridUI */
+    public GridUI getGridUI() { return gridui; }
         
+    /** Increases the resolution of the GridUI */
+    public void doZoomIn()
+        {
+        gridui.setScale(gridui.getScale() / 2.0);
+        gridui.reload();
+        rebuildSizes();
+        gridui.repaint();
+        }
 
-    /*
-      public static final int NEAREST_32_TRIPLETS = 0;
-      public static final int NEAREST_32 = 1;
-      public static final int NEAREST_16_TRIPLETS = 2;
-      public static final int NEAREST_16 = 3;
-      public static final int NEAREST_8_TRIPLETS = 4;
-      public static final int NEAREST_8 = 5;
-      public static final int NEAREST_4_TRIPLETS = 6;
-      public static final int NEAREST_4 = 7;
-    */
-    
-    public static final int[] quantizeDivisors = { 
-        Seq.PPQ / 12,           // 32 Triplet
-        Seq.PPQ / 8,            // 32
-        Seq.PPQ / 6,            // 16 Triplet
-        Seq.PPQ / 4,            // 16
-        Seq.PPQ / 3,            // 8 Triplet
-        Seq.PPQ / 2,            // 8
-        (Seq.PPQ * 2) / 3,      // 4 Triplet
-        Seq.PPQ                         // 4
-        };
-    
+    /** Decreases the resolution of the GridUI */
+    public void doZoomOut()
+        {
+        gridui.setScale(gridui.getScale() * 2.0);
+        gridui.reload();
+        rebuildSizes();
+        gridui.repaint();
+        }
+        
+    /** Scrolls the GridUI and EventUI until the selected notes or events are displayed */
+    public void doScrollToSelected()
+        {
+        Rectangle rect = gridui.getEventBoundingBox(true);
+        
+        if (rect == null)
+            {
+            rect = gridui.getEventBoundingBox(false);
+            }
+                
+        if (rect != null)
+            {
+            if (rect.y < 0)     // not a note
+                {
+                double scale = 1.0 / gridui.getScale();
+                rect.y = 64;
+                rect.height = 0;
+                rect.x = (int)(rect.x * scale);
+                rect.y *= PitchUI.PITCH_HEIGHT;
+                rect.width = (int)(rect.width * scale);
+                }
+            else
+                {
+                double scale = 1.0 / gridui.getScale();
+                rect.y = 127 - rect.y;
+                rect.y -= rect.height;          // because we're flipped, we need the top left corner, not bottom left
+                rect.height += 1;
+                rect.x = (int)(rect.x * scale);
+                rect.y *= PitchUI.PITCH_HEIGHT;
+                rect.height *= PitchUI.PITCH_HEIGHT;
+                rect.width = (int)(rect.width * scale);
+                }
+                                                                
+            /// BUG IN JAVA (at least MacOS)
+            /// scrollRectToVisible is broken.  So we have to fake it here.
+            /// getPrimaryScroll().getViewport().scrollRectToVisible(rect);
+
+            int viewportWidth = (int)(getPrimaryScroll().getViewport().getViewRect().getWidth());
+            int viewportHeight = (int)(getPrimaryScroll().getViewport().getViewRect().getHeight());
+
+            int posx = Math.max(0, rect.x);
+            int posy = Math.max(0, rect.y + (rect.height - viewportHeight) / 2);
+
+            getPrimaryScroll().getViewport().setViewPosition(new Point(posx, posy));
+            }       
+        }
+        
+        
+        
+        
+    /// BULK OPERATIONS
+
+	/** Quantizes all or a range of notes or events */
     public void doQuantize()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -387,7 +381,7 @@ public class NotesUI extends MotifUI
             }
 
         String[] names = { "To Nearest", "Note Ends", "Non-Note Events", "Bias" };
-        JComboBox toNearest = new JComboBox(new String[] {"32nd Trip", "32nd Note", "16th Trip", "16th Note", "8th Trip", "8th Note", "Quarter Trip", "Quarter Note"});
+        JComboBox toNearest = new JComboBox(Notes.QUANTIZE_STRINGS);
         toNearest.setSelectedIndex(Prefs.getLastInt("QuantizeTo", 1));
         JCheckBox noteEnds = new JCheckBox("");
         if (gridui.getSelectedSource() != GridUI.SELECTED_SOURCE_NOTES &&
@@ -411,7 +405,7 @@ public class NotesUI extends MotifUI
             };
 
         JComponent[] components = new JComponent[] { toNearest, noteEnds, nonNoteEvents, bias.getLabelledDial("-0.0000") };
-        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Quantize", "Cancel" }, 0, "Quantize", "Enter Quantization Settings");
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Quantize", "Cancel and Set", "Cancel" }, 0, "Quantize", "Enter Quantization Settings");
         
         if (result == 0)
             {
@@ -420,7 +414,7 @@ public class NotesUI extends MotifUI
             boolean _ends = noteEnds.isSelected();
             boolean _nonNotes = nonNoteEvents.isSelected();
             double _bias = bias.getValue();
-            int divisor = quantizeDivisors[_toNearest];
+            int divisor = Notes.QUANTIZE_DIVISORS[_toNearest];
         
             ReentrantLock lock = seq.getLock();
             lock.lock();
@@ -440,13 +434,10 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("QuantizeBias", _bias);
             
             rebuild();
-                        
-            //       table.reload();             // we could change ordering
-            //       table.setSelection(evts);
             }
         }
 
-
+	/** Randomizes the time for all or a range of notes or events */
     public void doRandomizeTime()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -506,12 +497,11 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("RandomizeTimeVariance", _variance);
 
             rebuild();
-                        
-            //       table.reload();             // we could change ordering
-            //       table.setSelection(evts);
             }
         }
         
+        
+	/** Randomizes the velocity for all or a range of notes */
     public void doRandomizeVelocity()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -561,6 +551,8 @@ public class NotesUI extends MotifUI
         rebuild();
         }
 
+
+	/** Sets the velocity for all or a range of notes */
     public void doSetVelocity()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -607,7 +599,8 @@ public class NotesUI extends MotifUI
         }
 
 
-    public void doFilter()
+	/** Filters out all or a range of notes or events by type */
+	public void doFilter()
         {
         JCheckBox range = new JCheckBox("");
 
@@ -668,12 +661,11 @@ public class NotesUI extends MotifUI
             Prefs.setLastBoolean("FilterRemoveRPN", _removeRPN);
 
             rebuild();
-            // we could change everything
-//            table.reload();
             }
         }
 
 
+	/** Shifts all notes and events so that the first one starts at timestep 0 */
     public void doTrimTime()
         {
         ReentrantLock lock = seq.getLock();
@@ -686,9 +678,11 @@ public class NotesUI extends MotifUI
             {
             lock.unlock();
             }
-        reload();
-        
+        reload();        
         }
+        
+
+	/** Stretches the time for all or a range of notes or events such that they fit in the provided space.  */
     public void doStretchTime()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -742,171 +736,13 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("StretchTimeTo", to.getValue());
             
             rebuild();
-            //table.reload();                                     // we could change time
-            //table.setSelection(evts);
             }
         }
         
-    public GridUI getGridUI() { return gridui; }
         
-    public void doZoomIn()
-        {
-        gridui.setScale(gridui.getScale() / 2.0);
-        gridui.reload();
-        rebuildSizes();
-        gridui.repaint();
-        }
-
-    public void doZoomOut()
-        {
-        gridui.setScale(gridui.getScale() * 2.0);
-        gridui.reload();
-        rebuildSizes();
-        gridui.repaint();
-        }
-        
-    public void doScrollToSelected()
-        {
-        Rectangle rect = gridui.getEventBoundingBox(true);
-        
-        if (rect == null)
-            {
-            rect = gridui.getEventBoundingBox(false);
-            }
-                
-        if (rect != null)
-            {
-            if (rect.y < 0)     // not a note
-                {
-                double scale = 1.0 / gridui.getScale();
-                rect.y = 64;
-                rect.height = 0;
-                rect.x = (int)(rect.x * scale);
-                rect.y *= PitchUI.PITCH_HEIGHT;
-                rect.width = (int)(rect.width * scale);
-                }
-            else
-                {
-                double scale = 1.0 / gridui.getScale();
-                rect.y = 127 - rect.y;
-                rect.y -= rect.height;          // because we're flipped, we need the top left corner, not bottom left
-                rect.height += 1;
-                rect.x = (int)(rect.x * scale);
-                rect.y *= PitchUI.PITCH_HEIGHT;
-                rect.height *= PitchUI.PITCH_HEIGHT;
-                rect.width = (int)(rect.width * scale);
-                }
-                                                                
-            /// BUG IN JAVA (at least MacOS)
-            /// scrollRectToVisible is broken.  So we have to fake it here.
-            /// getPrimaryScroll().getViewport().scrollRectToVisible(rect);
-
-            int viewportWidth = (int)(getPrimaryScroll().getViewport().getViewRect().getWidth());
-            int viewportHeight = (int)(getPrimaryScroll().getViewport().getViewRect().getHeight());
-
-            int posx = Math.max(0, rect.x);
-            int posy = Math.max(0, rect.y + (rect.height - viewportHeight) / 2);
-
-            getPrimaryScroll().getViewport().setViewPosition(new Point(posx, posy));
-            }       
-        }
-        
-    /*
-      public static final int TYPE_NOTE = 0;
-      public static final int TYPE_AFTERTOUCH = 1;
-      public static final int TYPE_CC = 2;
-      public static final int TYPE_NRPN = 3;
-      public static final int TYPE_RPN = 4;
-      public static final int TYPE_BEND = 5;
-        
-      public void doInsert(int type)
-      {
-      seq.push();
-      int where = 0;
-      int when = 0;
-      Notes.Note insertedNote = null;
-      int insertedPitch = 0;
-      ReentrantLock lock = seq.getLock();
-      lock.lock();
-      try
-      {
-      // Insert after the selection point if possible
-      int[] indices = table.getSelectedIndices();
-      if (indices.length > 0)
-      {
-      where = indices[0] + 1;
-      when = notes.getEvents().get(indices[0]).when;
-      }
-            
-      switch(type)
-      {
-      case TYPE_NOTE:
-      notes.getEvents().add(where, insertedNote = new Notes.Note(60, DEFAULT_NOTE_VELOCITY, when, 192, DEFAULT_NOTE_VELOCITY));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-      notes.computeMaxTime();
-      insertedPitch = insertedNote.pitch;
-      break;
-      case TYPE_AFTERTOUCH:
-      notes.getEvents().add(where, new Notes.Aftertouch(Out.CHANNEL_AFTERTOUCH, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-      break;
-      case TYPE_CC:
-      notes.getEvents().add(where, new Notes.CC(0, 0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-      break;
-      case TYPE_NRPN:
-      notes.getEvents().add(where, new Notes.NRPN(0, 0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-      break;
-      case TYPE_RPN:
-      notes.getEvents().add(where, new Notes.RPN(0, 0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-      break;
-      case TYPE_BEND:
-      notes.getEvents().add(where, new Notes.Bend(0, when));                // guarantee it's first. It's at time 0 too so we don't need to sort.
-      break;
-      }
-
-      // now comes the costly part
-      notes.sortEvents();
-            
-      // Select
-      }
-      finally
-      {
-      lock.unlock();
-      }
-            
-      table.reload();                                 // we will change the table
-      table.setSelection(where);
-
-      gridui.rebuild();
-      if (insertedNote != null)
-      {
-      gridui.clearSelected();
-      gridui.addEventToSelected(getNoteUIFor(insertedNote, insertedPitch));
-      }
-      }
-    */
-
+	/** Removes the selected events */
     public void doRemove()
         {
-        /*
-          int[] indices = table.getSelectedIndices();
-                
-          if (indices.length > 0)
-          {
-          seq.push();
-          ReentrantLock lock = seq.getLock();
-          lock.lock();
-          try
-          {
-          notes.remove(indices);         // do nothing with the result
-          }
-          finally
-          {
-          lock.unlock();
-          }
-          }
-            
-          table.reload();                         // we will change events
-        */
-        
         if (gridui.getSelected().size() == 0)
             {
             sequi.showSimpleError("No Events Selected", "No events are selected, and so none were deleted.");
@@ -920,45 +756,9 @@ public class NotesUI extends MotifUI
         }
 
 
+	/** Duplicates the selected events */
     public void doCopy()
         {
-        /*
-          int[] indices = table.getSelectedIndices();
-          int[] newIndices = new int[indices.length];
-        
-          if (indices.length > 0)
-          {
-          seq.push();
-          ReentrantLock lock = seq.getLock();
-          lock.lock();
-          try
-          {
-          ArrayList<Notes.Event> events = notes.getEvents();
-          ArrayList<Notes.Event> copy = notes.copyEvents(indices);
-          // Add in reverse order so we can insert them properly and retain the indices.
-          // This will be extremely costly, O(n^2)
-          for(int i = indices.length - 1; i >= 0; i--)
-          {
-          Notes.Event evt = copy.get(i);
-          notes.getEvents().add(indices[i] + 1, evt);
-          }
-          // find the events, O(n^2)
-          int idx = 0;
-          for(Notes.Event evt : copy)
-          {
-          newIndices[idx++] = notes.getEvents().indexOf(evt);
-          }
-          }
-          finally
-          {
-          lock.unlock();
-          }
-          }
-            
-          table.reload();                         // we will change events
-          table.setSelection(newIndices);
-        */
-
         if (gridui.getSelected().size() == 0)
             {
             sequi.showSimpleError("No Events Selected", "No events are selected, and so none were copied.");
@@ -971,14 +771,8 @@ public class NotesUI extends MotifUI
         }
 
 
-/*
-  public void loadEvents()
-  {
-  ArrayList<Notes.Event> events = new ArrayList<Notes.Event>(notes.getEvents());          // copy?
-  table.setEvents(events);
-  }
-*/        
-    void loadMIDIFile()
+	/** Loads a MIDI File, displacing existing notes and events. */
+    public void doLoadMIDIFile()
         {
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -1043,7 +837,6 @@ public class NotesUI extends MotifUI
                 if (events != null) 
                     {
                     rebuild();
-//                    table.setEvents(events);
                     }
                 }
             catch (Exception ex)
@@ -1058,6 +851,7 @@ public class NotesUI extends MotifUI
             }
         }
     
+	/** Builds the inspectors facility. */
     public void buildInspectors(JScrollPane scroll)
         {
         // Build the notes child inspector holder
@@ -1085,51 +879,11 @@ public class NotesUI extends MotifUI
                 
         scroll.setViewportView(inspectorPane);
         }
-    
-/*
-  public EventTable getTable()
-  {
-  return table;
-  }
-*/
-        
+
+
+	/** Builds the main view. */        
     public void buildPrimary(JScrollPane scroll)
         {
-        /*
-          table = new EventTable(notes, seq);
-        
-          table.addListSelectionListener(new javax.swing.event.ListSelectionListener()
-          {
-          public void valueChanged(javax.swing.event.ListSelectionEvent e)
-          {
-          // Find event
-          Notes.Event event;
-          ReentrantLock lock = seq.getLock();
-          lock.lock();
-          try
-          {
-          ArrayList<Notes.Event> evts = notes.getEvents();
-          event = evts.get(table.getSelectedRow());
-          }
-          finally
-          {
-          lock.unlock();
-          }
-
-          // It's a single item selected
-          if (table.getSelectedRow() >= 0 && table.getSelectedRowCount() == 1)
-          {
-          setChildInspector(new EventInspector(seq, notes, NotesUI.this, event));
-          }
-          else
-          {
-          setChildInspector(null);
-          }
-          }
-          });
-          loadEvents();
-        */
-
         gridui = new GridUI(this);
         scroll.setViewportView(gridui);
         scroll.setRowHeaderView(gridui.buildKeyboard());
@@ -1142,7 +896,6 @@ public class NotesUI extends MotifUI
         box.add(ruler, BorderLayout.NORTH);
         box.add(eventsui, BorderLayout.CENTER);
         scroll.setColumnHeaderView(box);
-        //scroll.setCorner(JScrollPane.UPPER_LEFT_CORNER, eventsui.getHeader());
                 
         // For some reason, the notes don't appear right now, perhaps the JScrollView hasn't been installed yet?
         // So we delay with an invokeLater and it works...
@@ -1180,15 +933,10 @@ public class NotesUI extends MotifUI
           });
         */
                                         
-        //tabs = new JTabbedPane();
-        //tabs.addTab("Roll", new JScrollPane(gridui));
-        //tabs.addTab("Notes", new JScrollPane(table.getTable())); 
-        
-        //scroll.setViewportView(table.getTable());
-        
         this.scroll = scroll;
         }
 
+	/** Revalidates the entire GridUI, EventUI, and ruler */
     void rebuildSizes()
         {
         for(PitchUI pitchui : gridui.getPitchUIs())
@@ -1196,10 +944,16 @@ public class NotesUI extends MotifUI
             pitchui.revalidate();
             pitchui.repaint();
             }
+        for(ParameterUI parameterui : eventsui.getParameterUIs())
+            {
+            parameterui.revalidate();
+            parameterui.repaint();
+            }
         ruler.revalidate();
         ruler.repaint();
         }
-                    
+                 
+    /** Constructs the console under the GridUI */   
     public JPanel buildConsole()
         {
         PushButton removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
@@ -1244,83 +998,6 @@ public class NotesUI extends MotifUI
 
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
-
-/*
-  Image addNoteIcon = getStaticIcon().getImage().getScaledInstance(16, 16,  java.awt.Image.SCALE_SMOOTH); 
-  PushButton addNoteButton = new PushButton("")
-  {
-  public void perform()
-  {
-  doInsert(TYPE_NOTE);
-  }
-  };
-  addNoteButton.getButton().setIcon(new ImageIcon(addNoteIcon));
-
-  addNoteButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-  addNoteButton.getButton().setPreferredSize(new Dimension(24, 24));
-  addNoteButton.setToolTipText(ADD_NOTE_BUTTON_TOOLTIP);
-
-  PushButton addBendButton = new PushButton("B")
-  {
-  public void perform()
-  {
-  doInsert(TYPE_BEND);
-  }
-  };
-  addBendButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-  addBendButton.getButton().setPreferredSize(new Dimension(24, 24));
-  addBendButton.setToolTipText(ADD_BEND_BUTTON_TOOLTIP);
-                
-  PushButton addAftertouchButton = new PushButton("A")
-  {
-  public void perform()
-  {
-  doInsert(TYPE_AFTERTOUCH);
-  }
-  };
-  addAftertouchButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-  addAftertouchButton.getButton().setPreferredSize(new Dimension(24, 24));
-  addAftertouchButton.setToolTipText(ADD_AFTERTOUCH_BUTTON_TOOLTIP);
-  console = new JPanel();
-  console.setLayout(new BorderLayout());
-                
-  PushButton addCCButton = new PushButton("C")
-  {
-  public void perform()
-  {
-  doInsert(TYPE_CC);
-  }
-  };
-  addCCButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-  addCCButton.getButton().setPreferredSize(new Dimension(24, 24));
-  addCCButton.setToolTipText(ADD_CC_BUTTON_TOOLTIP);
-  console = new JPanel();
-  console.setLayout(new BorderLayout());
-                
-  PushButton addNRPNButton = new PushButton("N")
-  {
-  public void perform()
-  {
-  doInsert(TYPE_NRPN);
-  }
-  };
-  addNRPNButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-  addNRPNButton.getButton().setPreferredSize(new Dimension(24, 24));
-  addNRPNButton.setToolTipText(ADD_NRPN_BUTTON_TOOLTIP);
-  console = new JPanel();
-  console.setLayout(new BorderLayout());
-                
-  PushButton addRPNButton = new PushButton("R")
-  {
-  public void perform()
-  {
-  doInsert(TYPE_RPN);
-  }
-  };
-  addRPNButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-  addRPNButton.getButton().setPreferredSize(new Dimension(24, 24));
-  addRPNButton.setToolTipText(ADD_RPN_BUTTON_TOOLTIP);
-*/
 
         PushButton scrollButton = new PushButton("S")
             {
@@ -1378,12 +1055,6 @@ public class NotesUI extends MotifUI
         Box otherBox = new Box(BoxLayout.X_AXIS);
         otherBox.add(maxBox);
         otherBox.add(snapBox);
-//        otherBox.add(addNoteButton);
-//        otherBox.add(addBendButton);
-//        otherBox.add(addAftertouchButton);
-//        otherBox.add(addCCButton);
-//        otherBox.add(addNRPNButton);
-//        otherBox.add(addRPNButton);
         otherBox.add(zoomInButton);
         otherBox.add(zoomOutButton);
         otherBox.add(scrollButton);
@@ -1405,23 +1076,12 @@ public class NotesUI extends MotifUI
             }
         }
 
+    /** Revises or entirely rebuilds the child inspector as needed, or rebuilds if forceRebuild is true. */
     public void updateChildInspector(EventUI eventui, boolean forceRebuild)
         {
         if (childInspector == null || childInspector.getEvent() != eventui.event || forceRebuild)
             {
             int index = -1;
-            /*
-              ReentrantLock lock = seq.getLock();
-              lock.lock();
-              try
-              {
-              index = notes.getEvents().indexOf(eventui.event);
-              }
-              finally
-              {
-              lock.unlock();
-              }
-            */
             setChildInspector(new EventInspector(seq, notes, this, eventui.event));
             }
         else
@@ -1434,6 +1094,7 @@ public class NotesUI extends MotifUI
             }
         }
 
+    /** Sets the child inspector. */
     public void setChildInspector(EventInspector inspector)
         {
         childInspector = inspector;
@@ -1454,6 +1115,7 @@ public class NotesUI extends MotifUI
         revalidate();
         }
 
+	/** Updates the child inspector. */
     public void revise()
         {
         if (childInspector != null) 
@@ -1465,6 +1127,7 @@ public class NotesUI extends MotifUI
             }
         }
         
+	/** Updates the NotesUI and repaints it. */
     public void redraw(boolean inResponseToStep) 
         {
         boolean stopped;
@@ -1473,7 +1136,7 @@ public class NotesUI extends MotifUI
         NotesClip clip = (NotesClip)getDisplayClip();
         if (clip == null)
             {
-//            table.clearSelection();
+            // do nothing
             }
         else
             {
@@ -1491,26 +1154,7 @@ public class NotesUI extends MotifUI
                 {
                 lock.unlock();
                 }
-                                
-/*
-  if (recorded) 
-  {
-  // reload table
-  loadEvents();
-  }
-                                
-  if (stopped) 
-  {
-  table.setIndex(-1);
-  }
-  else 
-  {
-  table.setIndex(index);
-  }
-*/
             }
-
-        
         
         // When we build the gridui, it sends an updateUI() message which goes to SwingUtilities.invokeLater,
         // which in turn redraws everything including the ruler in a separate thread -- but it is occasionally 
@@ -1547,7 +1191,8 @@ public class NotesUI extends MotifUI
             super.redraw(inResponseToStep);
             }
         }
-        
+    
+    /** Rebuilds all of the gridui and eventsui to reflect current notes and events, repaints them, and repaints the ruler. */
     public void rebuild()
         {
         if (gridui != null) 
@@ -1567,7 +1212,8 @@ public class NotesUI extends MotifUI
         }
 
 
-    public void stopped()
+	/** Rebuilds the NotesUI in response to being stopped.  This is becasue we may have recorded notes which have just been inserted.  */
+   public void stopped()
         {
         if (isUIBuilt())
             {	
@@ -1583,25 +1229,7 @@ public class NotesUI extends MotifUI
         
     static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Event</b><br>" +
         "Duplicates the selected event or events from in the Notes.</html>";
-/*
-  static final String ADD_NOTE_BUTTON_TOOLTIP = "<html><b>Add Note</b><br>" +
-  "Adds a note to the Notes.</html>";
-        
-  static final String ADD_BEND_BUTTON_TOOLTIP = "<html><b>Add Pitch Bend</b><br>" +
-  "Adds a Pitch Bend event to the Notes.</html>";
-        
-  static final String ADD_AFTERTOUCH_BUTTON_TOOLTIP = "<html><b>Add Aftertouch</b><br>" +
-  "Adds an Aftertouch (or Pressure) event to the Notes.</html>";
-        
-  static final String ADD_CC_BUTTON_TOOLTIP = "<html><b>Add CC</b><br>" +
-  "Adds a CC (Control Change) event to the Notes.</html>";
-        
-  static final String ADD_NRPN_BUTTON_TOOLTIP = "<html><b>Add NRPN</b><br>" +
-  "Adds an NRPN (Non-Registered Program Number) event to the Notes.</html>";
-        
-  static final String ADD_RPN_BUTTON_TOOLTIP = "<html><b>Add RPN</b><br>" +
-  "Adds an RPN (Registered Program Number) event to the Notes.</html>";
-*/       
+
     static final String ZOOM_IN_BUTTON_TOOLTIP = "<html><b>Zoom In</b><br>" +
         "Magnifies the view of the Notes timeeline.</html>";
         

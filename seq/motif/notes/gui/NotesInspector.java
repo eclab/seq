@@ -8,6 +8,7 @@ package seq.motif.notes.gui;
 import seq.motif.notes.*;
 import seq.engine.*;
 import seq.gui.*;
+import seq.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -25,7 +26,6 @@ public class NotesInspector extends WidgetList
     JComboBox out;
     TimeDisplay end;
     WidgetList recordList1;
-    WidgetList recordList2;
     JCheckBox armed;
     JCheckBox echo;
     JCheckBox recordBend;
@@ -34,6 +34,11 @@ public class NotesInspector extends WidgetList
     JCheckBox convertNRPNRPN;
     JCheckBox logBend;
     JComboBox parameterHeight;
+    JCheckBox quantize;
+    JCheckBox quantizeNoteEnds;
+    JCheckBox quantizeNonNotes;
+    JComboBox quantizeTo;
+    SmallDial quantizationBias;
     
     WidgetList widgetList = new WidgetList();
     
@@ -71,15 +76,6 @@ public class NotesInspector extends WidgetList
     // And of course there is RPN_NULL
     };
     
-/*
-  JComboBox[] parameterType = new JComboBox[Motif.NUM_PARAMETERS];
-  SmallDial[] parameterMSB = new SmallDial[Motif.NUM_PARAMETERS];
-  SmallDial[] parameterLSB = new SmallDial[Motif.NUM_PARAMETERS];
-  JLabel[] combined = new JLabel[Motif.NUM_PARAMETERS]; 
-  JPanel[] parameterPanel = new JPanel[Motif.NUM_PARAMETERS];
-  public static final String[] TYPES = { "None", "Bend", "CC", "14-Bit CC", "NRPN", "RPN" };
-*/        
-
     JComboBox[] eventParameterType = new JComboBox[Notes.NUM_EVENT_PARAMETERS];
     SmallDial[] eventParameterMSB = new SmallDial[Notes.NUM_EVENT_PARAMETERS];
     SmallDial[] eventParameterLSB = new SmallDial[Notes.NUM_EVENT_PARAMETERS];
@@ -287,101 +283,85 @@ public class NotesInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
-            
-            /*
-              for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-              {
-              final int _i = i;
-              combined[i] = new JLabel("");
-              parameterType[i] = new JComboBox(TYPES);
-              parameterType[i].addActionListener(new ActionListener()
-              {
-              public void actionPerformed(ActionEvent e)
-              {
-              if (seq == null) return;
-              ReentrantLock lock = seq.getLock();
-              lock.lock();
-              try { notes.setMIDIParameterType(_i, parameterType[_i].getSelectedIndex()); }
-              finally { lock.unlock(); }     
-              updateFull(_i);                         
-              }
-              });
-                                        
-              parameterMSB[i]  = new SmallDial(notes.getMIDIParameterMSB(_i) / 127.0)
-              {
-              protected String map(double val) 
-              {
-              return "" + (int)(val * 127.0);
-              }
-              public double getValue() 
-              { 
-              ReentrantLock lock = seq.getLock();
-              lock.lock();
-              try { return notes.getMIDIParameterMSB(_i) / 127.0; }
-              finally { lock.unlock(); }
-              }
-              public void setValue(double val) 
-              { 
-              if (seq == null) return;
-              ReentrantLock lock = seq.getLock();
-              lock.lock();
-              try { notes.setMIDIParameterMSB(_i, (int)(val * 127.0)); }
-              finally { lock.unlock(); }
-              updateFull(_i);
-              }
-              };
 
-              parameterLSB[i]  = new SmallDial(notes.getMIDIParameterLSB(_i) / 127.0)
-              {
-              protected String map(double val) 
-              {
-              return "" + (int)(val * 127.0);
-              }
-              public double getValue() 
-              { 
-              ReentrantLock lock = seq.getLock();
-              lock.lock();
-              try { return notes.getMIDIParameterLSB(_i) / 127.0; }
-              finally { lock.unlock(); }
-              }
-              public void setValue(double val) 
-              { 
-              if (seq == null) return;
-              ReentrantLock lock = seq.getLock();
-              lock.lock();
-              try { notes.setMIDIParameterLSB(_i, (int)(val * 127.0)); }
-              finally { lock.unlock(); }
-              updateFull(_i);
-              }
-              };
-                                
-              updateFull(i);
-                                
-              parameterPanel[i] = new JPanel();
-              parameterPanel[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
-              parameterPanel[i].setLayout(new BorderLayout());
-              Box box = new Box(BoxLayout.X_AXIS);
-              box.add(new Collapse(parameterType[i]));
-              parameterType[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
-              box.add(new JLabel(" "));
-              JComponent comp = parameterMSB[i].getLabelledTitledDialVertical("MSB", "127");
-              comp.setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
-              box.add(comp);
-              comp = parameterLSB[i].getLabelledTitledDialVertical("LSB", "127");
-              box.add(comp);
-              box.add(new JLabel(" "));
-              parameterPanel[i].add(box, BorderLayout.WEST);
-              combined[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
-              parameterPanel[i].add(combined[i], BorderLayout.CENTER);
-              parameterPanel[i].setToolTipText(OUTPUT_ONE_MIDI_VALUE_TOOLTIP);
-              }
-            
-              for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-              {
-              parameterType[i].setSelectedIndex(notes.getMIDIParameterType(i));
-              }
-            */
-            
+            quantize = new JCheckBox();
+            quantize.setSelected(Prefs.getLastBoolean("QuantizeOnRecord", false));
+            quantize.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastBoolean("QuantizeOnRecord", quantize.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
+            quantizeNonNotes = new JCheckBox();
+            quantizeNonNotes.setSelected(Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false));
+            quantizeNonNotes.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastBoolean("QuantizeNonNotesOnRecord", quantizeNonNotes.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
+            quantizeNoteEnds = new JCheckBox();
+            quantizeNoteEnds.setSelected(Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false));
+            quantizeNoteEnds.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastBoolean("QuantizeNoteEndsOnRecord", quantizeNoteEnds.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
+                quantizeTo = new JComboBox(Notes.QUANTIZE_STRINGS);
+                quantizeTo.addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { Prefs.setLastInt("QuantizeToOnRecord", quantizeTo.getSelectedIndex()); }
+                        finally { lock.unlock(); }     
+                        }
+                    });
+                    
+                quantizeTo.setSelectedIndex(Prefs.getLastInt("QuantizeToOnRecord", 1));
+ 
+                     quantizationBias = new SmallDial(Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5))
+                        {
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5); }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { Prefs.setLastDouble("QuantizeBiasOnRecord", val); }
+                            finally { lock.unlock(); }
+                            }
+                        };
+           
+           
+           
             for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
                 {
                 final int _i = i;
@@ -515,51 +495,44 @@ public class NotesInspector extends WidgetList
         recordCC.setToolTipText(RECORD_CC_TOOLTIP);
         convertNRPNRPN.setToolTipText(CONVERT_NRPN_RPN_TOOLTIP);
 
-        build(new String[] { "Name", "Out", "In", "End"}, 
+        build(new String[] { "Name", "Out", "In", "End", "Armed", "Echo"}, 
             new JComponent[] 
                 {
                 name,
                 out,
                 in,
                 end, //endPanel,
+                armed,
+                echo,
                 });
                 
-        recordList1 = new WidgetList(new String[] { "Armed", "Echo", "Make NRPN/RPN" },  new JComponent[] { armed, echo, convertNRPNRPN });
-        recordList2 = new WidgetList(new String[] { "Record Bend", "Record Aftertouch", "Record CC" },  new JComponent [] { recordBend, recordAftertouch, recordCC });
-                
-        JPanel recordPanel = new JPanel();
-        recordPanel.setLayout(new BorderLayout());
-        recordPanel.add(recordList1, BorderLayout.WEST);
-        recordPanel.add(recordList2, BorderLayout.CENTER);
-        recordPanel.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
-    
-        /*
-          widgetList.build(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" },
-          new JComponent[] { parameterPanel[0], parameterPanel[1], parameterPanel[2], parameterPanel[3], 
-          parameterPanel[4], parameterPanel[5], parameterPanel[6], parameterPanel[7] });
-                             
-          widgetList.makeBorder("MIDI Parameters");
-          DisclosurePanel disclosure = new DisclosurePanel("MIDI Parameters", widgetList);
-          disclosure.setParentComponent(this);
-          disclosure.setToolTipText(OUTPUT_MIDI_VALUES_TOOLTIP);
-        */
+        recordList1 = new WidgetList(new String[] { "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN",
+        	"Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
+        	new JComponent[] { recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizationBias.getLabelledDial("0.8888")});
+        
+        recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
+		DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
+		recordDisclosure.setParentComponent(this);
 
         WidgetList widgetList2 = new WidgetList();
         widgetList2.build(new String[] { "1", "2", "3", "4" },
             new JComponent[] { eventParameterPanel[0], eventParameterPanel[1], eventParameterPanel[2], eventParameterPanel[3] });
-        widgetList2.makeBorder("Other MIDI Messages");
-        
-        WidgetList widgetList3 = new WidgetList();
-        widgetList3.build(new String[] { "Logarithmic Pitch Bend", "Parameter Height" }, new JComponent[] { logBend, parameterHeight });
 
-        // DisclosurePanel disclosure2 = new DisclosurePanel("Other MIDI Messages", widgetList2);
-        // disclosure2.setParentComponent(this);
+        WidgetList widgetList1 = new WidgetList();
+        widgetList1.build(new String[] { "Logarithmic Pitch Bend", "Display Height" }, new JComponent[] { logBend, parameterHeight });
+		
+		JPanel messagePanel = new JPanel();
+		messagePanel.setLayout(new BorderLayout());
+		messagePanel.add(widgetList2, BorderLayout.NORTH);
+		messagePanel.add(widgetList1, BorderLayout.SOUTH);
+        messagePanel.setBorder(BorderFactory.createTitledBorder("<html><i>Non-Note Display</i></html>"));
+		DisclosurePanel parameterDisclosure = new DisclosurePanel("Non-Note Display", messagePanel);
+		parameterDisclosure.setParentComponent(this);
 
         JPanel finalPanel = new JPanel();
         finalPanel.setLayout(new BorderLayout());
-        finalPanel.add(recordPanel, BorderLayout.NORTH);
-        finalPanel.add(widgetList2, BorderLayout.CENTER);
-        finalPanel.add(widgetList3, BorderLayout.SOUTH);
+        finalPanel.add(recordDisclosure, BorderLayout.NORTH);
+        finalPanel.add(parameterDisclosure, BorderLayout.SOUTH);
         add(finalPanel, BorderLayout.SOUTH);
         }
     
