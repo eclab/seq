@@ -19,12 +19,12 @@ public class Notes extends Motif
     {
     private static final long serialVersionUID = 1;
 
-	/** What do MIDI files end with? */
+    /** What do MIDI files end with? */
     public static final String MIDI_FILE_EXTENSION = ".mid";
     
     /** The maximum number of permitted event parameters displayed.
-    	This is here because the current event parameters displayed are
-    	stored with the Notes object when saved. */
+        This is here because the current event parameters displayed are
+        stored with the Notes object when saved. */
     public static final int NUM_EVENT_PARAMETERS = 4;
     /** A list of note strings */
     public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
@@ -34,9 +34,9 @@ public class Notes extends Motif
 
 
 
-	//// NOTE TYPES
-	//
-	//        
+    //// NOTE TYPES
+    //
+    //        
     // TYPES are in the following order:
     // 0-127            Note by Pitch
     // 128-255          CC
@@ -140,13 +140,13 @@ public class Notes extends Motif
 
 
 
-	/// EVENTS
-	//
-	// There are event classes for each event type: Notes, Bend, CC, NRPN, RPN, Aftertouch
+    /// EVENTS
+    //
+    // There are event classes for each event type: Notes, Bend, CC, NRPN, RPN, Aftertouch
 
 
 
-	// Used by NRPN and RPN to determine if we need to rewrite the parameter when writing to a sequence
+    // Used by NRPN and RPN to determine if we need to rewrite the parameter when writing to a sequence
     int lastNRPN = -1;
     boolean wasRPN = false;
     
@@ -196,8 +196,8 @@ public class Notes extends Motif
                 }
             }
  
-       /** Writes the Event to the given MIDI File Track. */
-       public abstract void write(Track track, Notes notes) throws InvalidMidiDataException;
+        /** Writes the Event to the given MIDI File Track. */
+        public abstract void write(Track track, Notes notes) throws InvalidMidiDataException;
                         
         public JSONObject save() throws JSONException
             {
@@ -206,14 +206,14 @@ public class Notes extends Motif
             return obj;
             }
         
-       /** Copies the event. */
+        /** Copies the event. */
         public abstract Event copy();
         
-       /** Converts and sets the event's parameter value (or velocity in the case of Notes) from a value [0.0, 1.0). */
+        /** Converts and sets the event's parameter value (or velocity in the case of Notes) from a value [0.0, 1.0). */
         public abstract double getNormalizedValue(boolean log);
-       /** Returns the event's parameter value (or velocity in the case of Notes) as a value [0.0, 1.0). */
+        /** Returns the event's parameter value (or velocity in the case of Notes) as a value [0.0, 1.0). */
         public abstract void setNormalizedValue(double value, boolean log);
-       /** Returns the event's parameter value. */
+        /** Returns the event's parameter value. */
         public abstract int getParameter();
         /** Returns the event's type (see NOTE TYPES above) */
         public abstract int getType();
@@ -326,41 +326,41 @@ public class Notes extends Motif
             }
         public String toString() { return "Bend[" + value + "]"; }
 
-		/** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
-			have much bigger impact.  This is useful for displaying */
-		public static double toNormalizedLog(double value) 
-			{ 
-			if (value == 0) return 0.5;
-			else if (value > 0) return Math.min(1.0, Math.log(value + 1) / Math.log(2.0) / 13.0) / 2.0 + 0.5;
-			else return (Math.max(-1.0, 0 - Math.log((0 - value) + 1) / Math.log(2.0) / 13.0) / 2.0) + 0.5;
-			}
-			
-		/** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
-			have much bigger impact.  This is useful for displaying */
-		public double fromNormalizedLog(double value)
-			{
-			double v = 0.0;
-			value = value - 0.5;
-			if (value == 0) v = 0.0;
-			else if (value > 0) v = Math.pow(2.0, value * 2.0 * 13.0) - 1;
-			else v = 0 - (Math.pow(2.0, (0.0 - value) * 2.0 * 13.0) - 1);
-			return v;
-			}
+        /** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
+            have much bigger impact.  This is useful for displaying */
+        public static double toNormalizedLog(double value) 
+            { 
+            if (value == 0) return 0.5;
+            else if (value > 0) return Math.min(1.0, Math.log(value + 1) / Math.log(2.0) / 13.0) / 2.0 + 0.5;
+            else return (Math.max(-1.0, 0 - Math.log((0 - value) + 1) / Math.log(2.0) / 13.0) / 2.0) + 0.5;
+            }
+                        
+        /** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
+            have much bigger impact.  This is useful for displaying */
+        public double fromNormalizedLog(double value)
+            {
+            double v = 0.0;
+            value = value - 0.5;
+            if (value == 0) v = 0.0;
+            else if (value > 0) v = Math.pow(2.0, value * 2.0 * 13.0) - 1;
+            else v = 0 - (Math.pow(2.0, (0.0 - value) * 2.0 * 13.0) - 1);
+            return v;
+            }
 
-		/** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
-			have much bigger impact.  This is useful for displaying */
-		public double getNormalizedLogValue() 
-			{ 
-			return toNormalizedLog(value);
-			}
-			
-		/** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
-			have much bigger impact.  This is useful for displaying */
-		public void setNormalizedLogValue(double value)
-			{
-			this.value = (int)fromNormalizedLog(value);
-			}
-			
+        /** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
+            have much bigger impact.  This is useful for displaying */
+        public double getNormalizedLogValue() 
+            { 
+            return toNormalizedLog(value);
+            }
+                        
+        /** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
+            have much bigger impact.  This is useful for displaying */
+        public void setNormalizedLogValue(double value)
+            {
+            this.value = (int)fromNormalizedLog(value);
+            }
+                        
         public double getNormalizedValue(boolean log) { if (log) return getNormalizedLogValue(); else return (value + 8192) / 16384.0; }
         public void setNormalizedValue(double value, boolean log) { if (log) setNormalizedLogValue(value); else this.value = ((int)(value * 16384) - 8192); }
         public int getParameter() { return 0; }
@@ -571,11 +571,11 @@ public class Notes extends Motif
         
         
         
-	/// THE EVENT CC->NRPN/RPN PARSER        
-	//
-	//
-	// This class converts the CCs, when appropriate, into NRPN or RPN messages in an ArrayList of events.
-	
+    /// THE EVENT CC->NRPN/RPN PARSER        
+    //
+    //
+    // This class converts the CCs, when appropriate, into NRPN or RPN messages in an ArrayList of events.
+        
     static class EventParser
         {
         boolean rpn = false;                                    // Whether the last NRPN/RPN parameter is RPN
@@ -751,7 +751,7 @@ public class Notes extends Motif
     int maxEventPosition = 0;
     // The highest timestamp for a note
     int maxNoteOnPosition = 0;
-	// The highest time for a note OFF
+    // The highest time for a note OFF
     int maxNoteOffPosition = 0;
     // Do I play out notes as I am recording them?
     boolean echo = true;
@@ -760,89 +760,89 @@ public class Notes extends Motif
     // The end marker for the Notes
     int end = 0;
 
-	/** Returns whether pitch bend is displayed logarithmicaly */
+    /** Returns whether pitch bend is displayed logarithmicaly */
     public boolean getLog() { return log; }
-	/** Sets whether pitch bend is displayed logarithmicaly */
+    /** Sets whether pitch bend is displayed logarithmicaly */
     public void setLog(boolean val) { log = val; }
         
- 	/** Returns the given event parameter type. */
+    /** Returns the given event parameter type. */
     public int getEventParameterType(int param) { return eventParameterType[param]; }
- 	/** Sets the given event parameter type. */
+    /** Sets the given event parameter type. */
     public void setEventParameterType(int param, int val) { eventParameterType[param] = val; }
     
- 	/** Returns the given event parameter MSB. */
+    /** Returns the given event parameter MSB. */
     public int getEventParameterMSB(int param) { return eventParameterMSB[param]; }
- 	/** Sets the given event parameter MSB. */
+    /** Sets the given event parameter MSB. */
     public void setEventParameterMSB(int param, int val) { eventParameterMSB[param] = val; }
     
- 	/** Returns the given event parameter LSB. */
+    /** Returns the given event parameter LSB. */
     public int getEventParameterLSB(int param) { return eventParameterLSB[param]; }
- 	/** Sets the given event parameter LSB. */
+    /** Sets the given event parameter LSB. */
     public void setEventParameterLSB(int param, int val) { eventParameterLSB[param] = val; }
 
- 	/** Returns whether we record pitch bend. */
+    /** Returns whether we record pitch bend. */
     public boolean getRecordBend() { return recordBend; }
- 	/** Sets whether we record pitch bend. */
+    /** Sets whether we record pitch bend. */
     public void setRecordBend(boolean val) { recordBend = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordbend", val); }
 
- 	/** Returns whether we record CC. */
+    /** Returns whether we record CC. */
     public boolean getRecordCC() { return recordCC; }
- 	/** Sets whether we record CC. */
+    /** Sets whether we record CC. */
     public void setRecordCC(boolean val) { recordCC = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordcc", val); }
 
- 	/** Returns whether we record Aftertouch. */
+    /** Returns whether we record Aftertouch. */
     public boolean getRecordAftertouch() { return recordAftertouch; }
- 	/** Sets whether we record Aftertouich. */
+    /** Sets whether we record Aftertouich. */
     public void setRecordAftertouch(boolean val) { recordAftertouch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordaftertouch", val); }
 
- 	/** Returns whether we quantize on recording. */
+    /** Returns whether we quantize on recording. */
     public boolean getConvertNRPNRPN() { return convertNRPNRPN; }
- 	/** Sets whether we quantize on recording. */
+    /** Sets whether we quantize on recording. */
     public void setConvertNRPNRPN(boolean val) { convertNRPNRPN = val; Prefs.setLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", val); }
 
- 	/** Returns whether we quantize on recording. */
+    /** Returns whether we quantize on recording. */
     public boolean getQuantize() { return quantize; }
- 	/** Sets whether we quantize on recording. */
+    /** Sets whether we quantize on recording. */
     public void setQuantize(boolean val) { quantize = val; Prefs.setLastBoolean("seq.motif.notes.Notes.quantize", val); }
 
- 	/** Returns our quantization amount on recording. */
+    /** Returns our quantization amount on recording. */
     public int getQuantizeTo() { return quantizeTo; }
- 	/** Sets our quantization amount on recording. */
+    /** Sets our quantization amount on recording. */
     public void setQuantizeTo(int val) { quantizeTo = val; Prefs.setLastInt("seq.motif.notes.Notes.quantizeTo", val); }
 
- 	/** Returns whether we quantize note ends on recording. */
+    /** Returns whether we quantize note ends on recording. */
     public boolean getQuantizeNoteEnds() { return quantizeNoteEnds; }
- 	/** Sets whether we quantize note ends on recording. */
+    /** Sets whether we quantize note ends on recording. */
     public void setQuantizeNoteEnds(boolean val) { quantizeNoteEnds = val; Prefs.setLastBoolean("seq.motif.notes.Notes.quantizeNoteEnds", val); }
 
- 	/** Returns whether we quantize non-notes on recording. */
+    /** Returns whether we quantize non-notes on recording. */
     public boolean getQuantizeNonNotes() { return quantizeNonNotes; }
- 	/** Sets whether we quantize non-notes on recording. */
+    /** Sets whether we quantize non-notes on recording. */
     public void setQuantizeNonNotes(boolean val) { quantizeNonNotes = val; Prefs.setLastBoolean("seq.motif.notes.Notes.quantizeNonNotes", val); }
 
- 	/** Returns the quantization bias on recording. */
+    /** Returns the quantization bias on recording. */
     public double getQuantizeBias() { return quantizeBias; }
- 	/** Sets the quantization bias on recording. */
+    /** Sets the quantization bias on recording. */
     public void setQuantizeBias(double val) { quantizeBias = val; Prefs.setLastDouble("seq.motif.notes.Notes.quantizeBias", val); }
 
- 	/** Returns the output device. */
+    /** Returns the output device. */
     public int getOut() { return out; }
- 	/** Sets the output device. */
+    /** Sets the output device. */
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.notes.Notes"); }
 
- 	/** Returns the input device. */
+    /** Returns the input device. */
     public int getIn() { return in; }
- 	/** Sets the input device. */
+    /** Sets the input device. */
     public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.notes.Notes"); }
         
- 	/** Returns whether we echo when recording. */
+    /** Returns whether we echo when recording. */
     public boolean getEcho() { return echo; }
- 	/** Sets whether we echo when recording. */
+    /** Sets whether we echo when recording. */
     public void setEcho(boolean val) { echo = val; }
     
- 	/** Returns the endpoint. */
+    /** Returns the endpoint. */
     public void setEnd(int end) { this.end = end; }
- 	/** Sets the endpoint. */
+    /** Sets the endpoint. */
     public int getEnd() { return end; }
     
     /** Returns the highest timestamp of the onset of any event. */
@@ -860,9 +860,9 @@ public class Notes extends Motif
         other.events = new ArrayList();
         for(Event event : events)
             other.events.add(event.copy());
-		System.arraycopy(eventParameterType, 0, other.eventParameterType, 0, eventParameterType.length);
-		System.arraycopy(eventParameterMSB, 0, other.eventParameterMSB, 0, eventParameterMSB.length);
-		System.arraycopy(eventParameterLSB, 0, other.eventParameterLSB, 0, eventParameterLSB.length);
+        System.arraycopy(eventParameterType, 0, other.eventParameterType, 0, eventParameterType.length);
+        System.arraycopy(eventParameterMSB, 0, other.eventParameterMSB, 0, eventParameterMSB.length);
+        System.arraycopy(eventParameterLSB, 0, other.eventParameterLSB, 0, eventParameterLSB.length);
         clearRecording();
         return other;
         }
@@ -1236,22 +1236,22 @@ public class Notes extends Motif
         return copy;
         }
 /*
-    public ArrayList<Event> copyEvents(int[] indices)
-        {
-        ArrayList<Event> copy = new ArrayList<Event>();
+  public ArrayList<Event> copyEvents(int[] indices)
+  {
+  ArrayList<Event> copy = new ArrayList<Event>();
         
-        for(int i : indices)
-            {
-            Event event = events.get(i);
+  for(int i : indices)
+  {
+  Event event = events.get(i);
             
-            copy.add(event);
-            }
-        computeMaxTime(); 
-        return copy;
-        }
+  copy.add(event);
+  }
+  computeMaxTime(); 
+  return copy;
+  }
 */
 
-	/** Inserts the given events in sorted order. */
+    /** Inserts the given events in sorted order. */
     public void merge(ArrayList<Event> from)
         {
         if (from.isEmpty()) return;
@@ -1294,7 +1294,7 @@ public class Notes extends Motif
         events = newEvents;
         }
 
-	/** Replaces with the given events all events whose timestamp overlaps with them.  Returns the replaced events. */
+    /** Replaces with the given events all events whose timestamp overlaps with them.  Returns the replaced events. */
     public ArrayList<Event> overwrite(ArrayList<Event> from, boolean allowStartOverlaps, boolean allowEndOverlaps)
         {
         if (from.isEmpty()) return new ArrayList<Event>();
@@ -1310,7 +1310,7 @@ public class Notes extends Motif
         return cut;
         }
 
-	/** Shifts all events in time so that the first event's onset is at timestep 0. */
+    /** Shifts all events in time so that the first event's onset is at timestep 0. */
     public void trim()
         {
         if (events.size() > 0) 
@@ -1319,7 +1319,7 @@ public class Notes extends Motif
             }
         }
 
-	// Shifts the provided events in time so that the first event's onset is at timestep 0.
+    // Shifts the provided events in time so that the first event's onset is at timestep 0.
     void shift(ArrayList<Event> events, int by, boolean sort)
         {
         if (events.size() == 0) return;
@@ -1338,7 +1338,7 @@ public class Notes extends Motif
         sortEvents(events);
         }
         
-	/** Transposes the given events by the provided semitones. */
+    /** Transposes the given events by the provided semitones. */
     public void transpose(ArrayList<Event> events, int by)
         {
         if (by == 0) return;
@@ -1363,9 +1363,9 @@ public class Notes extends Motif
         }
               
 
-	/** Stretches the onset and length of the provided events so that the previous time interval STRETCHFROM
-		is stretched to fill the time interval STRETCHTO.  If LOCKTOSTART is true, then the stretched events
-		are shifted in time afterwards so that the first event's onset is the same as it originally was. */
+    /** Stretches the onset and length of the provided events so that the previous time interval STRETCHFROM
+        is stretched to fill the time interval STRETCHTO.  If LOCKTOSTART is true, then the stretched events
+        are shifted in time afterwards so that the first event's onset is the same as it originally was. */
     public void stretch(ArrayList<Event> events, int stretchFrom, int stretchTo, boolean lockToStart)
         {
         if (stretchFrom == stretchTo) return;
@@ -1404,7 +1404,7 @@ public class Notes extends Motif
         }
 
 
-	/// Some quantization divisors
+    /// Some quantization divisors
     public static final int[] QUANTIZE_DIVISORS = { 
         Seq.PPQ / 12,           // 32 Triplet
         Seq.PPQ / 8,            // 32
@@ -1468,7 +1468,7 @@ public class Notes extends Motif
         computeMaxTime(); 
         }
 
-	// Provide a random number of ticks scaled for randomizing time
+    // Provide a random number of ticks scaled for randomizing time
     int getRandomTimeNoise(Random random, double max)
         {
 //              return (int)Math.round(random.nextGaussian() * stdev);
@@ -1507,13 +1507,13 @@ public class Notes extends Motif
         computeMaxTime(); 
         }
 
-	/** Sets the velocity of all events to the given value */
+    /** Sets the velocity of all events to the given value */
     public void setVelocity(int val)
         {
         setVelocity(events, val);
         }
 
-	/** Sets the velocity of the provided events to the given value */
+    /** Sets the velocity of the provided events to the given value */
     public void setVelocity(ArrayList<Event> events, int val)
         {
         for(Event event : events)
@@ -1527,7 +1527,7 @@ public class Notes extends Motif
             }
         }
 
-	// Provide a random velocity delta
+    // Provide a random velocity delta
     int getRandomVelocityNoise(Random random, double max)
         {
         return (int)((random.nextDouble() * 127 - 63) * max);           // So we have enough space to fit in above 1...
@@ -1540,7 +1540,7 @@ public class Notes extends Motif
         randomizeVelocity(events, max, randomizeReleases, random);
         }
 
-	// How often should we try to randomize the note velocity and stay in the proper time?
+    // How often should we try to randomize the note velocity and stay in the proper time?
     static final int NUM_TRIES = 8;
         
     /** Randomize the velocity, and possibly release velocity, of the provided events, by the given
@@ -1589,22 +1589,22 @@ public class Notes extends Motif
         }
 
 
-	/** Builds the clip. */
+    /** Builds the clip. */
     public Clip buildClip(Clip parent)
         {
         return new NotesClip(seq, this, parent);
         }
 
-	/** Read Notes from a MIDI File, displacing the originals. */
+    /** Read Notes from a MIDI File, displacing the originals. */
     public void read(File midiFile) { try { read(MidiSystem.getSequence(midiFile)); } catch (InvalidMidiDataException ex) { }  catch (IOException ex) { }}
 
-	/** Read Notes from an InputStream, displacing the originals. */
+    /** Read Notes from an InputStream, displacing the originals. */
     public void read(InputStream stream) { try { read(MidiSystem.getSequence(stream));  } catch (InvalidMidiDataException ex) { }  catch (IOException ex) { }}
 
-	/** Read Notes from a URL, displacing the originals. */
+    /** Read Notes from a URL, displacing the originals. */
     public void read(URL url) { try { read(MidiSystem.getSequence(url));  } catch (InvalidMidiDataException ex) { } catch (IOException ex) { }}
 
-	/** Read Notes from a Sequence, displacing the originals. */
+    /** Read Notes from a Sequence, displacing the originals. */
     public void read(javax.sound.midi.Sequence sequence)
         {
         Track[] tracks = sequence.getTracks();
@@ -1700,19 +1700,19 @@ public class Notes extends Motif
         return sequence;
         }
 
-	/** Writes notes to a MIDI File */
+    /** Writes notes to a MIDI File */
     public void write(File out) throws IOException, InvalidMidiDataException
         {
         MidiSystem.write(write(), 0, out);
         }
 
-	/** Writes notes to an Output Stream */
+    /** Writes notes to an Output Stream */
     public void write(OutputStream out) throws IOException, InvalidMidiDataException
         {
         MidiSystem.write(write(), 0, out);
         }
 
-	/** Loads the Notes object from JSON */
+    /** Loads the Notes object from JSON */
     public void load(JSONObject obj) throws JSONException
         {
         setEnd(obj.optInt("end", 0));
@@ -1750,7 +1750,7 @@ public class Notes extends Motif
         computeMaxTime();               // computs maxNoteOnPosition and maxNoteOffPosition
         }
         
-	/** Saves the Notes object to JSON */
+    /** Saves the Notes object to JSON */
     public void save(JSONObject obj) throws JSONException
         {
         obj.put("end", getEnd());
@@ -1806,8 +1806,8 @@ public class Notes extends Motif
 
 
 
-	////// UNTESTED
-	////// BINARY SEARCH METHODS
+    ////// UNTESTED
+    ////// BINARY SEARCH METHODS
 
 
 
@@ -1933,4 +1933,4 @@ public class Notes extends Motif
 
     
     
-        }
+    }

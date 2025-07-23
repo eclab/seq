@@ -1065,10 +1065,10 @@ public class Seq
                                                                 
                     // Handle beep
                     if (metronome == METRONOME_RECORDING_AND_PLAYING ||
-                    	(metronome == METRONOME_RECORDING_ONLY && recording))
-                    	{
-                    	doBeep(time, getBeepBarFrequency(), getBeepBarFrequency() * 2);
-                    	}
+                        (metronome == METRONOME_RECORDING_ONLY && recording))
+                        {
+                        doBeep(time, getBeepBarFrequency(), getBeepBarFrequency() * 2);
+                        }
                         
                     processNoteOffs(false);
 //                    playingClips.clear();

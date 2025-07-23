@@ -102,13 +102,13 @@ public class NotesUI extends MotifUI
         return new NotesUI(seq, ui, new Notes(seq, autoArm));
         }
 
-	/** Returns the NoteUI corresponding to the given note and its pitch.  We specify pitch so we can look it up in the PitchUI. */
+    /** Returns the NoteUI corresponding to the given note and its pitch.  We specify pitch so we can look it up in the PitchUI. */
     public NoteUI getNoteUIFor(Notes.Note note, int pitch)
         {
         return gridui.getNoteUIFor(note, pitch);
         } 
 
-	/** Returns the EventUI corresponding to the given event and its parameter type.  We specify parameter type so we can look it up in the ParameterUI. */
+    /** Returns the EventUI corresponding to the given event and its parameter type.  We specify parameter type so we can look it up in the ParameterUI. */
     public EventUI getEventUIFor(Notes.Event event, int type)
         {
         return eventsui.getEventUIFor(event, type);
@@ -117,7 +117,7 @@ public class NotesUI extends MotifUI
     /** Returns the Ruler */
     public Ruler getRuler() { return ruler; }
      
-     /** Builds a new NotesUI */
+    /** Builds a new NotesUI */
     public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
         {
         return new NotesUI(seq, ui, (Notes)motif);
@@ -267,7 +267,7 @@ public class NotesUI extends MotifUI
         reload(notes.getEvents());
         }
     
-     /** Re-caches the NoteUI or EventUI objects for the given events, and repaints the GridUI, EventsUI, and ruler. */
+    /** Re-caches the NoteUI or EventUI objects for the given events, and repaints the GridUI, EventsUI, and ruler. */
     public void reload(ArrayList<Notes.Event> events)
         {
         HashSet<Notes.Event> hash = new HashSet(events);
@@ -281,7 +281,7 @@ public class NotesUI extends MotifUI
         eventsui.repaint();
         }
         
-	/** Sets the auto-arm menu option */
+    /** Sets the auto-arm menu option */
     public void uiWasSet()
         {
         super.uiWasSet();
@@ -368,7 +368,7 @@ public class NotesUI extends MotifUI
         
     /// BULK OPERATIONS
 
-	/** Quantizes all or a range of notes or events */
+    /** Quantizes all or a range of notes or events */
     public void doQuantize()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -437,7 +437,7 @@ public class NotesUI extends MotifUI
             }
         }
 
-	/** Randomizes the time for all or a range of notes or events */
+    /** Randomizes the time for all or a range of notes or events */
     public void doRandomizeTime()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -501,7 +501,7 @@ public class NotesUI extends MotifUI
         }
         
         
-	/** Randomizes the velocity for all or a range of notes */
+    /** Randomizes the velocity for all or a range of notes */
     public void doRandomizeVelocity()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -552,7 +552,7 @@ public class NotesUI extends MotifUI
         }
 
 
-	/** Sets the velocity for all or a range of notes */
+    /** Sets the velocity for all or a range of notes */
     public void doSetVelocity()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -599,8 +599,8 @@ public class NotesUI extends MotifUI
         }
 
 
-	/** Filters out all or a range of notes or events by type */
-	public void doFilter()
+    /** Filters out all or a range of notes or events by type */
+    public void doFilter()
         {
         JCheckBox range = new JCheckBox("");
 
@@ -665,7 +665,7 @@ public class NotesUI extends MotifUI
         }
 
 
-	/** Shifts all notes and events so that the first one starts at timestep 0 */
+    /** Shifts all notes and events so that the first one starts at timestep 0 */
     public void doTrimTime()
         {
         ReentrantLock lock = seq.getLock();
@@ -682,7 +682,7 @@ public class NotesUI extends MotifUI
         }
         
 
-	/** Stretches the time for all or a range of notes or events such that they fit in the provided space.  */
+    /** Stretches the time for all or a range of notes or events such that they fit in the provided space.  */
     public void doStretchTime()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -740,7 +740,7 @@ public class NotesUI extends MotifUI
         }
         
         
-	/** Removes the selected events */
+    /** Removes the selected events */
     public void doRemove()
         {
         if (gridui.getSelected().size() == 0)
@@ -756,7 +756,7 @@ public class NotesUI extends MotifUI
         }
 
 
-	/** Duplicates the selected events */
+    /** Duplicates the selected events */
     public void doCopy()
         {
         if (gridui.getSelected().size() == 0)
@@ -771,7 +771,7 @@ public class NotesUI extends MotifUI
         }
 
 
-	/** Loads a MIDI File, displacing existing notes and events. */
+    /** Loads a MIDI File, displacing existing notes and events. */
     public void doLoadMIDIFile()
         {
         ReentrantLock lock = seq.getLock();
@@ -851,7 +851,7 @@ public class NotesUI extends MotifUI
             }
         }
     
-	/** Builds the inspectors facility. */
+    /** Builds the inspectors facility. */
     public void buildInspectors(JScrollPane scroll)
         {
         // Build the notes child inspector holder
@@ -881,7 +881,7 @@ public class NotesUI extends MotifUI
         }
 
 
-	/** Builds the main view. */        
+    /** Builds the main view. */        
     public void buildPrimary(JScrollPane scroll)
         {
         gridui = new GridUI(this);
@@ -907,18 +907,18 @@ public class NotesUI extends MotifUI
                 rebuildSizes();
                 gridui.repaint();
 
-		        // Scroll to Middle C-ish?  Or Selected?
-		        if (gridui.getSelected().size() > 0)
-		        	{
-		        	doScrollToSelected();
-		        	}
-		        else
-		        	{
-		        	/// FIXME THIS ISN'T WORKING!!!
-					JScrollBar vert = getPrimaryScroll().getVerticalScrollBar();
-		        	vert.setValue((vert.getMaximum() - vert.getMinimum()) / 4);
-				    }
-				}
+                // Scroll to Middle C-ish?  Or Selected?
+                if (gridui.getSelected().size() > 0)
+                    {
+                    doScrollToSelected();
+                    }
+                else
+                    {
+                    /// FIXME THIS ISN'T WORKING!!!
+                    JScrollBar vert = getPrimaryScroll().getVerticalScrollBar();
+                    vert.setValue((vert.getMaximum() - vert.getMinimum()) / 4);
+                    }
+                }
             });
                                 
         // FIXME
@@ -936,7 +936,7 @@ public class NotesUI extends MotifUI
         this.scroll = scroll;
         }
 
-	/** Revalidates the entire GridUI, EventUI, and ruler */
+    /** Revalidates the entire GridUI, EventUI, and ruler */
     void rebuildSizes()
         {
         for(PitchUI pitchui : gridui.getPitchUIs())
@@ -1115,7 +1115,7 @@ public class NotesUI extends MotifUI
         revalidate();
         }
 
-	/** Updates the child inspector. */
+    /** Updates the child inspector. */
     public void revise()
         {
         if (childInspector != null) 
@@ -1127,7 +1127,7 @@ public class NotesUI extends MotifUI
             }
         }
         
-	/** Updates the NotesUI and repaints it. */
+    /** Updates the NotesUI and repaints it. */
     public void redraw(boolean inResponseToStep) 
         {
         boolean stopped;
@@ -1212,13 +1212,13 @@ public class NotesUI extends MotifUI
         }
 
 
-	/** Rebuilds the NotesUI in response to being stopped.  This is becasue we may have recorded notes which have just been inserted.  */
-   public void stopped()
+    /** Rebuilds the NotesUI in response to being stopped.  This is becasue we may have recorded notes which have just been inserted.  */
+    public void stopped()
         {
         if (isUIBuilt())
-            {	
-			// we may have just recorded.  We have to display the new notes
-			rebuild();
+            {   
+            // we may have just recorded.  We have to display the new notes
+            rebuild();
             }
         }
         

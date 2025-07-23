@@ -17,8 +17,8 @@ public class NotesClip extends Clip
     {
     private static final long serialVersionUID = 1;
 
-	// When notes are recorded, they are stored here when receiving a NOTE ON
-	// and then completed and removed when receiving a NOTE OFF
+    // When notes are recorded, they are stored here when receiving a NOTE ON
+    // and then completed and removed when receiving a NOTE OFF
     Notes.Note[] recordedNoteOn = new Notes.Note[128];
     
     // Where in notes.events was my LAST EVENT.  If I have NO EVENTS, then this value is -1  
@@ -26,9 +26,9 @@ public class NotesClip extends Clip
     // Did we just record notes?
     boolean didRecord;
 
-	/** Returns if we just recorded notes. */
+    /** Returns if we just recorded notes. */
     public boolean getDidRecord() { return didRecord; }
- 	/** Sets if we just recorded notes. */
+    /** Sets if we just recorded notes. */
     public void setDidRecord(boolean val) { didRecord = val; }
     
     public NotesClip(Seq seq, Motif motif, Clip parent)
@@ -37,7 +37,7 @@ public class NotesClip extends Clip
         rebuild();
         }
 
-	/** Updates the version. */
+    /** Updates the version. */
     public void rebuild(Motif motif)
         {
         if (this.getMotif() == motif)
@@ -46,7 +46,7 @@ public class NotesClip extends Clip
             }
         }
                 
-	/** Updates the version. */
+    /** Updates the version. */
     public void rebuild()
         {
         version = getMotif().getVersion();
@@ -75,14 +75,14 @@ public class NotesClip extends Clip
             }
         }
 
-	/** Updates the index */
+    /** Updates the index */
     public void loop()
         {
         super.loop();
         updateIndex();
         }
                 
-	/** Updates the index and moves over recorded notes */
+    /** Updates the index and moves over recorded notes */
     public void reset()  
         {
         super.reset();
@@ -90,7 +90,7 @@ public class NotesClip extends Clip
         updateIndex();
         }
 
-	// Moves over recorded notes, including converting NPN and RPN         
+    // Moves over recorded notes, including converting NPN and RPN         
     void moveRecording()
         {
         // Move the recorded notes over 
@@ -99,14 +99,14 @@ public class NotesClip extends Clip
         if (!recording.isEmpty())
             {
             if (Prefs.getLastBoolean("QuantizeOnRecord", false))
-            	{
-	            notes.quantize(recording, 	
-    	         	Notes.QUANTIZE_DIVISORS[Prefs.getLastInt("QuantizeToOnRecord", 1)],
-        		    Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false),
-           			Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false),
-            		Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5));
-            	}
-            	
+                {
+                notes.quantize(recording,   
+                    Notes.QUANTIZE_DIVISORS[Prefs.getLastInt("QuantizeToOnRecord", 1)],
+                    Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false),
+                    Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false),
+                    Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5));
+                }
+                
             boolean result = notes.setEvents(recording);
             final SeqUI sequi = seq.getSeqUI();
             if (result)
@@ -127,7 +127,7 @@ public class NotesClip extends Clip
         else setDidRecord(false);
         }
 
-	/** Updates the index and moves over recorded notes. */
+    /** Updates the index and moves over recorded notes. */
     public void terminate()  
         {
         super.terminate();
@@ -135,7 +135,7 @@ public class NotesClip extends Clip
         updateIndex();
         }
         
-	/** Cuts all current echoed notes. */
+    /** Cuts all current echoed notes. */
     public void clear()
         {
         Notes notes = (Notes) getMotif();
@@ -151,7 +151,7 @@ public class NotesClip extends Clip
             }
         }
 
-	/** Moves all current echoed to the release queue. */
+    /** Moves all current echoed to the release queue. */
     public void release()
         {
         Notes notes = (Notes) getMotif();
@@ -324,7 +324,7 @@ public class NotesClip extends Clip
             }
         }
         
-	/** Returns true if we have finished playing. */
+    /** Returns true if we have finished playing. */
     public boolean finishedPlaying() { return getPosition() >= ((Notes) getMotif()).getEndTime(); }
 
     // TESTING

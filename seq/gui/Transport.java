@@ -250,19 +250,19 @@ public class Transport extends JPanel implements SeqListener
                 });
 
 /*
-            metronome = new JCheckBox();
-            metronome.setSelected(seq.getMetronome());
-            metronome.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { seq.setMetronome(metronome.isSelected()); }
-                    finally { lock.unlock(); }                              
-                    }
-                });
+  metronome = new JCheckBox();
+  metronome.setSelected(seq.getMetronome());
+  metronome.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { seq.setMetronome(metronome.isSelected()); }
+  finally { lock.unlock(); }                              
+  }
+  });
 */
             beepVolume = new SmallDial(seq.getBeepVolume())
                 {

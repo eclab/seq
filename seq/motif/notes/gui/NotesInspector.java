@@ -89,9 +89,9 @@ public class NotesInspector extends WidgetList
     public static final boolean[] EVENT_HAS_LSB = { false, false, false, false, false, true, true };
     public static final boolean[] EVENT_HAS_MSB = { false, true, true, false, false, true, true };
 
-	public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
-	public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
-	
+    public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
+    public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
+        
     public NotesInspector(Seq seq, Notes notes, NotesUI notesui)
         {
         this.seq = seq;
@@ -326,37 +326,37 @@ public class NotesInspector extends WidgetList
                     }
                 });
 
-                quantizeTo = new JComboBox(Notes.QUANTIZE_STRINGS);
-                quantizeTo.addActionListener(new ActionListener()
+            quantizeTo = new JComboBox(Notes.QUANTIZE_STRINGS);
+            quantizeTo.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
                     {
-                    public void actionPerformed(ActionEvent e)
-                        {
-                        if (seq == null) return;
-                        ReentrantLock lock = seq.getLock();
-                        lock.lock();
-                        try { notes.setQuantizeTo(quantizeTo.getSelectedIndex()); }
-                        finally { lock.unlock(); }     
-                        }
-                    });
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setQuantizeTo(quantizeTo.getSelectedIndex()); }
+                    finally { lock.unlock(); }     
+                    }
+                });
  
-                     quantizeBias = new SmallDial(notes.getQuantizeBias())
-                        {
-                        public double getValue() 
-                            { 
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { return notes.getQuantizeBias(); }
-                            finally { lock.unlock(); }
-                            }
-                        public void setValue(double val) 
-                            { 
-                            if (seq == null) return;
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { notes.setQuantizeBias(val); }
-                            finally { lock.unlock(); }
-                            }
-                        };
+            quantizeBias = new SmallDial(notes.getQuantizeBias())
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return notes.getQuantizeBias(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setQuantizeBias(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
            
            
            
@@ -459,27 +459,27 @@ public class NotesInspector extends WidgetList
                     lock.lock();
                     try { notes.setLog(logBend.isSelected()); }
                     finally { lock.unlock(); }  
-                    notesui.getEventsUI().reload();					// gotta redraw the bends!                            
-                    notesui.getEventsUI().repaint();					// gotta redraw the bends!                            
+                    notesui.getEventsUI().reload();                                     // gotta redraw the bends!                            
+                    notesui.getEventsUI().repaint();                                    // gotta redraw the bends!                            
                     }
                 });
 
-			parameterHeight = new JComboBox(PARAMETER_HEIGHT_STRINGS);
-			parameterHeight.addActionListener(new ActionListener()
-				{
-				public void actionPerformed(ActionEvent e)
-					{
-					notesui.getEventsUI().setParameterHeight(PARAMETER_HEIGHTS[parameterHeight.getSelectedIndex()]);
-					notesui.getEventsUI().rebuild();
-					notesui.getGridUI().clearSelected();
-					}
-				});
+            parameterHeight = new JComboBox(PARAMETER_HEIGHT_STRINGS);
+            parameterHeight.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    notesui.getEventsUI().setParameterHeight(PARAMETER_HEIGHTS[parameterHeight.getSelectedIndex()]);
+                    notesui.getEventsUI().rebuild();
+                    notesui.getGridUI().clearSelected();
+                    }
+                });
 
             }
         finally { lock.unlock(); }
 
-            int height = notesui.getEventsUI().getParameterHeight();
-            parameterHeight.setSelectedIndex(height == 32 ? 0 : (height == 64 ? 1 : 2));
+        int height = notesui.getEventsUI().getParameterHeight();
+        parameterHeight.setSelectedIndex(height == 32 ? 0 : (height == 64 ? 1 : 2));
 
         name.setToolTipText(NAME_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
@@ -505,12 +505,12 @@ public class NotesInspector extends WidgetList
                 });
                 
         recordList1 = new WidgetList(new String[] { "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN",
-        	"Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
-        	new JComponent[] { recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
+                "Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
+            new JComponent[] { recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
         
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
-		DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
-		recordDisclosure.setParentComponent(this);
+        DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
+        recordDisclosure.setParentComponent(this);
 
         WidgetList widgetList2 = new WidgetList();
         widgetList2.build(new String[] { "1", "2", "3", "4" },
@@ -518,14 +518,14 @@ public class NotesInspector extends WidgetList
 
         WidgetList widgetList1 = new WidgetList();
         widgetList1.build(new String[] { "Logarithmic Pitch Bend", "Display Height" }, new JComponent[] { logBend, parameterHeight });
-		
-		JPanel messagePanel = new JPanel();
-		messagePanel.setLayout(new BorderLayout());
-		messagePanel.add(widgetList2, BorderLayout.NORTH);
-		messagePanel.add(widgetList1, BorderLayout.SOUTH);
+                
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new BorderLayout());
+        messagePanel.add(widgetList2, BorderLayout.NORTH);
+        messagePanel.add(widgetList1, BorderLayout.SOUTH);
         messagePanel.setBorder(BorderFactory.createTitledBorder("<html><i>Non-Note Display</i></html>"));
-		DisclosurePanel parameterDisclosure = new DisclosurePanel("Non-Note Display", messagePanel);
-		parameterDisclosure.setParentComponent(this);
+        DisclosurePanel parameterDisclosure = new DisclosurePanel("Non-Note Display", messagePanel);
+        parameterDisclosure.setParentComponent(this);
 
         JPanel finalPanel = new JPanel();
         finalPanel.setLayout(new BorderLayout());
@@ -755,7 +755,7 @@ public class NotesInspector extends WidgetList
             quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
             quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
             convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
-        	logBend.setSelected(notes.getLog());
+            logBend.setSelected(notes.getLog());
             
             /*
               for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
