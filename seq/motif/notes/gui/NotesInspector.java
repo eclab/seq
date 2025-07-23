@@ -38,7 +38,7 @@ public class NotesInspector extends WidgetList
     JCheckBox quantizeNoteEnds;
     JCheckBox quantizeNonNotes;
     JComboBox quantizeTo;
-    SmallDial quantizationBias;
+    SmallDial quantizeBias;
     
     WidgetList widgetList = new WidgetList();
     
@@ -293,7 +293,7 @@ public class NotesInspector extends WidgetList
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { Prefs.setLastBoolean("QuantizeOnRecord", quantize.isSelected()); }
+                    try { notes.setQuantize(quantize.isSelected()); }
                     finally { lock.unlock(); }                              
                     }
                 });
@@ -307,7 +307,7 @@ public class NotesInspector extends WidgetList
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { Prefs.setLastBoolean("QuantizeNonNotesOnRecord", quantizeNonNotes.isSelected()); }
+                    try { notes.setQuantizeNonNotes(quantizeNonNotes.isSelected()); }
                     finally { lock.unlock(); }                              
                     }
                 });
@@ -321,7 +321,7 @@ public class NotesInspector extends WidgetList
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { Prefs.setLastBoolean("QuantizeNoteEndsOnRecord", quantizeNoteEnds.isSelected()); }
+                    try { notes.setQuantizeNoteEnds(quantizeNoteEnds.isSelected()); }
                     finally { lock.unlock(); }                              
                     }
                 });
@@ -334,20 +334,18 @@ public class NotesInspector extends WidgetList
                         if (seq == null) return;
                         ReentrantLock lock = seq.getLock();
                         lock.lock();
-                        try { Prefs.setLastInt("QuantizeToOnRecord", quantizeTo.getSelectedIndex()); }
+                        try { notes.setQuantizeTo(quantizeTo.getSelectedIndex()); }
                         finally { lock.unlock(); }     
                         }
                     });
-                    
-                quantizeTo.setSelectedIndex(Prefs.getLastInt("QuantizeToOnRecord", 1));
  
-                     quantizationBias = new SmallDial(Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5))
+                     quantizeBias = new SmallDial(notes.getQuantizeBias())
                         {
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { return Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5); }
+                            try { return notes.getQuantizeBias(); }
                             finally { lock.unlock(); }
                             }
                         public void setValue(double val) 
@@ -355,7 +353,7 @@ public class NotesInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { Prefs.setLastDouble("QuantizeBiasOnRecord", val); }
+                            try { notes.setQuantizeBias(val); }
                             finally { lock.unlock(); }
                             }
                         };
@@ -508,7 +506,7 @@ public class NotesInspector extends WidgetList
                 
         recordList1 = new WidgetList(new String[] { "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN",
         	"Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
-        	new JComponent[] { recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizationBias.getLabelledDial("0.8888")});
+        	new JComponent[] { recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
         
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
 		DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
@@ -753,6 +751,9 @@ public class NotesInspector extends WidgetList
             recordBend.setSelected(notes.getRecordBend()); 
             recordCC.setSelected(notes.getRecordCC()); 
             recordAftertouch.setSelected(notes.getRecordAftertouch()); 
+            quantize.setSelected(notes.getQuantize());
+            quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
+            quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
             convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
         	logBend.setSelected(notes.getLog());
             
@@ -763,6 +764,7 @@ public class NotesInspector extends WidgetList
               }
             */
             
+            quantizeTo.setSelectedIndex(notes.getQuantizeTo());
             for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
                 {
                 eventParameterType[i].setSelectedIndex(notes.getEventParameterType(i));
@@ -774,14 +776,7 @@ public class NotesInspector extends WidgetList
         seq = old;
         name.update();
         if (end != null) end.revise();
-        
-        /*
-          for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-          {
-          if (parameterMSB[i] != null) parameterMSB[i].redraw();
-          if (parameterLSB[i] != null) parameterLSB[i].redraw();
-          }
-        */
+        if (quantizeBias != null) quantizeBias.redraw();
         
         for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
             {

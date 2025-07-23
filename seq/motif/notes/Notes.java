@@ -733,6 +733,16 @@ public class Notes extends Motif
     boolean recordAftertouch;
     // Do we convert CC to NRP and RPN after recording?
     boolean convertNRPNRPN;
+    // Do we quantize on recording?
+    boolean quantize;
+    // What do we quantize to?
+    int quantizeTo;
+    // Do we quantize note ends as well?
+    boolean quantizeNoteEnds;
+    // Do we quantize non-note messages as well?
+    boolean quantizeNonNotes;
+    // The quanization bias
+    double quantizeBias;
     // The out device
     int out;
     // The in device
@@ -785,10 +795,35 @@ public class Notes extends Motif
  	/** Sets whether we record Aftertouich. */
     public void setRecordAftertouch(boolean val) { recordAftertouch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordaftertouch", val); }
 
- 	/** Returns whether we convert CC to NRPN/RPN after recording. */
+ 	/** Returns whether we quantize on recording. */
     public boolean getConvertNRPNRPN() { return convertNRPNRPN; }
- 	/** Sets whether we convert CC to NRPN/RPN after recording. */
+ 	/** Sets whether we quantize on recording. */
     public void setConvertNRPNRPN(boolean val) { convertNRPNRPN = val; Prefs.setLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", val); }
+
+ 	/** Returns whether we quantize on recording. */
+    public boolean getQuantize() { return quantize; }
+ 	/** Sets whether we quantize on recording. */
+    public void setQuantize(boolean val) { quantize = val; Prefs.setLastBoolean("seq.motif.notes.Notes.quantize", val); }
+
+ 	/** Returns our quantization amount on recording. */
+    public int getQuantizeTo() { return quantizeTo; }
+ 	/** Sets our quantization amount on recording. */
+    public void setQuantizeTo(int val) { quantizeTo = val; Prefs.setLastInt("seq.motif.notes.Notes.quantizeTo", val); }
+
+ 	/** Returns whether we quantize note ends on recording. */
+    public boolean getQuantizeNoteEnds() { return quantizeNoteEnds; }
+ 	/** Sets whether we quantize note ends on recording. */
+    public void setQuantizeNoteEnds(boolean val) { quantizeNoteEnds = val; Prefs.setLastBoolean("seq.motif.notes.Notes.quantizeNoteEnds", val); }
+
+ 	/** Returns whether we quantize non-notes on recording. */
+    public boolean getQuantizeNonNotes() { return quantizeNonNotes; }
+ 	/** Sets whether we quantize non-notes on recording. */
+    public void setQuantizeNonNotes(boolean val) { quantizeNonNotes = val; Prefs.setLastBoolean("seq.motif.notes.Notes.quantizeNonNotes", val); }
+
+ 	/** Returns the quantization bias on recording. */
+    public double getQuantizeBias() { return quantizeBias; }
+ 	/** Sets the quantization bias on recording. */
+    public void setQuantizeBias(double val) { quantizeBias = val; Prefs.setLastDouble("seq.motif.notes.Notes.quantizeBias", val); }
 
  	/** Returns the output device. */
     public int getOut() { return out; }
@@ -846,6 +881,11 @@ public class Notes extends Motif
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
         convertNRPNRPN = Prefs.getLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", true); 
+        quantize = Prefs.getLastBoolean("seq.motif.notes.Notes.quantize", true); 
+        quantizeTo = Prefs.getLastInt("seq.motif.notes.Notes.quantizeTo", 1); 
+        quantizeNoteEnds = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNoteEnds", true); 
+        quantizeNonNotes = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNonNotes", true); 
+        quantizeBias = Prefs.getLastDouble("seq.motif.notes.Notes.quantizeBias", 0.5); 
         }
 
     /** Returns all events */

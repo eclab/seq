@@ -432,7 +432,7 @@ Recording only has an effect on certain Motifs, such as the {\bf Notes} motif, w
 
 Below the Transport buttons is the {\bf Clock}, which shows the current play time in (right to left) ticks (192 ticks per beat), beats, measures, and parts (256 measures per part).  To the left of the clock is a small dot.  This dot will light up momentarily when Seq receives MIDI information (other than Note Off) from any of its currently registered devices and channels.
 
-Below the clock are two expandable regions: the {\bf Clock Options} and the {\bf Root Arguments}.  The Clock Options include the tempo, whether the clock is Internal or External, the number of beats per measure, the metronome toggle, whether the metronome plays a count-in for recording, playing, or both, and the metronome volume.
+Below the clock are two expandable regions: the {\bf Clock Options} and the {\bf Root Arguments}.  The Clock Options include the tempo, whether the clock is Internal or External, the number of beats per measure, whether the metronome plays for recording,  for recording and playing, or for none; whether a count-in is provided for recording, for recording and playing, or for none; and the metronome volume and pitch..
 
 We'll discuss the Root Arguments later in Section~\ref{parameters}.  However we mention one item here: the {\bf Random Seed}.  This is the seed of the random number generator used by Seq when playing, and the generator is always reset to that seed each time we play again.  That way the sequence will always be deterministic.  The seed is saved with the Sequence when you write it to a file, but new Sequences get new random seeds. You can always change this seed to cause the sequence's random choices to be different.
 
@@ -564,9 +564,9 @@ Like other Motifs, you can give your Notes a {\bf Name} in the Notes Inspector.
 
 Notes are displayed using a {\bf piano player roll} with scroll bars: the Y axis is pitch (with a little keyboard display at left to help you out) and the X axis is time.  The color of the note is its {\bf velocity}.  
 
-Other events are {\bf optionally displayed} above the piano player roll.  In the image above, you can see the time-stream of four such events. You select up to four event types to display with the {\bf Other MIDI Messages} in the Notes Inspector at right.  You can change the height of the event displays with {\bf Parameter Height}.
+Other events are {\bf optionally displayed} above the piano player roll.  In the image above, you can see the time-stream of four such events. You select up to four event types to display with the {\bf Non-Note Display} disclosure panel in the Notes Inspector at right.  You can change the height of the event displays with {\bf Parameter Height}.
 
-The color of a non-note event is (at present) its {\bf value}.   The value is also shown with the {\it vertical position} of the event.  Pitch Bend is a special case: although it has a large range (\(-8192\) to \(+8191\)), very often subtle difference near 0 are important but can't be seen in the display due to resolution.  By default Seq displays Pitch Bend logarithmically, so values near 0 take up lots of space and large values take up rather little space.  If you don't like this, you can turn it off by unchecking {\bf Logarithmic Pitch Bend}.
+The color of a non-note event is (at present) its {\bf value}.   The value is also shown with the {\it vertical position} of the event.  Pitch Bend is a special case: although it has a large range (\(-8192\) to \(+8191\)), very often subtle difference near 0 are important but can't be seen in the display due to resolution.  By default Seq displays Pitch Bend logarithmically, so values near 0 take up lots of space and large values take up rather little space.  If you don't like this, you can turn it off by unchecking {\bf Logarithmic Pitch Bend} in the Non-Note Display disclosure panel.
 
  You can change the {\bf maximum length of time} of the piano player roll with a pop-up menu at the bottom of the window, anywhere from 64 to 65536 bars.  Making the length longer doesn't consume more resources, and it's not slower.  But it will make horizontal scrolling more annoying.  So you'd like to keep it reasonably short when possible.
 
@@ -633,11 +633,9 @@ You can record notes from MIDI into the Notes.  To do this you must first {\bf A
 
 If you check the {\bf Echo} checkbox in the Notes Inspector, Notes will play to its Output all the notes it receives at its Input while recording.
 
-If you check the {\bf Record Bend}, {\bf Record Aftertouch}, or {\bf Record CC} checkboxes, Notes will record these events: otherwise it will ignore and discard them while recording. 
+In the {\bf Recording} disclosure panel there are a number of recording options.    If you check the {\bf Record Bend}, {\bf Record Aftertouch}, or {\bf Record CC} checkboxes, Notes will record these events: otherwise it will ignore and discard them while recording.   And if you check the {\bf Make NRPN/RPN} checkbox, Notes will attempt to build NRPN or RPN parameters as it receives them.  NRPN and RPN parameters are made up of collections of CC messages, so if those CC messages are used to build a parameter, the CC messages will not be recorded as CC messages but as NRPN or RPN.  
 
-Finally, if you check the {\bf Make NRPN/RPN} checkbox, Notes will attempt to build NRPN or RPN parameters as it receives them.  NRPN and RPN parameters are made up of collections of CC messages, so if those CC messages are used to build a parameter, the CC messages will not be recorded as CC messages but as NRPN or RPN.  
-
-
+Other recording options deal with automatic quantization.  You can turn {\bf Quantize} on for notes, instruct it to also {\bf Quantize Note Ends} and to {\bf Quantize Non-Note Events} (like pitch bend or CC), and tell it to {\bf Quantize To} a certain resolution.  There also is a mysterious {\bf Quantize Bias} knob.  Normally Quantize works by rounding your note to the nearest resolution point, before or after.  By adjusting the Quantize Bias knob you can push Quantize to more likely round to the note before or to the note after.  This is useful because as humans we each have a different tendency to either play too early or too late, and can set the Quantize Bias knob to adjust for our own nature.
 
 \paragraph{The Notes Menu} Notes has a number of items under its menu.  Many of these items are applied to either all events or to a subset of them, depending on how you have selected notes or non-note events: 
 
