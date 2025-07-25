@@ -593,7 +593,15 @@ public abstract class Motif implements Cloneable
         Calls Clip.rebuildClip() */
     public abstract Clip buildClip(Clip parent);
 
-
+    /** Rebuilds the Clip if it exists and can be rebuilt at this point. */
+    public void rebuildClip()
+        {
+        Clip clip = getPlayingClip();
+        if (clip != null) 
+            {
+            clip.rebuild();
+            }
+        }
 
 
     ///// RELATIONSHIP WITH CHILDREN
@@ -645,6 +653,7 @@ public abstract class Motif implements Cloneable
         // Add me as a parent
         child.getMotif().addParent(this);
         incrementVersion();
+        rebuildClip();
         }
         
     /** Replaces the child with a new one at the given position.  Marks the Motif as dirty so it must update its lengths etc.
@@ -662,6 +671,7 @@ public abstract class Motif implements Cloneable
         // Add me as a parent
         motif.addParent(this);
         incrementVersion();
+        rebuildClip();
         return oldChild;
         }
         
@@ -674,6 +684,7 @@ public abstract class Motif implements Cloneable
         Child child = new Child(children.get(from), this);
         children.set(to, child);
         incrementVersion();
+        rebuildClip();
         return oldChild;
         }
         
@@ -688,6 +699,7 @@ public abstract class Motif implements Cloneable
             toBefore--;       // it was shifted down
         children.add(toBefore, child);
         incrementVersion();
+        rebuildClip();
         }
 
     /** Swaps two children.  Marks the Motif as dirty so it must update its lengths etc. 
@@ -700,6 +712,7 @@ public abstract class Motif implements Cloneable
         children.set(to, _from);
         children.set(from, _to);
         incrementVersion();
+        rebuildClip();
         }
 
     /** Removes a child.  Marks the Motif as dirty so it must update its lengths etc. 
@@ -713,6 +726,7 @@ public abstract class Motif implements Cloneable
             child.getMotif().removeParent(this);
             }
         incrementVersion();
+        rebuildClip();
         return child; 
         }
                         
