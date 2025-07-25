@@ -693,7 +693,7 @@ public class SeqUI extends JPanel
             }
         }
 
-    public static final int[] ADD_ACCELERATORS = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
+    public static final int[] ADD_ACCELERATORS = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_0 };
     /** Call this immediately after you create the SeqUI JFrame to prepare the menu. */
     public void setupMenu(JFrame frame)
         {
@@ -1576,6 +1576,6 @@ public class SeqUI extends JPanel
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 
         "With Help from Filippo Carnovalini<br>" + 
-        "<b><font color='#3498db'>Version 3</font></b>, July 2025<br>" + 
+        "<b><font color='#3498db'>Version 4</font></b>, July 2025<br>" + 
         "https://github.com/eclab/seq</html>";
     }
