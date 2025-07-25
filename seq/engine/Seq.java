@@ -1093,6 +1093,7 @@ public class Seq
                             if (time % (PPQ * 4) == (PPQ * 4 - 1))
                                 {
                                 root.release();
+                                processNoteOffs(true);
 //                                data.endArmed();
                                 resetTime();
                                 recording = false;
@@ -1158,7 +1159,7 @@ public class Seq
             }
         else    
             {
-            cut();
+            cut();              // this will also processNoteOffs(true)
             stop();
             }
         updateGUI(false);                            // should we do this at this rate?
