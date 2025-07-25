@@ -828,12 +828,12 @@ public class Notes extends Motif
     /** Returns the output device. */
     public int getOut() { return out; }
     /** Sets the output device. */
-    public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.notes.Notes"); }
+    public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.notes.Notes.out"); }
 
     /** Returns the input device. */
     public int getIn() { return in; }
     /** Sets the input device. */
-    public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.notes.Notes"); }
+    public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.notes.Notes.in"); }
         
     /** Returns whether we echo when recording. */
     public boolean getEcho() { return echo; }
@@ -874,8 +874,8 @@ public class Notes extends Motif
         super(seq);
 
         // Load devices. Note I'm not using setOut(...) etc. which would write the device to prefs
-        out = (Prefs.getLastOutDevice(0, "seq.motif.notes.Notes"));
-        in = (Prefs.getLastInDevice(0, "seq.motif.notes.Notes"));
+        out = (Prefs.getLastOutDevice(0, "seq.motif.notes.Notes.out"));
+        in = (Prefs.getLastInDevice(0, "seq.motif.notes.Notes.in"));
         setArmed(arm);
         recordBend = Prefs.getLastBoolean("seq.motif.notes.Notes.recordbend", true); 
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
