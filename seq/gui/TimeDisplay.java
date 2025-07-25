@@ -158,26 +158,23 @@ public abstract class TimeDisplay extends JPanel
                 
     public static final String[] PRESET_OPTIONS = 
         { 
-        "  1/16",
-        "  2/16   1/8",
-        "  3/16",
-        "  4/16   2/8   1/4",
-        "  5/16",
-        "  6/16   3/8",
-        "  7/16",
-        "  8/16   4/8   2/4   1/2",
-        "  9/16",
-        "10/16   5/8",
-        "11/16",
-        "12/16   6/8   3/4",
-        "13/16",
-        "14/16   7/8",
-        "15/16",
-        "  1/6",
-        "  2/6    1/3",
-        "  3/6    1/2",
-        "  4/6    2/3",
-        "  5/6",
+        "  1/64",
+        "  2/64   1/32",
+        "  3/64",
+        "  4/64   2/32   1/16",
+        "  5/64",
+        "  6/64   3/32",
+        "  7/64",
+        "  8/64   4/32   2/16   1/8",
+        "  9/64",
+        "10/64   5/32",
+        "11/64",
+        "12/64   6/32   3/16",
+        "13/64",
+        "14/64   7/32",
+        "15/64",
+        "1st Triplet",
+        "2nd Triplet"
         };
 
     public static final int[] PRESETS = 
@@ -197,11 +194,8 @@ public abstract class TimeDisplay extends JPanel
         Seq.PPQ / 16 * 13,
         Seq.PPQ / 16 * 14,
         Seq.PPQ / 16 * 15,
-        Seq.PPQ / 6 * 1,
-        Seq.PPQ / 6 * 2,
-        Seq.PPQ / 6 * 3,
-        Seq.PPQ / 6 * 4,
-        Seq.PPQ / 6 * 5,
+        Seq.PPQ / 3 * 1,
+        Seq.PPQ / 2 * 2,
         };
 
 
@@ -283,25 +277,23 @@ public abstract class TimeDisplay extends JPanel
                 {
                 int ppq = (int)(val * maxSteps);
 
-                if (ppq == 12)  return "1|16";
-                else if  (ppq == 24)    return "1|8";
-                else if  (ppq == 32)    return "1|6";
-                else if  (ppq == 36)    return "3|16";
-                else if  (ppq == 48)    return "1|4";
-                else if  (ppq == 64)    return "1|3";
-                else if  (ppq == 60)    return "5|16";
-                else if  (ppq == 72)    return "3|8";
-                else if  (ppq == 84)    return "7|16";
-                else if  (ppq == 96)    return "1|2";
-                else if  (ppq == 108)   return "9|16";
-                else if  (ppq == 120)   return "5|8";
-                else if  (ppq == 128)   return "2|3";
-                else if  (ppq == 132)   return "11|16";
-                else if  (ppq == 144)   return "3|4";
-                else if  (ppq == 156)   return "13|16";
-                else if  (ppq == 160)   return "5|6";
-                else if  (ppq == 168)   return "7|8";
-                else if  (ppq == 180)   return "15|16";
+                if (ppq == 12)  return "1|64";
+                else if  (ppq == 24)    return "1|32";
+                else if  (ppq == 36)    return "3|64";
+                else if  (ppq == 48)    return "1|16";
+                else if  (ppq == 64)    return "1 T";
+                else if  (ppq == 60)    return "5|64";
+                else if  (ppq == 72)    return "3|32";
+                else if  (ppq == 84)    return "7|64";
+                else if  (ppq == 96)    return "1|8";
+                else if  (ppq == 108)   return "9|64";
+                else if  (ppq == 120)   return "5|32";
+                else if  (ppq == 128)   return "2 T";
+                else if  (ppq == 132)   return "11|64";
+                else if  (ppq == 144)   return "3|16";
+                else if  (ppq == 156)   return "13|64";
+                else if  (ppq == 168)   return "7|32";
+                else if  (ppq == 180)   return "15|64";
                 else return String.valueOf((displaysTime ? 1 : 0) + ppq);
                 }
                                 
