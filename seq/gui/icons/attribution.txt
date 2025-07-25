@@ -1,5 +1,6 @@
 Seq uses at least the following icons, to which we are indebted.
 
+<a href="https://www.flaticon.com/free-icons/staircase" title="staircase icons">Staircase icons created by Freepik - Flaticon</a>
 <a href="https://iconduck.com/sets/fontaudio-icon-library">FontAudio Library icons created by Michelangelo Nottoli</a><br>
 <a href="https://www.flaticon.com/free-icons/delay" title="delay icons">Delay icons created by HEA POH LIN - Flaticon</a><br>
 <a href="https://www.flaticon.com/free-icons/split" title="split icons">Split icons created by Rahul Kaklotar - Flaticon</a><br>
