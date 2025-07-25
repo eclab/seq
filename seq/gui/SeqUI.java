@@ -864,6 +864,11 @@ public class SeqUI extends JPanel
                         {
                         lock.unlock();
                         }
+                        
+                    if (SeqUI.this.motifui != null) 
+                    	{
+                    	SeqUI.this.motifui.rebuildInspectors(rebuildInspectorsCount);
+                    	}
                     }
                 }
             });
