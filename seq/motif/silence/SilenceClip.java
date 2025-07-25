@@ -13,9 +13,9 @@ public class SilenceClip extends Clip
     {
     private static final long serialVersionUID = 1;
 
-    public SilenceClip(Seq seq, Silence Silence, Clip parent)
+    public SilenceClip(Seq seq, Silence silence, Clip parent)
         {
-        super(seq, Silence, parent);
+        super(seq, silence, parent);
         rebuild();
         }
         
