@@ -25,7 +25,7 @@ import java.awt.datatransfer.*;
 
 public class AutomatonButton extends MotifButton
     {
-    public static final Color START_COLOR = new Color(64, 200, 64); // new Color(0x20, 0xFF, 0x20);
+    public static final Color START_COLOR = new Color(128, 200, 128); // new Color(0x20, 0xFF, 0x20);
     public static final int MINIMUM_SIZE = 80;
     int at = -1;                // default
     
