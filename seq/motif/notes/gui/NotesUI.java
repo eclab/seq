@@ -181,6 +181,16 @@ public class NotesUI extends MotifUI
             });
         menu.add(stretchTime);
                 
+        JMenuItem shiftTime = new JMenuItem("Shift Time...");
+        shiftTime.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doShiftTime();
+                }
+            });
+        menu.add(shiftTime);
+                
         JMenuItem trimTime = new JMenuItem("Trim Blank Time from Start");
         trimTime.addActionListener(new ActionListener()
             {
@@ -374,12 +384,32 @@ public class NotesUI extends MotifUI
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
         boolean hasRange = false;
         boolean ruler = getRuler().getHasRange();
-                
+        
         if (events.size() > 0)
             {
             hasRange = true;
             }
 
+	    boolean all = false;
+        if ((events.size() == 0) && !ruler)		// do all
+        	{
+        	if (sequi.showSimpleConfirm("Quantize All Events?", "You have no events selected, and no ruler range.\nQuantize all events in the sequence?", "Quantize All"))
+        		{
+             	ReentrantLock lock = seq.getLock();
+            	lock.lock();
+	       		try
+        			{
+        			events = notes.getEvents();
+        			}
+        		finally
+        			{
+        			lock.unlock();
+        			}
+        		all = true;
+        		}
+        	else return;
+        	}
+                
         String[] names = { "To Nearest", "Note Ends", "Non-Note Events", "Bias" };
         JComboBox toNearest = new JComboBox(Notes.QUANTIZE_STRINGS);
         toNearest.setSelectedIndex(Prefs.getLastInt("QuantizeTo", 1));
@@ -391,7 +421,7 @@ public class NotesUI extends MotifUI
             }
         noteEnds.setSelected(Prefs.getLastBoolean("QuantizeEnds", true));
         JCheckBox nonNoteEvents = new JCheckBox("");
-        if (hasRange && !ruler) // They're selected
+        if (hasRange && !ruler && !all) // They're selected
             {
             nonNoteEvents.setEnabled(false);
             }
@@ -405,7 +435,7 @@ public class NotesUI extends MotifUI
             };
 
         JComponent[] components = new JComponent[] { toNearest, noteEnds, nonNoteEvents, bias.getLabelledDial("-0.0000") };
-        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Quantize", "Cancel and Set", "Cancel" }, 0, "Quantize", "Enter Quantization Settings");
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Quantize All" : "Quantize", "Cancel and Set", "Cancel" }, 0, all ? "Quantize All" : "Quantize", "Enter Quantization Settings");
         
         if (result == 0)
             {
@@ -449,7 +479,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-        String[] names = { "Note Lengths", "Non-Note Events", "Noise" };
+ 	    boolean all = false;
+        if ((events.size() == 0) && !ruler)		// do all
+        	{
+        	if (sequi.showSimpleConfirm("Randomize Time for All Events?", "You have no events selected, and no ruler range.\nRandomize the time for all events in the sequence?", "Randomize Time for All"))
+        		{
+             	ReentrantLock lock = seq.getLock();
+            	lock.lock();
+	       		try
+        			{
+        			events = notes.getEvents();
+        			}
+        		finally
+        			{
+        			lock.unlock();
+        			}
+        		all = true;
+        		}
+        	else return;
+        	}
+                
+       String[] names = { "Note Lengths", "Non-Note Events", "Noise" };
         JCheckBox noteLengths = new JCheckBox("");
         if (gridui.getSelectedSource() != GridUI.SELECTED_SOURCE_NOTES &&
             gridui.getSelectedSource() != GridUI.SELECTED_SOURCE_NONE)
@@ -458,7 +508,7 @@ public class NotesUI extends MotifUI
             }
         noteLengths.setSelected(Prefs.getLastBoolean("RandomizeTimeLengths", true));
         JCheckBox nonNoteEvents = new JCheckBox("");
-        if (hasRange && !ruler) // They're selected
+        if (hasRange && !ruler && !all) // They're selected
             {
             nonNoteEvents.setEnabled(false);
             }
@@ -471,7 +521,7 @@ public class NotesUI extends MotifUI
             public String map(double val) { return String.format("%.4f", val); }
             };
         JComponent[] components = new JComponent[] { noteLengths, nonNoteEvents, variance.getLabelledDial("0.0000") };
-        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Randomize", "Cancel" }, 0, "Randomize", "Enter Time Randomization Settings");
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Randomize All" : "Randomize", "Cancel" }, 0, all ? "Randomize Time for All" : "Randomize Time", "Enter Time Randomization Settings");
         
         if (result == 0)
             {
@@ -513,7 +563,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-        String[] names = { "Release Velocities", "Noise" };
+  	    boolean all = false;
+        if ((events.size() == 0) && !ruler)		// do all
+        	{
+        	if (sequi.showSimpleConfirm("Randomize Velocity for All Events?", "You have no events selected, and no ruler range.\nRandomize the time for all events in the sequence?", "Randomize Velocity for All"))
+        		{
+             	ReentrantLock lock = seq.getLock();
+            	lock.lock();
+	       		try
+        			{
+        			events = notes.getEvents();
+        			}
+        		finally
+        			{
+        			lock.unlock();
+        			}
+        		all = true;
+        		}
+        	else return;
+        	}
+                
+       String[] names = { "Release Velocities", "Noise" };
         JCheckBox noteReleases = new JCheckBox("");
         noteReleases.setSelected(Prefs.getLastBoolean("RandomizeVelocityReleases", true));
         SmallDial variance = new SmallDial(Prefs.getLastDouble("RandomizeVelocityVariance", 0.1))
@@ -524,7 +594,7 @@ public class NotesUI extends MotifUI
             public String map(double val) { return String.format("%.4f", val); }
             };
         JComponent[] components = new JComponent[] { noteReleases, variance.getLabelledDial("0.0000") };
-        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Randomize", "Cancel" }, 0, "Randomize", "Enter Velocity Randomization Settings");
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Randomize All" : "Randomize", "Cancel" }, 0, all ? "Randomize Velocity for All" : "Randomize Velocity", "Enter Velocity Randomization Settings");
         
         if (result == 0)
             {
@@ -564,7 +634,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-        String[] names = { "Velocity" };
+    	    boolean all = false;
+        if ((events.size() == 0) && !ruler)		// do all
+        	{
+        	if (sequi.showSimpleConfirm("Set Velocity for All Events?", "You have no events selected, and no ruler range.\nSet the time for all events in the sequence?", "Set Velocity for All"))
+        		{
+             	ReentrantLock lock = seq.getLock();
+            	lock.lock();
+	       		try
+        			{
+        			events = notes.getEvents();
+        			}
+        		finally
+        			{
+        			lock.unlock();
+        			}
+        		all = true;
+        		}
+        	else return;
+        	}
+                
+      String[] names = { "Velocity" };
         SmallDial velocity = new SmallDial(Prefs.getLastDouble("SetVelocity", 1.0))
             {
             double value;
@@ -573,7 +663,7 @@ public class NotesUI extends MotifUI
             public String map(double val) { return "" + (int)((val * 126) + 1); }
             };
         JComponent[] components = new JComponent[] { velocity.getLabelledDial("126") };
-        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Set", "Cancel" }, 0, "Set", "Enter Velocity Settings");
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Set All" : "Set", "Cancel" }, 0, all ? "Randomize Velocity for All" : "Set Velocity", "Enter Velocity Settings");
         
         if (result == 0)
             {
@@ -613,7 +703,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-        String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch" };
+   	    boolean all = false;
+        if ((events.size() == 0) && !ruler)		// do all
+        	{
+        	if (sequi.showSimpleConfirm("Filter All Events?", "You have no events selected, and no ruler range.\nFilter all events in the sequence?", "Filter All"))
+        		{
+             	ReentrantLock lock = seq.getLock();
+            	lock.lock();
+	       		try
+        			{
+        			events = notes.getEvents();
+        			}
+        		finally
+        			{
+        			lock.unlock();
+        			}
+        		all = true;
+        		}
+        	else return;
+        	}
+                
+       String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch" };
         JCheckBox removeNotes = new JCheckBox("");
         JCheckBox removeBend = new JCheckBox("");
         JCheckBox removeCC = new JCheckBox("");
@@ -629,7 +739,7 @@ public class NotesUI extends MotifUI
         removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveRPN", false));
         
         JComponent[] components = new JComponent[] { removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch};
-        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Filter", "Cancel" }, 0, "Filter", "Enter Filter Settings");
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Filter All" : "Filter", "Cancel" }, 0, all ? "Filter All" : "Filter", "Enter Filter Settings");
         
         if (result == 0)
             {
@@ -683,17 +793,123 @@ public class NotesUI extends MotifUI
         
 
     /** Stretches the time for all or a range of notes or events such that they fit in the provided space.  */
+    public void doShiftTime()
+        {
+        ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
+        boolean hasRange = false;
+        boolean ruler = getRuler().getHasRange();
+
+        if (events.size() > 0)
+            {
+            hasRange = true;
+            }
+        
+   	    boolean all = false;
+        if ((events.size() == 0) && !ruler)		// do all
+        	{
+        	if (sequi.showSimpleConfirm("Shift Time for All Events?", "You have no events selected, and no ruler range.\nShift the time for all events in the sequence?", "Shift Time for All"))
+        		{
+             	ReentrantLock lock = seq.getLock();
+            	lock.lock();
+	       		try
+        			{
+        			events = notes.getEvents();
+        			}
+        		finally
+        			{
+        			lock.unlock();
+        			}
+        		all = true;
+        		}
+        	else return;
+        	}
+        
+        // This is stupid
+        final int[] byTime = { Prefs.getLastInt("ShiftTimeBy", 0) };
+        String[] names = { "By", "Backward" };
+        TimeDisplay by = new TimeDisplay(byTime[0], seq)
+        	{
+        	protected int getTime()
+        		{
+        		return byTime[0];
+        		}
+        	protected void setTime(int time)
+        		{
+        		byTime[0] = time;
+        		}
+        	};
+        	
+        JCheckBox backward = new JCheckBox();
+        backward.setSelected(Prefs.getLastBoolean("ShiftTimeBackward", false));
+
+		JComponent[] components = { by, backward };
+        
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Shift All" : "Shift", "Cancel" }, 0, all ? "Shift Time for All" : "Shift Time", "Enter Time Shift Settings");
+        
+        if (result == 0)
+            {
+            seq.push();
+            int _by = byTime[0] * (backward.isSelected() ? -1 : +1 );
+        
+            seq.push();
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                if (all)
+                	{
+                	notes.shift(_by);
+                	}
+                else
+                	{
+                	notes.shift(events, _by);		// will sort
+                	}
+                }
+            finally
+                {
+                lock.unlock();
+                }
+        
+            Prefs.setLastInt("ShiftTimeBy", byTime[0]);
+            Prefs.setLastBoolean("ShiftTimeBackward", backward.isSelected());
+            
+            rebuild();
+            }
+        }
+
+    /** Stretches the time for all or a range of notes or events such that they fit in the provided space.  */
     public void doStretchTime()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
         boolean hasRange = false;
+        boolean ruler = getRuler().getHasRange();
 
         if (events.size() > 0)
             {
             hasRange = true;
             }
                 
-        String[] names = { "From", "To"};
+    	    boolean all = false;
+        if ((events.size() == 0) && !ruler)		// do all
+        	{
+        	if (sequi.showSimpleConfirm("Stretch Time for All Events?", "You have no events selected, and no ruler range.\nStretch the time for all events in the sequence?", "Stretch Time for All"))
+        		{
+             	ReentrantLock lock = seq.getLock();
+            	lock.lock();
+	       		try
+        			{
+        			events = notes.getEvents();
+        			}
+        		finally
+        			{
+        			lock.unlock();
+        			}
+        		all = true;
+        		}
+        	else return;
+        	}
+                
+       String[] names = { "From", "To"};
         SmallDial from = new SmallDial(Prefs.getLastDouble("StretchTimeFrom", 0.5))
             {
             double value;
@@ -712,7 +928,7 @@ public class NotesUI extends MotifUI
 
 
         JComponent[] components = new JComponent[] { from.getLabelledDial("32"), to.getLabelledDial("32"), };
-        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  "Stretch", "Cancel" }, 0, "Stretch Time", "Enter Stretch Settings");
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Stretch All" : "Stretch", "Cancel" }, 0, all ? "Stretch Time for All" : "Stretch Time", "Enter Stretch Settings");
         
         if (result == 0)
             {
