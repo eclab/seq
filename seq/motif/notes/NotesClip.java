@@ -96,6 +96,12 @@ public class NotesClip extends Clip
         // Move the recorded notes over 
         Notes notes = (Notes) getMotif();
         ArrayList<Notes.Event> recording = notes.getRecording();
+
+				for(Notes.Event evt : recording)
+					{
+					System.err.println(evt);
+					}
+
         if (!recording.isEmpty())
             {
             if (Prefs.getLastBoolean("QuantizeOnRecord", false))
@@ -107,10 +113,14 @@ public class NotesClip extends Clip
                     Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5));
                 }
                 
-            boolean result = notes.setEvents(recording);
             final SeqUI sequi = seq.getSeqUI();
-            if (result)
-                {
+            int integration = notes.getRecordIntegration();
+            boolean[] error = new boolean[1];
+
+            recording = notes.parseEvents(recording, error);  // parse NRPN/RPN maybe
+            
+            if (error[0])
+            	{
                 SwingUtilities.invokeLater(new Runnable()
                     {
                     public void run()
@@ -119,7 +129,22 @@ public class NotesClip extends Clip
                             "There were errors in converting certain CC messages to NRPN or RPN.\nThese CC messages will be removed.");
                         }
                     });
-                }
+            	}
+        
+        	// Now integrate
+            if (integration == Notes.INTEGRATE_REPLACE)	// replace all events
+				{
+				notes.setEvents(recording);
+				}
+			else if (integration == Notes.INTEGRATE_OVERWRITE)	// overwrite same-time events
+				{
+				notes.overwrite(recording, true, true);
+				}
+			else	// integration == Notes.INTEGRATE_MERGE
+				{
+				notes.merge(recording);
+				}
+
             notes.clearRecording();
             updateIndex();
             setDidRecord(true);
@@ -195,6 +220,7 @@ public class NotesClip extends Clip
                 for(int i = 0; i < messages.length; i++)
                     {
                     MidiMessage message = messages[i];
+                    System.err.println("Message " + i + " : " + Midi.format(message));
                     if (message instanceof ShortMessage)
                         {
                         ShortMessage shortmessage = (ShortMessage)message;

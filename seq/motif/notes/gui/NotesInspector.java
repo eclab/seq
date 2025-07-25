@@ -28,6 +28,7 @@ public class NotesInspector extends WidgetList
     WidgetList recordList1;
     JCheckBox armed;
     JCheckBox echo;
+    JComboBox recordIntegration;
     JCheckBox recordBend;
     JCheckBox recordCC;
     JCheckBox recordAftertouch;
@@ -91,7 +92,9 @@ public class NotesInspector extends WidgetList
 
     public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
     public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
-        
+    
+    public static final String[] RECORD_INTEGRATION_STRINGS = { "Replace All", "Overwrite", "Merge" };
+    
     public NotesInspector(Seq seq, Notes notes, NotesUI notesui)
         {
         this.seq = seq;
@@ -213,6 +216,20 @@ public class NotesInspector extends WidgetList
                         }
                     }
                 });
+
+            recordIntegration = new JComboBox(RECORD_INTEGRATION_STRINGS);
+            recordIntegration.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setRecordIntegration(recordIntegration.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+            recordIntegration.setSelectedIndex(notes.getRecordIntegration());
 
             echo = new JCheckBox();
             echo.setSelected(notes.getEcho());
@@ -504,9 +521,9 @@ public class NotesInspector extends WidgetList
                 echo,
                 });
                 
-        recordList1 = new WidgetList(new String[] { "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN",
+        recordList1 = new WidgetList(new String[] { "Integration", "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN",
                 "Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
-            new JComponent[] { recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
+            new JComponent[] { recordIntegration, recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
         
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
         DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);

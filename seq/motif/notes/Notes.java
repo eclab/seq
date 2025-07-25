@@ -759,7 +759,19 @@ public class Notes extends Motif
     boolean log = true;
     // The end marker for the Notes
     int end = 0;
+    
+    public static final int INTEGRATE_REPLACE = 0;
+    public static final int INTEGRATE_OVERWRITE = 1;
+    public static final int INTEGRATE_MERGE = 2;
+    
+    int recordIntegration = INTEGRATE_REPLACE;
 
+	/** Returns the recorded note integration method. */
+	public int getRecordIntegration() { return recordIntegration; }
+	
+	/** Sets the recorded note integration method. */
+	public void setRecordIntegration(int val) { recordIntegration = val; Prefs.setLastInt("seq.motif.notes.Notes.recordintegration", val); }
+	
     /** Returns whether pitch bend is displayed logarithmicaly */
     public boolean getLog() { return log; }
     /** Sets whether pitch bend is displayed logarithmicaly */
@@ -886,6 +898,7 @@ public class Notes extends Motif
         quantizeNoteEnds = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNoteEnds", true); 
         quantizeNonNotes = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNonNotes", true); 
         quantizeBias = Prefs.getLastDouble("seq.motif.notes.Notes.quantizeBias", 0.5); 
+        recordIntegration = Prefs.getLastInt("seq.motif.notes.Notes.recordIntegration", INTEGRATE_REPLACE); 
         }
 
     /** Returns all events */
@@ -983,23 +996,26 @@ public class Notes extends Motif
             }
         return all;
         }
-    
-    /** Sets the events, converting CC to NRPN/RPN if we are set up to do that.  */
-    public boolean setEvents(ArrayList<Event> val) 
-        {
+        
+    /** Parses the given events, returning new ones.  error[0] is set to TRUE
+    	if there was an error, else it is set to FALSE. */
+    public ArrayList<Event> parseEvents(ArrayList<Event> val, boolean[] error)
+    	{
         if (getConvertNRPNRPN())
             {
             EventParser parser = new EventParser(val, true);
             events = parser.getParsedEvents();
-            computeMaxTime();     
-            return parser.getError();    
+            error[0] = parser.getError();
+            return events;
             }
-        else
-            {
-            events = val;
-            computeMaxTime();     
-            return true;    
-            }
+        else return val;
+    	}
+    
+    /** Sets the events, converting CC to NRPN/RPN if we are set up to do that.  */
+    public void setEvents(ArrayList<Event> val) 
+        {
+		events = val;
+		computeMaxTime();     
         }
 
     /** Erases recorded events.  */
@@ -1319,7 +1335,20 @@ public class Notes extends Motif
             }
         }
 
-    // Shifts the provided events in time so that the first event's onset is at timestep 0.
+	/** Shifts all events in time by the given number of steps. */
+	public void shift(int by)
+		{
+		shift(events, by, false);
+		}
+		
+
+	/** Shifts the provided events in time by the given number of steps, and sorts all events afterwards */
+	public void shift(ArrayList<Event> events, int by)
+		{
+		shift(events, by, true);
+		}
+		
+    // Shifts the provided events in time by the given number of steps and optionally sorts afterwards
     void shift(ArrayList<Event> events, int by, boolean sort)
         {
         if (events.size() == 0) return;
@@ -1335,7 +1364,7 @@ public class Notes extends Motif
             /// FIXME: we don't have an upper bound
             }
         // Need to sort
-        sortEvents(events);
+        if (sort) sortEvents(events);
         }
         
     /** Transposes the given events by the provided semitones. */
