@@ -687,55 +687,6 @@ public class NotesInspector extends WidgetList
             }
         }
 
-/*
-  public void updateFull(int param)
-  {
-  String full = null;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try 
-  { 
-  int type = notes.getMIDIParameterType(param);
-  int midiParamMSB = notes.getMIDIParameterMSB(param);
-  int midiParamLSB = notes.getMIDIParameterLSB(param);
-  if (type == Notes.NO_MIDI_PARAMETER)
-  {
-  full = "[None]";
-  }
-  else if (type == Notes.BEND)
-  {
-  full = "Bend";
-  }
-  else if (type == Notes.CC_7)
-  {
-  full = "" + midiParamMSB + " " + CC_7_NAMES[midiParamMSB];
-  }
-  else if (type == Notes.CC_14)
-  {
-  if (midiParamMSB >= 32) // uh oh
-  full = "[Invalid]";
-  else
-  full = "" + midiParamMSB + " " + CC_14_NAMES[midiParamMSB];
-  }
-  else if (type == Notes.NRPN)    // it's NRPN
-  {
-  full = "" + (midiParamMSB * 128 + midiParamLSB);
-  }
-  else                    // It's RPN
-  {
-  int p = midiParamMSB * 128 + midiParamLSB;
-  if (p == 16383)
-  full = "16383 RPN NULL";
-  else if (p < RPN_NAMES.length)
-  full = "" + (p) + " " + RPN_NAMES[p];
-  else full = "" + (p);
-  }
-  }
-  finally { lock.unlock(); }
-  combined[param].setText(full);
-  }
-*/
-            
     public void revise()
         {
         Seq old = seq;
@@ -756,13 +707,6 @@ public class NotesInspector extends WidgetList
             quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
             convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
             logBend.setSelected(notes.getLog());
-            
-            /*
-              for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-              {
-              parameterType[i].setSelectedIndex(notes.getMIDIParameterType(i));
-              }
-            */
             
             quantizeTo.setSelectedIndex(notes.getQuantizeTo());
             for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
