@@ -236,8 +236,8 @@ George Mason University\\
 sean@cs.gmu.edu}\\
 \\
 \\
-\large\rm {\bf Seq Version 3}\\
-\large\rm {\bf Manual Version 3.0}\\
+\large\rm {\bf Seq Version 4}\\
+\large\rm {\bf Manual Version 4.0}\\
 \large\rm  July 2025\\
 
 \vspace{5in}
@@ -1038,16 +1038,74 @@ To use a Novation LaunchPad to select Children, you specify it in the {\bf Contr
 
 \end{itemize}
 
+\clearpage
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=6.5in]{Arpeggio}
+\vspace{-2em}
+\caption{Arpeggio Motif.}
+\label{arpeggio}
+\end{figure}
+
+\subsection{Arpeggio}
+
+Arpeggio doesn't make any sound on its own, nor does it control the order or time of play of its children.  Rather, it is a {\it MIDI FIlter}: it modifies the MIDI it receives from its (only) child.  Specifically, it interprets the MIDI coming from its child as chords, and replaces them with arpeggios, just like an arpeggiator on a synthesizer.
+
+\paragraph{Source of Chords and Emitting MIDI}
+
+To use Arpeggio, you have to provide it with a source of chords.  Usually this will be a {\bf Notes} motif, or perhaps something that contains Notes motifs as children.  You drag your chord source from the Motif List into the single slot at the top of the Arpeggio.
+
+When a chord source like Notes emits MIDI, it does so out some {\bf MIDI Device}.  You can instruct Arpeggio to intercept {\it all} MIDI Note data from its child, and use it to make arpeggios, by checking {\bf Omni} in the Inspector.  Otherwise Arpeggio will only intercept MIDI Note data whose device is the same as {\bf Out} (set in the Inspector).
+
+Arpeggio itself emits MIDI in the form of arpeggios. {\bf Out} specifies the MIDI output device that it will send its arpeggios to.
+
+\paragraph{Step Rate}
+
+The Step Rate governs the speed of the arpeggio being played.  An arpeggio is a sequence of notes, each played in turn for the same amount of time.  The amount of time of a single not (or {\it step}) is specified by the {\bf Step Rate}.  By default this value is a 16th note.  Don't set the Step Rate to 0, which is impossible: it will instead assume you meant 1 (which is ridiculously fast).
 
 
+\paragraph{Arpeggio Types}
 
+Arpeggio can make many kinds of arpeggios, which you specify with {\bf Arpeggio Type} in its Inspector:
+
+\begin{itemize}
+\item {\bf Up} Arpeggiates the chord upwards. 
+\item {\bf Down} Arpeggiates the chord downwards. 
+\item {\bf Up-Down} Arpeggiates the chord upwards, then downwards but without the top note.  For example, if Arpeggio was provided the chord C E G A, it would repeat the arpeggio C, E, G, A, G, E.
+\item {\bf Up-Down-Plus} Arpeggiates the chord upwards, then downwards with the root note repeated at top.  For example, if Arpeggio was provided the chord C E G A, it would repeat the arpeggio C, E, G, A, C2, A, G, E.  (Where C2 was one octave above C).  This is more useful than {\bf Up-Down} for arpeggios with multiple octaves (see below).  
+\item {\bf Random} Arpeggiates the chord by playing its notes in random order.  Random attempts to not play the same note twice when reasonable. 
+\item {\bf Pattern} Arpeggiates the chord according to the provided pattern.  See {\bf Patterns} below.   The {\bf Octaves} option is ignored.
+\end{itemize}
+
+An arpeggio is played for some number of {\bf Octaves}.  For example, if you set Octaves to 2, and your chord is C E G A, and you're playing an Up arpeggio, it'd repeat C E G A C2 E2 A2 G2, where C2, E2, A2, and G2 are one octave above C, E, G, and A respectively.
+
+\paragraph{Pattern Arpeggios}
+
+Arpeggios get fun when you start drawing patterns in the grid at the center of the window.  Each column is a step: you can have patterns up to 32 steps long, but you probably will want a shorter pattern: set the length of your pattern, in steps, with the {\bf Pattern Length} dial in the Inspector.
+
+You instruct the Arpeggio to play a note at a given step by clicking on a square to highlight it.
+
+The blue line is the {\it Root Marker}.  The square directly above it represents the root note in whatever chord is provided.  The square above {\it that} represents the second note in the chord, and so on.  When you run out of notes, the next squares represent the notes in the chord, repeated one octave above.
+
+For example, if your incoming chord was C E G A, then the first four squares in a column, above the root marker, would represent C, E, G, and A.  The next four squares would represent C1, E1, G1, and A1 (one octave above).  The next would represent C2, D2, G2, and A2, and so on
+
+You can play notes {\it below} the chord as well!  The squares {\it below} the Root Marker represent notes one or more octaves below the chord.  For example, the first four squares below the Root Marker would be (going down) A -1, G -1, E -1, and C -1, which are all one octave below the chord.  The next four squares below them would be A -2, G -2, E -2, and C -2, and so on.
+
+You can play more than one note in the same step: just click multiple squares.  You can also play a rest: just have a column with no squares selected in it.  \footnote{One thing you can't do at present is a tie\,---\,lengthening a note length\,---but we might improve Arpeggio to allow that in the future.}
+
+\paragraph{Resetting Arpeggios}
+
+When the underlying child says it has finished, Arpeggio will tell the same to its parent.  Arpeggios are always reset when the parent resets or loops the Arpeggio.  Also by default Arpeggios are reset when {\it all} the old notes are released and entirely new ones are played. As long as at least one note is being played, the Arpeggio won't reset.
+
+If you want to override this chord reset behavior, so that Arpeggio doesn't reset even when all notes are released, just uncheck {\bf New Chord Reset}.
 
 \clearpage\subsection{Motifs Planned for the Future}
 
 At present we have four motifs planned:
 
 \begin{itemize}
-\item A Motif for individual notes, chords, or arpeggios
+\item A Motif for individual notes, or chords
 \item A Motif which implements functions that operates on Parameters, such as LFOs or Envelopes, Random Sequences, MIDI CC.  {\bf \color{red} We have this partially implemented in Seq (the ``Modulation'' motif) but it's not working yet.}
 \item Possibly a Motif which performs more complex MIDI Effects on incoming MIDI data
 \item Possibly a Motif which does Live Coding using some programming language
