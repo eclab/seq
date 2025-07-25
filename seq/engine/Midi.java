@@ -924,11 +924,15 @@ public class Midi
                 }         
             else if (result == 0)           // "Set"
                 {
+                // we ALWAYS change because devices can be plugged in and we want to set to them
+                // even though we don't frob any widget at all.
+                /*
                 if (!changed[0]) 
                     { 
                     Dialogs.enableMenuBar();
                     return old; 
                     }
+                */
                     
                 // we need to build a tuple
                                                                 
