@@ -140,20 +140,20 @@ public class ArpeggioUI extends MotifUI
     public void redraw(boolean inResponseToStep) 
         { 
         if (!inResponseToStep)
-        	{
-	        primaryScroll.repaint(); 
-	        }
+            {
+            primaryScroll.repaint(); 
+            }
         }
     
 
     public void buildInspectors(JScrollPane scroll)
         {
 /*
-        // Build the series child inspector holder
-        childOuter = new JPanel();
-        childOuter.setLayout(new BorderLayout());
-        childBorder = BorderFactory.createTitledBorder(null, "Child");
-        childOuter.setBorder(childBorder);
+// Build the series child inspector holder
+childOuter = new JPanel();
+childOuter.setLayout(new BorderLayout());
+childBorder = BorderFactory.createTitledBorder(null, "Child");
+childOuter.setBorder(childBorder);
 */
                 
         // Build the arpeggio inspector holder
@@ -191,148 +191,148 @@ public class ArpeggioUI extends MotifUI
         
         // yes, this is backwards
         for(int i = 0; i < Arpeggio.PATTERN_NOTES; i++)
-        	{
-        	for(int j = 0; j < Arpeggio.MAX_PATTERN_LENGTH; j++)
-        		{
-        		final int _i = i;
-        		final int _j = j;
-				JCheckBox button = new JCheckBox()
-					{
-					public void paintComponent(Graphics _g)
-						{
-						Graphics2D g = (Graphics2D) _g;
-						boolean state = false;
-						int length = 0;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try
-							{
-							Arpeggio arp = (Arpeggio)getMotif();
-							length = arp.getPatternLength();
-							state = arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1);			// note backwards
-							}
-						finally
-							{
-							lock.unlock();
-							}
-		
-						Rectangle bounds = getBounds();
-						bounds.x = 0;
-						bounds.y = 0;
-						g.setPaint(state ? (_j < length ? PATTERN_ON_COLOR : PATTERN_ON_DISABLED_COLOR) : PATTERN_OFF_COLOR);
-						g.fill(bounds);
+            {
+            for(int j = 0; j < Arpeggio.MAX_PATTERN_LENGTH; j++)
+                {
+                final int _i = i;
+                final int _j = j;
+                JCheckBox button = new JCheckBox()
+                    {
+                    public void paintComponent(Graphics _g)
+                        {
+                        Graphics2D g = (Graphics2D) _g;
+                        boolean state = false;
+                        int length = 0;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try
+                            {
+                            Arpeggio arp = (Arpeggio)getMotif();
+                            length = arp.getPatternLength();
+                            state = arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1);                    // note backwards
+                            }
+                        finally
+                            {
+                            lock.unlock();
+                            }
+                
+                        Rectangle bounds = getBounds();
+                        bounds.x = 0;
+                        bounds.y = 0;
+                        g.setPaint(state ? (_j < length ? PATTERN_ON_COLOR : PATTERN_ON_DISABLED_COLOR) : PATTERN_OFF_COLOR);
+                        g.fill(bounds);
 
-						if (_i  == Arpeggio.PATTERN_NOTES / 2)
-							{
-							g.setStroke(DIVIDER_STROKE);
-							g.setColor(PATTERN_DIVIDER_COLOR);
-							}
-						else
-							{
-							g.setStroke(PATTERN_STROKE);
-							g.setColor(PATTERN_BORDER_COLOR);
-							}
-						line.setLine(0, 0, bounds.width, 0);
-						g.draw(line);
-						
-						if (_j == length - 1)
-							{
-						g.setStroke(DIVIDER_STROKE);
-							g.setColor(PATTERN_END_COLOR);
-							line.setLine(bounds.width - 1, 0, bounds.width - 1, bounds.height);
-							}
-						else
-							{
-							g.setStroke(PATTERN_STROKE);
-							g.setColor(PATTERN_BORDER_COLOR);
-							line.setLine(bounds.width, 0, bounds.width, bounds.height);
-							}
-						g.draw(line);
-						}
-					};
-				button.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
-				button.setBorderPainted(true);
-				button.setOpaque(true);
-									
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try
-					{
-					Arpeggio arp = (Arpeggio)getMotif();
-					button.setSelected(arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1));
-					}
-				finally
-					{
-					lock.unlock();
-					}
-					
-				button.addActionListener(new ActionListener()
-					{
-					public void actionPerformed(ActionEvent e)
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try
-							{
-							Arpeggio arp = (Arpeggio)getMotif();
-							arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, button.isSelected());
-							}
-						finally
-							{
-							lock.unlock();
-							}
-						repaint();
-						}
-					});
-					
-				patternGrid.add(button);
+                        if (_i  == Arpeggio.PATTERN_NOTES / 2)
+                            {
+                            g.setStroke(DIVIDER_STROKE);
+                            g.setColor(PATTERN_DIVIDER_COLOR);
+                            }
+                        else
+                            {
+                            g.setStroke(PATTERN_STROKE);
+                            g.setColor(PATTERN_BORDER_COLOR);
+                            }
+                        line.setLine(0, 0, bounds.width, 0);
+                        g.draw(line);
+                                                
+                        if (_j == length - 1)
+                            {
+                            g.setStroke(DIVIDER_STROKE);
+                            g.setColor(PATTERN_END_COLOR);
+                            line.setLine(bounds.width - 1, 0, bounds.width - 1, bounds.height);
+                            }
+                        else
+                            {
+                            g.setStroke(PATTERN_STROKE);
+                            g.setColor(PATTERN_BORDER_COLOR);
+                            line.setLine(bounds.width, 0, bounds.width, bounds.height);
+                            }
+                        g.draw(line);
+                        }
+                    };
+                button.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
+                button.setBorderPainted(true);
+                button.setOpaque(true);
+                                                                        
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    Arpeggio arp = (Arpeggio)getMotif();
+                    button.setSelected(arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1));
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                                        
+                button.addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try
+                            {
+                            Arpeggio arp = (Arpeggio)getMotif();
+                            arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, button.isSelected());
+                            }
+                        finally
+                            {
+                            lock.unlock();
+                            }
+                        repaint();
+                        }
+                    });
+                                        
+                patternGrid.add(button);
 
-				patternGrid.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, PATTERN_BORDER_COLOR));
-				
-        		}
-        	}
+                patternGrid.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, PATTERN_BORDER_COLOR));
+                                
+                }
+            }
 
-		JPanel one = new JPanel();
-		one.setBackground(BACKGROUND);
-		one.setLayout(new BorderLayout());
-		one.add(patternGrid, BorderLayout.CENTER);
+        JPanel one = new JPanel();
+        one.setBackground(BACKGROUND);
+        one.setLayout(new BorderLayout());
+        one.add(patternGrid, BorderLayout.CENTER);
         
-		JPanel two = new JPanel();
-		two.setBackground(BACKGROUND);
-		two.setLayout(new BorderLayout());
-		two.add(one, BorderLayout.CENTER);
-		
+        JPanel two = new JPanel();
+        two.setBackground(BACKGROUND);
+        two.setLayout(new BorderLayout());
+        two.add(one, BorderLayout.CENTER);
+                
         // Add headers
         JPanel topHeader = new JPanel();
         topHeader.setLayout(new GridLayout(1, Arpeggio.MAX_PATTERN_LENGTH));
         for(int i = 0; i < Arpeggio.MAX_PATTERN_LENGTH; i++)
-        	{
-        	JLabel label = new JLabel("" + (i + 1), SwingConstants.CENTER);
-        	label.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
-        	topHeader.add(label);
-        	}
-		one.add(topHeader, BorderLayout.NORTH);
+            {
+            JLabel label = new JLabel("" + (i + 1), SwingConstants.CENTER);
+            label.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
+            topHeader.add(label);
+            }
+        one.add(topHeader, BorderLayout.NORTH);
 
         /*
-        JPanel leftHeader = new JPanel();
-        leftHeader.setLayout(new GridLayout(Arpeggio.PATTERN_NOTES + 1, 1));
-        JLabel corner = new JLabel(" ");
-        corner.setBackground(BACKGROUND);
-        corner.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
-        leftHeader.add(corner);
-        for(int i = 0; i < Arpeggio.PATTERN_NOTES; i++)
-        	{
-        	JLabel label = new JLabel("" + (i + 1));
-        	label.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
-        	leftHeader.add(label);
-        	}
-		two.add(leftHeader, BorderLayout.WEST);
-		*/
-		
-		JPanel three = new JPanel();
-		three.setBackground(BACKGROUND);
-		three.setLayout(new BorderLayout());
-		three.add(two, BorderLayout.NORTH);
+          JPanel leftHeader = new JPanel();
+          leftHeader.setLayout(new GridLayout(Arpeggio.PATTERN_NOTES + 1, 1));
+          JLabel corner = new JLabel(" ");
+          corner.setBackground(BACKGROUND);
+          corner.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
+          leftHeader.add(corner);
+          for(int i = 0; i < Arpeggio.PATTERN_NOTES; i++)
+          {
+          JLabel label = new JLabel("" + (i + 1));
+          label.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
+          leftHeader.add(label);
+          }
+          two.add(leftHeader, BorderLayout.WEST);
+        */
+                
+        JPanel three = new JPanel();
+        three.setBackground(BACKGROUND);
+        three.setLayout(new BorderLayout());
+        three.add(two, BorderLayout.NORTH);
 
         outer.add(three, BorderLayout.WEST);
         }
@@ -375,52 +375,52 @@ public class ArpeggioUI extends MotifUI
 
 
 /*
-    JPanel stub = new JPanel();
-    public void moveChild(ArpeggioButton button, int to)
-        {
-        // Where is the button?
-        Component[] c = arpeggioGrid.getComponents();
-        int from = -1;
-        for(int i = 0; i < c.length; i++)
-            {
-            if (c[i] == button) { from = i; break; }
-            }
-        if (from != -1)
-            {
-            if (from == to) return; // duh
-            ArrayList<Motif.Child> children = null;
-            seq.getLock().lock();
-            try
-                {
-                arpeggio.swapChild(from, to);
-                }
-            finally
-                {
-                seq.getLock().unlock();
-                }
+  JPanel stub = new JPanel();
+  public void moveChild(ArpeggioButton button, int to)
+  {
+  // Where is the button?
+  Component[] c = arpeggioGrid.getComponents();
+  int from = -1;
+  for(int i = 0; i < c.length; i++)
+  {
+  if (c[i] == button) { from = i; break; }
+  }
+  if (from != -1)
+  {
+  if (from == to) return; // duh
+  ArrayList<Motif.Child> children = null;
+  seq.getLock().lock();
+  try
+  {
+  arpeggio.swapChild(from, to);
+  }
+  finally
+  {
+  seq.getLock().unlock();
+  }
             
-            // To swap, to be careful we'll first remove TO and replace with
-            // a stub.  Then we'll remove FROM and replace with TO.  Then we'll
-            // remove the stub and replace with FROM.
-            ArpeggioButton toButton = (ArpeggioButton)c[to];
-            arpeggioGrid.remove(to);
-            arpeggioGrid.add(stub, to);
+  // To swap, to be careful we'll first remove TO and replace with
+  // a stub.  Then we'll remove FROM and replace with TO.  Then we'll
+  // remove the stub and replace with FROM.
+  ArpeggioButton toButton = (ArpeggioButton)c[to];
+  arpeggioGrid.remove(to);
+  arpeggioGrid.add(stub, to);
             
-            arpeggioGrid.remove(from);
-            arpeggioGrid.add(toButton, from);
+  arpeggioGrid.remove(from);
+  arpeggioGrid.add(toButton, from);
             
-            arpeggioGrid.remove(to);
-            arpeggioGrid.add(button, to);
+  arpeggioGrid.remove(to);
+  arpeggioGrid.add(button, to);
             
-            button.setAt(to);
-            toButton.setAt(from);
+  button.setAt(to);
+  toButton.setAt(from);
               
-            select(button);
-            sequi.getMotifList().rebuildClipsForMotif(getMotif());
-            arpeggioGrid.revalidate();
-            }
-        else System.err.println("ArpeggioUI.moveChild: button not in list");
-        }
+  select(button);
+  sequi.getMotifList().rebuildClipsForMotif(getMotif());
+  arpeggioGrid.revalidate();
+  }
+  else System.err.println("ArpeggioUI.moveChild: button not in list");
+  }
 */
 
     public void doRemove()
@@ -523,38 +523,38 @@ public class ArpeggioUI extends MotifUI
         }
     
 /*
-    public void setChildInspector(ArpeggioChildInspector inspector)
-        {
-        childInspector = inspector;
-        childOuter.removeAll();
-        if (inspector!=null) 
-            {
-            childOuter.add(inspector, BorderLayout.NORTH);
-            childBorder.setTitle("Child");
-            }
-        else
-            {
-            childBorder.setTitle("Empty");
-            }
+  public void setChildInspector(ArpeggioChildInspector inspector)
+  {
+  childInspector = inspector;
+  childOuter.removeAll();
+  if (inspector!=null) 
+  {
+  childOuter.add(inspector, BorderLayout.NORTH);
+  childBorder.setTitle("Child");
+  }
+  else
+  {
+  childBorder.setTitle("Empty");
+  }
 
-        childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-        childOuter.setBorder(childBorder);
-        if (inspector!=null) inspector.revise();
-        revalidate();
-        }
- */
+  childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+  childOuter.setBorder(childBorder);
+  if (inspector!=null) inspector.revise();
+  revalidate();
+  }
+*/
 
 /*
-    public void revise()
-        {
-        if (childInspector != null) 
-            {
-            childBorder.setTitle("Child (" + childInspector.getAt() + ")");
-            childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-            childOuter.setBorder(childBorder);
-            childInspector.revise();
-            }
-        }
+  public void revise()
+  {
+  if (childInspector != null) 
+  {
+  childBorder.setTitle("Child (" + childInspector.getAt() + ")");
+  childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+  childOuter.setBorder(childBorder);
+  childInspector.revise();
+  }
+  }
 */
 
 

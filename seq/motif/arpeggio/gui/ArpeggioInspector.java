@@ -22,9 +22,9 @@ public class ArpeggioInspector extends WidgetList
 
     StringField name;
     JComboBox out;
-	JCheckBox omni;
-	JCheckBox newChordReset;
-	JComboBox arp;
+    JCheckBox omni;
+    JCheckBox newChordReset;
+    JComboBox arp;
     SmallDial length;
     SmallDial octaves;
     TimeDisplay rate;
@@ -128,17 +128,17 @@ public class ArpeggioInspector extends WidgetList
                 });
 
 
-             octaves = new SmallDial((arpeggio.getOctaves() - 1) / ((double)Arpeggio.MAX_OCTAVES - 1))
+            octaves = new SmallDial((arpeggio.getOctaves() - 1) / ((double)Arpeggio.MAX_OCTAVES - 1))
                 {
-				protected String map(double val) 
-					{
-					return "" + (int)(val * ((double)Arpeggio.MAX_OCTAVES - 1) + 1);
-					}
+                protected String map(double val) 
+                    {
+                    return "" + (int)(val * ((double)Arpeggio.MAX_OCTAVES - 1) + 1);
+                    }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                   try { return (arpeggio.getOctaves() - 1) / ((double)Arpeggio.MAX_OCTAVES - 1); }
+                    try { return (arpeggio.getOctaves() - 1) / ((double)Arpeggio.MAX_OCTAVES - 1); }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -152,17 +152,17 @@ public class ArpeggioInspector extends WidgetList
                     }
                 };
 
-             length = new SmallDial((arpeggio.getPatternLength() - 1) / ((double)Arpeggio.MAX_PATTERN_LENGTH - 1))
+            length = new SmallDial((arpeggio.getPatternLength() - 1) / ((double)Arpeggio.MAX_PATTERN_LENGTH - 1))
                 {
-				protected String map(double val) 
-					{
-					return "" + (int)(val * ((double)Arpeggio.MAX_PATTERN_LENGTH - 1) + 1);
-					}
+                protected String map(double val) 
+                    {
+                    return "" + (int)(val * ((double)Arpeggio.MAX_PATTERN_LENGTH - 1) + 1);
+                    }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                   try { return (arpeggio.getPatternLength() - 1) / ((double)Arpeggio.MAX_PATTERN_LENGTH - 1); }
+                    try { return (arpeggio.getPatternLength() - 1) / ((double)Arpeggio.MAX_PATTERN_LENGTH - 1); }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -176,9 +176,9 @@ public class ArpeggioInspector extends WidgetList
                     }
                 };
 
-		/// FIXME: TimeDisplay cannot have a minimum right now.  So we just hack it so
-		/// so that 0 = 1...
-		
+            /// FIXME: TimeDisplay cannot have a minimum right now.  So we just hack it so
+            /// so that 0 = 1...
+                
             rate = new TimeDisplay(arpeggio.getRate(), seq, true)
                 {
                 public int getTime()

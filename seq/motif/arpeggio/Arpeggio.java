@@ -32,7 +32,7 @@ public class Arpeggio extends Motif
     int patternLength = MAX_PATTERN_LENGTH;
     //int intercept;
     int out;
-    int rate = Seq.PPQ / 4;		// 16th notes
+    int rate = Seq.PPQ / 4;             // 16th notes
     boolean omni = true;
     boolean newChordReset = true;
     
@@ -85,24 +85,24 @@ public class Arpeggio extends Motif
         }
         
     public boolean isOmni()
-    	{
-    	return omni;
-    	}
-    	
+        {
+        return omni;
+        }
+        
     public void setOmni(boolean val)
-    	{
-    	omni = val;
-    	}
+        {
+        omni = val;
+        }
 
     public boolean getNewChordReset()
-    	{
-    	return newChordReset;
-    	}
-    	
+        {
+        return newChordReset;
+        }
+        
     public void setNewChordReset(boolean val)
-    	{
-    	newChordReset = val;
-    	}
+        {
+        newChordReset = val;
+        }
     
     public void setPatternLength(int length)
         {
@@ -156,7 +156,7 @@ public class Arpeggio extends Motif
 
     public void load(JSONObject obj) throws JSONException
         {
-        setArpeggioType(obj.optInt("arp", TYPE_UP));		// can't use "type", it's used in Motif.java
+        setArpeggioType(obj.optInt("arp", TYPE_UP));            // can't use "type", it's used in Motif.java
         setOctaves(obj.optInt("oct", 1));
         setRate(obj.optInt("rate", Seq.PPQ / 4));
         setPatternLength(obj.optInt("len", MAX_PATTERN_LENGTH));
@@ -183,32 +183,32 @@ public class Arpeggio extends Motif
             }
         }
         
-        public void save(JSONObject obj) throws JSONException
+    public void save(JSONObject obj) throws JSONException
+        {
+        obj.put("arp", getArpeggioType());          // can't use "type", it's used in Motif.java
+        obj.put("oct", getOctaves());
+        obj.put("len", getPatternLength());
+        obj.put("rate", getRate());
+        obj.put("omni", isOmni());
+        obj.put("out", getOut());
+        obj.put("new", getNewChordReset());
+        // obj.put("int", getIn());
+        JSONArray array = new JSONArray();
+        int pos = 0;
+        for(int i = 0; i < getPatternLength(); i++)
             {
-            obj.put("arp", getArpeggioType());		// can't use "type", it's used in Motif.java
-            obj.put("oct", getOctaves());
-            obj.put("len", getPatternLength());
-            obj.put("rate", getRate());
-            obj.put("omni", isOmni());
-            obj.put("out", getOut());
-            obj.put("new", getNewChordReset());
-           // obj.put("int", getIn());
-            JSONArray array = new JSONArray();
-            int pos = 0;
-            for(int i = 0; i < getPatternLength(); i++)
+            for(int j = 0; j < pattern[i].length; j++)
                 {
-                for(int j = 0; j < pattern[i].length; j++)
-                    {
-                    array.put(getPattern(i, j));
-                    }
+                array.put(getPattern(i, j));
                 }
-            obj.put("pattern", array);
             }
-
-        static int document = 0;
-        static int counter = 1;
-        public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
-        
-        public String getBaseName() { return "Arpeggio"; }
+        obj.put("pattern", array);
         }
+
+    static int document = 0;
+    static int counter = 1;
+    public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
+        
+    public String getBaseName() { return "Arpeggio"; }
+    }
         
