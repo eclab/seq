@@ -93,7 +93,7 @@ public class NotesInspector extends WidgetList
     public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
     public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
     
-    public static final String[] RECORD_INTEGRATION_STRINGS = { "Replace All", "Overwrite", "Merge" };
+    public static final String[] RECORD_INTEGRATION_STRINGS = { "Replace", "Replace/Trim", "Merge" };		// No "OVERWRITE" right now
     
     public NotesInspector(Seq seq, Notes notes, NotesUI notesui)
         {
@@ -229,6 +229,7 @@ public class NotesInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            if (notes.getRecordIntegration() < 2)
             recordIntegration.setSelectedIndex(notes.getRecordIntegration());
 
             echo = new JCheckBox();

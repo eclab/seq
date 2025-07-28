@@ -161,6 +161,38 @@ public class NotesUI extends MotifUI
 
         menu.addSeparator();
         
+        JMenuItem cutEvents = new JMenuItem("Cut Events");
+        cutEvents.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doCutEvents();
+                }
+            });
+        menu.add(cutEvents);
+
+        JMenuItem copyEvents = new JMenuItem("Copy Events");
+        copyEvents.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doCopyEvents();
+                }
+            });
+        menu.add(copyEvents);
+
+        JMenuItem pasteEvents = new JMenuItem("Paste Events");
+        pasteEvents.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doPasteEvents();
+                }
+            });
+        menu.add(pasteEvents);
+
+        menu.addSeparator();
+
         JMenuItem quantize = new JMenuItem("Quantize...");
         quantize.addActionListener(new ActionListener()
             {
@@ -973,7 +1005,7 @@ public class NotesUI extends MotifUI
 
 
     /** Duplicates the selected events */
-    public void doCopy()
+    public void doDuplicate()
         {
         if (gridui.getSelected().size() == 0)
             {
@@ -1186,7 +1218,7 @@ public class NotesUI extends MotifUI
             {
             public void perform()
                 {
-                doCopy();
+                doDuplicate();
                 }
             };
         copyButton.getButton().setPreferredSize(new Dimension(24, 24));
@@ -1224,6 +1256,7 @@ public class NotesUI extends MotifUI
             };
         scrollButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
         scrollButton.getButton().setPreferredSize(new Dimension(24, 24));
+        scrollButton.setToolTipText(SCROLL_BUTTON_TOOLTIP);
 
         snapBox = new JComboBox(SNAP_OPTIONS);
         snapBox.setSelectedIndex(Prefs.getLastInt("SnapTo", SNAP_DEFAULT_OPTION));
@@ -1246,6 +1279,7 @@ public class NotesUI extends MotifUI
                 Prefs.setLastInt("SnapTo", snapBox.getSelectedIndex());
                 }
             });
+        snapBox.setToolTipText(SNAP_COMBO_TOOLTIP);
 
         maxBox = new JComboBox(MAX_OPTIONS);
         maxBox.setSelectedIndex(Prefs.getLastInt("MaxBar", MAX_DEFAULT_OPTION));
@@ -1259,6 +1293,7 @@ public class NotesUI extends MotifUI
                 rebuildSizes();
                 }
             });
+        maxBox.setToolTipText(LENGTH_COMBO_TOOLTIP);
 
         console = new JPanel();
         console.setLayout(new BorderLayout());
@@ -1438,18 +1473,193 @@ public class NotesUI extends MotifUI
             }
         }
         
+    
+    public void doCutEvents()
+    	{
+    	doCopyEvents();
+    	doRemove();
+    	}
+    
+    public void doCopyEvents()
+    	{
+        ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
+
+		// We have to copy it, because the user might move or delete them
+        ArrayList<Notes.Event> eventsCopy = new ArrayList<Notes.Event>();
+        for(Notes.Event event : events)
+        	{
+        	eventsCopy.add(event.copy());
+        	}
+        
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+        	notes.setPasteboard(eventsCopy);
+			}
+		finally { lock.unlock(); }
+    	}
+    	
+    public void doPasteEvents()
+    	{
+    	ArrayList<Notes.Event> pasteboard = notes.getPasteboard();	// this gives me a COPY
+    	
+    	if (pasteboard.size() == 0) return;
+    	
+    	// Where should they go?
+    	
+    	int timeDiff = 0;
+    	if (ruler.getHasRange())
+			{    	
+    		timeDiff = notes.getMinimumTime(pasteboard) - ruler.getRangeLow();		// I own the pasteboard copy, and getMinimumTime changes no state, so this doesn't need to be locked
+			}
+		else
+			{
+			if (gridui.getSelected().size() > 0)
+				{
+				if (gridui.getFirstSelected() instanceof NoteUI)
+					{
+					timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime();
+					}
+				else
+					{
+					timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime() - DEFAULT_NOTE_LENGTH;
+					}
+				}
+			else
+				{
+				// we assume we put them DEFAULT_NOTE_LENGTH ahead
+				timeDiff = 0;
+				}
+			}
+			
+    	// Shift time to chosen time
+    	
+		for(Notes.Event event : pasteboard)
+			{
+			event.when -= timeDiff;
+			if (event.when < 0)	// uh....
+				{
+				event.when = 0;
+				}
+			}
+		
+		// Add notes to the model
+		
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			notes.merge(pasteboard);
+			}
+		finally { lock.unlock(); }
+		
+		
+		// Build NoteUIs, add them, and determine if they are all the same kind
+
+		boolean homogeneous = true;		
+		Notes.Event firstEvent = null;
+		for(Notes.Event event : pasteboard)
+			{
+			if (firstEvent == null)
+				{
+				firstEvent = event;
+				}
+			else if (homogeneous)
+				{
+				if (firstEvent instanceof Notes.Note)
+					{
+					if (!(event instanceof Notes.Note))
+						{
+						homogeneous = false;
+						}
+					}
+				else if (firstEvent.getType() != event.getType())
+					{
+					homogeneous = false;
+					}
+				}
+				
+			if (event instanceof Notes.Note)
+				{
+                PitchUI pitchui = gridui.getPitchUIs().get(((Notes.Note)event).pitch);
+				NoteUI noteui = new NoteUI(pitchui, (Notes.Note)event);
+				pitchui.addNoteUI(noteui);
+				}
+			else
+				{
+				ParameterUI parameterui = eventsui.getParameterUIFor(event.getType());
+				if (parameterui != null)
+					{
+					parameterui.addEventUI(new EventUI(parameterui, event));
+					}
+				}
+			}
+		
+		//// Select Events if Possible
+		
+		if (homogeneous && firstEvent != null) 		// we can select them
+			{
+			gridui.clearSelected();
+			if (firstEvent instanceof Notes.Note)
+				{
+				gridui.addNotesToSelected(new HashSet(pasteboard));
+				}
+			else
+				{
+				ParameterUI parameterui = eventsui.getParameterUIFor(firstEvent.getType());
+				if (parameterui != null)
+					{
+					int index = eventsui.getParameterUIs().indexOf(parameterui);
+					if (index != -1)	// should never happen
+						{
+						gridui.addEventsToSelected(new HashSet(pasteboard), -1);
+						}
+					}
+				}
+			}
+			
+		//// Setup Inspector
+
+		if (gridui.getSelected().size() == 0)
+			{
+        	setChildInspector(null);
+			}
+		else if (gridui.getSelected().size() == 1)
+			{
+            setChildInspector(new EventInspector(seq, notes, this, gridui.getFirstSelected().event));
+			}
+			
+		//// Repaint Everything :-(
+		
+                
+        gridui.repaint();
+        eventsui.repaint();
+    	}
 
                           
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Event</b><br>" +
         "Removes the selected event or events from the Notes.</html>";
         
-    static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Event</b><br>" +
+    static final String COPY_BUTTON_TOOLTIP = "<html><b>Duplicate Event</b><br>" +
         "Duplicates the selected event or events from in the Notes.</html>";
 
     static final String ZOOM_IN_BUTTON_TOOLTIP = "<html><b>Zoom In</b><br>" +
         "Magnifies the view of the Notes timeeline.</html>";
         
     static final String ZOOM_OUT_BUTTON_TOOLTIP = "<html><b>Zoom Out</b><br>" +
-        "Demagnifies the view of the Notes timeeline.</html>";
+        "Demagnifies the view of the Notes timeline.</html>";
 
+    static final String SCROLL_BUTTON_TOOLTIP = "<html><b>Scroll To Sequence</b><br>" +
+        "Scrolls the Notes grid to show selected notes or the first unselected notes.</html>";
+
+    static final String LENGTH_COMBO_TOOLTIP = "<html><b>Sequence Display Length</b><br>" +
+        "Sets the displayed maximum length of the sequence.  Longer displays show more music,<br>" +
+        "but shorter displays are easier to scroll.</html>";
+
+    static final String SNAP_COMBO_TOOLTIP = "<html><b>Snap</b><br>" +
+        "Sets how moving or resizing notes or events snaps them to the time grid.<br><br>" +
+        "<i>Snap by</i> values causes moving or resizing to snap <i>by</i> a certain amount.<br>" +
+        "<i>Snap to</i> values causes moving or resizing to snap <i>to</i> a grid position.<br>" +
+        "<i>No Snap</i> allows moving or resizing to any value.</html>";
     }

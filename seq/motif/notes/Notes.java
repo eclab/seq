@@ -724,6 +724,8 @@ public class Notes extends Motif
     ArrayList<Event> events = new ArrayList<>();
     // Events currently being recorded, to be moved to the main events
     ArrayList<Event> recording = new ArrayList<>();
+    // For cut, copy, and paste
+    static ArrayList<Event> pasteboard = new ArrayList<>();
     
     // Do we record pitch bend?
     boolean recordBend;
@@ -761,8 +763,9 @@ public class Notes extends Motif
     int end = 0;
     
     public static final int INTEGRATE_REPLACE = 0;
-    public static final int INTEGRATE_OVERWRITE = 1;
+    public static final int INTEGRATE_REPLACE_TRIM = 1;
     public static final int INTEGRATE_MERGE = 2;
+    public static final int INTEGRATE_PUNCH_IN = 3;				// doesn't work for now
     
     int recordIntegration = INTEGRATE_REPLACE;
 
@@ -898,7 +901,7 @@ public class Notes extends Motif
         quantizeNoteEnds = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNoteEnds", true); 
         quantizeNonNotes = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNonNotes", true); 
         quantizeBias = Prefs.getLastDouble("seq.motif.notes.Notes.quantizeBias", 0.5); 
-        recordIntegration = Prefs.getLastInt("seq.motif.notes.Notes.recordIntegration", INTEGRATE_REPLACE); 
+        recordIntegration = Prefs.getLastInt("seq.motif.notes.Notes.recordintegration", INTEGRATE_REPLACE); 
         }
 
     /** Returns all events */
@@ -1251,6 +1254,23 @@ public class Notes extends Motif
         computeMaxTime(); 
         return copy;
         }
+
+	public static void setPasteboard(ArrayList<Event> events)
+		{
+		pasteboard.clear();
+		pasteboard.addAll(events);
+		}
+
+	public static ArrayList<Event> getPasteboard()
+		{
+		ArrayList<Event> copy = new ArrayList<>(pasteboard.size());
+		for(Event event : pasteboard)
+			{
+			copy.add(event.copy());
+			}
+		return copy;
+		}
+
 /*
   public ArrayList<Event> copyEvents(int[] indices)
   {
@@ -1272,19 +1292,20 @@ public class Notes extends Motif
         {
         if (from.isEmpty()) return;
         ArrayList<Event> newEvents = new ArrayList<Event>();
+        
         int plen = events.size();
         int rlen = from.size();
         int pi = 0;
         int ri = 0;
-        while(pi < plen && ri < rlen)
+        while(pi < plen || ri < rlen)
             {
-            if (pi == plen)
+            if (pi == plen)		// only r left
                 {
                 Event r = from.get(ri);
                 newEvents.add(r);
                 ri++;
                 }
-            else if (ri == rlen)
+            else if (ri == rlen)		// only p left
                 {
                 Event p = events.get(pi);
                 newEvents.add(p);
@@ -1306,8 +1327,7 @@ public class Notes extends Motif
                     }
                 }
             }
-        computeMaxTime(); 
-        events = newEvents;
+        setEvents(newEvents);
         }
 
     /** Replaces with the given events all events whose timestamp overlaps with them.  Returns the replaced events. */
@@ -1326,12 +1346,78 @@ public class Notes extends Motif
         return cut;
         }
 
+	/** Returns the minimum time of the events. */
+	public int getMinimumTime(ArrayList<Event> events)
+		{
+		if (events.size() == 0)
+			{
+			System.err.println("Note.getMinimumTime(): called with empty events");
+			return 0;
+			}
+		
+		int minTime = -1;
+		for(Event event: events)
+			{
+			int time = event.when;
+			if (minTime == -1 || time < minTime)
+				{
+				minTime = time;
+				}
+			}
+		return minTime;
+		}
+
+	/** Returns the maximum time of the events. */
+	public int getMaximumTime(ArrayList<Event> events)
+		{
+		if (events.size() == 0)
+			{
+			System.err.println("Note.getMaximumTime(): called with empty events");
+			return 0;
+			}
+		
+		int maxTime = -1;
+		for(Event event: events)
+			{
+			int time = event.when + event.getLength();
+			if (time > maxTime)
+				{
+				maxTime = time;
+				}
+			}
+		return maxTime;
+		}
+
+	/** Returns the maximum time of the events, assuming they are sorted. */
+	/*
+	public int getMaximumTime(Iterator eventIterator)
+		{
+		if (!eventIterator.hasNext())
+			{
+			System.err.println("Note.getMaximumTime(Iterator): called with empty events");
+			return 0;
+			}
+		
+		int maxTime = -1;
+		while(eventIterator.hasNext())
+			{
+			Event event = (Event)(eventIterator.next());
+			int time = event.when + event.getLength();
+			if (time > maxTime)
+				{
+				maxTime = time;
+				}
+			}
+		return maxTime;
+		}
+	*/
+	
     /** Shifts all events in time so that the first event's onset is at timestep 0. */
     public void trim()
         {
         if (events.size() > 0) 
             {
-            shift(events, 0 - events.get(0).when, false);
+            shift(events, 0 - getMinimumTime(events), false);
             }
         }
 

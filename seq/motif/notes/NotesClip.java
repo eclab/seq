@@ -97,11 +97,6 @@ public class NotesClip extends Clip
         Notes notes = (Notes) getMotif();
         ArrayList<Notes.Event> recording = notes.getRecording();
 
-				for(Notes.Event evt : recording)
-					{
-					System.err.println(evt);
-					}
-
         if (!recording.isEmpty())
             {
             if (Prefs.getLastBoolean("QuantizeOnRecord", false))
@@ -136,13 +131,19 @@ public class NotesClip extends Clip
 				{
 				notes.setEvents(recording);
 				}
-			else if (integration == Notes.INTEGRATE_OVERWRITE)	// overwrite same-time events
+            else if (integration == Notes.INTEGRATE_REPLACE_TRIM)	// replace all events, trime to zero
 				{
-				notes.overwrite(recording, true, true);
+				notes.setEvents(recording);
+				notes.trim();
 				}
-			else	// integration == Notes.INTEGRATE_MERGE
+			else if (integration == Notes.INTEGRATE_MERGE)
 				{
 				notes.merge(recording);
+				}
+			else // if (integration == Notes.INTEGRATE_OVERWRITE)	// overwrite same-time events
+				{
+				// Doesn't work right now and I'm not sure how to implement it in a way useful to the user
+				notes.overwrite(recording, true, true);
 				}
 
             notes.clearRecording();
@@ -220,7 +221,6 @@ public class NotesClip extends Clip
                 for(int i = 0; i < messages.length; i++)
                     {
                     MidiMessage message = messages[i];
-                    System.err.println("Message " + i + " : " + Midi.format(message));
                     if (message instanceof ShortMessage)
                         {
                         ShortMessage shortmessage = (ShortMessage)message;
