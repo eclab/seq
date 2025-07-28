@@ -195,7 +195,7 @@ public abstract class TimeDisplay extends JPanel
         Seq.PPQ / 16 * 14,
         Seq.PPQ / 16 * 15,
         Seq.PPQ / 3 * 1,
-        Seq.PPQ / 2 * 2,
+        Seq.PPQ / 3 * 2,
         };
 
 
