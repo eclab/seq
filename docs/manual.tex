@@ -661,9 +661,11 @@ Other recording options deal with automatic quantization.  You can turn {\bf Qua
 
 \item{\bf Cut} and {\bf Copy} do what you expect.  They cut/copy either the selected events, or all events which fall inside the Ruler range.
 
-\item {\bf Paste}\quad also does what you expect.  But where do the Pasted events go?  If you have selected a range in the Ruler, Paste will paste its events starting at the beginning of that range.  If you have selected notes or events, Paste will paste its events immediately after the selection.  If no notes or events are selected, and the ruler has no range, Paste will paste its events right where they were cut or copied.  This is intentional, though it might confusing as they'd be on top of their previous notes/events.
+\item {\bf Paste}\quad also does what you expect: it pastes the cut/copied notes, merging them into the existing notes.  But where do the Pasted events go?  If you have selected a range in the Ruler, Paste will paste its events starting at the beginning of that range.  If you have selected notes or events, Paste will paste its events immediately after the selection.  If no notes or events are selected, and the ruler has no range, Paste will paste its events right where they were cut or copied.  This is intentional, though it might confusing as they'd be on top of their previous notes/events.
 
 Note that you can cut/copy from one Notes motif and Paste into a different one.
+
+\item {\bf Paste/Replace}\quad is just like Paste, except that the selected events, or those in the Ruler range, will be deleted and replaced with the pasted events.
 
 \item{\bf Quantize...}\quad gives options for quantizing all or a selection/ruler range of your notes or event data. 
 
@@ -679,7 +681,7 @@ Note that you can cut/copy from one Notes motif and Paste into a different one.
 
 \item{\bf Randomize Velocity...}\quad gives options for adding noise to the velocity of all notes or those in the selection/ruler range.
 
-\item{\bf Delete Selection}\quad deletes the selected events.
+\item{\bf Delete Selection}\quad deletes the selected events.  Note that this does {\it not} delete events within the ruler range.
 
 \item{\bf Filter...}\quad gives options for filtering out (deleting) notes, bend data, CC data, RPN and NRPN data, or aftertouch data.  Since selection is applied to a single kind of data, Filter is really is only appropriate for filtering all data, or data within the ruler range (not selection).
 

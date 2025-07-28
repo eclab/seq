@@ -186,10 +186,20 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                doPasteEvents();
+                doPasteEvents(false);
                 }
             });
         menu.add(pasteEvents);
+
+        JMenuItem pasteReplaceEvents = new JMenuItem("Paste/Replace Events");
+        pasteReplaceEvents.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doPasteEvents(true);
+                }
+            });
+        menu.add(pasteReplaceEvents);
 
         menu.addSeparator();
 
@@ -991,7 +1001,9 @@ public class NotesUI extends MotifUI
     /** Removes the selected events */
     public void doRemove()
         {
-        if (gridui.getSelected().size() == 0)
+        ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
+
+        if (events.size() == 0)
             {
             sequi.showSimpleError("No Events Selected", "No events are selected, and so none were deleted.");
             return;
@@ -1500,7 +1512,7 @@ public class NotesUI extends MotifUI
 		finally { lock.unlock(); }
     	}
     	
-    public void doPasteEvents()
+    public void doPasteEvents(boolean replaceSelected)
     	{
     	ArrayList<Notes.Event> pasteboard = notes.getPasteboard();	// this gives me a COPY
     	
@@ -1517,7 +1529,11 @@ public class NotesUI extends MotifUI
 			{
 			if (gridui.getSelected().size() > 0)
 				{
-				if (gridui.getFirstSelected() instanceof NoteUI)
+				if (replaceSelected)
+					{
+					timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMinimumSelectedTime();
+					}
+				else if (gridui.getFirstSelected() instanceof NoteUI)
 					{
 					timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime();
 					}
@@ -1542,6 +1558,15 @@ public class NotesUI extends MotifUI
 				{
 				event.when = 0;
 				}
+			}
+		
+		// Remove previous notes
+		
+		if (replaceSelected)
+			{
+	        ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
+			gridui.deleteEvents(events);
+			// will rebuild, expensive
 			}
 		
 		// Add notes to the model
