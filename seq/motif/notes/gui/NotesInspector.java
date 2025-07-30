@@ -32,6 +32,7 @@ public class NotesInspector extends WidgetList
     JCheckBox recordBend;
     JCheckBox recordCC;
     JCheckBox recordAftertouch;
+    JCheckBox recordPC;
     JCheckBox convertNRPNRPN;
     JCheckBox logBend;
     JComboBox parameterHeight;
@@ -86,9 +87,9 @@ public class NotesInspector extends WidgetList
     public JComponent eventLSB[] = new JComponent[Notes.NUM_EVENT_PARAMETERS];
     public JComponent eventBox[] = new Box[Notes.NUM_EVENT_PARAMETERS];
 
-    public static final String[] EVENT_TYPES = { "None", "CC", "Poly AT", "Channel AT", "Bend", "NRPN", "RPN" };
-    public static final boolean[] EVENT_HAS_LSB = { false, false, false, false, false, true, true };
-    public static final boolean[] EVENT_HAS_MSB = { false, true, true, false, false, true, true };
+    public static final String[] EVENT_TYPES = { "None", "CC", "Poly AT", "Channel AT", "Bend", "PC", "NRPN", "RPN" };
+    public static final boolean[] EVENT_HAS_LSB = { false, false, false, false, false, false, true, true };
+    public static final boolean[] EVENT_HAS_MSB = { false, true, true, false, false, false, true, true };
 
     public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
     public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
@@ -229,8 +230,10 @@ public class NotesInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
-            if (notes.getRecordIntegration() < 2)
-            recordIntegration.setSelectedIndex(notes.getRecordIntegration());
+            if (notes.getRecordIntegration() < Notes.INTEGRATE_PUNCH_IN)
+            	{
+	            recordIntegration.setSelectedIndex(notes.getRecordIntegration());
+	            }
 
             echo = new JCheckBox();
             echo.setSelected(notes.getEcho());
@@ -274,8 +277,22 @@ public class NotesInspector extends WidgetList
                     }
                 });
                 
+            recordPC = new JCheckBox();
+            recordPC.setSelected(notes.getRecordPC());
+            recordPC.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setRecordPC(recordPC.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+                
             convertNRPNRPN = new JCheckBox();
-            convertNRPNRPN.setSelected(notes.getRecordCC());
+            convertNRPNRPN.setSelected(notes.getConvertNRPNRPN());
             convertNRPNRPN.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
@@ -393,7 +410,8 @@ public class NotesInspector extends WidgetList
                         try { notes.setEventParameterType(_i, eventParameterType[_i].getSelectedIndex()); }
                         finally { lock.unlock(); }     
                         reviseEventParameters();
-                        updateEventFull(_i);             
+                        updateEventFull(_i);
+                        notesui.revalidate();           
                         }
                     });
                                         
@@ -509,6 +527,7 @@ public class NotesInspector extends WidgetList
         recordBend.setToolTipText(RECORD_BEND_TOOLTIP);
         recordAftertouch.setToolTipText(RECORD_AFTERTOUCH_TOOLTIP);
         recordCC.setToolTipText(RECORD_CC_TOOLTIP);
+        recordPC.setToolTipText(RECORD_PC_TOOLTIP);
         convertNRPNRPN.setToolTipText(CONVERT_NRPN_RPN_TOOLTIP);
 
         build(new String[] { "Name", "Out", "In", "End", "Armed", "Echo"}, 
@@ -522,13 +541,12 @@ public class NotesInspector extends WidgetList
                 echo,
                 });
                 
-        recordList1 = new WidgetList(new String[] { "Integration", "Record Bend", "Record Aftertouch", "Record CC", "Make NRPN/RPN",
+        recordList1 = new WidgetList(new String[] { "Integration", "Record Bend", "Record Aftertouch", "Record CC", "Record PC", "Make NRPN/RPN",
                 "Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
-            new JComponent[] { recordIntegration, recordBend, recordAftertouch, recordCC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
+            new JComponent[] { recordIntegration, recordBend, recordAftertouch, recordCC, recordPC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
         
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
         DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
-        recordDisclosure.setParentComponent(this);
 
         WidgetList widgetList2 = new WidgetList();
         widgetList2.build(new String[] { "1", "2", "3", "4" },
@@ -543,13 +561,15 @@ public class NotesInspector extends WidgetList
         messagePanel.add(widgetList1, BorderLayout.SOUTH);
         messagePanel.setBorder(BorderFactory.createTitledBorder("<html><i>Non-Note Display</i></html>"));
         DisclosurePanel parameterDisclosure = new DisclosurePanel("Non-Note Display", messagePanel);
-        parameterDisclosure.setParentComponent(this);
 
         JPanel finalPanel = new JPanel();
         finalPanel.setLayout(new BorderLayout());
         finalPanel.add(recordDisclosure, BorderLayout.NORTH);
         finalPanel.add(parameterDisclosure, BorderLayout.SOUTH);
         add(finalPanel, BorderLayout.SOUTH);
+
+        recordDisclosure.setParentComponent(notesui);
+        parameterDisclosure.setParentComponent(notesui);
         }
     
     boolean validType(EventsUI eventsui, int pos)
@@ -643,6 +663,10 @@ public class NotesInspector extends WidgetList
                 {
                 full = "";
                 }
+            else if (type == Notes.EVENT_PARAMETER_PC)
+                {
+                full = "";
+                }
 /*
   else if (type == Notes.CC_14)
   {
@@ -695,6 +719,10 @@ public class NotesInspector extends WidgetList
             {
             return Notes.TYPE_CHANNEL_AFTERTOUCH;
             }
+        else if (type == Notes.EVENT_PARAMETER_PC)
+            {
+            return Notes.TYPE_PC;
+            }
         else if (type == Notes.EVENT_PARAMETER_NRPN)
             {
             return Notes.TYPE_NRPN + eventParamMSB * 128 + eventParamLSB;
@@ -719,6 +747,7 @@ public class NotesInspector extends WidgetList
             echo.setSelected(notes.getEcho()); 
             recordBend.setSelected(notes.getRecordBend()); 
             recordCC.setSelected(notes.getRecordCC()); 
+            recordPC.setSelected(notes.getRecordPC()); 
             recordAftertouch.setSelected(notes.getRecordAftertouch()); 
             quantize.setSelected(notes.getQuantize());
             quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
@@ -782,7 +811,10 @@ public class NotesInspector extends WidgetList
         "Sets whether the Notes will record Aftertouch data during recording.</html>";
         
     static final String RECORD_CC_TOOLTIP = "<html><b>Record CC</b><br>" +
-        "Sets whether the Notes will record CC data during recording.</html>";
+        "Sets whether the Notes will record CC (Control Change) data during recording.</html>";
+        
+    static final String RECORD_PC_TOOLTIP = "<html><b>Record PC</b><br>" +
+        "Sets whether the Notes will record PC (Program Change) data during recording.</html>";
         
     static final String CONVERT_NRPN_RPN_TOOLTIP = "<html><b>Make NRPN/RPN</b><br>" +
         "Sets whether the Notes will attempt to convert appropriate CC data<br>" + 
