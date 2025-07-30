@@ -556,7 +556,7 @@ If you arm one or more Tracks, set their Notes, and set the Sequence's MIDI Inpu
 
 \subsection{Notes}
  
-Notes is simply a collection of MIDI events: MIDI Notes, Pitch Bend events, CC events, NRPN/RPN events, and Aftertouch Events.  Notes are not stored as MIDI Note On/Note Off, but as entire notes with an onset, pitch, velocity, length, and release velocity.   Other events are simply stored as their time stamp and value.  
+Notes is simply a collection of MIDI events: MIDI Notes, Pitch Bend events, Control Change (CC) events, Program Change (CC) events NRPN/RPN events, and Aftertouch Events.  Notes are not stored as MIDI Note On/Note Off, but as entire notes with an onset, pitch, velocity, length, and release velocity.   Other events are simply stored as their time stamp and value.  
 
 Like other Motifs, you can give your Notes a {\bf Name} in the Notes Inspector.  
 
@@ -667,13 +667,15 @@ Note that you can cut/copy from one Notes motif and Paste into a different one.
 
 \item {\bf Paste/Replace}\quad is just like Paste, except that the selected events, or those in the Ruler range, will be deleted and replaced with the pasted events.
 
+\item {\bf Replicate}\quad copies the selected or range events and places that copy in its own new Notes motif.  The events are trimmed so that they start at timestep 1..
+
 \item{\bf Quantize...}\quad gives options for quantizing all or a selection/ruler range of your notes or event data. 
 
  A note about  the {\bf quantization bias}.  What is this?  Normally quantizers just round the notes up or down to the nearest quantized position, but this is often wrong.  As a human, you may tend to play more notes early than late (or vice versa), resulting in an error distribution which is {\it ought} to favor the earlier quantized positions more than the later one (or vice versa).  You can set the bias to match your personal tendencies.
 
 \item{\bf Stretch Time...}\quad stretches the time of all of your data or the selection/ruler range.
 
-\item{\bf Trim Blank Time from Start}\quad removes empty time from the start of your data.  Your first event will start at timestep 0 in the Notes.
+\item{\bf Trim Blank Time from Start}\quad removes empty time from the start of your data.  Your first event will start at timestep 1 in the Notes.
 
 \item{\bf Randomize Time...}\quad gives options for adding noise to the onset and optionally the duration of all of your data or the selection/ruler range.
 
@@ -688,86 +690,6 @@ Note that you can cut/copy from one Notes motif and Paste into a different one.
 \item{\bf Arm New Notes Motifs}\quad sets it so that new Notes Motifs will automatically be armed (or not).
 
 \end{itemize}
-
-
-\ignore
-{
-\begin{figure}[t]
-\centering
-\includegraphics[width=6.5in]{Notes}
-\vspace{-2em}
-\caption{Notes Motif.}
-\label{notes}
-\end{figure}
-
-\subsection{Notes}
- 
-Notes is simply a collection of MIDI events: MIDI Notes, Pitch Bend events, CC events, and Aftertouch Events.  Notes are not stored as MIDI Note On/Note Off, but as entire notes with an onset, pitch, velocity, length, and release velocity.   When Notes is played, it plays through all its events in order once.
-
-\paragraph{\color{red} To Do} We still haven't built a proper Note Editor for Notes.  At present it's still just displaying its Notes as a table.  It's a big job but one that is frankly low priority.  For now you'll need to edit your Notes by exporting them to a MIDI file, loading them in your DAW, editing them, and then re-importing them.
-
-Notes has a MIDI Out and a MIDI In.  The MIDI Out is of course where the MIDI events go.  The MIDI In is the source of events when recording into Notes.
-
-\paragraph{End} You can specify the when the Notes object ends.   If you run out of MIDI events before this time, Notes will wait until this time to end.  If there are MIDI events after this time, Notes will continue until they have finished.
-
-You can select ranges of notes (for various menu actions), and when Notes is playing, it will highlight the last event played (and scroll to it).
-
-\paragraph{Notes and Events} The Notes object supports several kinds of events: Notes, Pitch Bend, CC, Aftertouch, RPN, and NRPN.  You can add events by clicking on the ``Notes'' button at bottom (to add a MIDI note), or the {\bf B, A, C, N,} or {\bf R} buttons (to add Bend, Aftertouch, CC, NRPN, and RPN respectively).  You can remove a note or duplicate a note by selecting it and pressing the buttons at bottom. 
-
-If you select an event, its inspector pops up.  All events have a time of onset called {\bf When}.  You can change this value, but you must press {\bf Set} to set it, because it will change the order of the note in the list.  Additionally:
-
-\begin{itemize}
-
-\item Notes also have a {\bf Length}, a {\bf Pitch}, a {\bf Velocity} (volume), and a {\bf Release Velocity}.  Note that the velocity cannot be set to 0.  The Length comes with some useful presets.  Unlike When, changing Length is immediate.
-
-\item Pitch Bend has a bend value called, not surprisingly, {\bf Bend}. It's positive or negative.
-
-\item CC events each have a {\bf Parameter} and a {\bf Value}.
-
-\item Aftertouch events each have a {\bf Pitch} and a {\bf Value}.
-
-\item RPN and NRPN events  each have a {\bf Parameter} (broken into MSB and LSB) and a {\bf Value} (also broken into MSB and LSB).
-\end{itemize}
-
-\paragraph{Recording Notes} To record notes, first make sure that its {\bf MIDI In} is set to your device.  Then {\bf Arm} the Notes in its Inspector, press Record in Seq, and record in some notes.  You'll find it easier if you turned on the Metronome.  If you select {\bf Echo} in the Inspector, then all events received via the MIDI In will be echoed out the MIDI Out: you probably would want that.  Remember that if your Notes motif is not a descendant of the Root, it will never be reached to do Recording.
-
-When recording, you can filter out CC (which also filters out RPN and NRPN), Pitch Bend, and Aftertouch in real-time: just uncheck the {\bf Record Bend}, {\bf Record CC}, or {\bf Record Aftertouch} checkboxes as appropriate.  You can also postprocess CC to produce RPN and NRPN when appropriate by checking {\bf Make RPN/NRPN}.  Seq will store these in its Preferences and configure them this way next time as well.
-
-\paragraph{The Notes Menu} Notes has a number of items under its menu:
-
-\begin{itemize}
-
-\item{\bf Load MIDI File...}\quad will load MIDI data from a MIDI file, replacing the existing data.
-
-\item{\bf Quantize...}\quad gives options for quantizing all or a range of your notes or event data. 
-
- A note about  the {\bf quantization bias}.  What is this?  Normally quantizers just round the notes up or down to the nearest quantized position, but this is often wrong.  As a human, you may tend to play more notes early than late (or vice versa), resulting in an error distribution which is {\it ought} to favor the earlier quantized positions more than the later one (or vice versa).  You can set the bias to match your personal tendencies.
-
-\item{\bf Shift Time...}\quad gives options for stretching a region of notes to fill a different amount of time.
-
-\item{\bf Stretch Time...}\quad stretches the time of the selection, or the whole  the time of the onset of all or a range of your event data by a given amount.
-
-\item{\bf Trim Blank Time from Start}\quad deletes empty time from the start of your data.  Your first event will start at timestep 0 in the Notes.
-\item{\bf Delete Selection}\quad deletes the selected events.
-
-\item{\bf Randomize Time...}\quad gives options for adding noise to the onset and optionally the duration all or a range of your notes or event data.
-
-\item{\bf Transpose...}\quad transposes the pitch all or a range of your notes by a given amount.
-
-\item{\bf Set Velocity...}\quad lets you set the velocity of all notes in a range or all notes in the motif.
-
-\item{\bf Randomize Velocity...}\quad gives options for adding noise to the velocity of all or a range of your notes.
-
-\item{\bf Delete Selection}\quad deletes the selection.
-
-\item{\bf Filter...}\quad gives options for filtering out (deleting) notes, bend data, CC data, RPN and NRPN data, or aftertouch data.
-
-\item{\bf Add Note}\quad adds a note and selects it.
-
-\item{\bf Arm New Notes Motifs}\quad sets it so that new Notes Motifs will automatically be armed (or not).
-
-\end{itemize}
-}
 
 
 \clearpage
