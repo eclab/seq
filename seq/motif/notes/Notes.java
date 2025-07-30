@@ -41,8 +41,8 @@ public class Notes extends Motif
     // 0-127            Note by Pitch
     // 128-255          CC
     // 256-383          Poly Aftertouch by Pitch
-    // 384                      Channel Aftertouch
-    // 385                      Pitch Bend
+    // 384              Channel Aftertouch
+    // 385              Pitch Bend
     // 386-16383        [RESERVED] -- future use, 16-bit CC, PC, and sysex perhaps
     // 16384-32767      NRPN
     // 32768-49151      RPN
@@ -52,6 +52,7 @@ public class Notes extends Motif
     public static final int TYPE_POLYPHONIC_AFTERTOUCH = 256;
     public static final int TYPE_CHANNEL_AFTERTOUCH = 384;
     public static final int TYPE_PITCH_BEND = 385;
+    public static final int TYPE_PC = 386;
     public static final int TYPE_NRPN = 16384;
     public static final int TYPE_RPN = 32768;
     
@@ -64,6 +65,7 @@ public class Notes extends Motif
         if (type < TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch(type - TYPE_POLYPHONIC_AFTERTOUCH, (int)(value * 128), when);
         if (type == TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch((int)(value * 128), when);
         if (type == TYPE_PITCH_BEND) return new Bend((int)(value * 16384) - 8192, when);
+        if (type == TYPE_PC) return new PC((int)(value * 128), when);
         if (type < TYPE_RPN) return new NRPN(type - TYPE_NRPN, (int)(value * 16384), when);
         return new RPN(type - TYPE_RPN, (int)(value * 16384), when);
         }
@@ -77,6 +79,7 @@ public class Notes extends Motif
         if (type < TYPE_CHANNEL_AFTERTOUCH) return "P AT";
         if (type == TYPE_CHANNEL_AFTERTOUCH) return "Ch AT";
         if (type == TYPE_PITCH_BEND) return "Bend";
+        if (type == TYPE_PC) return "PC";
         if (type < TYPE_RPN) return "NRPN";
         return "RPN";
         }
@@ -90,6 +93,7 @@ public class Notes extends Motif
         if (type < TYPE_CHANNEL_AFTERTOUCH) return "Polyphonic Aftertouch";
         if (type == TYPE_CHANNEL_AFTERTOUCH) return "Channel Aftertouch";
         if (type == TYPE_PITCH_BEND) return "Pitch Bend";
+        if (type == TYPE_PC) return "Program Change";
         if (type < TYPE_RPN) return "NRPN";
         return "RPN";
         }
@@ -103,6 +107,7 @@ public class Notes extends Motif
         if (type < TYPE_CHANNEL_AFTERTOUCH) return NOTES[(type - TYPE_POLYPHONIC_AFTERTOUCH) % 12] + ((type - TYPE_POLYPHONIC_AFTERTOUCH) / 12);
         if (type == TYPE_CHANNEL_AFTERTOUCH) return "";
         if (type == TYPE_PITCH_BEND) return "";
+        if (type == TYPE_PC) return "";
         if (type < TYPE_RPN) return "" + (type - TYPE_NRPN);
         return "" + (type - TYPE_RPN);
         }
@@ -120,6 +125,7 @@ public class Notes extends Motif
         if (type < TYPE_CHANNEL_AFTERTOUCH) return header + " " + footer;
         if (type == TYPE_CHANNEL_AFTERTOUCH) return header;
         if (type == TYPE_PITCH_BEND) return header;
+        if (type == TYPE_PC) return header;
         if (type < TYPE_RPN) return header + " " + footer;
         return header + " " + footer;
         }
@@ -129,7 +135,7 @@ public class Notes extends Motif
     public static boolean isValidType(int type)
         {
         if (type < TYPE_NOTE) return false;
-        if (type > TYPE_PITCH_BEND && type < TYPE_NRPN) return false;
+        if (type > TYPE_PC && type < TYPE_NRPN) return false;
         if (type > TYPE_RPN + 16384) return false;
         return true;
         }
@@ -185,6 +191,8 @@ public class Notes extends Motif
                 return new CC(obj);
             else if (type.equals("a"))
                 return new Aftertouch(obj);
+            else if (type.equals("p"))
+                return new PC(obj);
             else if (type.equals("N"))
                 return new NRPN(obj);
             else if (type.equals("R"))
@@ -516,6 +524,45 @@ public class Notes extends Motif
         public int getType() { return TYPE_CC + parameter; }
         }
 
+
+    public static class PC extends Event
+        {
+        // CC parameter value from 0 to 127.  We do not yet support 14-bit CC in Notes
+        public int value;
+
+        public PC(int value, int when)
+            {
+            super(when);
+            this.value = value;
+            }
+        public PC(JSONObject obj)
+            {
+            super(obj);
+            value = obj.optInt("v", 0);
+            }
+        public Event copy()
+            {
+            return new PC(value, when);
+            }
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
+            {
+            track.add(new MidiEvent(new ShortMessage(ShortMessage.PROGRAM_CHANGE, value, 0), when));
+            }
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            obj.put("t", "p");
+            obj.put("v", value);
+            return obj;
+            }
+        public String toString() { return "PC[" + value + "]"; }
+
+        public double getNormalizedValue(boolean log) { return value / 128.0; }
+        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
+        public int getParameter() { return 0; }
+        public int getType() { return TYPE_PC; }
+        }
+
     public static class Aftertouch extends Event
         {
         // Aftertouch note pitch, or Out.CHANNEL_AFTERTOUCH if this is channel aftertouch.
@@ -710,8 +757,9 @@ public class Notes extends Motif
     public static final int EVENT_PARAMETER_POLY_AT = 2;
     public static final int EVENT_PARAMETER_CHANNEL_AT = 3;
     public static final int EVENT_PARAMETER_BEND = 4;
-    public static final int EVENT_PARAMETER_NRPN = 5;
-    public static final int EVENT_PARAMETER_RPN = 6;
+    public static final int EVENT_PARAMETER_PC = 5;
+    public static final int EVENT_PARAMETER_NRPN = 6;
+    public static final int EVENT_PARAMETER_RPN = 7;
     
     // Types of event parameters
     int[] eventParameterType = new int[NUM_EVENT_PARAMETERS];
@@ -727,6 +775,8 @@ public class Notes extends Motif
     // For cut, copy, and paste
     static ArrayList<Event> pasteboard = new ArrayList<>();
     
+    // Do we record program change?
+    boolean recordPC;
     // Do we record pitch bend?
     boolean recordBend;
     // Do we record CC?
@@ -804,6 +854,11 @@ public class Notes extends Motif
     public boolean getRecordCC() { return recordCC; }
     /** Sets whether we record CC. */
     public void setRecordCC(boolean val) { recordCC = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordcc", val); }
+
+    /** Returns whether we record PC. */
+    public boolean getRecordPC() { return recordPC; }
+    /** Sets whether we record PC. */
+    public void setRecordPC(boolean val) { recordPC = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordpc", val); }
 
     /** Returns whether we record Aftertouch. */
     public boolean getRecordAftertouch() { return recordAftertouch; }
@@ -894,6 +949,7 @@ public class Notes extends Motif
         setArmed(arm);
         recordBend = Prefs.getLastBoolean("seq.motif.notes.Notes.recordbend", true); 
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
+        recordPC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordpc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
         convertNRPNRPN = Prefs.getLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", true); 
         quantize = Prefs.getLastBoolean("seq.motif.notes.Notes.quantize", true); 
@@ -1007,14 +1063,14 @@ public class Notes extends Motif
         if (getConvertNRPNRPN())
             {
             EventParser parser = new EventParser(val, true);
-            events = parser.getParsedEvents();
+            ArrayList<Event> parsed = parser.getParsedEvents();
             error[0] = parser.getError();
-            return events;
+            return parsed;
             }
         else return val;
     	}
     
-    /** Sets the events, converting CC to NRPN/RPN if we are set up to do that.  */
+    /** Sets the events.  */
     public void setEvents(ArrayList<Event> val) 
         {
 		events = val;
@@ -1121,7 +1177,7 @@ public class Notes extends Motif
         }
 
     /** Filters events from all events. */
-    public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)
+    public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removePC, boolean removeAftertouch)
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
@@ -1132,6 +1188,7 @@ public class Notes extends Motif
                 (event instanceof Note && removeNotes) ||
                 (event instanceof Bend && removeBend) ||
                 (event instanceof CC && removeCC) ||
+                (event instanceof PC && removePC) ||
                 (event instanceof Aftertouch && removeAftertouch) ||
                 (event instanceof NRPN && removeNRPN) ||
                 (event instanceof RPN && removeRPN)
@@ -1151,7 +1208,7 @@ public class Notes extends Motif
         }
     
     /** Filters events from the given events. */
-    public ArrayList<Event> filter(ArrayList<Event> eventsIn, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removeAftertouch)        // endIndex is inclusive
+    public ArrayList<Event> filter(ArrayList<Event> eventsIn, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removePC, boolean removeAftertouch)        // endIndex is inclusive
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
@@ -1166,6 +1223,7 @@ public class Notes extends Motif
                     (event instanceof Note && removeNotes) ||
                     (event instanceof Bend && removeBend) ||
                     (event instanceof CC && removeCC) ||
+                    (event instanceof PC && removePC) ||
                     (event instanceof Aftertouch && removeAftertouch) ||
                     (event instanceof NRPN && removeNRPN) ||
                     (event instanceof RPN && removeRPN)
@@ -1297,36 +1355,42 @@ public class Notes extends Motif
         int rlen = from.size();
         int pi = 0;
         int ri = 0;
-        while(pi < plen || ri < rlen)
+        while(pi < plen || ri < rlen)		// As long as a stream still has events
             {
-            if (pi == plen)		// only r left
+        System.err.println("Merge into " + events);
+            if (pi >= plen)					// only r left
                 {
                 Event r = from.get(ri);
+                    System.err.println("Adding 2" + r);
                 newEvents.add(r);
                 ri++;
                 }
-            else if (ri == rlen)		// only p left
+            else if (ri >= rlen)			// only p left
                 {
                 Event p = events.get(pi);
+                    System.err.println("Adding 3" + p);
                 newEvents.add(p);
                 pi++;
                 }
-            else
+            else							// both have events left
                 {
                 Event p = events.get(pi);
                 Event r = from.get(ri);
                 if (p.when < r.when)
                     {
+                    System.err.println("Adding 0" + p);
                     newEvents.add(p);
                     pi++;
                     }
                 else
                     {
+                    System.err.println("Adding 1" + r);
                     newEvents.add(r);
                     ri++;
                     }
                 }
             }
+        System.err.println("New Events : " + newEvents);
         setEvents(newEvents);
         }
 
@@ -1387,30 +1451,6 @@ public class Notes extends Motif
 			}
 		return maxTime;
 		}
-
-	/** Returns the maximum time of the events, assuming they are sorted. */
-	/*
-	public int getMaximumTime(Iterator eventIterator)
-		{
-		if (!eventIterator.hasNext())
-			{
-			System.err.println("Note.getMaximumTime(Iterator): called with empty events");
-			return 0;
-			}
-		
-		int maxTime = -1;
-		while(eventIterator.hasNext())
-			{
-			Event event = (Event)(eventIterator.next());
-			int time = event.when + event.getLength();
-			if (time > maxTime)
-				{
-				maxTime = time;
-				}
-			}
-		return maxTime;
-		}
-	*/
 	
     /** Shifts all events in time so that the first event's onset is at timestep 0. */
     public void trim()
@@ -1777,6 +1817,13 @@ public class Notes extends Motif
 
                     Notes.CC cc = new Notes.CC(parameter, value, pos);
                     readEvents.add(cc);
+                    }
+                else if (Clip.isPC(shortmessage) && getRecordPC())
+                    {
+                    int value = shortmessage.getData1();
+
+                    Notes.PC pc = new Notes.PC(value, pos);
+                    readEvents.add(pc);
                     }
                 else if (Clip.isChannelAftertouch(shortmessage) && getRecordAftertouch())
                     {

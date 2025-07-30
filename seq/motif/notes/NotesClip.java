@@ -86,71 +86,80 @@ public class NotesClip extends Clip
     public void reset()  
         {
         super.reset();
-        moveRecording();                // also calls updateIndex() if nonempty
+//        moveRecording();                // also calls updateIndex() if nonempty
         updateIndex();
         }
 
     // Moves over recorded notes, including converting NPN and RPN         
     void moveRecording()
         {
-        // Move the recorded notes over 
-        Notes notes = (Notes) getMotif();
-        ArrayList<Notes.Event> recording = notes.getRecording();
+		// Move the recorded notes over 
+		Notes notes = (Notes) getMotif();
+		ArrayList<Notes.Event> recording = notes.getRecording();
+		if (recording.size() > 0)
+			{
+			if (!recording.isEmpty())
+				{
+				if (Prefs.getLastBoolean("QuantizeOnRecord", false))
+					{
+					notes.quantize(recording,   
+						Notes.QUANTIZE_DIVISORS[Prefs.getLastInt("QuantizeToOnRecord", 1)],
+						Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false),
+						Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false),
+						Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5));
+					}
+				
+				final SeqUI sequi = seq.getSeqUI();
+				int integration = notes.getRecordIntegration();
+				boolean[] error = new boolean[1];
 
-        if (!recording.isEmpty())
-            {
-            if (Prefs.getLastBoolean("QuantizeOnRecord", false))
-                {
-                notes.quantize(recording,   
-                    Notes.QUANTIZE_DIVISORS[Prefs.getLastInt("QuantizeToOnRecord", 1)],
-                    Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false),
-                    Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false),
-                    Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5));
-                }
-                
-            final SeqUI sequi = seq.getSeqUI();
-            int integration = notes.getRecordIntegration();
-            boolean[] error = new boolean[1];
+				recording = notes.parseEvents(recording, error);  // parse NRPN/RPN maybe
+			
+				if (error[0])
+					{
+					SwingUtilities.invokeLater(new Runnable()
+						{
+						public void run()
+							{
+							sequi.showSimpleError("Errors in Converting to NRPN/RPN",
+								"There were errors in converting certain CC messages to NRPN or RPN.\nThese CC messages will be removed.");
+							}
+						});
+					}
+		
+				// Now integrate
+				if (integration == Notes.INTEGRATE_REPLACE)	// replace all events
+					{
+					notes.setEvents(recording);
+					}
+				else if (integration == Notes.INTEGRATE_REPLACE_TRIM)	// replace all events, trime to zero
+					{
+					notes.setEvents(recording);
+					notes.trim();
+					}
+				else if (integration == Notes.INTEGRATE_MERGE)
+					{
+					notes.merge(recording);
+					}
+				else // if (integration == Notes.INTEGRATE_OVERWRITE)	// overwrite same-time events
+					{
+					// Doesn't work right now and I'm not sure how to implement it in a way useful to the user
+					notes.overwrite(recording, true, true);
+					}
 
-            recording = notes.parseEvents(recording, error);  // parse NRPN/RPN maybe
-            
-            if (error[0])
-            	{
-                SwingUtilities.invokeLater(new Runnable()
-                    {
-                    public void run()
-                        {
-                        sequi.showSimpleError("Errors in Converting to NRPN/RPN",
-                            "There were errors in converting certain CC messages to NRPN or RPN.\nThese CC messages will be removed.");
-                        }
-                    });
-            	}
-        
-        	// Now integrate
-            if (integration == Notes.INTEGRATE_REPLACE)	// replace all events
-				{
-				notes.setEvents(recording);
+				notes.clearRecording();
+				updateIndex();
+				setDidRecord(true);
 				}
-            else if (integration == Notes.INTEGRATE_REPLACE_TRIM)	// replace all events, trime to zero
-				{
-				notes.setEvents(recording);
-				notes.trim();
-				}
-			else if (integration == Notes.INTEGRATE_MERGE)
-				{
-				notes.merge(recording);
-				}
-			else // if (integration == Notes.INTEGRATE_OVERWRITE)	// overwrite same-time events
-				{
-				// Doesn't work right now and I'm not sure how to implement it in a way useful to the user
-				notes.overwrite(recording, true, true);
-				}
-
-            notes.clearRecording();
-            updateIndex();
-            setDidRecord(true);
-            }
-        else setDidRecord(false);
+        	else 
+        		{
+        		setDidRecord(false);
+        		}
+        	}
+        else
+        	{
+        	setDidRecord(false);
+        	}
         }
 
     /** Updates the index and moves over recorded notes. */
@@ -266,6 +275,14 @@ public class NotesClip extends Clip
                                 recording.add(cc);
                                 if (notes.getEcho()) cc(out, parameter, value);
                                 }
+                            else if (isPC(shortmessage) && notes.getRecordPC())
+                                {
+                                int value = shortmessage.getData1();
+
+                                Notes.PC pc = new Notes.PC(value, pos);
+                                recording.add(pc);
+                                if (notes.getEcho()) pc(out, value);
+                                }
                             else if (isChannelAftertouch(shortmessage) && notes.getRecordAftertouch())
                                 {
                                 int value = shortmessage.getData1();
@@ -325,6 +342,11 @@ public class NotesClip extends Clip
                     {
                     Notes.CC cc = (Notes.CC)event;
                     cc(out, cc.parameter, cc.value);
+                    }
+                else if (event instanceof Notes.PC)
+                    {
+                    Notes.PC pc = (Notes.PC)event;
+                    pc(out, pc.value);
                     }
                 else if (event instanceof Notes.Aftertouch)
                     {
