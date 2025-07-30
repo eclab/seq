@@ -866,9 +866,9 @@ public class SeqUI extends JPanel
                         }
                         
                     if (SeqUI.this.motifui != null) 
-                    	{
-                    	SeqUI.this.motifui.rebuildInspectors(rebuildInspectorsCount);
-                    	}
+                        {
+                        SeqUI.this.motifui.rebuildInspectors(rebuildInspectorsCount);
+                        }
                     }
                 }
             });
@@ -1581,6 +1581,6 @@ public class SeqUI extends JPanel
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 
         "With Help from Filippo Carnovalini<br>" + 
-        "<b><font color='#3498db'>Version 4</font></b>, July 2025<br>" + 
+        "<b><font color='#3498db'>Version 5</font></b>, July 2025<br>" + 
         "https://github.com/eclab/seq</html>";
     }

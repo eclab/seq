@@ -43,54 +43,54 @@ public class ArpeggioUI extends MotifUI
     public static final int PATTERN_WIDTH = 24;
 /*
 
-    //// NODE STATES
-    public static final int UNUSED = 0;
-    public static final int ON = 1;
-    public static final int DISABLED = 2;
+//// NODE STATES
+public static final int UNUSED = 0;
+public static final int ON = 1;
+public static final int DISABLED = 2;
     
-    public static final int PAD_UNUSED_MKIII = 0;
-    public static final int PAD_DISABLED_MKIII = 1;
-    public static final int PAD_ON_MKIII = 5;
+public static final int PAD_UNUSED_MKIII = 0;
+public static final int PAD_DISABLED_MKIII = 1;
+public static final int PAD_ON_MKIII = 5;
 
-    public static final int PAD_UNUSED_MKI = 0;
-    public static final int PAD_DISABLED_MKI = 28;
-    public static final int PAD_ON_MKI = 15;
+public static final int PAD_UNUSED_MKI = 0;
+public static final int PAD_DISABLED_MKI = 28;
+public static final int PAD_ON_MKI = 15;
     
-    // Given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
-    void setPad(int out, int note, int state)
-        {
-        int gridDevice = ((Select)getMotif()).getGridDevice();
-        if (gridDevice == Select.DEVICE_LAUNCHPAD_MKIII)
-            {
-            if (state == UNUSED)
-                {
-                seq.forceNoteOn(out, note, PAD_UNUSED_MKIII, 1);                          // Turn the Light Off
-                }
-            else if (state == ON)                                                   
-                {
-                seq.forceNoteOn(out, note, PAD_ON_MKIII, 1);              // RED
-                }
-            else if (state == DISABLED)
-                {
-                seq.forceNoteOn(out, note, PAD_DISABLED_MKIII, 1);                             // Gray
-                }
-            }l
-        else if (gridDevice == Select.DEVICE_LAUNCHPAD_MKI)
-            {
-            if (state == UNUSED)
-                {
-                seq.forceNoteOn(out, note, PAD_UNUSED_MKI, 1);                          // Turn the Light Off
-                }
-            else if (state == ON)                                                   
-                {
-                seq.forceNoteOn(out, note, PAD_ON_MKI, 1);              // RED
-                }
-            else if (state == DISABLED)
-                {
-                seq.forceNoteOn(out, note, PAD_DISABLED_MKI, 1);                             // Green Low
-                }
-            }
-        }
+// Given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
+void setPad(int out, int note, int state)
+{
+int gridDevice = ((Select)getMotif()).getGridDevice();
+if (gridDevice == Select.DEVICE_LAUNCHPAD_MKIII)
+{
+if (state == UNUSED)
+{
+seq.forceNoteOn(out, note, PAD_UNUSED_MKIII, 1);                          // Turn the Light Off
+}
+else if (state == ON)                                                   
+{
+seq.forceNoteOn(out, note, PAD_ON_MKIII, 1);              // RED
+}
+else if (state == DISABLED)
+{
+seq.forceNoteOn(out, note, PAD_DISABLED_MKIII, 1);                             // Gray
+}
+}l
+else if (gridDevice == Select.DEVICE_LAUNCHPAD_MKI)
+{
+if (state == UNUSED)
+{
+seq.forceNoteOn(out, note, PAD_UNUSED_MKI, 1);                          // Turn the Light Off
+}
+else if (state == ON)                                                   
+{
+seq.forceNoteOn(out, note, PAD_ON_MKI, 1);              // RED
+}
+else if (state == DISABLED)
+{
+seq.forceNoteOn(out, note, PAD_DISABLED_MKI, 1);                             // Green Low
+}
+}
+}
 */
 
     Arpeggio arpeggio;

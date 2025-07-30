@@ -123,17 +123,17 @@ public class Out
             }
             
         try
-        	{
-        	receiver.send(message, -1L); 
-        	}
+            {
+            receiver.send(message, -1L); 
+            }
         catch (IllegalStateException e)
-			{
-			// This happens when the device has closed itself and we're still trying to send to it.
-			// For example if the user rips the USB cord for his device out of the laptop. 
-			
-			// Do nothing
-			}
-			
+            {
+            // This happens when the device has closed itself and we're still trying to send to it.
+            // For example if the user rips the USB cord for his device out of the laptop. 
+                        
+            // Do nothing
+            }
+                        
         javax.sound.midi.Track[] tracks = seq.getTracks();
         if (tracks != null)
             {

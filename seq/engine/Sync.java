@@ -197,20 +197,20 @@ public class Sync
                 {
                 synchronized(sync)
                     {
-                      long time = System.currentTimeMillis();
+                    long time = System.currentTimeMillis();
                     if (count++ > 50)
-                    	{
-                    if (lastTime != -1 && lastTime != time)
-                    	{
-                    	// tick/ms * beat/tick * ms/sec * sec/min -> beat/min
-                    	bpm = 0.99 * bpm + 0.01 * 1.0 / (time - lastTime) / 24.0 * 1000.0 * 60.0;
-                    	}
-                    	
-                      if (lastTime == time) System.err.println("SAME");
-                      else System.err.println("TIME " + " " + time + " " + lastTime + " " + (time - lastTime) + " " + bpm);
-                    	}
-                      lastTime = time;
-                    	
+                        {
+                        if (lastTime != -1 && lastTime != time)
+                            {
+                            // tick/ms * beat/tick * ms/sec * sec/min -> beat/min
+                            bpm = 0.99 * bpm + 0.01 * 1.0 / (time - lastTime) / 24.0 * 1000.0 * 60.0;
+                            }
+                        
+                        if (lastTime == time) System.err.println("SAME");
+                        else System.err.println("TIME " + " " + time + " " + lastTime + " " + (time - lastTime) + " " + bpm);
+                        }
+                    lastTime = time;
+                        
 //                    if (count++ > 50)
 //                        sync.sync();
                     }

@@ -47,12 +47,12 @@ public class In implements Receiver
     
     // Also removes the receiver from the wrapper just in case
     public void setWrapper(Midi.MidiDeviceWrapper wrapper) 
-    	{ 
-    	/* System.err.println("changed wrapper from " + this.wrapper + " to " + wrapper); */ 
-    	if (this.wrapper != null) this.wrapper.removeFromTransmitter(this); 
-    	this.wrapper = wrapper; 
-    	//if (wrapper != null) wrapper.addToTransmitter(this); 
-    	}
+        { 
+        /* System.err.println("changed wrapper from " + this.wrapper + " to " + wrapper); */ 
+        if (this.wrapper != null) this.wrapper.removeFromTransmitter(this); 
+        this.wrapper = wrapper; 
+        //if (wrapper != null) wrapper.addToTransmitter(this); 
+        }
         
     /** Returns the channel */
     public int getChannel() { return channel; }

@@ -815,16 +815,16 @@ public class Notes extends Motif
     public static final int INTEGRATE_REPLACE = 0;
     public static final int INTEGRATE_REPLACE_TRIM = 1;
     public static final int INTEGRATE_MERGE = 2;
-    public static final int INTEGRATE_PUNCH_IN = 3;				// doesn't work for now
+    public static final int INTEGRATE_PUNCH_IN = 3;                             // doesn't work for now
     
     int recordIntegration = INTEGRATE_REPLACE;
 
-	/** Returns the recorded note integration method. */
-	public int getRecordIntegration() { return recordIntegration; }
-	
-	/** Sets the recorded note integration method. */
-	public void setRecordIntegration(int val) { recordIntegration = val; Prefs.setLastInt("seq.motif.notes.Notes.recordintegration", val); }
-	
+    /** Returns the recorded note integration method. */
+    public int getRecordIntegration() { return recordIntegration; }
+        
+    /** Sets the recorded note integration method. */
+    public void setRecordIntegration(int val) { recordIntegration = val; Prefs.setLastInt("seq.motif.notes.Notes.recordintegration", val); }
+        
     /** Returns whether pitch bend is displayed logarithmicaly */
     public boolean getLog() { return log; }
     /** Sets whether pitch bend is displayed logarithmicaly */
@@ -1057,9 +1057,9 @@ public class Notes extends Motif
         }
         
     /** Parses the given events, returning new ones.  error[0] is set to TRUE
-    	if there was an error, else it is set to FALSE. */
+        if there was an error, else it is set to FALSE. */
     public ArrayList<Event> parseEvents(ArrayList<Event> val, boolean[] error)
-    	{
+        {
         if (getConvertNRPNRPN())
             {
             EventParser parser = new EventParser(val, true);
@@ -1068,13 +1068,13 @@ public class Notes extends Motif
             return parsed;
             }
         else return val;
-    	}
+        }
     
     /** Sets the events.  */
     public void setEvents(ArrayList<Event> val) 
         {
-		events = val;
-		computeMaxTime();     
+        events = val;
+        computeMaxTime();     
         }
 
     /** Erases recorded events.  */
@@ -1313,21 +1313,21 @@ public class Notes extends Motif
         return copy;
         }
 
-	public static void setPasteboard(ArrayList<Event> events)
-		{
-		pasteboard.clear();
-		pasteboard.addAll(events);
-		}
+    public static void setPasteboard(ArrayList<Event> events)
+        {
+        pasteboard.clear();
+        pasteboard.addAll(events);
+        }
 
-	public static ArrayList<Event> getPasteboard()
-		{
-		ArrayList<Event> copy = new ArrayList<>(pasteboard.size());
-		for(Event event : pasteboard)
-			{
-			copy.add(event.copy());
-			}
-		return copy;
-		}
+    public static ArrayList<Event> getPasteboard()
+        {
+        ArrayList<Event> copy = new ArrayList<>(pasteboard.size());
+        for(Event event : pasteboard)
+            {
+            copy.add(event.copy());
+            }
+        return copy;
+        }
 
 /*
   public ArrayList<Event> copyEvents(int[] indices)
@@ -1355,24 +1355,24 @@ public class Notes extends Motif
         int rlen = from.size();
         int pi = 0;
         int ri = 0;
-        while(pi < plen || ri < rlen)		// As long as a stream still has events
+        while(pi < plen || ri < rlen)           // As long as a stream still has events
             {
-        System.err.println("Merge into " + events);
-            if (pi >= plen)					// only r left
+            System.err.println("Merge into " + events);
+            if (pi >= plen)                                     // only r left
                 {
                 Event r = from.get(ri);
-                    System.err.println("Adding 2" + r);
+                System.err.println("Adding 2" + r);
                 newEvents.add(r);
                 ri++;
                 }
-            else if (ri >= rlen)			// only p left
+            else if (ri >= rlen)                        // only p left
                 {
                 Event p = events.get(pi);
-                    System.err.println("Adding 3" + p);
+                System.err.println("Adding 3" + p);
                 newEvents.add(p);
                 pi++;
                 }
-            else							// both have events left
+            else                                                        // both have events left
                 {
                 Event p = events.get(pi);
                 Event r = from.get(ri);
@@ -1410,48 +1410,48 @@ public class Notes extends Motif
         return cut;
         }
 
-	/** Returns the minimum time of the events. */
-	public int getMinimumTime(ArrayList<Event> events)
-		{
-		if (events.size() == 0)
-			{
-			System.err.println("Note.getMinimumTime(): called with empty events");
-			return 0;
-			}
-		
-		int minTime = -1;
-		for(Event event: events)
-			{
-			int time = event.when;
-			if (minTime == -1 || time < minTime)
-				{
-				minTime = time;
-				}
-			}
-		return minTime;
-		}
+    /** Returns the minimum time of the events. */
+    public int getMinimumTime(ArrayList<Event> events)
+        {
+        if (events.size() == 0)
+            {
+            System.err.println("Note.getMinimumTime(): called with empty events");
+            return 0;
+            }
+                
+        int minTime = -1;
+        for(Event event: events)
+            {
+            int time = event.when;
+            if (minTime == -1 || time < minTime)
+                {
+                minTime = time;
+                }
+            }
+        return minTime;
+        }
 
-	/** Returns the maximum time of the events. */
-	public int getMaximumTime(ArrayList<Event> events)
-		{
-		if (events.size() == 0)
-			{
-			System.err.println("Note.getMaximumTime(): called with empty events");
-			return 0;
-			}
-		
-		int maxTime = -1;
-		for(Event event: events)
-			{
-			int time = event.when + event.getLength();
-			if (time > maxTime)
-				{
-				maxTime = time;
-				}
-			}
-		return maxTime;
-		}
-	
+    /** Returns the maximum time of the events. */
+    public int getMaximumTime(ArrayList<Event> events)
+        {
+        if (events.size() == 0)
+            {
+            System.err.println("Note.getMaximumTime(): called with empty events");
+            return 0;
+            }
+                
+        int maxTime = -1;
+        for(Event event: events)
+            {
+            int time = event.when + event.getLength();
+            if (time > maxTime)
+                {
+                maxTime = time;
+                }
+            }
+        return maxTime;
+        }
+        
     /** Shifts all events in time so that the first event's onset is at timestep 0. */
     public void trim()
         {
@@ -1461,19 +1461,19 @@ public class Notes extends Motif
             }
         }
 
-	/** Shifts all events in time by the given number of steps. */
-	public void shift(int by)
-		{
-		shift(events, by, false);
-		}
-		
+    /** Shifts all events in time by the given number of steps. */
+    public void shift(int by)
+        {
+        shift(events, by, false);
+        }
+                
 
-	/** Shifts the provided events in time by the given number of steps, and sorts all events afterwards */
-	public void shift(ArrayList<Event> events, int by)
-		{
-		shift(events, by, true);
-		}
-		
+    /** Shifts the provided events in time by the given number of steps, and sorts all events afterwards */
+    public void shift(ArrayList<Event> events, int by)
+        {
+        shift(events, by, true);
+        }
+                
     // Shifts the provided events in time by the given number of steps and optionally sorts afterwards
     void shift(ArrayList<Event> events, int by, boolean sort)
         {

@@ -442,25 +442,25 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-	    boolean all = false;
-        if ((events.size() == 0) && !ruler)		// do all
-        	{
-        	if (sequi.showSimpleConfirm("Quantize All Events?", "You have no events selected, and no ruler range.\nQuantize all events in the sequence?", "Quantize All"))
-        		{
-             	ReentrantLock lock = seq.getLock();
-            	lock.lock();
-	       		try
-        			{
-        			events = notes.getEvents();
-        			}
-        		finally
-        			{
-        			lock.unlock();
-        			}
-        		all = true;
-        		}
-        	else return;
-        	}
+        boolean all = false;
+        if ((events.size() == 0) && !ruler)             // do all
+            {
+            if (sequi.showSimpleConfirm("Quantize All Events?", "You have no events selected, and no ruler range.\nQuantize all events in the sequence?", "Quantize All"))
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    events = notes.getEvents();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                all = true;
+                }
+            else return;
+            }
                 
         String[] names = { "To Nearest", "Note Ends", "Non-Note Events", "Bias" };
         JComboBox toNearest = new JComboBox(Notes.QUANTIZE_STRINGS);
@@ -531,27 +531,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
- 	    boolean all = false;
-        if ((events.size() == 0) && !ruler)		// do all
-        	{
-        	if (sequi.showSimpleConfirm("Randomize Time for All Events?", "You have no events selected, and no ruler range.\nRandomize the time for all events in the sequence?", "Randomize Time for All"))
-        		{
-             	ReentrantLock lock = seq.getLock();
-            	lock.lock();
-	       		try
-        			{
-        			events = notes.getEvents();
-        			}
-        		finally
-        			{
-        			lock.unlock();
-        			}
-        		all = true;
-        		}
-        	else return;
-        	}
+        boolean all = false;
+        if ((events.size() == 0) && !ruler)             // do all
+            {
+            if (sequi.showSimpleConfirm("Randomize Time for All Events?", "You have no events selected, and no ruler range.\nRandomize the time for all events in the sequence?", "Randomize Time for All"))
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    events = notes.getEvents();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                all = true;
+                }
+            else return;
+            }
                 
-       String[] names = { "Note Lengths", "Non-Note Events", "Noise" };
+        String[] names = { "Note Lengths", "Non-Note Events", "Noise" };
         JCheckBox noteLengths = new JCheckBox("");
         if (gridui.getSelectedSource() != GridUI.SELECTED_SOURCE_NOTES &&
             gridui.getSelectedSource() != GridUI.SELECTED_SOURCE_NONE)
@@ -615,27 +615,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-  	    boolean all = false;
-        if ((events.size() == 0) && !ruler)		// do all
-        	{
-        	if (sequi.showSimpleConfirm("Randomize Velocity for All Events?", "You have no events selected, and no ruler range.\nRandomize the time for all events in the sequence?", "Randomize Velocity for All"))
-        		{
-             	ReentrantLock lock = seq.getLock();
-            	lock.lock();
-	       		try
-        			{
-        			events = notes.getEvents();
-        			}
-        		finally
-        			{
-        			lock.unlock();
-        			}
-        		all = true;
-        		}
-        	else return;
-        	}
+        boolean all = false;
+        if ((events.size() == 0) && !ruler)             // do all
+            {
+            if (sequi.showSimpleConfirm("Randomize Velocity for All Events?", "You have no events selected, and no ruler range.\nRandomize the time for all events in the sequence?", "Randomize Velocity for All"))
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    events = notes.getEvents();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                all = true;
+                }
+            else return;
+            }
                 
-       String[] names = { "Release Velocities", "Noise" };
+        String[] names = { "Release Velocities", "Noise" };
         JCheckBox noteReleases = new JCheckBox("");
         noteReleases.setSelected(Prefs.getLastBoolean("RandomizeVelocityReleases", true));
         SmallDial variance = new SmallDial(Prefs.getLastDouble("RandomizeVelocityVariance", 0.1))
@@ -686,27 +686,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-    	    boolean all = false;
-        if ((events.size() == 0) && !ruler)		// do all
-        	{
-        	if (sequi.showSimpleConfirm("Set Velocity for All Events?", "You have no events selected, and no ruler range.\nSet the time for all events in the sequence?", "Set Velocity for All"))
-        		{
-             	ReentrantLock lock = seq.getLock();
-            	lock.lock();
-	       		try
-        			{
-        			events = notes.getEvents();
-        			}
-        		finally
-        			{
-        			lock.unlock();
-        			}
-        		all = true;
-        		}
-        	else return;
-        	}
+        boolean all = false;
+        if ((events.size() == 0) && !ruler)             // do all
+            {
+            if (sequi.showSimpleConfirm("Set Velocity for All Events?", "You have no events selected, and no ruler range.\nSet the time for all events in the sequence?", "Set Velocity for All"))
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    events = notes.getEvents();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                all = true;
+                }
+            else return;
+            }
                 
-      String[] names = { "Velocity" };
+        String[] names = { "Velocity" };
         SmallDial velocity = new SmallDial(Prefs.getLastDouble("SetVelocity", 1.0))
             {
             double value;
@@ -755,27 +755,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
 
-   	    boolean all = false;
-        if ((events.size() == 0) && !ruler)		// do all
-        	{
-        	if (sequi.showSimpleConfirm("Filter All Events?", "You have no events selected, and no ruler range.\nFilter all events in the sequence?", "Filter All"))
-        		{
-             	ReentrantLock lock = seq.getLock();
-            	lock.lock();
-	       		try
-        			{
-        			events = notes.getEvents();
-        			}
-        		finally
-        			{
-        			lock.unlock();
-        			}
-        		all = true;
-        		}
-        	else return;
-        	}
+        boolean all = false;
+        if ((events.size() == 0) && !ruler)             // do all
+            {
+            if (sequi.showSimpleConfirm("Filter All Events?", "You have no events selected, and no ruler range.\nFilter all events in the sequence?", "Filter All"))
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    events = notes.getEvents();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                all = true;
+                }
+            else return;
+            }
                 
-       String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch", "Remove PC" };
+        String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch", "Remove PC" };
         JCheckBox removeNotes = new JCheckBox("");
         JCheckBox removeBend = new JCheckBox("");
         JCheckBox removeCC = new JCheckBox("");
@@ -860,45 +860,45 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
         
-   	    boolean all = false;
-        if ((events.size() == 0) && !ruler)		// do all
-        	{
-        	if (sequi.showSimpleConfirm("Shift Time for All Events?", "You have no events selected, and no ruler range.\nShift the time for all events in the sequence?", "Shift Time for All"))
-        		{
-             	ReentrantLock lock = seq.getLock();
-            	lock.lock();
-	       		try
-        			{
-        			events = notes.getEvents();
-        			}
-        		finally
-        			{
-        			lock.unlock();
-        			}
-        		all = true;
-        		}
-        	else return;
-        	}
+        boolean all = false;
+        if ((events.size() == 0) && !ruler)             // do all
+            {
+            if (sequi.showSimpleConfirm("Shift Time for All Events?", "You have no events selected, and no ruler range.\nShift the time for all events in the sequence?", "Shift Time for All"))
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    events = notes.getEvents();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                all = true;
+                }
+            else return;
+            }
         
         // This is stupid
         final int[] byTime = { Prefs.getLastInt("ShiftTimeBy", 0) };
         String[] names = { "By", "Backward" };
         TimeDisplay by = new TimeDisplay(byTime[0], seq)
-        	{
-        	protected int getTime()
-        		{
-        		return byTime[0];
-        		}
-        	protected void setTime(int time)
-        		{
-        		byTime[0] = time;
-        		}
-        	};
-        	
+            {
+            protected int getTime()
+                {
+                return byTime[0];
+                }
+            protected void setTime(int time)
+                {
+                byTime[0] = time;
+                }
+            };
+                
         JCheckBox backward = new JCheckBox();
         backward.setSelected(Prefs.getLastBoolean("ShiftTimeBackward", false));
 
-		JComponent[] components = { by, backward };
+        JComponent[] components = { by, backward };
         
         int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Shift All" : "Shift", "Cancel" }, 0, all ? "Shift Time for All" : "Shift Time", "Enter Time Shift Settings");
         
@@ -913,13 +913,13 @@ public class NotesUI extends MotifUI
             try
                 {
                 if (all)
-                	{
-                	notes.shift(_by);
-                	}
+                    {
+                    notes.shift(_by);
+                    }
                 else
-                	{
-                	notes.shift(events, _by);		// will sort
-                	}
+                    {
+                    notes.shift(events, _by);               // will sort
+                    }
                 }
             finally
                 {
@@ -945,27 +945,27 @@ public class NotesUI extends MotifUI
             hasRange = true;
             }
                 
-    	    boolean all = false;
-        if ((events.size() == 0) && !ruler)		// do all
-        	{
-        	if (sequi.showSimpleConfirm("Stretch Time for All Events?", "You have no events selected, and no ruler range.\nStretch the time for all events in the sequence?", "Stretch Time for All"))
-        		{
-             	ReentrantLock lock = seq.getLock();
-            	lock.lock();
-	       		try
-        			{
-        			events = notes.getEvents();
-        			}
-        		finally
-        			{
-        			lock.unlock();
-        			}
-        		all = true;
-        		}
-        	else return;
-        	}
+        boolean all = false;
+        if ((events.size() == 0) && !ruler)             // do all
+            {
+            if (sequi.showSimpleConfirm("Stretch Time for All Events?", "You have no events selected, and no ruler range.\nStretch the time for all events in the sequence?", "Stretch Time for All"))
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    events = notes.getEvents();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
+                all = true;
+                }
+            else return;
+            }
                 
-       String[] names = { "From", "To"};
+        String[] names = { "From", "To"};
         SmallDial from = new SmallDial(Prefs.getLastDouble("StretchTimeFrom", 0.5))
             {
             double value;
@@ -1501,194 +1501,194 @@ public class NotesUI extends MotifUI
         
     
     public void doCutEvents()
-    	{
-    	doCopyEvents();
-    	doRemove();
-    	}
+        {
+        doCopyEvents();
+        doRemove();
+        }
     
     public void doCopyEvents()
-    	{
+        {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
 
-		// We have to copy it, because the user might move or delete them
+        // We have to copy it, because the user might move or delete them
         ArrayList<Notes.Event> eventsCopy = new ArrayList<Notes.Event>();
         for(Notes.Event event : events)
-        	{
-        	eventsCopy.add(event.copy());
-        	}
+            {
+            eventsCopy.add(event.copy());
+            }
         
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try
-			{
-        	notes.setPasteboard(eventsCopy);
-			}
-		finally { lock.unlock(); }
-    	}
-    	
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            notes.setPasteboard(eventsCopy);
+            }
+        finally { lock.unlock(); }
+        }
+        
     public void doPasteEvents(boolean replaceSelected)
-    	{
-    	ArrayList<Notes.Event> pasteboard = notes.getPasteboard();	// this gives me a COPY
-    	
-    	if (pasteboard.size() == 0) return;
-    	
-    	// Where should they go?
-    	
-    	int timeDiff = 0;
-    	if (ruler.getHasRange())
-			{    	
-    		timeDiff = notes.getMinimumTime(pasteboard) - ruler.getRangeLow();		// I own the pasteboard copy, and getMinimumTime changes no state, so this doesn't need to be locked
-			}
-		else
-			{
-			if (gridui.getSelected().size() > 0)
-				{
-				if (replaceSelected)
-					{
-					timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMinimumSelectedTime();
-					}
-				else if (gridui.getFirstSelected() instanceof NoteUI)
-					{
-					timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime();
-					}
-				else
-					{
-					timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime() - DEFAULT_NOTE_LENGTH;
-					}
-				}
-			else
-				{
-				// we assume we put them DEFAULT_NOTE_LENGTH ahead
-				timeDiff = 0;
-				}
-			}
-			
-    	// Shift time to chosen time
-    	
-		for(Notes.Event event : pasteboard)
-			{
-			event.when -= timeDiff;
-			if (event.when < 0)	// uh....
-				{
-				event.when = 0;
-				}
-			}
-		
-		// Remove previous notes
-		
-		if (replaceSelected)
-			{
-	        ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
-			gridui.deleteEvents(events);
-			// will rebuild, expensive
-			}
-		
-		// Add notes to the model
-		
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try
-			{
-			notes.merge(pasteboard);
-			}
-		finally { lock.unlock(); }
-		
-		
-		// Build NoteUIs, add them, and determine if they are all the same kind
+        {
+        ArrayList<Notes.Event> pasteboard = notes.getPasteboard();      // this gives me a COPY
+        
+        if (pasteboard.size() == 0) return;
+        
+        // Where should they go?
+        
+        int timeDiff = 0;
+        if (ruler.getHasRange())
+            {       
+            timeDiff = notes.getMinimumTime(pasteboard) - ruler.getRangeLow();              // I own the pasteboard copy, and getMinimumTime changes no state, so this doesn't need to be locked
+            }
+        else
+            {
+            if (gridui.getSelected().size() > 0)
+                {
+                if (replaceSelected)
+                    {
+                    timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMinimumSelectedTime();
+                    }
+                else if (gridui.getFirstSelected() instanceof NoteUI)
+                    {
+                    timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime();
+                    }
+                else
+                    {
+                    timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime() - DEFAULT_NOTE_LENGTH;
+                    }
+                }
+            else
+                {
+                // we assume we put them DEFAULT_NOTE_LENGTH ahead
+                timeDiff = 0;
+                }
+            }
+                        
+        // Shift time to chosen time
+        
+        for(Notes.Event event : pasteboard)
+            {
+            event.when -= timeDiff;
+            if (event.when < 0)     // uh....
+                {
+                event.when = 0;
+                }
+            }
+                
+        // Remove previous notes
+                
+        if (replaceSelected)
+            {
+            ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
+            gridui.deleteEvents(events);
+            // will rebuild, expensive
+            }
+                
+        // Add notes to the model
+                
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            notes.merge(pasteboard);
+            }
+        finally { lock.unlock(); }
+                
+                
+        // Build NoteUIs, add them, and determine if they are all the same kind
 
-		boolean homogeneous = true;		
-		Notes.Event firstEvent = null;
-		for(Notes.Event event : pasteboard)
-			{
-			if (firstEvent == null)
-				{
-				firstEvent = event;
-				}
-			else if (homogeneous)
-				{
-				if (firstEvent instanceof Notes.Note)
-					{
-					if (!(event instanceof Notes.Note))
-						{
-						homogeneous = false;
-						}
-					}
-				else if (firstEvent.getType() != event.getType())
-					{
-					homogeneous = false;
-					}
-				}
-				
-			if (event instanceof Notes.Note)
-				{
+        boolean homogeneous = true;             
+        Notes.Event firstEvent = null;
+        for(Notes.Event event : pasteboard)
+            {
+            if (firstEvent == null)
+                {
+                firstEvent = event;
+                }
+            else if (homogeneous)
+                {
+                if (firstEvent instanceof Notes.Note)
+                    {
+                    if (!(event instanceof Notes.Note))
+                        {
+                        homogeneous = false;
+                        }
+                    }
+                else if (firstEvent.getType() != event.getType())
+                    {
+                    homogeneous = false;
+                    }
+                }
+                                
+            if (event instanceof Notes.Note)
+                {
                 PitchUI pitchui = gridui.getPitchUIs().get(((Notes.Note)event).pitch);
-				NoteUI noteui = new NoteUI(pitchui, (Notes.Note)event);
-				pitchui.addNoteUI(noteui);
-				}
-			else
-				{
-				ParameterUI parameterui = eventsui.getParameterUIFor(event.getType());
-				if (parameterui != null)
-					{
-					parameterui.addEventUI(new EventUI(parameterui, event));
-					}
-				}
-			}
-		
-		//// Select Events if Possible
-		
-		if (homogeneous && firstEvent != null) 		// we can select them
-			{
-			gridui.clearSelected();
-			if (firstEvent instanceof Notes.Note)
-				{
-				gridui.addNotesToSelected(new HashSet(pasteboard));
-				}
-			else
-				{
-				ParameterUI parameterui = eventsui.getParameterUIFor(firstEvent.getType());
-				if (parameterui != null)
-					{
-					int index = eventsui.getParameterUIs().indexOf(parameterui);
-					if (index != -1)	// should never happen
-						{
-						gridui.addEventsToSelected(new HashSet(pasteboard), -1);
-						}
-					}
-				}
-		
-			// Scroll to selected
-			doScrollToSelected();
-			}
-			
-		//// Setup Inspector
+                NoteUI noteui = new NoteUI(pitchui, (Notes.Note)event);
+                pitchui.addNoteUI(noteui);
+                }
+            else
+                {
+                ParameterUI parameterui = eventsui.getParameterUIFor(event.getType());
+                if (parameterui != null)
+                    {
+                    parameterui.addEventUI(new EventUI(parameterui, event));
+                    }
+                }
+            }
+                
+        //// Select Events if Possible
+                
+        if (homogeneous && firstEvent != null)          // we can select them
+            {
+            gridui.clearSelected();
+            if (firstEvent instanceof Notes.Note)
+                {
+                gridui.addNotesToSelected(new HashSet(pasteboard));
+                }
+            else
+                {
+                ParameterUI parameterui = eventsui.getParameterUIFor(firstEvent.getType());
+                if (parameterui != null)
+                    {
+                    int index = eventsui.getParameterUIs().indexOf(parameterui);
+                    if (index != -1)        // should never happen
+                        {
+                        gridui.addEventsToSelected(new HashSet(pasteboard), -1);
+                        }
+                    }
+                }
+                
+            // Scroll to selected
+            doScrollToSelected();
+            }
+                        
+        //// Setup Inspector
 
-		if (gridui.getSelected().size() == 0)
-			{
-        	setChildInspector(null);
-			}
-		else if (gridui.getSelected().size() == 1)
-			{
+        if (gridui.getSelected().size() == 0)
+            {
+            setChildInspector(null);
+            }
+        else if (gridui.getSelected().size() == 1)
+            {
             setChildInspector(new EventInspector(seq, notes, this, gridui.getFirstSelected().event));
-			}
-			
-		//// Repaint Everything :-(
-		
+            }
+                        
+        //// Repaint Everything :-(
+                
         gridui.repaint();
         eventsui.repaint();
-    	}
+        }
 
     
     public void doReplicateEvents()
-    	{
+        {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
 
-		// We have to copy it
+        // We have to copy it
         ArrayList<Notes.Event> eventsCopy = new ArrayList<Notes.Event>();
         for(Notes.Event event : events)
-        	{
-        	eventsCopy.add(event.copy());
-        	}
+            {
+            eventsCopy.add(event.copy());
+            }
         
         // We can do the following outside of a lock because the notes is not hooked up yet
         Notes newNotes = new Notes(seq);
@@ -1696,8 +1696,8 @@ public class NotesUI extends MotifUI
         newNotes.trim();
         NotesUI newNotesUI = (NotesUI)(sequi.getMotifList().getOrAddMotifUIFor(newNotes));
         newNotesUI.doScrollToSelected();
-    	}
-    	
+        }
+        
                           
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Event</b><br>" +
         "Removes the selected event or events from the Notes.</html>";
