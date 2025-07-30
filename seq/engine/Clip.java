@@ -655,6 +655,15 @@ public abstract class Clip
         else return parent.cc(out, cc, val); 
         }
         
+    /** Sends a PC to the given Out. 
+        Returns true if the message was successfully sent.  */
+    public boolean pc(int out, int val) 
+        {
+        if (seq.root == this) return seq.pc(out, val);
+        // else if (parent == null) // uhh.....
+        else return parent.pc(out, val); 
+        }
+        
     /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
         up for only channel aftertouch, this will be converted to channel aftertouch. 
         Returns true if the message was successfully sent.  
@@ -745,6 +754,15 @@ public abstract class Clip
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
         return (shortmessage.getCommand() == ShortMessage.CONTROL_CHANGE);
+        }
+
+    /** Returns true if the given message is a PC. */
+    public static boolean isPC(MidiMessage message)
+        {
+        if (message == null) return false;
+        if (!(message instanceof ShortMessage)) return false;
+        ShortMessage shortmessage = (ShortMessage) message;
+        return (shortmessage.getCommand() == ShortMessage.PROGRAM_CHANGE);
         }
 
     /** Returns true if the given message is a pitchbend. */

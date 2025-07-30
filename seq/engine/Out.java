@@ -121,7 +121,19 @@ public class Out
             if (wrapper == null) return false;
             receiver = wrapper.getReceiver();
             }
-        receiver.send(message, -1L); 
+            
+        try
+        	{
+        	receiver.send(message, -1L); 
+        	}
+        catch (IllegalStateException e)
+			{
+			// This happens when the device has closed itself and we're still trying to send to it.
+			// For example if the user rips the USB cord for his device out of the laptop. 
+			
+			// Do nothing
+			}
+			
         javax.sound.midi.Track[] tracks = seq.getTracks();
         if (tracks != null)
             {
@@ -319,6 +331,9 @@ public class Out
 
     /** Sends a CC.  Returns true if the message was successfully sent.  */
     public boolean cc(int cc, int val) { return send(ShortMessage.CONTROL_CHANGE, cc, val); }
+
+    /** Sends a PC.  Returns true if the message was successfully sent.  */
+    public boolean pc(int val) { return send(ShortMessage.PROGRAM_CHANGE, val); }
 
     /** Sends a bend, associated with a given note (for MPE).   Bend goes -8192...8191.  Returns true if the message was successfully sent.  */
     // for the time being this just does regular bend

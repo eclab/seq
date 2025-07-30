@@ -1294,6 +1294,14 @@ public class Seq
         else return false;
         }
         
+    /** Sends a PC to the given Out. 
+        Returns true if the message was successfully sent.  */
+    public boolean pc(int out, int val) 
+        {
+        if (isPlaying()) return outs[out].pc(val);
+        else return false;
+        }
+        
     /** Sends a bend to the given Out, associated with a given note (for MPE).   Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
     public boolean bend(int out, int note, int val) 
