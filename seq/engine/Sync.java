@@ -20,7 +20,7 @@ public class Sync
     static final int SYNCS_PER_BEAT = 24;
     public static final double RATE_ALPHA = 0.03;
     public static final double PREDICTION_ALPHA = 0.5;
-    public static final double WARMUP = 0;
+    public static final double WARMUP = 50;
     public static final int TICKS_PER_SYNC = 8;
     public static final int MAX_SANE_RATE = 500;
     public static final int MIN_SANE_RATE = 20;
@@ -189,21 +189,30 @@ public class Sync
                 
         java.util.TimerTask writeTask = new java.util.TimerTask()
             {
+            double bpm = 120;
+            
             int count = 0;
-            //long lastTime = -1;
+            long lastTime = -1;
             public void run()
                 {
                 synchronized(sync)
                     {
-                    /*
                       long time = System.currentTimeMillis();
-                      if (lastTime == time) System.err.println("SAME");
-                      else System.err.println("TIME " + " " + time + " " + lastTime + " " + (time - lastTime));
-                      lastTime = time;
-                    */
-                                        
                     if (count++ > 50)
-                        sync.sync();
+                    	{
+                    if (lastTime != -1 && lastTime != time)
+                    	{
+                    	// tick/ms * beat/tick * ms/sec * sec/min -> beat/min
+                    	bpm = 0.99 * bpm + 0.01 * 1.0 / (time - lastTime) / 24.0 * 1000.0 * 60.0;
+                    	}
+                    	
+                      if (lastTime == time) System.err.println("SAME");
+                      else System.err.println("TIME " + " " + time + " " + lastTime + " " + (time - lastTime) + " " + bpm);
+                    	}
+                      lastTime = time;
+                    	
+//                    if (count++ > 50)
+//                        sync.sync();
                     }
                 }
             };
