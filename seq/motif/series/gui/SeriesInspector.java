@@ -405,7 +405,9 @@ public class SeriesInspector extends WidgetList
             }
         WidgetList cc = new WidgetList(labels, components);
         cc.makeBorder("MIDI Parameters");
-        add(new DisclosurePanel("MIDI Parameters", cc), BorderLayout.SOUTH);
+        DisclosurePanel midiParameters = new DisclosurePanel("MIDI Parameters", cc);
+        midiParameters.setParentComponent(seriesui);
+        add(midiParameters, BorderLayout.SOUTH);
         add(new DefaultParameterList(seq, seriesui), BorderLayout.NORTH);
         seriesui.revalidate();                            
         }
