@@ -201,6 +201,17 @@ public class NotesUI extends MotifUI
             });
         menu.add(pasteReplaceEvents);
 
+        JMenuItem replicateEvents = new JMenuItem("Replicate Events");
+        replicateEvents.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doReplicateEvents();
+                }
+            });
+        menu.add(replicateEvents);
+
+
         menu.addSeparator();
 
         JMenuItem quantize = new JMenuItem("Quantize...");
@@ -322,9 +333,8 @@ public class NotesUI extends MotifUI
     /** Re-caches the NoteUI or EventUI objects for the given events, and repaints the GridUI, EventsUI, and ruler. */
     public void reload(ArrayList<Notes.Event> events)
         {
-        HashSet<Notes.Event> hash = new HashSet(events);
-        gridui.reload(hash);
-        eventsui.reload(hash);
+        gridui.reload(events);
+        eventsui.reload(events);
         updateChildInspector(true);
 
         // at this point nothing has repainted yet, so we do it in bulk
@@ -765,22 +775,24 @@ public class NotesUI extends MotifUI
         	else return;
         	}
                 
-       String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch" };
+       String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch", "Remove PC" };
         JCheckBox removeNotes = new JCheckBox("");
         JCheckBox removeBend = new JCheckBox("");
         JCheckBox removeCC = new JCheckBox("");
         JCheckBox removeAftertouch = new JCheckBox("");
         JCheckBox removeNRPN = new JCheckBox("");
         JCheckBox removeRPN = new JCheckBox("");
+        JCheckBox removePC = new JCheckBox("");
 
         removeNotes.setSelected(Prefs.getLastBoolean("FilterRemoveNotes", false));
         removeBend.setSelected(Prefs.getLastBoolean("FilterRemoveBend", false));
         removeCC.setSelected(Prefs.getLastBoolean("FilterRemoveCC", false));
         removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveAftertouch", false));
-        removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveNRPN", false));
-        removeAftertouch.setSelected(Prefs.getLastBoolean("FilterRemoveRPN", false));
+        removeNRPN.setSelected(Prefs.getLastBoolean("FilterRemoveNRPN", false));
+        removeRPN.setSelected(Prefs.getLastBoolean("FilterRemoveRPN", false));
+        removePC.setSelected(Prefs.getLastBoolean("FilterRemovePC", false));
         
-        JComponent[] components = new JComponent[] { removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch};
+        JComponent[] components = new JComponent[] { removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch, removePC};
         int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Filter All" : "Filter", "Cancel" }, 0, all ? "Filter All" : "Filter", "Enter Filter Settings");
         
         if (result == 0)
@@ -792,13 +804,14 @@ public class NotesUI extends MotifUI
             boolean _removeAftertouch = removeAftertouch.isSelected();
             boolean _removeNRPN = removeNRPN.isSelected();
             boolean _removeRPN = removeRPN.isSelected();
+            boolean _removePC = removePC.isSelected();
         
             ReentrantLock lock = seq.getLock();
             lock.lock();
             boolean stopped;
             try
                 {
-                notes.filter(events, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removeAftertouch);
+                notes.filter(events, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removePC, _removeAftertouch);
                 }
             finally
                 {
@@ -811,6 +824,7 @@ public class NotesUI extends MotifUI
             Prefs.setLastBoolean("FilterRemoveAftertouch", _removeAftertouch);
             Prefs.setLastBoolean("FilterRemoveNRPN", _removeNRPN);
             Prefs.setLastBoolean("FilterRemoveRPN", _removeRPN);
+            Prefs.setLastBoolean("FilterRemovePC", _removePC);
 
             rebuild();
             }
@@ -1331,7 +1345,7 @@ public class NotesUI extends MotifUI
         {
         if (gridui.selected.size() == 1)
             {
-            updateChildInspector(gridui.getSelectedIterator().next(), forceRebuild);                // get the first (and only) one
+            updateChildInspector(gridui.getFirstSelected(), forceRebuild);                // get the first (and only) one
             }
         else
             {
@@ -1642,6 +1656,9 @@ public class NotesUI extends MotifUI
 						}
 					}
 				}
+		
+			// Scroll to selected
+			doScrollToSelected();
 			}
 			
 		//// Setup Inspector
@@ -1657,11 +1674,30 @@ public class NotesUI extends MotifUI
 			
 		//// Repaint Everything :-(
 		
-                
         gridui.repaint();
         eventsui.repaint();
     	}
 
+    
+    public void doReplicateEvents()
+    	{
+        ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
+
+		// We have to copy it
+        ArrayList<Notes.Event> eventsCopy = new ArrayList<Notes.Event>();
+        for(Notes.Event event : events)
+        	{
+        	eventsCopy.add(event.copy());
+        	}
+        
+        // We can do the following outside of a lock because the notes is not hooked up yet
+        Notes newNotes = new Notes(seq);
+        newNotes.setEvents(eventsCopy);
+        newNotes.trim();
+        NotesUI newNotesUI = (NotesUI)(sequi.getMotifList().getOrAddMotifUIFor(newNotes));
+        newNotesUI.doScrollToSelected();
+    	}
+    	
                           
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Event</b><br>" +
         "Removes the selected event or events from the Notes.</html>";
