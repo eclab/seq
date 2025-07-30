@@ -891,7 +891,7 @@ public class SeqUI extends JPanel
                     }
                 }
             });
-        panic.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        panic.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
         midiMenu.addSeparator();
         logItem = new JMenuItem("Log MIDI ...");
@@ -1176,9 +1176,18 @@ public class SeqUI extends JPanel
         motifui.uiWasSet();
 
         // This must be AFTER uiWasSet(), which calls build() and thus builds the menu...
-        if (motifUIMenu != null) menubar.remove(motifUIMenu);
-        motifUIMenu = motifui.getMenu();
-        if (motifUIMenu != null) menubar.add(motifUIMenu);
+        
+        /// NOTE: this particular configuration, where I don't change the menu if I have
+        /// it already up, is necessary to work around a frustrating MacOS Menu bug where if you
+        /// remove a menu, then put the same menu object back up, it will often make two
+        /// copies (not removing the original!)
+        JMenu newMotifUIMenu = motifui.getMenu();
+		if (newMotifUIMenu != motifUIMenu)
+			{
+	        if (motifUIMenu != null) menubar.remove(motifUIMenu);
+    		if (newMotifUIMenu != null) menubar.add(newMotifUIMenu);
+        	motifUIMenu = newMotifUIMenu;
+    		}
 
         motifui.rebuildInspectors(rebuildInspectorsCount);
         revalidate(); 
