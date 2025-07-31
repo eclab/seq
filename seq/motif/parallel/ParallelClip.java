@@ -151,100 +151,101 @@ public class ParallelClip extends Clip
 
         boolean[] muted = null;
         double[] prob = null;
-        int numChildren = parallel.getNumChildrenToSelect();
+        int numChildrenToSelect = parallel.getNumChildrenToSelect();
         ArrayList<Motif.Child> children = parallel.getChildren();
-        
-        if (numChildren == Parallel.ALL_CHILDREN)
-            {
-            int numRemainingChildren = children.size();
-            for(int i = 0; i < numRemainingChildren; i++)
-                {
-                double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
-                if (weight == 0.0) nodes.get(i).muted = true;
-                else if (weight == 1.0) nodes.get(i).muted = false;
-                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
-                }
-            }
-        else if (numChildren < children.size())
-            {
-            // do nothing
-            }
-        else if (numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST)
-            {
-            int numRemainingChildren = children.size();
-            nodes.get(0).muted = false;
-            for(int i = 1; i < numRemainingChildren; i++)
-                {
-                double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
-                if (weight == 0.0) nodes.get(i).muted = true;
-                else if (weight == 1.0) nodes.get(i).muted = false;
-                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
-                }
-            }
-        else    // need to build distribution
-            {
-            ThreadLocalRandom random = ThreadLocalRandom.current();
-            int numRemainingChildren = children.size();
-            prob = new double[numRemainingChildren];
                 
-            for(int i = 0; i < muted.length; i++) 
-                {
-                nodes.get(i).muted = true;
-                }
-                        
-            // Pick numChildren random children
+        if (numChildrenToSelect == Parallel.ALL_CHILDREN)
+            {
+            int numChildren = children.size();
             for(int i = 0; i < numChildren; i++)
                 {
-                double totalWeight = 0;
-                // Build the distribution
-                for(int j = 0; j < numChildren; j++)
-                    {
-                    Node node = nodes.get(i);
-                    if (node.muted)         // hasn't been picked yet
-                        {
-                        totalWeight += getCorrectedValueDouble(((Parallel.Data)(children.get(j).getData())).getProbability());
-                        }
-                    }
-                        
-                if (totalWeight == 0.0)                                         // select uniformly, ugh O(n)
-                    {
-                    double count = numChildren;
-                    for(int j = 0; j < numChildren; j++)
-                        {
-                        Node node = nodes.get(i);
-                        if (node.muted)         // hasn't been picked yet
-                            {
-                            if (random.nextDouble() <= 1.0 / count)
-                                {
-                                // selected!
-                                node.muted = false;
-                                break;
-                                }
-                            }
-                        count--;
-                        }
-                    }
-                else                                                                            // select from distribution, ugh O(n)
-                    {
-                    double rand = random.nextDouble() * totalWeight;
-                    double cdf = 0.0;
-                    double val = random.nextDouble() * totalWeight;
-                    for(int j = 0; j < numChildren; j++)
-                        {
-                        Node node = nodes.get(i);
-                        if (node.muted)         // hasn't been picked yet
-                            {
-                            cdf += getCorrectedValueDouble(((Parallel.Data)(children.get(j).getData())).getProbability());
-                            if (rand < cdf)
-                                {
-                                node.muted = false;
-                                break;
-                                }
-                            }
-                        }
-                    }
+                double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
+                if (weight == 0.0) nodes.get(i).muted = true;
+                else if (weight == 1.0) nodes.get(i).muted = false;
+                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
                 }
             }
+        else if (numChildrenToSelect == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST)
+            {
+            int numChildren = children.size();
+            nodes.get(0).muted = false;
+            for(int i = 1; i < numChildren; i++)
+                {
+                double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
+                if (weight == 0.0) nodes.get(i).muted = true;
+                else if (weight == 1.0) nodes.get(i).muted = false;
+                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
+                }
+            }
+        else if (numChildrenToSelect >= children.size())
+            {
+            int numChildren = children.size();
+            for(int i = 0; i < numChildren; i++)
+                {
+                nodes.get(0).muted = false;
+                }
+            }
+        else    // need to build distribution.  We do this in stupid O(n^2) fashion 
+            {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            ArrayList<Node> candidates = new ArrayList<>(nodes);
+            ArrayList<Double> weights = new ArrayList<>();
+            
+            // prepare weights
+            for(int i = 0; i < children.size(); i++)
+            	{
+               double weight = getCorrectedValueDouble(((Parallel.Data)(candidates.get(i).child.getData())).getProbability());
+               weights.add(weight);
+            	}
+
+            // prepare children
+            for(int i = 0; i < candidates.size(); i++)
+            	{
+				candidates.get(i).muted = true;
+            	}
+            
+            // Pick n children.  This will be O(n^2) because we have to update the distribution
+            // each time.  If we were doing uniform selection we could do this in O(n) :-( :-(
+            for(int i = 0; i < numChildrenToSelect; i++)
+            	{
+            	// Normalize weights
+            	double sum = 0.0;
+            	for(int j = 0; j < weights.size(); j++)
+            		{
+            		double weight = weights.get(j);
+            		sum += weights.get(j);
+            		}
+            	if (sum == 0)
+            		{
+            		for(int j = 0; j < weights.size(); j++)
+            			{
+            			weights.set(j, 1.0 / weights.size());
+            			}
+            		}
+            	else
+            		{
+            		for(int j = 0; j < weights.size(); j++)
+            			{
+            			weights.set(j, weights.get(j) / sum);
+            			}
+            		}
+
+				// Find and remove node  - I suppose we could do this in O(lg n)....
+				double pivot = random.nextDouble();
+				sum = 0.0;
+				for(int j = 0; j < weights.size(); j++)
+					{
+					sum += weights.get(j);
+					if (j == weights.size() - 1 || pivot < sum)	// it's the last one or we found the pivot
+						{
+						candidates.get(j).muted = false;
+						candidates.remove(j);
+						weights.remove((int)j);
+						break;
+						}
+					}
+				}
+			}
         }
 
     public void cut()  

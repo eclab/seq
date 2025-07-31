@@ -130,7 +130,7 @@ public class ParallelChildInspector extends WidgetList
         13.0,
         14.0,
         15.0,
-        1.0,
+        16.0,
         };
 
     public static final String[] QUANTIZATIONS = { "None", "16th Note", "Quarter Note", "Measure" };
