@@ -128,6 +128,8 @@ public class AutomatonUI extends MotifUI
  
     public void buildMenu()
         {
+        if (menu != null) return;		// already built, we don't want to make another one
+        
         menu = new JMenu("Automaton");
         JMenuItem load = new JMenuItem("Make Start Node");
         load.addActionListener(new ActionListener()
