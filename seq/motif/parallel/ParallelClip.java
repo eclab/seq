@@ -31,11 +31,13 @@ public class ParallelClip extends Clip
         double cumulativeRate = 0.0;
         boolean muted;
         boolean playing;
+        boolean repeating;
         boolean finishedPlaying;                // node finished last timestep and this timestep needs to clear
         boolean finallyFinishedPlaying;
         public Clip getClip() { return clip; }
         public Node(Clip clip, Parallel.Child node) { this.clip = clip; this.child = node;  }
         public boolean isPlaying() { return playing; }
+        public boolean isRepeating() { return repeating; }
         public Parallel.Data getData() { return (Parallel.Data)(child.getData()); }
         public boolean finishedPlaying(int position)
             {
@@ -116,6 +118,7 @@ public class ParallelClip extends Clip
         node.clip.reset();
         node.lastPos = -1;
         node.cumulativeRate = 0;
+        node.repeating = false;
         node.resetFinishedPlaying();
         node.localOverride = false;             // we start not overriding
         }
@@ -324,15 +327,23 @@ public class ParallelClip extends Clip
                     }
                 
                 // We only terminate/release if we haven't done so
-                if (!node.finallyFinishedPlaying)
+                if (!node.finallyFinishedPlaying || node.repeating)
                     {
                     boolean done = advance(node, getCorrectedValueDouble(data.getRate(), Parallel.Data.MAX_RATE));                                          // done == we have JUST finished playing notes
                     node.finishedPlaying = node.finishedPlaying || done;
 
                     if (done)                                               
                         {
-                        node.clip.terminate();
-                        node.clip.release();
+                        if (data.repeat)
+                        	{
+                        	node.clip.loop();
+                        	node.repeating = true;
+                        	}
+                        else
+                        	{
+	                        node.clip.terminate();
+    	                    node.clip.release();
+    	                    }
                         }
                     }
                     
@@ -342,8 +353,8 @@ public class ParallelClip extends Clip
                     firstAdvanced = !finallyDone;
                     }
                     
-                node.playing = !finallyDone;
-                somebodyAdvanced = node.playing || somebodyAdvanced;           // Bug note: somebodyAdvanced must be SECOND or ParallelClip will act in series!
+                node.playing = !finallyDone || node.repeating;
+                somebodyAdvanced = (node.playing && !node.repeating) || somebodyAdvanced;           // Bug note: somebodyAdvanced must be SECOND or ParallelClip will act in series!
                 }
                 
             testOverriding = false;                                                                             // we're not testing any more

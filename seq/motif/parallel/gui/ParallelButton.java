@@ -94,14 +94,37 @@ public class ParallelButton extends MotifButton
                 catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); return false; }                // FIXME: This appears to be a bug...
                 if (n != null)
                     {
-                    playing = n.isPlaying();
+                    playing = n.isPlaying() && !n.isRepeating();
                     }
                 }
             }
         finally { lock.unlock(); }
         return playing;
         }
-        
+    
+    public boolean shouldPreHighlight()
+    	{
+        boolean playing = false;
+        Seq seq = sequi.getSeq();
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            ParallelClip clip = ((ParallelClip)(owner.getDisplayClip()));
+            if (clip != null) 
+                {
+                ParallelClip.Node n = null;
+                try { n = clip.getNodes().get(at); } 
+                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); return false; }                // FIXME: This appears to be a bug...
+                if (n != null)
+                    {
+                    playing = n.isRepeating();
+                    }
+                }
+            }
+        finally { lock.unlock(); }
+        return playing;
+    	}
         
     public String getSubtext()
         {
@@ -111,11 +134,24 @@ public class ParallelButton extends MotifButton
         int bar = 0;
         boolean muted = false;
         boolean override = false;
+        boolean repeating = false;
         
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
             {
+            ParallelClip clip = ((ParallelClip)(owner.getDisplayClip()));
+            if (clip != null) 
+                {
+                ParallelClip.Node n = null;
+                try { n = clip.getNodes().get(at); } 
+                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); }                // FIXME: This appears to be a bug...
+                if (n != null)
+                    {
+                    repeating = n.isRepeating();
+                    }
+                }
+
             ArrayList<Motif.Child> children = owner.getMotif().getChildren();
             if (at >= children.size())  // uh
                 return "BAD CHILD? " + at;
@@ -147,7 +183,8 @@ public class ParallelButton extends MotifButton
         int beats = (_delay % bar);
         int bars = _delay / bar;
         
-        return (override ? "Override   (" : "(") + bars + " . " + beats + ") " + ticks + "/192&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (muted ? "MUTED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
+        return (override ? "Override   (" : "(") + bars + " . " + beats + ") " + ticks + "/192&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (muted ? "MUTED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") +
+        	(repeating ? "REPEATING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
         }
 
     public void doubleClick(MouseEvent e)

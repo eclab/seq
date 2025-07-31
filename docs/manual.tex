@@ -789,6 +789,8 @@ In the Current Motif Display, Parallel maintains a list of Child Motifs that it 
 
 While a Child is playing, its name is highlighted in red in the Child List.
 
+If a Child is playing repeated (looping) its name is highlighted in blue in the Child List.
+
 Each Child in the Child Motifs can have a {\bf Nickname}, set in its Child Inspector.  Even if a Motif appears multiple times in the List, each entry can have a different Nickname.  When you set the Nickname, it appears with the Child in the list.
 
 \paragraph{Play Probability}
@@ -811,6 +813,11 @@ When the last Child finishes playing once, we can finish Parallel immediately, o
 
 When a Child is delayed, it will shift horizontally to demonstrate this, as is shown in Figure~\ref{parallel}.
 
+\paragraph{Repeating}
+
+After a Child has played, you can set it to {\bf Repeat}, that is, to play in a loop until all of the children have been given a chance to play at least once: basically it's vamping.  The Parallel will terminate after all Children have terminated or are looping.
+
+While a Child is repeating, its button text color will change to blue and it will say ``REPEATING''.
 
 \paragraph{MIDI Modification}
 

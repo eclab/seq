@@ -123,7 +123,7 @@ public abstract class Clip
         By default this simply goes to the motif and optionally 
         removes the Clip as a playing clip. */
     public void terminate() 
-        { 
+        {
         Motif motif = getMotif();
         boolean result = motif.removePlayingClip(this); 
         if (playing)

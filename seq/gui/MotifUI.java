@@ -187,17 +187,16 @@ public abstract class MotifUI extends JPanel
     public void setPrimaryButton(MotifListButton button) { this.primaryButton = button; }
     public void addButton(MotifButton button) { buttons.add(button); button.updateList(); }
     public void removeButton(MotifButton button) { ArrayLists.removeFast(buttons, button); button.updateList(); }                        // O(n) search, O(1) remove
-    public boolean isPlaying() { return motif.getPlayCount() > 0; }
-    /*
-      private void setPlaying(boolean playing) 
-      {
-      if (playing != this.playing)
-      {
-      this.playing = playing;
-      updateText();
-      }
-      }
-    */
+    public boolean isPlaying() 
+    	{ 
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            { 
+    		return motif.getPlayCount() > 0; 
+            }
+        finally { lock.unlock(); }
+    	}
     
     public Clip getDisplayClip()
         {

@@ -143,17 +143,15 @@ public class ParallelChildInspector extends WidgetList
     ParallelButton button;
     JComboBox quantization;
     JCheckBox override;
+    JCheckBox repeat;
     JCheckBox mute;
     JPanel gainPanel;
     TimeDisplay delay;
     
-    //SmallDial coarseDelay;
-    //SmallDial fineDelay;
     SmallDial transpose;
     SmallDial gain;
     SmallDial rate;
     SmallDial probability;
-    //PushButton fineDelayPresets;
     PushButton ratePresets;
     JComboBox out;
     StringField name;
@@ -271,129 +269,6 @@ public class ParallelChildInspector extends WidgetList
                     }
                 };
             delay.setToolTipText(DELAY_TOOLTIP);
-/*
-  coarseDelay = new SmallDial((getData().getDelay() / Seq.PPQ) / Parallel.Data.MAX_DELAY)
-  {
-  protected String map(double val) 
-  {
-  int beats = (int)(val * Parallel.Data.MAX_DELAY);
-  int beatsPerBar = 0;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try { beatsPerBar = seq.getBar(); }
-  finally { lock.unlock(); }
-  return String.valueOf("" + beats + " (" + (beats / beatsPerBar) + " . " + (beats % beatsPerBar) + ")");
-  }
-  public double getValue() 
-  {
-  double val = 0;
-  int delay = 0;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try 
-  {
-  delay = getData().getDelay();
-  val = (delay / Seq.PPQ) / Parallel.Data.MAX_DELAY; 
-  }
-  finally { lock.unlock(); }
-  if (button != null) button.setDelay(delay);
-  return val;
-  }
-  public void setValue(double val) 
-  { 
-  if (seq == null) return;
-  int delay = 0;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try 
-  { 
-  int oldDelay = getData().getDelay();
-  int oldBeats = oldDelay / Seq.PPQ;
-  int oldPPQ = oldDelay - (oldBeats * Seq.PPQ);           // Faster than %
-  delay = oldPPQ + (int)(val * Parallel.Data.MAX_DELAY) * Seq.PPQ;
-  getData().setDelay(delay);
-  }
-  finally { lock.unlock(); }
-  if (button != null) button.setDelay(delay);
-  }
-  };
-
-  fineDelay = new SmallDial((getData().getDelay() % Seq.PPQ) / (double)(Seq.PPQ - 1))
-  {
-  protected String map(double val) 
-  {
-  int ppq = (int)(val * (Seq.PPQ - 1));
-  String ppqVal = String.valueOf(ppq) + " / " + Seq.PPQ;
-  if (ppq == 0) return ppqVal;
-  if (ppq % (Seq.PPQ / 2) == 0)       // divisible by 2
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 2)) + " / 2" + ")";
-  else if (ppq % (Seq.PPQ / 3) == 0)  // divisible by 3
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 3)) + " / 3" + ")";
-  else if (ppq % (Seq.PPQ / 4) == 0)  // divisible by 4
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 4)) + " / 4" + ")";
-  else if (ppq % (Seq.PPQ / 6) == 0)  // divisible by 6
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 6)) + " / 6" + ")";
-  else if (ppq % (Seq.PPQ / 8) == 0)  // divisible by 8
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 8)) + " / 8" + ")";
-  else if (ppq % (Seq.PPQ / 12) == 0) // divisible by 12
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 12)) + " / 12" + ")";
-  else if (ppq % (Seq.PPQ / 16) == 0) // divisible by 16
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 16)) + " / 16" + ")";
-  else if (ppq % (Seq.PPQ / 24) == 0) // divisible by 24
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 24)) + " / 24" + ")";
-  else if (ppq % (Seq.PPQ / 32) == 0) // divisible by 32
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 32)) + " / 32" + ")";
-  else if (ppq % (Seq.PPQ / 36) == 0) // divisible by 36
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 36)) + " / 36" + ")";
-  else if (ppq % (Seq.PPQ / 48) == 0) // divisible by 48
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 48)) + " / 48" + ")";
-  else if (ppq % (Seq.PPQ / 96) == 0) // divisible by 96
-  return ppqVal + " (" + String.valueOf(ppq / (Seq.PPQ / 96)) + " / 96" + ")";
-  else return String.valueOf(ppq) + " / " + Seq.PPQ;
-  }
-  public double getValue() 
-  { 
-  double val = 0;
-  int delay = 0;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try 
-  {
-  delay = getData().getDelay();
-  val = (delay % Seq.PPQ) / (double)(Seq.PPQ - 1); 
-  }
-  finally { lock.unlock(); }
-  if (button != null) button.setDelay(delay);
-  return val;
-  }
-  public void setValue(double val) 
-  { 
-  if (seq == null) return;
-  int delay = 0;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try 
-  { 
-  int oldDelay = getData().getDelay();
-  int oldBeats = oldDelay / Seq.PPQ;
-  int oldPPQ = oldDelay - (oldBeats * Seq.PPQ);           // Faster than %
-  delay = oldBeats * Seq.PPQ + (int)(val * (Seq.PPQ - 1));
-  getData().setDelay(delay);
-  }
-  finally { lock.unlock(); }
-  if (button != null) button.setDelay(delay);
-  }
-  };
-
-  fineDelayPresets = new PushButton("Presets...", FINE_DELAY_OPTIONS)
-  {
-  public void perform(int val)
-  {
-  if (seq == null) return;
-  fineDelay.update(FINE_DELAYS[val], false);
-  }
-  };
-*/
 
             quantization = new JComboBox(QUANTIZATIONS);
             quantization.setSelectedIndex(getData().getEndingQuantization());
@@ -560,7 +435,8 @@ public class ParallelChildInspector extends WidgetList
                         { 
                         getData().setMute(mute.isSelected()); 
                         }
-                    finally { lock.unlock(); }                              
+                    finally { lock.unlock(); }      
+                    if (button != null) button.updateText();		// display the "MUTE"                        
                     }
                 });
             mute.setToolTipText(MIDI_CHANGES_MUTE_TOOLTIP);
@@ -651,6 +527,22 @@ public class ParallelChildInspector extends WidgetList
                 });
             override.setToolTipText(OVERRIDE_TOOLTIP);
 
+            repeat = new JCheckBox();
+            repeat.setSelected(getData().getRepeat());
+            repeat.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { getData().setRepeat(repeat.isSelected()); }
+                    finally { lock.unlock(); }   
+                    if (button != null) button.updateText();
+                    }
+                });
+            repeat.setToolTipText(REPEAT_TOOLTIP);
+
             }
         finally { lock.unlock(); }
 
@@ -660,20 +552,13 @@ public class ParallelChildInspector extends WidgetList
         ratePanel.add(ratePresets, BorderLayout.EAST);       
         ratePanel.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
 
-//        JPanel fineDelayPanel = new JPanel();
-//        fineDelayPanel.setLayout(new BorderLayout());
-//        fineDelayPanel.add(fineDelay.getLabelledDial("158 / 192 (79 / 96)"), BorderLayout.CENTER);   // so it stretches
-//        fineDelayPanel.add(fineDelayPresets, BorderLayout.EAST);       
-
-
-        JPanel result = build(new String[] { "Nickname", "Delay", /*"Coarse Delay", "Fine Delay",*/ "Probability", "End Quantization", "Override", "MIDI Changes", "Rate", "Transpose", "Gain", "Out" }, 
+        JPanel result = build(new String[] { "Nickname", "Delay", "Probability", "Repeat", "End Quantization", "Override", "MIDI Changes", "Rate", "Transpose", "Gain", "Out" }, 
             new JComponent[] 
                 {
                 name,
-                //coarseDelay.getLabelledDial("256 (64 . 4)"),
-                //fineDelayPanel,
                 delay,
                 probability.getLabelledDial("0.0000"),
+                repeat,
                 quantization,
                 override,
                 null,                           // separator
@@ -716,8 +601,6 @@ public class ParallelChildInspector extends WidgetList
         name.update();
         rate.redraw();
         probability.redraw();
-//        coarseDelay.redraw();
-//        fineDelay.redraw();
         if (delay != null) delay.revise();
         transpose.redraw();
         gain.redraw();
@@ -759,6 +642,10 @@ public class ParallelChildInspector extends WidgetList
         "as normal, but we want to change its ending.  We do that by inserting a node with<br>" +
         "the ending changes, delay it to occur at the right time, and set it to override the<br>" +
         "original node.</html>";
+
+    static final String REPEAT_TOOLTIP = "<html><b>Repeat</b><br>" +
+        "Sets whether the child repeats (loops) after it has finished playing and there is time left.<br><br>" + 
+        "Repeating children will be displayed in <font color=blue>blue</font> and with the word REPEATING.</html>";
 
     static final String MIDI_CHANGES_RATE_TOOLTIP = "<html><b>MIDI Changes: Rate</b><br>" +
         "Changes the rate of the motif node's playing (speeding it up or slowing it down)</html>";

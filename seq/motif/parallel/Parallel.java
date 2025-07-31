@@ -38,6 +38,7 @@ public class Parallel extends Motif
         public int out = DISABLED;
         int endingQuantization = QUANTIZATION_NONE;
         boolean override = false;
+        boolean repeat = false;
         
         public boolean getMute() { return mute; }
         public void setMute(boolean val) { mute = val; }
@@ -63,6 +64,9 @@ public class Parallel extends Motif
         public double getRate() { return rate; }
         public void setRate(double val) { rate = val; }
  
+ 		public boolean getRepeat() { return repeat; }
+ 		public void setRepeat(boolean val) { repeat = val; }
+ 		
         public int getEndingQuantization() { return endingQuantization; }
         public void setEndingQuantization(int val) { endingQuantization = val; }
        
@@ -70,13 +74,15 @@ public class Parallel extends Motif
 
         public Data(Data other)
             {
+            mute = other.mute;
             rate = other.rate;
             delay = other.delay;
+            probability = other.probability;
             transpose = other.transpose;
             gain = other.gain;
             out = other.out;
-            probability = other.probability;
             endingQuantization = other.endingQuantization;
+            repeat = other.repeat;
             override = other.override;
             }
         }
@@ -96,6 +102,7 @@ public class Parallel extends Motif
         to.put("gain", d.gain);
         to.put("out", d.out);
         to.put("equant", d.endingQuantization);
+        to.put("repeat", d.repeat);
         to.put("over", d.override);
         }
 
@@ -110,6 +117,7 @@ public class Parallel extends Motif
         d.out = from.optInt("out", 0);
         d.probability = from.optDouble("prob", 1.0);
         d.endingQuantization = from.optInt("equant", QUANTIZATION_NONE);
+        d.repeat = from.optBoolean("repeat", false);
         d.override = from.optBoolean("over", false);
         return d;
         }
