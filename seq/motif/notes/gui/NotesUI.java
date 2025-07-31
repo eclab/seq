@@ -290,7 +290,7 @@ public class NotesUI extends MotifUI
         menu.addSeparator();
 
         JMenuItem delete = new JMenuItem("Delete Selection");
-        delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         delete.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent event)

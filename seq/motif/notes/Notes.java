@@ -953,7 +953,7 @@ public class Notes extends Motif
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
         convertNRPNRPN = Prefs.getLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", true); 
         quantize = Prefs.getLastBoolean("seq.motif.notes.Notes.quantize", true); 
-        quantizeTo = Prefs.getLastInt("seq.motif.notes.Notes.quantizeTo", 1); 
+        quantizeTo = Prefs.getLastInt("seq.motif.notes.Notes.quantizeTo", 3);			// 16th notes 
         quantizeNoteEnds = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNoteEnds", true); 
         quantizeNonNotes = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNonNotes", true); 
         quantizeBias = Prefs.getLastDouble("seq.motif.notes.Notes.quantizeBias", 0.5); 

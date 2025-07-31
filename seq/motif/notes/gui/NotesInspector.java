@@ -320,7 +320,7 @@ public class NotesInspector extends WidgetList
                 });
 
             quantize = new JCheckBox();
-            quantize.setSelected(Prefs.getLastBoolean("QuantizeOnRecord", false));
+            quantize.setSelected(notes.getQuantize());
             quantize.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
@@ -334,7 +334,7 @@ public class NotesInspector extends WidgetList
                 });
 
             quantizeNonNotes = new JCheckBox();
-            quantizeNonNotes.setSelected(Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false));
+            quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
             quantizeNonNotes.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
@@ -348,7 +348,7 @@ public class NotesInspector extends WidgetList
                 });
 
             quantizeNoteEnds = new JCheckBox();
-            quantizeNoteEnds.setSelected(Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false));
+            quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
             quantizeNoteEnds.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
@@ -362,6 +362,7 @@ public class NotesInspector extends WidgetList
                 });
 
             quantizeTo = new JComboBox(Notes.QUANTIZE_STRINGS);
+            quantizeTo.setSelectedIndex(notes.getQuantizeTo());
             quantizeTo.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
