@@ -1209,7 +1209,7 @@ public class NotesUI extends MotifUI
                                         
         this.scroll = scroll;
         }
-
+        
     /** Revalidates the entire GridUI, EventUI, and ruler */
     void rebuildSizes()
         {
@@ -1488,8 +1488,14 @@ public class NotesUI extends MotifUI
             }
         }
 
-
-    /** Rebuilds the NotesUI in response to being stopped.  This is becasue we may have recorded notes which have just been inserted.  */
+	protected void build()
+		{
+		super.build();
+		// FIXME:   I don't know why I have to invoke this like this....
+		SwingUtilities.invokeLater(new Runnable() { public void run() { rebuild(); } });
+ 		}
+		
+    /** Rebuilds the NotesUI in response to being stopped.  This is because we may have recorded notes which have just been inserted.  */
     public void stopped()
         {
         if (isUIBuilt())

@@ -80,7 +80,7 @@ public abstract class MotifUI extends JPanel
         }
 
     protected void build()
-        {       
+        {      
         setLayout(new BorderLayout());  
         inspectorScroll.setBorder(null);
         JComponent primary = buildPrimary();

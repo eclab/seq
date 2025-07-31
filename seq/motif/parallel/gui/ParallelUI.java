@@ -92,10 +92,10 @@ public class ParallelUI extends MotifUI
         scroll.setViewportView(inspectorPane);
         }
     
-    public void build()
+    protected void build()
         {
-        loadChildren();
         super.build();
+        loadChildren();
         }
         
     public void buildPrimary(JScrollPane scroll)
@@ -333,6 +333,17 @@ public class ParallelUI extends MotifUI
             MotifUI motifui = list.getMotifUIFor(motif);
         
             ParallelButton newButton = new ParallelButton(sequi, motifui, ParallelUI.this, i);
+
+			ReentrantLock lock = parallel.getSeq().getLock();
+			lock.lock();
+			try 
+				{
+			    newButton.setDelay(((Parallel.Data)(parallel.getChild(i).getData())).getDelay());
+			    }
+			finally
+				{
+				lock.unlock();
+				}
 
             newButton.addActionListener(new ActionListener()
                 {

@@ -81,9 +81,9 @@ public class ParallelButton extends MotifButton
         Seq seq = sequi.getSeq();
         
         String subname = null;
+        boolean playing = false;
         ReentrantLock lock = seq.getLock();
         lock.lock();
-        boolean playing = false;
         try 
             {
             ParallelClip clip = ((ParallelClip)(owner.getDisplayClip()));

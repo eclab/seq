@@ -1170,7 +1170,7 @@ public class SeqUI extends JPanel
         if (this.motifui != null) this.motifui.uiWasUnset();
         if (this.motifui != null) remove(this.motifui);
         this.motifui = motifui; 
-        if (motifui != null) add(motifui, BorderLayout.CENTER);
+        add(motifui, BorderLayout.CENTER);
         MotifListButton button = motifui.getPrimaryButton();
         if (button != null) getMotifList().select(button, updateStacks);
         motifui.uiWasSet();
