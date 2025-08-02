@@ -140,13 +140,28 @@ public class GridUI extends JComponent
                         {
                         length = DEFAULT_NO_SNAP_NEW_NOTE;
                         }
-                    Notes.Note note = new Notes.Note(pitch, NotesUI.DEFAULT_NOTE_VELOCITY, when, length, NotesUI.DEFAULT_NOTE_VELOCITY);
-                                     
+                        
+                    int velocity = 0;
+                    int releaseVelocity = 0;
+                    Notes notes = null;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try
                         {
-                        Notes notes = getNotesUI().getNotes();
+                        notes = getNotesUI().getNotes();
+                        velocity = notes.getDefaultVelocity();
+                        releaseVelocity = notes.getDefaultReleaseVelocity();
+                        }
+                    finally
+                        {
+                        lock.unlock();
+                        }
+
+                    Notes.Note note = new Notes.Note(pitch, velocity, when, length, releaseVelocity);
+                                     
+                    lock.lock();
+                    try
+                        {
                         notes.getEvents().add(note);
                                 
                         // now comes the costly part

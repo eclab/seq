@@ -303,9 +303,9 @@ An example of a trivial hierarchical sequencer is {\bf song mode}, commonly foun
 
 Now imagine: what if you had a {\bf chain of chains}?  Perhaps you might have a chain X that said ``Play all of Chain Y three times, then play Pattern B twice, then play Chain Z''.  You could create a larger and larger hierarchy of chains.
 
-Parents don't just have to be chains (or in Seq's terminology, {\bf Series} objects).  You could instead have a parent that says ``Play Chain X and Chain Y in parallel, with Chain Y coming in delayed by 5 beats.''  Or you could have a parent that says ``Play either Chain X or Chain Y''.  And so on.  You could create a complex hierarchy of parent objects.
+Parents don't just have to be chains (or in Seq's terminology, {\bf Series} objects).  You could instead have a parent that says ``Play Chain X and Chain Y in parallel, with Chain Y coming in delayed by 5 beats.''  Or you could have a parent that says ``Play either Chain X or Chain Y, selected at Random''.  And so on.  You could create a complex hierarchy of parent objects.
 
-The children at the very bottom don't have to be just simple patterns either.  They can be entire chunks of MIDI, or arpeggio generators, or whatnot.  
+The children at the very bottom don't have to be just simple patterns either.  They can be entire chunks of MIDI, or melody generators, or whatnot.  
 
 Furthermore, when in the course of playing a child generates MIDI, the MIDI is sent to its parents (and their parents, and so on), and they have a chance to modify it before it is finally emitted.
 
@@ -326,7 +326,7 @@ You don't have to start playing at Chain Z.  You could instead choose to start p
 
 \paragraph{Seq Terminology}
 
-Seq's sequences are DAGs built out of basic musical building blocks (step sequences, chunks of MIDI, etc.), and objects which group other building blocks into subsequences (including grouping other subsequences tother).  All these objects, both basic and grouping, are know as {\bf motifs}.  Thus (to use the LM-1's terminology) both individual step sequence patterns and pattern chains are represented as kinds of motifs.  One motif is designated the {\bf root motif}, and is the start point when playing.  Motifs which group other motifs are known as the {\bf parents} of those {\bf children}.  
+Seq's sequences are DAGs built out of basic musical building blocks (step sequences, chunks of MIDI, etc.), and objects which group other building blocks into subsequences (including grouping other subsequences together).  All these objects, both basic and grouping, are know as {\bf motifs}.  Thus (to use the LM-1's terminology) both individual step sequence patterns and pattern chains are represented as kinds of motifs.  One motif is designated the {\bf root motif}, and is the start point when playing.  Motifs which group other motifs are known as the {\bf parents} of those {\bf children}.  
 
 When you're editing a Motif, you'll be shown the {\bf Motif Display} and, to its right, various {\bf Inspectors} to modify the features of the Motif and how it manages its children (if it has them).  All your Motifs are collected into one group, called the {\bf Motif List}.
 
@@ -576,7 +576,7 @@ At the top of the display is the {\bf Ruler}.  Depending on the zoom amount, wil
 
 \paragraph{Creating Notes and Events}
 
-The create a note or an event, just double click in its region where you want it to be.
+The create a note or an event, just double click in its region where you want it to be.  The velocity and release velocity of the note will be set to the {\bf Initial Velocity} and {\bf Initial Release Velocity} respectively, found under the {\bf Note Editing} disclosure panel in the inspector.
 
 The position of the note or event, and the size of the note, are governed by the {\bf snap} value, which you can set via a pop-up menu at the bottom of the window:
 
@@ -819,6 +819,8 @@ After a Child has played, you can set it to {\bf Repeat}, that is, to play in a 
 
 While a Child is repeating, its button text color will change to blue and it will say ``REPEATING''.
 
+{\it Why is this useful?}  Let's say you want a Step Sequence to repeat its (shorter) pattern as long as a Notes melody is playing.  That's a very common need.  There are various ways to do this, but the easiest way is to put them both in a Parallel, and set the Step Sequence to be Repeating. 
+
 \paragraph{MIDI Modification}
 
 As a Child of the Parallel emits MIDI, that MIDI is handed to the Parallel, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
@@ -979,9 +981,14 @@ To use a Novation LaunchPad to select Children, you specify it in the {\bf Contr
 
 \begin{itemize}
 \item {\bf MK I}\qquad LaunchPad, LaunchPad S, LaunchPad Pro (untested).   
-\item {\bf MK III}\qquad Launchpad Mini, Launchpad X, LaunchPad Pro [MK3].\\\\When using a MK3 device, you should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  
+\item {\bf MK III}\qquad Launchpad Mini, Launchpad X, LaunchPad Pro [MK3].  When using a MK3 device, you should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  
 
 \end{itemize}
+
+\paragraph{Troubleshooting}
+
+\paragraph{\it When I go to my Select, it plays a note on my synthesizer even when stopped.}~\\
+\noindent You have the Control Out set to your synthesizer device.  Instead, set it to your LaunchPad.
 
 \clearpage
 

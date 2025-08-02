@@ -183,8 +183,8 @@ public class ParallelButton extends MotifButton
         int beats = (_delay % bar);
         int bars = _delay / bar;
         
-        return (override ? "Override   (" : "(") + bars + " . " + beats + ") " + ticks + "/192&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (muted ? "MUTED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") +
-        	(repeating ? "REPEATING&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
+        return (override ? "Override   (" : "(") + bars + " . " + beats + ") " + ticks + "/192&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (muted ? "Muted&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") +
+        	(repeating ? "Repeating&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
         }
 
     public void doubleClick(MouseEvent e)

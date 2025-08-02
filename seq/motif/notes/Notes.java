@@ -811,6 +811,10 @@ public class Notes extends Motif
     boolean log = true;
     // The end marker for the Notes
     int end = 0;
+    // Default velocity for new Notes
+    int defaultVelocity;
+    // Default release velocity for new Notes
+    int defaultReleaseVelocity;
     
     public static final int INTEGRATE_REPLACE = 0;
     public static final int INTEGRATE_REPLACE_TRIM = 1;
@@ -921,6 +925,16 @@ public class Notes extends Motif
     public int getMaxNoteOnPosition() { return maxNoteOnPosition; }
     /** Returns the highest time of the NOTE OFF of any note. */
     public int getMaxNoteOffPosition() { return maxNoteOffPosition; }
+    
+    /** Returns the default velocity of new notes drawn by hand. */
+    public int getDefaultVelocity() { return defaultVelocity; }
+    /** Sets the default release velocity of new notes drawn by hand. */
+    public void setDefaultVelocity(int val) { defaultVelocity = val; Prefs.setLastInt("seq.motif.notes.Notes.defaultVelocity", val); }
+    /** Returns the default velocity of new notes drawn by hand. */
+    public int getDefaultReleaseVelocity() { return defaultReleaseVelocity; }
+    /** Sets the default release velocity of new notes drawn by hand. */
+    public void setDefaultReleaseVelocity(int val) { defaultReleaseVelocity = val; Prefs.setLastInt("seq.motif.notes.Notes.defaultReleaseVelocity", val); }
+        
         
 
     /** Copies the Notes */
@@ -958,6 +972,8 @@ public class Notes extends Motif
         quantizeNonNotes = Prefs.getLastBoolean("seq.motif.notes.Notes.quantizeNonNotes", true); 
         quantizeBias = Prefs.getLastDouble("seq.motif.notes.Notes.quantizeBias", 0.5); 
         recordIntegration = Prefs.getLastInt("seq.motif.notes.Notes.recordintegration", INTEGRATE_REPLACE); 
+        defaultVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultVelocity", 64);	 
+        defaultReleaseVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultReleaseVelocity", 64); 
         }
 
     /** Returns all events */
@@ -1357,18 +1373,15 @@ public class Notes extends Motif
         int ri = 0;
         while(pi < plen || ri < rlen)           // As long as a stream still has events
             {
-            System.err.println("Merge into " + events);
             if (pi >= plen)                                     // only r left
                 {
                 Event r = from.get(ri);
-                System.err.println("Adding 2" + r);
                 newEvents.add(r);
                 ri++;
                 }
             else if (ri >= rlen)                        // only p left
                 {
                 Event p = events.get(pi);
-                System.err.println("Adding 3" + p);
                 newEvents.add(p);
                 pi++;
                 }
@@ -1378,19 +1391,16 @@ public class Notes extends Motif
                 Event r = from.get(ri);
                 if (p.when < r.when)
                     {
-                    System.err.println("Adding 0" + p);
                     newEvents.add(p);
                     pi++;
                     }
                 else
                     {
-                    System.err.println("Adding 1" + r);
                     newEvents.add(r);
                     ri++;
                     }
                 }
             }
-        System.err.println("New Events : " + newEvents);
         setEvents(newEvents);
         }
 

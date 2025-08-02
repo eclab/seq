@@ -26,6 +26,7 @@ public class NotesInspector extends WidgetList
     JComboBox out;
     TimeDisplay end;
     WidgetList recordList1;
+    WidgetList noteDisplayList;
     JCheckBox armed;
     JCheckBox echo;
     JComboBox recordIntegration;
@@ -41,6 +42,8 @@ public class NotesInspector extends WidgetList
     JCheckBox quantizeNonNotes;
     JComboBox quantizeTo;
     SmallDial quantizeBias;
+    SmallDial defaultNoteVelocity;
+    SmallDial defaultNoteReleaseVelocity;
     
     WidgetList widgetList = new WidgetList();
     
@@ -393,7 +396,46 @@ public class NotesInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+
+            defaultNoteVelocity = new SmallDial(notes.getDefaultVelocity() / 127.0)
+                {
+                public String map(double val) { return String.valueOf((int)(val * 127)); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return notes.getDefaultVelocity() / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setDefaultVelocity((int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                };
            
+            defaultNoteReleaseVelocity = new SmallDial(notes.getDefaultReleaseVelocity() / 127.0)
+                {
+                public String map(double val) { return String.valueOf((int)(val * 127)); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return notes.getDefaultReleaseVelocity() / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setDefaultReleaseVelocity((int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                };
            
            
             for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
@@ -522,7 +564,6 @@ public class NotesInspector extends WidgetList
         out.setToolTipText(OUT_TOOLTIP);
         in.setToolTipText(IN_TOOLTIP);
         end.setToolTipText(END_TOOLTIP);
-//        setEnd.setToolTipText(SET_END_TOOLTIP);
         echo.setToolTipText(ECHO_TOOLTIP);
         armed.setToolTipText(ARMED_TOOLTIP);
         recordBend.setToolTipText(RECORD_BEND_TOOLTIP);
@@ -530,6 +571,8 @@ public class NotesInspector extends WidgetList
         recordCC.setToolTipText(RECORD_CC_TOOLTIP);
         recordPC.setToolTipText(RECORD_PC_TOOLTIP);
         convertNRPNRPN.setToolTipText(CONVERT_NRPN_RPN_TOOLTIP);
+        defaultNoteVelocity.setToolTipText(DEFAULT_NOTE_VELOCITY_TOOLTIP);
+        defaultNoteReleaseVelocity.setToolTipText(DEFAULT_NOTE_RELEASE_VELOCITY_TOOLTIP);
 
         build(new String[] { "Name", "Out", "In", "End", "Armed", "Echo"}, 
             new JComponent[] 
@@ -549,6 +592,12 @@ public class NotesInspector extends WidgetList
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
         DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
 
+        noteDisplayList = new WidgetList(new String[] { "Initial Velocity", "Initial Release Velocity" },  
+            new JComponent[] { defaultNoteVelocity.getLabelledDial("127"), defaultNoteReleaseVelocity.getLabelledDial("127") });
+
+        noteDisplayList.setBorder(BorderFactory.createTitledBorder("<html><i>Note Editing</i></html>"));
+        DisclosurePanel noteDisplayDisclosure = new DisclosurePanel("Note Editing", noteDisplayList);
+
         WidgetList widgetList2 = new WidgetList();
         widgetList2.build(new String[] { "1", "2", "3", "4" },
             new JComponent[] { eventParameterPanel[0], eventParameterPanel[1], eventParameterPanel[2], eventParameterPanel[3] });
@@ -566,10 +615,12 @@ public class NotesInspector extends WidgetList
         JPanel finalPanel = new JPanel();
         finalPanel.setLayout(new BorderLayout());
         finalPanel.add(recordDisclosure, BorderLayout.NORTH);
+        finalPanel.add(noteDisplayDisclosure, BorderLayout.CENTER);
         finalPanel.add(parameterDisclosure, BorderLayout.SOUTH);
         add(finalPanel, BorderLayout.SOUTH);
 
         recordDisclosure.setParentComponent(notesui);
+        noteDisplayDisclosure.setParentComponent(notesui);
         parameterDisclosure.setParentComponent(notesui);
         }
     
@@ -769,6 +820,8 @@ public class NotesInspector extends WidgetList
         name.update();
         if (end != null) end.revise();
         if (quantizeBias != null) quantizeBias.redraw();
+        if (defaultNoteVelocity != null) defaultNoteVelocity.redraw();
+        if (defaultNoteReleaseVelocity != null) defaultNoteReleaseVelocity.redraw();
         
         for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
             {
@@ -847,4 +900,9 @@ public class NotesInspector extends WidgetList
         "<li><b>RPN</b>.  Uses the MSB and LSB together to define the parameter." + 
         "</ul></html>";
         
+    static final String DEFAULT_NOTE_VELOCITY_TOOLTIP = "<html><b>Initial Note Velocity</b><br>" +
+        "Sets the velocity of notes drawn on-screen with the mouse (not recorded ones).</html>";
+
+    static final String DEFAULT_NOTE_RELEASE_VELOCITY_TOOLTIP = "<html><b>Initial Note Release Velocity</b><br>" +
+        "Sets the release velocity of notes drawn on-screen with the mouse (not recorded ones).</html>";
     }

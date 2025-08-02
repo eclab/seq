@@ -30,8 +30,11 @@ public class EventUI extends JComponent
     // Stroke color for drawing me while selected
     public static final Color selectedColor = Color.BLUE; 
     // Mapping of value to color
-    public static final SimpleColorMap valueMap = new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
-
+    public static final SimpleColorMap valueMap = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
+		new SimpleColorMap(0, 127, 64, 
+			new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
+			new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
+			
     // The parameterui owner
     ParameterUI parameterui;
     // The event

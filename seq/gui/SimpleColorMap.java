@@ -1,5 +1,5 @@
 /*
-  Copyright 2006 by Sean Luke and George Mason University
+  Copyright 2006, 2025 by Sean Luke and George Mason University
   Licensed under the Academic Free License version 3.0
   See the file "LICENSE" for more information
 */
@@ -50,6 +50,11 @@ import java.util.*;
  *
  * <p>NaN is assumed to be the same color as negative infinity.
  *
+ * <p><b>Version 2, August 2025</b>
+ * <p>You can also create a <b>Composite SimpleColorMap</b> which assigns a SimpleColorMap to the "low"
+ * values and another one to the "high" values.  This makes it possible to have nonlinear color ranges,
+ * such as going from green to orange to blue.  The "low" and "high" maps can themselves be composite.
+ *
  * @author Sean Luke
  * 
  */
@@ -78,8 +83,11 @@ public class SimpleColorMap
     int maxAlpha = 0;
     double maxLevel = 0;
     double minLevel = 0;
+    double midLevel = 0;
     Color minColor = clearColor;
     Color maxColor = clearColor;
+    SimpleColorMap lowMap = null;
+    SimpleColorMap highMap = null;
     
     /** User-provided color table */
     public Color[] colors;
@@ -138,6 +146,15 @@ public class SimpleColorMap
         setColorTable(colorTable);
         setLevels(minLevel,maxLevel,minColor,maxColor);
         }
+        
+    public SimpleColorMap(double minLevel, double maxLevel, double midLevel, SimpleColorMap lowMap, SimpleColorMap highMap)
+    	{
+    	this.lowMap = lowMap;
+    	this.highMap = highMap;
+    	this.minLevel = minLevel;
+    	this.maxLevel = maxLevel;
+    	this.midLevel = midLevel;
+    	}
 
     /** Specifies that if a value (cast into an int) in the IntGrid2D or DoubleGrid2D falls in the range 0 ... colors.length,
         then that index in the colors table should be used to represent that value.  Otherwise, values in
@@ -178,7 +195,8 @@ public class SimpleColorMap
     /** Sets the color levels for the ValueGridPortrayal2D values for use by the default getColor(...)
         method.  These are overridden by any array provided in setColorTable().  If the value in the IntGrid2D or DoubleGrid2D
         is less than or equal to minLevel, then minColor is used.  If the value is greater than or equal to maxColor, then
-        maxColor is used.  Otherwise a linear interpolation from minColor to maxColor is used. */
+        maxColor is used.  Otherwise a linear interpolation from minColor to maxColor is used. 
+        If this is a composite SimpleColorMap, then the colors are ignored, the levels are used as bounds. */
     public void setLevels(double minLevel, double maxLevel, Color minColor, Color maxColor)
         {
         if (maxLevel != maxLevel || minLevel != minLevel) throw new RuntimeException("maxLevel or minLevel cannot be NaN");
@@ -206,7 +224,19 @@ public class SimpleColorMap
         }
         
     public Color getColor(double level)
-        {
+        {        
+        if (lowMap != null)
+        	{
+			if (level < midLevel)
+				{
+				return lowMap.getColor(level);
+				}
+			else
+				{
+				return highMap.getColor(level);
+				}
+        	}
+        		
         if (colors != null && level >= 0 && level < colors.length)
             {
             return colors[(int)level];
@@ -254,6 +284,18 @@ public class SimpleColorMap
 
     public int getAlpha(double level)
         {
+        if (lowMap != null)
+        	{
+			if (level < midLevel)
+				{
+				return lowMap.getAlpha(level);
+				}
+			else
+				{
+				return highMap.getAlpha(level);
+				}
+        	}
+        		
         if (colors != null && level >= 0 && level < colors.length)
             {
             return colors[(int)level].getAlpha();
@@ -282,6 +324,18 @@ public class SimpleColorMap
          
     public int getRGB(double level)
         {
+        if (lowMap != null)
+        	{
+			if (level < midLevel)
+				{
+				return lowMap.getRGB(level);
+				}
+			else
+				{
+				return highMap.getRGB(level);
+				}
+        	}
+        		
         if (colors != null && level >= 0 && level < colors.length)
             {
             return colors[(int)level].getRGB();

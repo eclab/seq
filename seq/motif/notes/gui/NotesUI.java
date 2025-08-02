@@ -27,8 +27,6 @@ import java.awt.datatransfer.*;
 
 public class NotesUI extends MotifUI
     {
-    // The default velocity of new notes
-    public static final int DEFAULT_NOTE_VELOCITY = 64;
     // The default length of new notes (1 beat)
     public static final int DEFAULT_NOTE_LENGTH = 192;
     // Options for snapping to or by
