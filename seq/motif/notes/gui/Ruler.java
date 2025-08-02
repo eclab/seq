@@ -101,7 +101,7 @@ public class Ruler extends JComponent
                     }
                 else
                     {
-                    originalTime = getGridUI().getTime(e);
+                    originalTime = getGridUI().getQuantizedTime(e);
                     finalTime = originalTime;
                     }
                 
@@ -122,7 +122,7 @@ public class Ruler extends JComponent
                 
                 if (dragged || shifted)
                     {
-                    finalTime = getGridUI().getTime(e);
+                    finalTime = getGridUI().getQuantizedTime(e);
                     }
                 else
                     {
@@ -141,7 +141,7 @@ public class Ruler extends JComponent
                 dragged = true;
 
                 getGridUI().clearSelected();
-                finalTime = getGridUI().getTime(e);
+                finalTime = getGridUI().getQuantizedTime(e);
                 repaint();
                 }
             });
