@@ -665,7 +665,7 @@ public class NotesInspector extends WidgetList
             }
         eventsui.parameterBox.revalidate();
         eventsui.parameterBox.repaint();
-        notesui.scroll.setCorner(JScrollPane.UPPER_LEFT_CORNER, eventsui.getHeader());
+        notesui.scroll.setCorner(JScrollPane.UPPER_LEFT_CORNER, eventsui.getHeader(notesui.getRuler()));
         notesui.scroll.revalidate();
         notesui.scroll.repaint();
         }

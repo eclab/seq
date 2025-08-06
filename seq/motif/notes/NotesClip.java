@@ -240,7 +240,7 @@ public class NotesClip extends Clip
                                 int pitch = shortmessage.getData1();
                                 Notes.Note noteOn = new Notes.Note(pitch, shortmessage.getData2(), pos, 1);             // gotta have something for length
                                 recording.add(noteOn);
-                                if (notes.getEcho()) noteOn(out, pitch, noteOn.velocity);
+                                if (notes.getEcho()) noteOn(out, pitch, noteOn.velocity, NO_NOTE_ID);
                                 recordedNoteOn[pitch] = noteOn;
                                 }
                             else if (isNoteOff(shortmessage))
@@ -255,7 +255,7 @@ public class NotesClip extends Clip
                                     release = noteOn.release;
                                     recordedNoteOn[pitch] = null;
                                     }
-                                if (notes.getEcho()) noteOff(out, pitch, release);
+                                if (notes.getEcho()) noteOff(out, pitch, release, NO_NOTE_ID);
                                 }
                             else if (isPitchBend(shortmessage) && notes.getRecordBend())
                                 {
@@ -324,13 +324,13 @@ public class NotesClip extends Clip
                     Notes.Note note = (Notes.Note)event;
                     if (note.velocity > 0)
                         {
-                        noteOn(out, note.pitch, note.velocity);
+                        int id = noteOn(out, note.pitch, note.velocity);
                         // NOTE: We have to schedule the note off, rather than turn it off at a later time,
                         // because the musician could change the transpose before the note was turned off
                         // and then the note to turn off would be a different note and we'd be in a whole,
                         // um, HEAP of trouble
                                    
-                        scheduleNoteOff(out, note.pitch, note.release, note.length);
+                        if (id >= 0) scheduleNoteOff(out, note.pitch, note.release, note.length, id);
                         }
                     }
                 else if (event instanceof Notes.Bend)

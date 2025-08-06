@@ -236,10 +236,10 @@ public class EventsUI extends JComponent
         }
                    
     /** Returns the header for the entire EventsUI */
-    public JComponent getHeader()
+    public JComponent getHeader(Ruler ruler)
         {
         Box box = new Box(BoxLayout.Y_AXIS);
-        box.add(Ruler.getHeader());
+        box.add(ruler.getHeader());
         for(ParameterUI parameterui : parameteruis)
             {
             box.add(parameterui.getHeader());

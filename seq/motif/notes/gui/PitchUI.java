@@ -50,7 +50,7 @@ public class PitchUI extends JComponent
     
     // The rubber band goes from (startx, starty) to (endx, endy).
     // If these values are -1, they have not been set and should not be drawn.
-    int     rubberBandStartX = -1;
+    int rubberBandStartX = -1;
     int rubberBandEndX = -1;
     int rubberBandStartY = -1;
     int rubberBandEndY = -1;
@@ -175,7 +175,43 @@ public class PitchUI extends JComponent
         return new Dimension(gridui.getPixels(gridui.getMaximumTime()), PITCH_HEIGHT);
         }
         
-        
+    public void moveToBack(HashSet<NoteUI> move)
+    	{
+    	ArrayList<NoteUI> front = new ArrayList<>();
+    	ArrayList<NoteUI> back = new ArrayList<>();
+    	for(NoteUI noteui : noteuis)
+    		{
+    		if (move.contains(noteui))
+    			{
+    			back.add(noteui);
+    			}
+    		else
+    			{
+    			front.add(noteui);
+    			}
+    		}
+    	noteuis.clear();
+    	noteuis.addAll(back);
+    	noteuis.addAll(front);
+    	removeAll();
+    	for(NoteUI noteui : noteuis)
+    		{
+    		add(noteui);
+    		}
+    	repaint();
+    	}
+
+    public void moveToBack(NoteUI move)
+    	{
+    	noteuis.remove(move);
+    	noteuis.add(0, move);
+    	removeAll();
+    	for(NoteUI noteui : noteuis)
+    		{
+    		add(noteui);
+    		}
+    	repaint();
+    	}
         
         
     // The line that separates two white notes with no black note in-between, namely B/C and E/F

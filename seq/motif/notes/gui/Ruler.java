@@ -30,6 +30,8 @@ public class Ruler extends JComponent
     // The stroke of the play marker on the ruler
     public static final BasicStroke PLAY_STROKE = new BasicStroke(3.0f);
 
+	// Ruler Header
+	JLabel rulerSpace;
     // The owner NotesUI
     NotesUI notesui;
     // The Seq
@@ -88,7 +90,7 @@ public class Ruler extends JComponent
                 shifted = ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK);
                 if (shifted && (originalTime != finalTime))
                     {
-                    int newTime = getGridUI().getTime(e);
+                    int newTime = getGridUI().getQuantizedTime(e);
                     // We want to manipulate the FINAL TIME
                     if (Math.abs(originalTime - newTime) < Math.abs(finalTime - newTime))
                         {
@@ -106,6 +108,9 @@ public class Ruler extends JComponent
                     }
                 
                 dragged = false;
+                int t = finalTime % Seq.PPQ;
+                if (t == 0) rulerSpace.setText("");
+                else rulerSpace.setText(TimeDisplay.map(finalTime % Seq.PPQ, true));
                 repaint();
                 }
  
@@ -130,6 +135,7 @@ public class Ruler extends JComponent
                     }
                 dragged = false;
                 shifted = false;
+                rulerSpace.setText("");
                 repaint();
                 }
             });
@@ -142,6 +148,9 @@ public class Ruler extends JComponent
 
                 getGridUI().clearSelected();
                 finalTime = getGridUI().getQuantizedTime(e);
+                int t = finalTime % Seq.PPQ;
+                if (t == 0) rulerSpace.setText("");
+                else rulerSpace.setText(TimeDisplay.map(finalTime % Seq.PPQ, true));
                 repaint();
                 }
             });
@@ -347,22 +356,32 @@ public class Ruler extends JComponent
         }
     
     /** Builds and returns the header. */
-    public static JComponent getHeader()
+    public JComponent getHeader()
         {
-        JComponent rulerspace = new JComponent()        
-            {
-            public void paintComponent(Graphics _g)
+        JPanel panel = new JPanel()
+        	{
+            public Dimension getMinimumSize()
+            	{
+            	return new Dimension(GridUI.KEYBOARD_WIDTH, Ruler.RULER_HEIGHT);
+            	}
+            public Dimension getPreferredSize()
+            	{
+            	return new Dimension(GridUI.KEYBOARD_WIDTH, Ruler.RULER_HEIGHT);
+            	}
+            public void paint(Graphics _g)
                 {
+                super.paint(_g);
                 Graphics2D g = (Graphics2D) _g;
                 Rectangle bounds = getBounds();
-                g.setColor(BACKGROUND_COLOR);
-                g.fill(bounds);
                 g.setColor(BORDER_COLOR);
                 g.draw(new Line2D.Double(0, bounds.height, bounds.width, bounds.height));
-                }
-            };
-        rulerspace.setPreferredSize(new Dimension(1, Ruler.RULER_HEIGHT));
-        return rulerspace;
+            	}
+        	};
+        panel.setBackground(BACKGROUND_COLOR);
+        panel.setLayout(new BorderLayout());
+        rulerSpace = new JLabel();
+        panel.add(rulerSpace, BorderLayout.CENTER);
+        return panel;
         }
 
     /*** Tooltips ***/

@@ -159,6 +159,16 @@ public class NotesUI extends MotifUI
 
         menu.addSeparator();
         
+        JMenuItem selectAll = new JMenuItem("Select All Notes");
+        selectAll.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doSelectAll();
+                }
+            });
+        menu.add(selectAll);
+
         JMenuItem cutEvents = new JMenuItem("Cut Events");
         cutEvents.addActionListener(new ActionListener()
             {
@@ -376,16 +386,33 @@ public class NotesUI extends MotifUI
         gridui.repaint();
         }
         
-    /** Scrolls the GridUI and EventUI until the selected notes or events are displayed */
-    public void doScrollToSelected()
-        {
-        Rectangle rect = gridui.getEventBoundingBox(true);
+    public void doSelectAll()
+    	{
+    	gridui.clearSelected();
+    	gridui.addToSelected(gridui.getAllNoteUIs());
+    	gridui.repaint();
+    	}
+ 
+ 	public void doScrollToSelected()
+ 		{
+        doScrollToRect(gridui.getEventBoundingBox(true));
+        }
         
+    public void doScrollToAny()
+    	{
+	    Rectangle rect = gridui.getEventBoundingBox(true);
+	    
         if (rect == null)
             {
             rect = gridui.getEventBoundingBox(false);
             }
+        doScrollToRect(rect);
+        }
                 
+
+    /** Scrolls the GridUI and EventUI until the selected notes or events are displayed */
+    public void doScrollToRect(Rectangle rect)
+        {
         if (rect != null)
             {
             if (rect.y < 0)     // not a note
@@ -418,6 +445,18 @@ public class NotesUI extends MotifUI
 
             int posx = Math.max(0, rect.x);
             int posy = Math.max(0, rect.y + (rect.height - viewportHeight) / 2);
+
+			Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
+			if (viewRect.x <= posx && viewRect.x + viewRect.width > posx)
+				{
+				// posx already contained, so we won't scroll to it
+				posx = viewRect.x;
+				}
+			if (viewRect.y <= posy && viewRect.y + viewRect.height > posy)
+				{
+				// posy already contained, so we won't scroll to it
+				posy = viewRect.y;
+				}
 
             getPrimaryScroll().getViewport().setViewPosition(new Point(posx, posy));
             }       
@@ -1182,7 +1221,7 @@ public class NotesUI extends MotifUI
                 // Scroll to Middle C-ish?  Or Selected?
                 if (gridui.getSelected().size() > 0)
                     {
-                    doScrollToSelected();
+                    doScrollToAny();
                     }
                 else
                     {
@@ -1275,7 +1314,7 @@ public class NotesUI extends MotifUI
             {
             public void perform()
                 {
-                doScrollToSelected();
+                doScrollToAny();
                 }
             };
         scrollButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
@@ -1563,10 +1602,10 @@ public class NotesUI extends MotifUI
             else
                 {
                 // we assume we put them DEFAULT_NOTE_LENGTH ahead
-                timeDiff = 0;
+                timeDiff = 0; //  - DEFAULT_NOTE_LENGTH;
                 }
             }
-                        
+                                    
         // Shift time to chosen time
         
         for(Notes.Event event : pasteboard)
@@ -1576,6 +1615,7 @@ public class NotesUI extends MotifUI
                 {
                 event.when = 0;
                 }
+            System.err.println(event.when);
             }
                 
         // Remove previous notes

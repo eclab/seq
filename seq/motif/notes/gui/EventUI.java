@@ -115,7 +115,7 @@ public class EventUI extends JComponent
     int computeY()
         {
         // Centery ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
-        return HEIGHT / 2 + (int)((parameterui.getBounds().height - HEIGHT) * value);
+        return HEIGHT / 2 + (int)((parameterui.getBounds().height - HEIGHT) * (1.0 - value));
         }
     
     
@@ -236,9 +236,6 @@ public class EventUI extends JComponent
                         {
                         getGridUI().removeFromSelected(EventUI.this);
                         }
-                    }
-                else
-                    {
                     }
                 
                 dragged = false;
@@ -392,7 +389,7 @@ public class EventUI extends JComponent
         double valueDiff = parameterui.getValueDiff(origin, evt);
         double parameterHeight = getEventsUI().getParameterHeight();
         valueDiff /= (parameterHeight - HEIGHT) / parameterHeight;
-        double newValue = originalValue + valueDiff;
+        double newValue = (originalValue + valueDiff);
         if (newValue < 0) newValue = 0;
         if (newValue > 0.999999999) newValue = 0.999999999;     // we want this UNDER 1.0
         return newValue;
@@ -424,7 +421,7 @@ public class EventUI extends JComponent
         bounds.y = 0;
         bounds.height = HEIGHT;
         
-        g.setPaint(valueMap.getColor(value));
+        g.setPaint(valueMap.getColor(value * 127.0));
         g.fill(bounds);
         
         if (selected)

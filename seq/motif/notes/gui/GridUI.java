@@ -899,15 +899,22 @@ public class GridUI extends JComponent
     /** Finds the NoteUIs for the given note, then adds them to selected and selects them. */
     public void addNotesToSelected(HashSet<Notes.Event> notes)
         {
+        HashSet<NoteUI> move = new HashSet<>();
         for(PitchUI pitchui : pitchuis)
             {
+            move.clear();
             for(NoteUI noteui : pitchui.getNoteUIs())
                 {
                 if (notes.contains(noteui.event))
                     {
                     addEventToSelected(noteui, SELECTED_SOURCE_NOTES);
+                    move.add(noteui);
                     }
                 }
+            if (move.size() > 0)
+            	{
+            	pitchui.moveToBack(move);
+            	}
             }
         }
 
@@ -964,6 +971,14 @@ public class GridUI extends JComponent
         selected.add(eventui);
         notesui.getRuler().clearRange();
         selectedSource = source;
+        }
+
+    public void addToSelected(ArrayList<NoteUI> noteuis)
+        {
+        for(NoteUI noteui : noteuis)
+        	{
+        	addEventToSelected(noteui, SELECTED_SOURCE_NOTES);
+        	}
         }
 
     /** Removes the NoteUI from selected and deselects it. */
@@ -1117,6 +1132,8 @@ public class GridUI extends JComponent
         {
         PitchUI pitchui = pitchuis.get(pitch);
         pitchui.addNoteUI(noteui);
+        // make sure it's up front
+        pitchui.moveToBack(noteui);
         return pitchui;
         }
                 

@@ -476,13 +476,13 @@ public class ParameterUI extends JComponent
     /** Returns value corresponding to the given event. */
     public double getValue(MouseEvent evt)
         {
-        return (evt.getY() / (double) eventsui.getParameterHeight());
+        return 1.0 - (evt.getY() / (double) eventsui.getParameterHeight());
         }
 
     /** Returns value corresponding to the given pixel */
     public double getValue(int y)
         {
-        return (y / (double) eventsui.getParameterHeight());
+        return 1.0 - (y / (double) eventsui.getParameterHeight());
         }
 
     /** Returns number of pixels correponding to the given time. */
@@ -518,7 +518,7 @@ public class ParameterUI extends JComponent
     /** Returns the difference, in value, between the origin and the event. */
     public double getValueDiff(MouseEvent origin, MouseEvent evt)
         {
-        return getValue(evt) - getValue(origin);
+        return getValue(evt) - getValue(origin); //  - getValue(evt);		// note swapped
         }
 
     /** Returns the difference, in time, between the origin and the event. */
