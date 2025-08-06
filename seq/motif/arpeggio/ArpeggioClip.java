@@ -16,17 +16,46 @@ public class ArpeggioClip extends Clip
 
     public static final int TRIES = 4;              // number of times we try to get a unique random number
 
-    public static class Note implements Comparable
+
+	// Note is used both to store incoming Note Off messages stored the Heap, and
+	// also to indicated notes being played by the arpeggio.  So not all four
+	// of the variables below (pitch, velocity, id, out) are used 
+    static class Note implements Comparable
         {
         int pitch;
         int velocity;
+        int id;
+        int out;
 
+		// this version generates its own id
         public Note(int pitch, int velocity)
             {
             this.pitch = pitch;
             this.velocity = velocity;
+        	id = noteID++;
             }
-                
+            
+        public Note(int pitch, int velocity, int id)
+            {
+            this.pitch = pitch;
+            this.velocity = velocity;
+            this.id = id;
+            }
+        
+        // this version is used for incoming note off messages
+        public Note(int out, int pitch, int velocity, int id)
+            {
+            this.out = out;
+            this.pitch = pitch;
+            this.velocity = velocity;
+            this.id = id;
+            }
+            
+        public void setID(int val)
+        	{
+        	id = val;
+        	}
+            
         public int compareTo(Object obj)
             {
             if (obj == null) return -1;
@@ -37,7 +66,7 @@ public class ArpeggioClip extends Clip
                 
         public String toString()
             {
-            return "ArpeggioClip.Note pitch " + pitch + " vel " + velocity;
+            return "ArpeggioClip.Note pitch " + pitch + " vel " + velocity + " id " + id;
             }
         }
 
@@ -163,9 +192,9 @@ public class ArpeggioClip extends Clip
             }
         }
 
-    void addNote(int pitch, int velocity)
+    void addNote(int pitch, int velocity, int id)
         {
-        currentNotes.add(new Note(pitch, velocity));
+        currentNotes.add(new Note(pitch, velocity, id));
         Collections.sort(currentNotes);
         // O(n^2) but whatever
         for(int i = 0; i < currentNotes.size() - 1; i++)
@@ -178,13 +207,14 @@ public class ArpeggioClip extends Clip
         resetArpeggio();
         }
         
-    void removeNote(int pitch)
+    // returns TRUE if we found this note and were able to remove it, else we return FALSE
+    boolean removeNote(int id)
         {
         Arpeggio arp = (Arpeggio)getMotif();
         for(int i = 0; i < currentNotes.size(); i++)
             {
             Note note = currentNotes.get(i);
-            if (note.pitch == pitch)
+            if (note.id == id)
                 {
                 currentNotes.remove(note);
                 resetArpeggio();
@@ -192,9 +222,10 @@ public class ArpeggioClip extends Clip
                     {
                     state = 0;
                     }
-                return;
+                return true;
                 }
             }
+        return false;		// didn't find it
         }
 
     void removeAll()
@@ -211,7 +242,7 @@ public class ArpeggioClip extends Clip
 
         for(int i = 0; i < oldPitches.length; i++)
             {
-            sendNoteOff(arp.getOut(), oldPitches[i].pitch);
+            sendNoteOff(arp.getOut(), oldPitches[i].pitch, oldPitches[i].id);
             }
         oldPitches = new Note[0];
         
@@ -237,7 +268,7 @@ public class ArpeggioClip extends Clip
         Arpeggio arp = (Arpeggio)getMotif();
         for(int i = 0; i < oldPitches.length; i++)
             {
-            sendScheduleNoteOff(arp.getOut(), oldPitches[i].pitch, 0x40, countdown);
+            sendScheduleNoteOff(arp.getOut(), oldPitches[i].pitch, 0x40, countdown, oldPitches[i].id);
             }
         oldPitches = new Note[0];
 
@@ -263,74 +294,86 @@ public class ArpeggioClip extends Clip
     /// These are copies of the same messages in Clip, but with "send" in front.
     /// They allow me to override the Clip messages to route MIDI to the 
     /// arpeggio, but have the arpeggio send messages on with these.
-    public boolean sendNoteOn(int out, int note, double vel) 
+    public int sendNoteOn(int out, int note, double vel) 
         {
-        if (seq.getRoot() == this) return seq.noteOn(out, note, vel);
-        // else if (parent == null) // uhh.....
-        else return getParent().noteOn(out, note, vel); 
+        int id = noteID++;
+        if (seq.getRoot() == this) seq.noteOn(out, note, vel);
+        else getParent().noteOn(out, note, vel, id); 
+        return id;
         }
         
-    public boolean sendNoteOff(int out, int note) 
+    public void sendNoteOff(int out, int note, int id) 
         {
-        if (seq.getRoot() == this) return seq.noteOff(out, note, 0x40);
-        // else if (parent == null) // uhh.....
-        else return getParent().noteOff(out, note, 0x40); 
+        if (seq.getRoot() == this) seq.noteOff(out, note, 0x40);
+        else getParent().noteOff(out, note, 0x40, id); 
         }
         
-    public void sendScheduleNoteOff(int out, int note, double vel, int time) 
+    public void sendScheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         if (seq.getRoot() == this) seq.scheduleNoteOff(out, note, vel, time);
-        // else if (parent == null) // uhh.....
-        else getParent().scheduleNoteOff(out, note, vel, time); 
+        else getParent().scheduleNoteOff(out, note, vel, time, id); 
         }
 
+	public boolean isActive()
+		{
+		return isActive(getPosition());
+		}
+
+	public boolean isActive(int time)
+		{
+        Arpeggio arp = (Arpeggio)getMotif();
+		return (arp.isAlways() || (time >= arp.getFrom() && time < arp.getTo()));
+		}
 
     /// INTERCEPTED MESSAGES
     /// These are overridden to intercept notes and send them to the
     /// arpeggio.  Other MIDI messages just get passed on.
-    public boolean noteOn(int out, int note, double vel) 
+    ///
+    /// NOTE that I always pass on all messages if I'm not active.  Hopefully this isn't a problem for the note-offs
+    public void noteOn(int out, int note, double vel, int id) 
         {
         Arpeggio arp = (Arpeggio)getMotif();
-        if (arp.isOmni() || out == arp.getOut()) 
+        if (isActive() && (arp.isOmni() || out == arp.getOut()))		// if we're not active, send the note to our parent
             {
-            addNote(note, (int)vel);
-            return true;
+            addNote(note, (int)vel, id);
             }
         else
             {
-            return super.noteOn(out, note, vel);
+             super.noteOn(out, note, vel, id);
             }
         }
         
-    public boolean noteOff(int out, int note, double vel) 
+    public void noteOff(int out, int note, double vel, int id) 
         {
         Arpeggio arp = (Arpeggio)getMotif();
-        if (arp.isOmni() || out == arp.getOut()) 
+        if (isActive() && (arp.isOmni() || out == arp.getOut()))		// if we're not active, send the note to our parent
             {
-            removeNote(note);
-            return true;
+            if (!removeNote(id))		// couldn't find the note off, I better pass it through
+            	{
+             	super.noteOff(out, note, vel, id);
+            	}
             }
         else
             {
-            return super.noteOff(out, note, vel);
+             super.noteOff(out, note, vel, id);
             }
         }
         
-    public void scheduleNoteOff(int out, int note, double vel, int time) 
+    public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         Arpeggio arp = (Arpeggio)getMotif();
-        if (arp.isOmni() || out == arp.getOut()) 
+        if (isActive() && (arp.isOmni() || out == arp.getOut()))		// if we're not active, send the note to our parent
             {
-            noteOff.add(new Note(note, (int)vel), Integer.valueOf(time + seq.getTime()));
+            noteOff.add(new Note(out, note, (int)vel, id), Integer.valueOf(time + seq.getTime()));
             }
         else
             {
-            super.scheduleNoteOff(out, note, vel, time);
+            super.scheduleNoteOff(out, note, vel, time, id);
             }
         }        
 
 
-    // This is a modified copy oßf the same method in Seq, which removes
+    // This is a modified copy of the same method in Seq, which removes
     // Note-Off messages and processes them if their time has come up.
     void processNoteOffs(boolean all)
         {
@@ -342,7 +385,10 @@ public class ArpeggioClip extends Clip
             if (all || position >= i.intValue())
                 {
                 Note note = (Note)(noteOff.extractMin());
-                removeNote(note.pitch);
+                if (!removeNote(note.id))							// it wasn't there, I should pass it on
+                	{
+                	sendScheduleNoteOff(note.out, note.pitch, note.velocity, i, note.id);
+                	}
                 }
             else break;
             }       
@@ -499,8 +545,6 @@ public class ArpeggioClip extends Clip
                     pitches[count] = new Note(current.pitch + octave * 12, current.velocity);
                     }
                 else
-                        
-                        
                     {
                     // What an ugly equation
                     int pos = currentNotes.size() - (((Arpeggio.PATTERN_NOTES / 2) - i - 1) % currentNotes.size()) - 1;
@@ -521,13 +565,9 @@ public class ArpeggioClip extends Clip
     
     public boolean process()
         {
+        if (!isActive()) return clip.advance();							// If I'm not active, I just do what my child does
+        
         Arpeggio arp = (Arpeggio)getMotif();
-        /*
-          if (clip == null)
-          {
-          buildClip();
-          }
-        */
                 
         if (clip != null)
             {
@@ -548,22 +588,29 @@ public class ArpeggioClip extends Clip
                 // First we release the old notes
                 for(int i = 0; i < oldPitches.length; i++)
                     {
-                    sendNoteOff(arp.getOut(), oldPitches[i].pitch);
+                    sendNoteOff(arp.getOut(), oldPitches[i].pitch, oldPitches[i].id);
                     }
                         
-                // Next we compute the new notes
+                // Next we compute the new notes.  These won't have IDs.
                 Note[] newPitches = advanceArpeggio(arp);
                         
-                // Next we play the new notes
+                // Next we play the new notes. We have to revise their IDs.
                 for(int i = 0; i < newPitches.length; i++)
                     {
-                    sendNoteOn(arp.getOut(), newPitches[i].pitch, newPitches[i].velocity);
+                    int id = sendNoteOn(arp.getOut(), newPitches[i].pitch, newPitches[i].velocity);
+                    newPitches[i].setID(id);
                     }
                                         
                 // Finally we set them to the new "old pitches"
                 oldPitches = newPitches;
                 }
                                 
+        	if (!isActive(getPosition() + 1)) 						// this can only happen if I WAS active and am about to be INACTIVE.  I release my notes.
+        		{
+        		release();		
+        		removeAll();
+        		}
+        
             // I am done if my child is done
             return done;
             }

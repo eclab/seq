@@ -337,11 +337,11 @@ public class Out
 
     /** Sends a bend, associated with a given note (for MPE).   Bend goes -8192...8191.  Returns true if the message was successfully sent.  */
     // for the time being this just does regular bend
-    public boolean bend(int note, int val) { return bend(val); }
+    //public boolean bend(int note, int val) { return bend(val); }
 
     /** Sends a CC, associated with a given note (for MPE).  Returns true if the message was successfully sent.  */
     // for the time being this just does regular cc
-    public boolean cc(int note, int cc, int val) { return cc(cc, val); }
+    //public boolean cc(int note, int cc, int val) { return cc(cc, val); }
 
     /** Sends polyphonic aftertouch.  If the Out is set to send only channel aftertouch, this will
         be modified to channel aftertouch.   Returns true if the message was successfully sent. 

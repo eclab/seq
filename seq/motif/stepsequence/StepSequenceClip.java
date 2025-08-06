@@ -20,6 +20,8 @@ public class StepSequenceClip extends Clip
 
     // For each track, does the track currently have an outstanding NOTE_ON?  -1 if NO
     int[] trackNoteOn;
+    // For each track, what is the ID of the currently outstanding track note?
+    int[] trackNoteID;
     // For each track, is the track step currently playing (for flams, random).  There may be no step playing (due to swing, zero velocity, etc.)
     boolean[] trackPlaying;
     // For each track, which step is currently playing?  (or DEFAULT)   There may be no step playing (due to swing, zero velocity, etc.)
@@ -51,6 +53,8 @@ public class StepSequenceClip extends Clip
         int numTracks = dSeq.getNumTracks();
         trackNoteOn = new int[numTracks];   // default is -1
         Arrays.fill(trackNoteOn, DEFAULT);
+        trackNoteID = new int[numTracks];
+        Arrays.fill(trackNoteOn, NO_NOTE_ID);
         trackPlaying = new boolean[numTracks];  // default is FALSE
         playingStep = new int[numTracks];
         currentStep = new int[numTracks];
@@ -63,8 +67,9 @@ public class StepSequenceClip extends Clip
         {
         if (trackNoteOn[track] != DEFAULT) 
             {
-            noteOff(dSeq.getFinalOut(track), trackNoteOn[track]);
+            noteOff(dSeq.getFinalOut(track), trackNoteOn[track], trackNoteID[track]);
             trackNoteOn[track] = DEFAULT;
+            trackNoteID[track] = NO_NOTE_ID;
             }
         }
            
@@ -104,8 +109,9 @@ public class StepSequenceClip extends Clip
                 else releaseTime += stepLen;
                 }
             
-            scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], releaseTime);
+            scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], releaseTime, trackNoteID[track]);
             trackNoteOn[track] = DEFAULT;                                                                       // not sure if we should do this...
+            trackNoteID[track] = NO_NOTE_ID;
             }
         }
            
@@ -368,8 +374,9 @@ public class StepSequenceClip extends Clip
                     if (flam == 0 || trackPlaying[track])
                         {
                         int note = dSeq.getFinalNote(track, step);
-                        noteOn(dSeq.getFinalOut(track), note, velocity);
+                        int id = noteOn(dSeq.getFinalOut(track), note, velocity);
                         trackNoteOn[track] = note;
+                        trackNoteID[track] = id;
                         }
                     }
                 }

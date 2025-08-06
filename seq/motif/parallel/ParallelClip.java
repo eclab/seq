@@ -385,25 +385,28 @@ public class ParallelClip extends Clip
             }
         }
 
-    public boolean noteOn(int out, int note, double vel) 
+    public void noteOn(int out, int note, double vel, int id) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
         
+        Node node = (Node)(nodes.get(current));
         if (testOverriding)                                                             // If we're testing, we just passed the test
             {
-            Node node = (Node)(nodes.get(current));
             node.localOverride = true;                                                  // turn on overriding
             overriding = true;                                                                  // turn on overriding
             releaseLaterChildren(current);                                          // get rid of existing notes
             }
+            
         if (current >= 0)
             {
-            Node node = nodes.get(current);
-            Parallel.Data data = node.getData();
-            if (data.getMute()) return false;            
+        	Parallel.Data data = node.getData();
+            if (data.getMute()) 
+            	{
+            	return;
+            	}        
             
             if (data.getOut() != Parallel.Data.DISABLED)
                 {
@@ -413,16 +416,30 @@ public class ParallelClip extends Clip
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             vel *= getCorrectedValueDouble(data.getGain(), Parallel.Data.MAX_GAIN);
-            if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
+            // if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
             }
-        return super.noteOn(out, note, vel);
+
+		Parallel parallel = (Parallel) getMotif();
+		if (parallel.getCrossFadeOn())
+			{
+			if (current == 0)
+				{
+				vel = vel * (1.0 - parallel.getCrossFade());
+				}
+			else if (current == 1)
+				{
+				vel = vel * parallel.getCrossFade();
+				}
+			}
+
+         super.noteOn(out, note, vel, id);
         }
         
-    public boolean noteOff(int out, int note, double vel) 
+    public void noteOff(int out, int note, double vel, int id) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+			return;
             }
         if (current >= 0)
             {
@@ -436,10 +453,10 @@ public class ParallelClip extends Clip
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             }
-        return super.noteOff(out, note, vel);
+         super.noteOff(out, note, vel, id);
         }
         
-    public void scheduleNoteOff(int out, int note, double vel, int time) 
+    public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
@@ -456,72 +473,72 @@ public class ParallelClip extends Clip
             note += getCorrectedValueInt(data.getTranspose(), Parallel.Data.MAX_TRANSPOSE * 2) - Parallel.Data.MAX_TRANSPOSE;
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-            super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
+            super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())), id);
             }
         else System.err.println("ParallelClip.scheduleNoteOff: current was " + current);
         }
  
-    public boolean sysex(int out, byte[] sysex)
+    public void sysex(int out, byte[] sysex)
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
-        else return super.sysex(out, sysex);
+        else super.sysex(out, sysex);
         }
 
-    public boolean bend(int out, int val) 
+    public void bend(int out, int val) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
-        else return super.bend(out, val);
+        else super.bend(out, val);
         }
         
-    public boolean cc(int out, int cc, int val) 
+    public void cc(int out, int cc, int val) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
-        else return super.cc(out, cc, val);
+        else super.cc(out, cc, val);
         }
         
-    public boolean aftertouch(int out, int note, int val) 
+    public void aftertouch(int out, int note, int val) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
-        else return super.aftertouch(out, note, val);
+        else super.aftertouch(out, note, val);
         }
 
-    public boolean nrpn(int out, int nrpn, int val) 
+    public void nrpn(int out, int nrpn, int val) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
-        else return super.nrpn(out, nrpn, val);
+        else super.nrpn(out, nrpn, val);
         }
         
-    public boolean nrpnCoarse(int out, int nrpn, int msb) 
+    public void nrpnCoarse(int out, int nrpn, int msb) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
-        else return super.nrpnCoarse(out, nrpn, msb);
+        else super.nrpnCoarse(out, nrpn, msb);
         }
 
-    public boolean rpn(int out, int rpn, int val) 
+    public void rpn(int out, int rpn, int val) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-            return false;           // I'm being overridden
+            return;
             }
-        else return super.rpn(out, rpn, val);
+        else super.rpn(out, rpn, val);
         }
         
 

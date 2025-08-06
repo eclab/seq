@@ -659,6 +659,8 @@ Other recording options deal with automatic quantization.  You can turn {\bf Qua
 
 \item{\bf Load MIDI File...}\quad will load MIDI data from a MIDI file, replacing the existing data.
 
+\item{\bf Select All Notes}\quad selects all notes.
+
 \item{\bf Cut} and {\bf Copy} do what you expect.  They cut/copy either the selected events, or all events which fall inside the Ruler range.
 
 \item {\bf Paste}\quad also does what you expect: it pastes the cut/copied notes, merging them into the existing notes.  But where do the Pasted events go?  If you have selected a range in the Ruler, Paste will paste its events starting at the beginning of that range.  If you have selected notes or events, Paste will paste its events immediately after the selection.  If no notes or events are selected, and the ruler has no range, Paste will paste its events right where they were cut or copied.  This is intentional, though it might confusing as they'd be on top of their previous notes/events.
@@ -781,7 +783,7 @@ The Series Inspector also has an expandable region called {\bf MIDI Parameters}.
 
 \subsection{Parallel}
 
-Like Series, Parallel is a list of of Children; but it plays them in parallel.  Each child can have its onset delayed, so that they start at different times.  And Children can have some probability as to whether they're played at all.
+Like Series, Parallel is a list of of Children; but it plays them in parallel.  Each child can have its onset delayed, so that they start at different times.  Each child can have some probability as to whether it is played at all.
 
 \paragraph{Children}
 
@@ -792,6 +794,14 @@ While a Child is playing, its name is highlighted in red in the Child List.
 If a Child is playing repeated (looping) its name is highlighted in blue in the Child List.
 
 Each Child in the Child Motifs can have a {\bf Nickname}, set in its Child Inspector.  Even if a Motif appears multiple times in the List, each entry can have a different Nickname.  When you set the Nickname, it appears with the Child in the list.
+
+\paragraph{Cross-Fading}
+
+Parallel can be used as a real-time cross-fader between the first two children.  The value of {\bf Cross-Fade} determines the gain of Child 1 versus Child 2.  If Cross-Fade is 0.0, then Child 1 plays at full gain and Child 2 is silenced.  If Cross-Fade is 1.0, then it's the opposite.  The default is 0.5, where each child plays at half gain.
+
+By fault Cross-Fading is disabled, regardless of what {\bf Cross-Fade} says.  To enable cross-fading, check the {\bf Cross-Fade On} checkbox.
+
+You can further adjust the gain of each of the children with the {\bf Gain} option in each child's inspector.  This gain is multiplied against the cross-fade gain result (if the cross-fade gain is enabled).
 
 \paragraph{Play Probability}
 
@@ -1051,6 +1061,12 @@ You can play more than one note in the same step: just click multiple squares.  
 When the underlying child says it has finished, Arpeggio will tell the same to its parent.  Arpeggios are always reset when the parent resets or loops the Arpeggio.  Also by default Arpeggios are reset when {\it all} the old notes are released and entirely new ones are played. As long as at least one note is being played, the Arpeggio won't reset.
 
 If you want to override this chord reset behavior, so that Arpeggio doesn't reset even when all notes are released, just uncheck {\bf New Chord Reset}.
+
+\paragraph{Activity}
+
+Arpeggio is a filter: its main job is not to control how and when its child plays, but rather to process the MIDI received from its child.  You might wish to say {\it when} Arpeggio produces arpeggios from its child\,---\,that is,  when it is {\bf active}.  To do this, uncheck the {\bf Always} checkbox (which says that Arpeggio is always active no matter what), and set the activity time range by changing {\bf From} and {\bf To}.  
+
+When Arpeggio is {\it inactive} it just passes its child's MIDI straight through to its parent, rather than intercepting it to do arpeggios.
 
 \clearpage\subsection{Motifs Planned for the Future}
 

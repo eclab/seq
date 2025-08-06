@@ -21,6 +21,8 @@ public class ParallelInspector extends WidgetList
 
     StringField name;
     JComboBox childrenToSelect;
+    SmallDial crossFade;
+    JCheckBox crossFadeOn;
     
     public static final String[] CHILDREN_TO_SELECT_STRINGS = 
         { 
@@ -77,14 +79,56 @@ public class ParallelInspector extends WidgetList
                 });
             childrenToSelect.setMaximumRowCount(CHILDREN_TO_SELECT_STRINGS.length);
             childrenToSelect.setToolTipText(CHILDREN_PLAYING_TOOLTIP);
+
+
+			crossFade = new SmallDial(parallel.getCrossFade())
+				{
+				protected String map(double val) { return String.valueOf(val); }
+				public double getValue() 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { return parallel.getCrossFade(); }
+					finally { lock.unlock(); }
+					}
+				public void setValue(double val) 
+					{ 
+					if (seq == null) return;
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { parallel.setCrossFade(val); }
+					finally { lock.unlock(); }
+					}
+				};
+			crossFade.setToolTipText(CROSS_FADE_TOOLTIP);
+
+            crossFadeOn = new JCheckBox("");
+            crossFadeOn.setSelected(parallel.getCrossFadeOn());
+            crossFadeOn.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { parallel.setCrossFadeOn(crossFadeOn.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+            crossFadeOn.setToolTipText(CROSS_FADE_ON_TOOLTIP);
+
+                
+
             }
         finally { lock.unlock(); }
 
-        JPanel result = build(new String[] { "Name", "Children Playing"}, 
+        JPanel result = build(new String[] { "Name", "Children Playing", "Cross-Fade", "Cross-Fade On", }, 
             new JComponent[] 
                 {
                 name,
                 childrenToSelect,
+                crossFade.getLabelledDial("0.000"),
+                crossFadeOn,
                 });
         remove(result);
         add(result, BorderLayout.CENTER);               // re-add it as center
@@ -101,11 +145,12 @@ public class ParallelInspector extends WidgetList
         try 
             { 
             childrenToSelect.setSelectedIndex(parallel.getNumChildrenToSelect()); 
+            crossFadeOn.setSelected(parallel.getCrossFadeOn()); 
             }
         finally { lock.unlock(); }                              
         seq = old;
-
         name.update();
+        if (crossFade != null) crossFade.repaint();
         }
 
 
@@ -126,4 +171,17 @@ public class ParallelInspector extends WidgetList
         "</ul>" +
         "The <b>probability</b> of each child is set in its inspector below.</html>";
 
-    }
+     static final String CROSS_FADE_TOOLTIP = "<html><b>Cross Fade</b><br>" +
+        "The amount of cross-fade between the first two parallel children.  Only has an effect if<br>" +
+        "<b>Cross Fade On</b> is selected.<br><br>" + 
+        "A cross-fade of 0.0 sets the volume of child 1 to 100%, and the volume of child 2 to 0%.<br>" +
+        "A cross-fade of 1.0 does the opposite.  A cross-fade of 0.5 sets the volume of each to 50%.<br>" +
+        "You may wish 0.5 (the default) to be 100% for each child -- essentially doing nothing --<br>" +
+        "in which case, you should set the <b>Cross-Fade Gain</b> of child 1 and 2 to 2.0" +
+        "(also the default).</html>";
+
+     static final String CROSS_FADE_ON_TOOLTIP = "<html><b>Cross Fade On</b><br>" +
+        "Select this to turn on <b>Cross Fade</b>.</html>";
+
+
+   }

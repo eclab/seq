@@ -490,7 +490,7 @@ public class Seq
         
     public static int convertTime(int steps, int beats, int bars, int parts, int beatsPerBar)
         {
-        return          steps + 
+        return steps + 
             beats * PPQ + 
             bars * beatsPerBar * PPQ +
             parts * NUM_BARS_PER_PART * beatsPerBar * PPQ;
@@ -1304,19 +1304,23 @@ public class Seq
         
     /** Sends a bend to the given Out, associated with a given note (for MPE).   Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
+    /*
     public boolean bend(int out, int note, int val) 
         {
         if (isPlaying()) return outs[out].bend(note, val);
         else return false;
         }
+    */
         
     /** Sends a CC to the given Out, associated with a given note (for MPE). 
         Returns true if the message was successfully sent.  */
+    /*
     public boolean cc(int out, int note, int cc, int val) 
         {
         if (isPlaying()) return outs[out].cc(note, cc, val);
         else return false;
         }
+    */
         
 
     /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set

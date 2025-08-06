@@ -28,7 +28,10 @@ public class ArpeggioInspector extends WidgetList
     SmallDial length;
     SmallDial octaves;
     TimeDisplay rate;
-                
+    TimeDisplay activeFrom;
+    TimeDisplay activeTo;
+    JCheckBox activeAlways;
+
     public ArpeggioInspector(Seq seq, Arpeggio arpeggio, ArpeggioUI arpeggioui)
         {
         this.seq = seq;
@@ -192,13 +195,56 @@ public class ArpeggioInspector extends WidgetList
                     arpeggio.setRate(time);
                     }
                 };
-                                                                        
+
+            activeFrom = new TimeDisplay(arpeggio.getFrom(), seq, true)
+                {
+                public int getTime()
+                    {
+                    return arpeggio.getFrom();
+                    }
+                        
+                public void setTime(int time)
+                    {
+                    arpeggio.setFrom(time);
+                    }
+                };
+            activeFrom.setDisplaysTime(true);
+
+            activeTo = new TimeDisplay(arpeggio.getTo(), seq, true)
+                {
+                public int getTime()
+                    {
+                    return arpeggio.getTo();
+                    }
+                        
+                public void setTime(int time)
+                    {
+                    arpeggio.setTo(time);
+                    }
+                };
+            activeTo.setDisplaysTime(true);                                            
+
+            activeAlways = new JCheckBox();
+            activeAlways.setSelected(arpeggio.isAlways());
+            activeAlways.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { arpeggio.setAlways(activeAlways.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
             }
         finally { lock.unlock(); }
 
         name.setToolTipText(NAME_TOOLTIP);
 
-        build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "New Chord Reset"}, 
+        build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "New Chord Reset", 
+        "Activity", "Always", "From", "To"}, 
             new JComponent[] 
                 {
                 name,
@@ -209,6 +255,10 @@ public class ArpeggioInspector extends WidgetList
                 octaves.getLabelledDial("" + Arpeggio.MAX_OCTAVES),
                 length.getLabelledDial("" + Arpeggio.MAX_PATTERN_LENGTH),
                 newChordReset,
+                null,				// separator
+                activeAlways,
+                activeFrom,
+                activeTo
                 });
 
         }

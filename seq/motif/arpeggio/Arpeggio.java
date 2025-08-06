@@ -35,6 +35,9 @@ public class Arpeggio extends Motif
     int rate = Seq.PPQ / 4;             // 16th notes
     boolean omni = true;
     boolean newChordReset = true;
+    int from = 0;
+    int to = 0;
+    boolean always = true;					
     
     // pattern[PATTERN_NOTES/2] is the lowest note in the chord
     // BELOW that we go BELOW the chord
@@ -123,7 +126,39 @@ public class Arpeggio extends Motif
         {
         return pattern[i][j];
         }
+        
+    public int getFrom()
+    	{
+    	return from;
+    	}
     
+    public void setFrom(int val)
+    	{
+    	from = val;
+    	}
+    
+     public int getTo()
+    	{
+    	return to;
+    	}
+    
+    public void setTo(int val)
+    	{
+    	to = val;
+    	}
+    
+     public boolean isAlways()
+    	{
+    	return always;
+    	}
+    
+    public void setAlways(boolean val)
+    	{
+    	always = val;
+    	}
+    
+
+
     public void clearPattern()
         {
         for(int i = 0; i < pattern.length; i++)
@@ -139,14 +174,7 @@ public class Arpeggio extends Motif
     public int getOut() { return out; }
     
     /** Sets the output device. */
-    public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.arpeggio.Arpeggio.out"); }
-
-    /** Returns the input device. */
-    //public int getIntercept() { return intercept; }
-
-    /** Sets the input device. */
-    //public void setIntercept(int val) { intercept = val; Prefs.setLastInDevice(0, val, "seq.motif.arpeggio.Arpeggio.intercept"); }
-        
+    public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.arpeggio.Arpeggio.out"); }        
 
 
     public void add(Motif motif)
@@ -163,6 +191,9 @@ public class Arpeggio extends Motif
         setOmni(obj.optBoolean("omni", true));
         setNewChordReset(obj.optBoolean("new", true));
         setOut(obj.optInt("out", 0));
+        setFrom(obj.optInt("from", 0));
+        setTo(obj.optInt("to", 0));
+        setAlways(obj.optBoolean("always", false));
         //setIn(obj.optInt("int", 0));
         JSONArray array = obj.getJSONArray("pattern");
         clearPattern();
@@ -192,6 +223,9 @@ public class Arpeggio extends Motif
         obj.put("omni", isOmni());
         obj.put("out", getOut());
         obj.put("new", getNewChordReset());
+        obj.put("from", getFrom());
+        obj.put("to", getTo());
+        obj.put("always", isAlways());
         // obj.put("int", getIn());
         JSONArray array = new JSONArray();
         int pos = 0;

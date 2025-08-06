@@ -956,7 +956,7 @@ processCCIn((ShortMessage)messages[i], select);
         }
   
 
-    public boolean noteOn(int out, int note, double vel) 
+    public void noteOn(int out, int note, double vel, int id) 
         {
         if (current >= 0)
             {
@@ -971,10 +971,10 @@ processCCIn((ShortMessage)messages[i], select);
             vel *= getCorrectedValueDouble(data.getGain(), Select.Data.MAX_GAIN);
             if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
             }
-        return super.noteOn(out, note, vel);
+         super.noteOn(out, note, vel, id);
         }
         
-    public boolean noteOff(int out, int note, double vel) 
+    public void noteOff(int out, int note, double vel, int id) 
         {
         if (current >= 0)
             {
@@ -987,10 +987,10 @@ processCCIn((ShortMessage)messages[i], select);
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             }
-        return super.noteOff(out, note, vel);
+         super.noteOff(out, note, vel, id);
         }
         
-    public void scheduleNoteOff(int out, int note, double vel, int time) 
+    public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         if (current >= 0)
             {
@@ -1002,7 +1002,7 @@ processCCIn((ShortMessage)messages[i], select);
             note += getCorrectedValueInt(data.getTranspose(), Select.Data.MAX_TRANSPOSE * 2) - Select.Data.MAX_TRANSPOSE;
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-            super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
+            super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())), id);
             }
         else System.err.println("SelectClip.scheduleNoteOff: current was " + current);
         }

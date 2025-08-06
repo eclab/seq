@@ -38,6 +38,8 @@ public abstract class Clip
     {
     private static final long serialVersionUID = 1;
 
+	protected static int noteID = 0;
+	public static final int NO_NOTE_ID = -1; 
 
     // The Seq
     protected Seq seq;
@@ -583,85 +585,102 @@ public abstract class Clip
         
     /** Sends a sysex message to the given out.  
         Returns true if the message was successfully sent.  */
-    public boolean sysex(int out, byte[] sysex)
+    public void sysex(int out, byte[] sysex)
         {
-        if (seq.root == this) return seq.sysex(out, sysex);
+        if (seq.root == this) seq.sysex(out, sysex);
         // else if (parent == null) // uhh.....
-        else return parent.sysex(out, sysex); 
+        else parent.sysex(out, sysex); 
         }
 
-    /** Sends a note on to the given Out.  Note that velocity is expressed as a double.
+    /** Sends a note on to the given Out, generating a new ID, which is returned.  This method
+	    should be used when creating a new Note from scratch.  Note that velocity is expressed as a double.
         This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
-    public boolean noteOn(int out, int note, double vel) 
+    public int noteOn(int out, int note, double vel) 
         {
-        if (seq.root == this) return seq.noteOn(out, note, vel);
-        // else if (parent == null) // uhh.....
-        else return parent.noteOn(out, note, vel); 
+        int id = noteID++;
+        noteOn(out, note, vel, id);
+        return id;
         }
         
-    /** Sends a note off to the given Out.  Note that velocity is expressed as a double.
+    /** Sends a note on to the given Out, with the provided ID.  This version of the method
+    	should only be called if you are overriding it and calling super. Otherwise, call noteOn(out, note, vel) */
+    public void noteOn(int out, int note, double vel, int id) 
+        {
+        if (seq.root == this) seq.noteOn(out, note, vel);
+        else parent.noteOn(out, note, vel, id); 
+        }
+        
+     /** Sends a note on to the given Out, generating a new ID, which is returned.  This method
+	    should be used when creating a new Note from scratch.    Note that velocity is expressed as a double.
+        This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int.  Returns true if the message was successfully sent.  */
+    public int noteOn(int out, int note) 
+        {
+        return noteOn(out, note, 64); 
+        }
+        
+   /** Sends a note off to the given Out, with the given ID.  Note that velocity is expressed as a double.
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
-    public boolean noteOff(int out, int note, double vel) 
+    public void noteOff(int out, int note, double vel, int id) 
         {
-        if (seq.root == this) return seq.noteOff(out, note, vel);
-        // else if (parent == null) // uhh.....
-        else return parent.noteOff(out, note, vel); 
+        if (seq.root == this) seq.noteOff(out, note, vel);
+        else parent.noteOff(out, note, vel, id); 
         }
         
-    /** Sends a note off to the given Out with default velocity. 
+    /** Sends a note off to the given Out, with the given ID, and with default velocity. 
         Returns true if the message was successfully sent.  */
-    public boolean noteOff(int out, int note) 
+    public void noteOff(int out, int note, int id) 
         {
-        return noteOff(out, note, 64);
+     	noteOff(out, note, 64, id);
         }
 
     /** Sends a bend to the given Out. Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
-    public boolean bend(int out, int val) 
+    public void bend(int out, int val) 
         {
-        if (seq.root == this) return seq.bend(out, val);
-        // else if (parent == null) // uhh.....
-        else return parent.bend(out, val); 
+        if (seq.root == this) seq.bend(out, val);
+        else parent.bend(out, val); 
         }
         
     /** Sends a CC to the given Out, associated with a given note (for MPE).
         Returns true if the message was successfully sent.  */
-    public boolean cc(int out, int note, int cc, int val) 
+    /*
+    public void cc(int out, int note, int cc, int val) 
         {
-        if (seq.root == this) return seq.cc(out, note, cc, val);
-        // else if (parent == null) // uhh.....
-        else return parent.cc(out, note, cc, val); 
+        if (seq.root == this) seq.cc(out, note, cc, val);
+        else parent.cc(out, note, cc, val); 
         }
+    */
         
     /** Sends a bend to the given Out, associated with a given note (for MPE). Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
-    public boolean bend(int out, int note, int val) 
+    /*
+    public void bend(int out, int note, int val) 
         {
-        if (seq.root == this) return seq.bend(out, note, val);
-        // else if (parent == null) // uhh.....
-        else return parent.bend(out, note, val); 
+        if (seq.root == this) seq.bend(out, note, val);
+        else parent.bend(out, note, val); 
         }
+    */
         
     /** Sends a CC to the given Out. 
         Returns true if the message was successfully sent.  */
-    public boolean cc(int out, int cc, int val) 
+    public void cc(int out, int cc, int val) 
         {
-        if (seq.root == this) return seq.cc(out, cc, val);
-        // else if (parent == null) // uhh.....
-        else return parent.cc(out, cc, val); 
+        if (seq.root == this) seq.cc(out, cc, val);
+        else parent.cc(out, cc, val); 
         }
         
     /** Sends a PC to the given Out. 
         Returns true if the message was successfully sent.  */
-    public boolean pc(int out, int val) 
+    public void pc(int out, int val) 
         {
-        if (seq.root == this) return seq.pc(out, val);
-        // else if (parent == null) // uhh.....
-        else return parent.pc(out, val); 
+        if (seq.root == this) seq.pc(out, val);
+        else parent.pc(out, val); 
         }
         
     /** Sends a polyphonic aftertouch change to the given Out.  If the Out is set
@@ -669,39 +688,35 @@ public abstract class Clip
         Returns true if the message was successfully sent.  
         You can pass in Out.CHANNEL_AFTERTOUCH for the note, and this will force the message to be sent
         as a channel aftertouch message regardless. */
-    public boolean aftertouch(int out, int note, int val) 
+    public void aftertouch(int out, int note, int val) 
         {
-        if (seq.root == this) return seq.aftertouch(out, note, val);
-        // else if (parent == null) // uhh.....
-        else return parent.aftertouch(out, note, val); 
+        if (seq.root == this) seq.aftertouch(out, note, val);
+        else parent.aftertouch(out, note, val); 
         }
 
     /** Sends an NRPN (MSB+LSB) to the given Out. 
         Returns true if the message was successfully sent.  */
-    public boolean nrpn(int out, int nrpn, int val) 
+    public void nrpn(int out, int nrpn, int val) 
         {
-        if (seq.root == this) return seq.nrpn(out, nrpn, val);
-        // else if (parent == null) // uhh.....
-        else return parent.nrpn(out, nrpn, val); 
+        if (seq.root == this) seq.nrpn(out, nrpn, val);
+        else parent.nrpn(out, nrpn, val); 
         }
         
     /** Sends an NRPN (MSB only) to the given Out. Thus if you send
         NRPN coarse parameter 42, it'll be sent as parameter 42 * 128.  
         Returns true if the message was successfully sent.  */
-    public boolean nrpnCoarse(int out, int nrpn, int msb) 
+    public void nrpnCoarse(int out, int nrpn, int msb) 
         {
-        if (seq.root == this) return seq.nrpnCoarse(out, nrpn, msb);
-        // else if (parent == null) // uhh.....
-        else return parent.nrpnCoarse(out, nrpn, msb); 
+        if (seq.root == this) seq.nrpnCoarse(out, nrpn, msb);
+        else parent.nrpnCoarse(out, nrpn, msb); 
         }
 
     /** Sends an RPN (MSB+LSB) to the given Out. 
         Returns true if the message was successfully sent.  */
-    public boolean rpn(int out, int rpn, int val) 
+    public void rpn(int out, int rpn, int val) 
         {
-        if (seq.root == this) return seq.rpn(out, rpn, val);
-        // else if (parent == null) // uhh.....
-        else return parent.rpn(out, rpn, val); 
+        if (seq.root == this) seq.rpn(out, rpn, val);
+        else parent.rpn(out, rpn, val); 
         }
         
     /** Schedules a note off, with the given note pitch value and velocity, to be sent to the given Out at a time in the future RELATIVE to the current position.  
@@ -709,21 +724,19 @@ public abstract class Clip
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int. */
-    public void scheduleNoteOff(int out, int note, double vel, int time) 
+    public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         if (seq.root == this) seq.scheduleNoteOff(out, note, vel, time);
-        // else if (parent == null) // uhh.....
-        else parent.scheduleNoteOff(out, note, vel, time); 
+        else parent.scheduleNoteOff(out, note, vel, time, id); 
         }
         
     /** Schedules a note off, with the given note pitch value and with velocity 64, to be sent to the given Out at a time in the future RELATIVE to the current position. 
         Don't override this one. */
-    public void scheduleNoteOff(int out, int note, int time) 
+    public void scheduleNoteOff(int out, int note, int time, int id) 
         {
-        scheduleNoteOff(out, note, 64, time);
+        scheduleNoteOff(out, note, 64, time, id);
         }
         
-
     ///// UTILITY
     ///// This is mostly copying code.  See the Step Sequencer for heavy use of this code.
 

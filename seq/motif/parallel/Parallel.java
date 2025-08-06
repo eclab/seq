@@ -23,7 +23,6 @@ public class Parallel extends Motif
         {
         public static final int DISABLED = -1;
 
-        //public static final double MAX_DELAY = 256.0;               // in beats
         public static final int MAX_TRANSPOSE = 24;
         public static final double MAX_GAIN = 4.0;
         public static final double MAX_RATE = 16.0;
@@ -39,7 +38,7 @@ public class Parallel extends Motif
         int endingQuantization = QUANTIZATION_NONE;
         boolean override = false;
         boolean repeat = false;
-        
+    	
         public boolean getMute() { return mute; }
         public void setMute(boolean val) { mute = val; }
         
@@ -131,6 +130,18 @@ public class Parallel extends Motif
     public void setNumChildrenToSelect(int val) { numChildrenToSelect = val; }
         
 
+         double crossFade = 0.5;
+         boolean crossFadeOn = false;
+
+    	public double getCrossFade() { return crossFade; }
+    	public void setCrossFade(double val) { crossFade = val; }
+        
+    	public boolean getCrossFadeOn() { return crossFadeOn; }
+    	public void setCrossFadeOn(boolean val) { crossFadeOn = val; }
+        
+
+
+
     public Clip buildClip(Clip parent)
         {
         return new ParallelClip(seq, this, parent);
@@ -141,6 +152,14 @@ public class Parallel extends Motif
         super(seq);
         }
         
+    public Motif copy()
+        {
+        Parallel other = (Parallel)(super.copy());
+		other.crossFade = crossFade;
+        other.crossFadeOn = crossFadeOn;
+        return other;
+        }
+
     public void add(Motif motif, int delay)
         {
         Motif.Child child = addChild(motif);
@@ -151,11 +170,15 @@ public class Parallel extends Motif
     public void load(JSONObject obj) throws JSONException
         {
         setNumChildrenToSelect(obj.getInt("num"));
+        crossFade = obj.optDouble("xfade", 0.5);
+        crossFadeOn = obj.optBoolean("xfon", false);
         }
         
     public void save(JSONObject obj) throws JSONException
         {
         obj.put("num", getNumChildrenToSelect());
+        obj.put("xfade", crossFade);
+        obj.put("xfon", crossFadeOn);
         }
 
     static int document = 0;
