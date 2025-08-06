@@ -248,8 +248,13 @@ public class SimpleColorMap
         
             if (level != level) level = Double.NEGATIVE_INFINITY;  // NaN handling
             
+            /*
             if (level == minLevel) return minColor;  // so we don't divide by zero (maxLevel - minLevel)
             else if (level == maxLevel) return maxColor;  // so we don't overflow
+            */
+
+            if (level >= maxLevel) return getMaxColor(maxLevel);  // so we don't overflow
+            if (level <= minLevel) return getMinColor(minLevel);  // so we don't divide by zero (maxLevel - minLevel)
             
             final double interpolation = (level - minLevel) / (maxLevel - minLevel);
             
@@ -310,8 +315,12 @@ public class SimpleColorMap
             // else...
                         
             // these next two also handle the possibility that maxLevel = minLevel
+            /*
             if (level >= maxLevel) return maxColor.getAlpha();
             if (level <= minLevel) return minColor.getAlpha();
+            */
+            if (level >= maxLevel) return getMaxColor(maxLevel).getAlpha();
+            if (level <= minLevel) return getMinColor(minLevel).getAlpha();
 
             final double interpolation = (level - minLevel) / (maxLevel - minLevel);
 
@@ -348,9 +357,13 @@ public class SimpleColorMap
             if (level != level) level = Double.NEGATIVE_INFINITY;  // NaN handling
 
             // these next two also handle the possibility that maxLevel = minLevel
+            /*
             if (level >= maxLevel) return maxColor.getRGB();
             if (level <= minLevel) return minColor.getRGB();
-
+			*/
+            if (level >= maxLevel) return getMaxColor(maxLevel).getRGB();
+            if (level <= minLevel) return getMinColor(minLevel).getRGB();
+			
             final double interpolation = (level - minLevel) / (maxLevel - minLevel);
 
             final int maxAlpha = this.maxAlpha;
@@ -370,13 +383,19 @@ public class SimpleColorMap
             return (alpha << 24) | (red << 16) | (green << 8) | blue;
             }
         }
-    /*
 
-      public int getRGB(double level)
-      {
-      return getColor(level).getRGB();
-      }
-    */
+	/** Override this to customize Colors for levels >= maxLevel).  The default simply returns maxColor. */
+	protected Color getMaxColor(double level)
+		{
+		return maxColor;
+		}
+
+	/** Override this to customize Colors for levels <= minLevel).  The default simply returns minColor. */
+	protected Color getMinColor(double level)
+		{
+		return minColor;
+		}
+
 
     public boolean validLevel(double value)
         {
