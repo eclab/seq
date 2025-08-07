@@ -115,12 +115,6 @@ public class NotesUI extends MotifUI
     /** Returns the Ruler */
     public Ruler getRuler() { return ruler; }
      
-    /** Builds a new NotesUI */
-    public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
-        {
-        return new NotesUI(seq, ui, (Notes)motif);
-        }
-        
     public NotesUI(Seq seq, SeqUI sequi, Notes notes)
         {
         super(seq, sequi, notes);
@@ -167,6 +161,7 @@ public class NotesUI extends MotifUI
                 doSelectAll();
                 }
             });
+        selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menu.add(selectAll);
 
         JMenuItem cutEvents = new JMenuItem("Cut Events");
@@ -177,6 +172,7 @@ public class NotesUI extends MotifUI
                 doCutEvents();
                 }
             });
+        cutEvents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menu.add(cutEvents);
 
         JMenuItem copyEvents = new JMenuItem("Copy Events");
@@ -187,6 +183,7 @@ public class NotesUI extends MotifUI
                 doCopyEvents();
                 }
             });
+        copyEvents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menu.add(copyEvents);
 
         JMenuItem pasteEvents = new JMenuItem("Paste Events");
@@ -197,6 +194,7 @@ public class NotesUI extends MotifUI
                 doPasteEvents(false);
                 }
             });
+        pasteEvents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menu.add(pasteEvents);
 
         JMenuItem pasteReplaceEvents = new JMenuItem("Paste/Replace Events");
@@ -387,31 +385,52 @@ public class NotesUI extends MotifUI
         }
         
     public void doSelectAll()
-    	{
-    	gridui.clearSelected();
-    	gridui.addToSelected(gridui.getAllNoteUIs());
-    	gridui.repaint();
-    	}
+        {
+        gridui.clearSelected();
+        gridui.addToSelected(gridui.getAllNoteUIs());
+        gridui.repaint();
+        }
  
- 	public void doScrollToSelected()
- 		{
-        doScrollToRect(gridui.getEventBoundingBox(true));
+ 	/** Scrolls to timestep 0 at roughly middle C. */
+    public void doScrollToStart()
+        {
+        int height = PitchUI.PITCH_HEIGHT * 128;
+        Rectangle viewRect = getPrimaryScroll().getViewport().getBounds();
+
+        Point p = new Point(0, 0);
+        
+        // Now we change the height
+        if (viewRect.height < height)
+        	{
+        	// we can still scroll!
+        	p.y = (height - viewRect.height) / 2;
+        	}
+        	
+        getPrimaryScroll().getViewport().setViewPosition(p);
+        }
+
+ 	/** Scrolls to the start of the selected region, if it is not already in view. */
+    public void doScrollToSelected()
+        {
+        doScrollToRect(gridui.getEventBoundingBox(true), false);
         }
         
+ 	/** Scrolls to the start of all notes, if it is not already in view. */
     public void doScrollToAny()
-    	{
-	    Rectangle rect = gridui.getEventBoundingBox(true);
-	    
+        {
+        Rectangle rect = gridui.getEventBoundingBox(true);
+            
         if (rect == null)
             {
             rect = gridui.getEventBoundingBox(false);
             }
-        doScrollToRect(rect);
+        doScrollToRect(rect, false);
         }
                 
 
-    /** Scrolls the GridUI and EventUI until the selected notes or events are displayed */
-    public void doScrollToRect(Rectangle rect)
+    // Scrolls the GridUI and EventUI until the selected notes or events are displayed.  
+    // If the notes or events are already partically displayed, does not scroll at all unless forceScroll is TRUE
+    void doScrollToRect(Rectangle rect, boolean forceScroll)
         {
         if (rect != null)
             {
@@ -446,16 +465,19 @@ public class NotesUI extends MotifUI
             int posx = Math.max(0, rect.x);
             int posy = Math.max(0, rect.y + (rect.height - viewportHeight) / 2);
 
-			Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
-			if (viewRect.x <= posx && viewRect.x + viewRect.width > posx)
-				{
-				// posx already contained, so we won't scroll to it
-				posx = viewRect.x;
-				}
-			if (viewRect.y <= posy && viewRect.y + viewRect.height > posy)
-				{
-				// posy already contained, so we won't scroll to it
-				posy = viewRect.y;
+            Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
+            if (!forceScroll)
+            	{
+            	if (viewRect.x <= posx && viewRect.x + viewRect.width > posx)
+					{
+					// posx already contained, so we won't scroll to it
+					posx = viewRect.x;
+					}
+				if (viewRect.y <= posy && viewRect.y + viewRect.height > posy)
+					{
+					// posy already contained, so we won't scroll to it
+					posy = viewRect.y;
+					}
 				}
 
             getPrimaryScroll().getViewport().setViewPosition(new Point(posx, posy));
@@ -1192,9 +1214,27 @@ public class NotesUI extends MotifUI
         }
 
 
+	public int getNumNotes()
+		{
+				int size = 0;
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try
+					{
+					size = getNotes().getEvents().size();
+					}
+				finally
+					{
+					lock.unlock();
+					}
+				return size;
+		}
+
     /** Builds the main view. */        
     public void buildPrimary(JScrollPane scroll)
         {
+        this.scroll = scroll;
+
         gridui = new GridUI(this);
         scroll.setViewportView(gridui);
         scroll.setRowHeaderView(gridui.buildKeyboard());
@@ -1207,30 +1247,22 @@ public class NotesUI extends MotifUI
         box.add(ruler, BorderLayout.NORTH);
         box.add(eventsui, BorderLayout.CENTER);
         scroll.setColumnHeaderView(box);
-                
-        // For some reason, the notes don't appear right now, perhaps the JScrollView hasn't been installed yet?
-        // So we delay with an invokeLater and it works...
-        SwingUtilities.invokeLater(new Runnable()
-            {
-            public void run()
-                {
-                gridui.reload();
-                rebuildSizes();
-                gridui.repaint();
+               
+			gridui.reload();
+			rebuildSizes();
+			gridui.repaint();
 
-                // Scroll to Middle C-ish?  Or Selected?
-                if (gridui.getSelected().size() > 0)
-                    {
-                    doScrollToAny();
-                    }
-                else
-                    {
-                    /// FIXME THIS ISN'T WORKING!!!
-                    JScrollBar vert = getPrimaryScroll().getVerticalScrollBar();
-                    vert.setValue((vert.getMaximum() - vert.getMinimum()) / 4);
-                    }
-                }
-            });
+        	// This won't work if the frame hasn't been constructed yet. 
+
+			// Scroll to Middle C-ish?  Or Selected?
+			if (getNumNotes() > 0)
+				{
+				doScrollToAny();
+				}
+			else
+				{
+				doScrollToStart();
+				}
                                 
         // FIXME
         // This isn't working with two-finger trackpad scrolling.  :-(
@@ -1243,10 +1275,13 @@ public class NotesUI extends MotifUI
           }
           });
         */
-                                        
-        this.scroll = scroll;
         }
         
+    public void frameCreated()
+    	{
+		doScrollToStart();
+    	}
+    	
     /** Revalidates the entire GridUI, EventUI, and ruler */
     void rebuildSizes()
         {
@@ -1525,13 +1560,13 @@ public class NotesUI extends MotifUI
             }
         }
 
-	protected void build()
-		{
-		super.build();
-		// FIXME:   I don't know why I have to invoke this like this....
-		SwingUtilities.invokeLater(new Runnable() { public void run() { rebuild(); } });
- 		}
-		
+    protected void build()
+        {
+        super.build();
+        // FIXME:   I don't know why I have to invoke this like this....
+        SwingUtilities.invokeLater(new Runnable() { public void run() { rebuild(); } });
+        }
+                
     /** Rebuilds the NotesUI in response to being stopped.  This is because we may have recorded notes which have just been inserted.  */
     public void stopped()
         {

@@ -69,11 +69,13 @@ public abstract class MotifUI extends JPanel
     public static final Font SMALL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
 
     boolean built = false;
+    
     public void buildUI()
         {
         if (!built) { build(); }
         built = true;
         }
+        
     public boolean isUIBuilt()
         {
         return built;
@@ -188,15 +190,15 @@ public abstract class MotifUI extends JPanel
     public void addButton(MotifButton button) { buttons.add(button); button.updateList(); }
     public void removeButton(MotifButton button) { ArrayLists.removeFast(buttons, button); button.updateList(); }                        // O(n) search, O(1) remove
     public boolean isPlaying() 
-    	{ 
+        { 
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
             { 
-    		return motif.getPlayCount() > 0; 
+            return motif.getPlayCount() > 0; 
             }
         finally { lock.unlock(); }
-    	}
+        }
     
     public Clip getDisplayClip()
         {
@@ -253,7 +255,7 @@ public abstract class MotifUI extends JPanel
         {
         buildUI(); 
         }
-        
+                
     /** Called by the SeqUI to let the MotifUI know that it is no longer being displayed.
         If you override this, be sure to call super().   This is called even if the UI hasn't
         been built, so you might check that. */
@@ -305,14 +307,11 @@ public abstract class MotifUI extends JPanel
                 }
             }
         }
+
+	public void frameCreated()
+		{
+		}
     
-    /** Called to give the motifui a chance to revise its inspectors.  
-        Override this as you see fit, the default is empty.
-        FIXME: is this needed any more? */  
-    public void revise()
-        {
-        }
-        
     public void recursiveDragError(MotifButton dropped, SeqUI sequi)
         {
         sequi.showSimpleError("Cannot Drag", 

@@ -1305,21 +1305,21 @@ public class Seq
     /** Sends a bend to the given Out, associated with a given note (for MPE).   Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
     /*
-    public boolean bend(int out, int note, int val) 
-        {
-        if (isPlaying()) return outs[out].bend(note, val);
-        else return false;
-        }
+      public boolean bend(int out, int note, int val) 
+      {
+      if (isPlaying()) return outs[out].bend(note, val);
+      else return false;
+      }
     */
         
     /** Sends a CC to the given Out, associated with a given note (for MPE). 
         Returns true if the message was successfully sent.  */
     /*
-    public boolean cc(int out, int note, int cc, int val) 
-        {
-        if (isPlaying()) return outs[out].cc(note, cc, val);
-        else return false;
-        }
+      public boolean cc(int out, int note, int cc, int val) 
+      {
+      if (isPlaying()) return outs[out].cc(note, cc, val);
+      else return false;
+      }
     */
         
 
