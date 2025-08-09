@@ -449,7 +449,7 @@ Finally, you can {\bf Log MIDI} to a file.  If you start this, then the next tim
 
 Note that some DAWs (ahem, Ableton) cannot load multichannel MIDI data -- they'll just glom it together into a single channel blob.  You probably don't want that.  Seq offers you the option of writing separate files, one for each channel.
 
-\subsection{The Current Motif Display\quad (and the optional Per-Motif Menu)}
+\subsection{The Current Motif Display\quad (and the Options and Per-Motif Menus)}
 
 The current motif display varies depending on which motif you have selected in the Motif List.  Different motifs have different displays according to the nature of their data.  We'll discuss different motifs and their displays later in Section~\ref{motifs}.  
 
@@ -457,8 +457,15 @@ The current motif display varies depending on which motif you have selected in t
 
 Also below the Current Motif Display are the {\bf Display Zoom} buttons.  These zoom the display in and out and again are only appropriate for certain motifs (notably the Step Sequencer motif).
 
-\paragraph{The Optional Per-Motif Menu}  Some motifs have their own dedicated menu which appears only when that motif is selected.  These menus will be discussed with the motifs proper in Section~\ref{motifs}.
+\paragraph{The Per-Motif Menus}  Some motifs have their own dedicated menu which appears only when that motif is selected.  These menus will be discussed with the motifs proper in Section~\ref{motifs}.
 
+\paragraph{The Options Menu}  This contains miscellaneous sequencer options.  {\bf Show Tooltips} toggles whether you want tooltips popping up everywhere.  This option is remembered after you quit and restart Seq.  {\bf  New Random Number Generator} gives Seq a random number generator with a new random sequence.  And if {\bf New Generator Each Play} is check, Seq produces a new random number generator each time you press the Play or Record buttons: this is also remembered after you restart Seq.  These last two menu items require some explanation.
+
+Each sequence has a random number generator, which produces a stream of random numbers used whenever Seq has to roll the dice for something.  Each time you make a new sequence, it is given its own  unique random number generator, which is saved with the sequence.  When you stop and replay the sequence, this generator is reset so you'll always have the same random choices made and thus will have the same sequence.
+
+Normally this is desirable.  But what if you don't like the stream of numbers you were given, and want a new random generator?  Just select "New Random Number Generator", and you'll get a new one.  You can go back to the old one with {\bf Undo}.  Otherwise if you save your sequence, it'll be saved with to use the new generator.
+
+Note that if you change your sequence such that elements that draw random numbers are added, removed, or moved, you'll probably change the effect of the sequence on all the later random elements anyway.  So don't expect the random series to be the same after you've made significant changed to your sequence.
 
 \subsection{The Inspectors and Text Notes}
 
