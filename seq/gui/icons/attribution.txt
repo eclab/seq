@@ -1,5 +1,7 @@
 Seq uses at least the following icons, to which we are indebted.
 
+<a href="https://www.flaticon.com/free-icons/filter" title="filter icons">Filter icons created by aly_aly - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/process" title="process icons">Process icons created by Freepik - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/flow" title="flow icons">Flow icons created by Andrejs Kirma - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/machine-learning" title="machine learning icons">Machine learning icons created by Vlad Szirka - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/stairs" title="stairs icons">Stairs icons created by Icon mania - Flaticon</a>

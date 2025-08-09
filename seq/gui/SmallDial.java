@@ -48,6 +48,8 @@ public abstract class SmallDial extends JPanel
     // The color of the thin portion of the dial when using defaults
     public static final Color USES_DEFAULTS_THIN_COLOR = Color.GRAY;
     // The color of the thin portion of the dial
+    public static final Color DISABLED_COLOR = Color.GRAY;
+    // The color of the thin portion of the dial
     public static final Color THIN_COLOR = Color.BLACK;
     // The color of the thick portion of the dial when being changed in real time
     public static final Color DYNAMIC_COLOR = Color.RED;
@@ -369,7 +371,8 @@ public abstract class SmallDial extends JPanel
         addMouseListener(new MouseAdapter()
             {                        
             public void mousePressed(MouseEvent e)
-                {                        
+                {                       
+                if (!isEnabled()) return; 
                 if (usesDefaults() && getDefault() > NO_DEFAULT)
                     {
                     setDefault(NO_DEFAULT);
@@ -407,6 +410,7 @@ public abstract class SmallDial extends JPanel
             MouseEvent lastRelease;
             public void mouseReleased(MouseEvent e)
                 {
+                if (!isEnabled()) return; 
                 if (e == lastRelease) // we just had this event because we're in the AWT Event Listener.  So we ignore it
                     return;
                     
@@ -419,6 +423,7 @@ public abstract class SmallDial extends JPanel
 
             public void mouseClicked(MouseEvent e)
                 {
+                if (!isEnabled()) return; 
                 if (e.getClickCount() == 2 && usesDefaults())
                     { 
                     if (defaultsList.length == 1)
@@ -460,6 +465,7 @@ public abstract class SmallDial extends JPanel
             {
             public void mouseDragged(MouseEvent e)
                 {
+                if (!isEnabled()) return; 
                 // Propose a value based on Y
                 
                 int py = e.getY();                                
@@ -504,6 +510,7 @@ public abstract class SmallDial extends JPanel
         boolean def = getDefault() > NO_DEFAULT;
 
         graphics.setPaint(def ? USES_DEFAULTS_THIN_COLOR : THIN_COLOR);
+        if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
         graphics.setStroke(THIN_STROKE);
         Arc2D.Double arc = new Arc2D.Double();
         
@@ -517,6 +524,7 @@ public abstract class SmallDial extends JPanel
         if (usesDefaults())
             {
             graphics.setPaint(def ? DEFAULTS_ON_DOT_COLOR : (getDefaultsList().length > 1 ? DEFAULT_STATIC_COLOR : DEFAULTS_OFF_DOT_COLOR));
+        	if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
             double x = rect.getX() + rect.getWidth() / 2.0;
             double y = rect.getY() + rect.getHeight() / 2.0;
             Ellipse2D.Double circle = new Ellipse2D.Double(x - DEFAULTS_DOT_THICKNESS / 2.0, y - DEFAULTS_DOT_THICKNESS / 2.0, DEFAULTS_DOT_THICKNESS, DEFAULTS_DOT_THICKNESS);
@@ -536,6 +544,7 @@ public abstract class SmallDial extends JPanel
         if (dynamicallyChanging)
             {
             graphics.setPaint(DYNAMIC_COLOR);
+        	if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);	// should not happen
             if (value == min)
                 {
                 interval = -5;
@@ -544,6 +553,7 @@ public abstract class SmallDial extends JPanel
         else
             {
             graphics.setPaint(getStaticColor());
+        	if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
             if (value == min)
                 {
                 interval = 0;
