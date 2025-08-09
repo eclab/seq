@@ -1,5 +1,5 @@
 /* 
-   Copyright 2024 by Sean Luke and George Mason University
+   Copyright 2025 by Sean Luke and George Mason University
    Licensed under Apache 2.0
 */
 

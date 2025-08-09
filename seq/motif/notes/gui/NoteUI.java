@@ -31,10 +31,10 @@ public class NoteUI extends EventUI
     public static final int RESIZE_REGION_WIDTH = 6;
     // Mapping of velocity to color
     public static final SimpleColorMap velocityMap = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
-		new SimpleColorMap(0, 127, 64, 
-			new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
-			new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
-			
+        new SimpleColorMap(0, 127, 64, 
+            new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
+            new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
+                        
     // backpointer to the owner PitchUI
     PitchUI pitchui;
         

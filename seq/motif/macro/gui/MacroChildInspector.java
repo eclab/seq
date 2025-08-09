@@ -20,7 +20,6 @@ public class MacroChildInspector extends WidgetList
     MacroUI macroUI = null;             // default
     MacroChildUI macroChildUI = null;   // default
     StringField name;
-    JButton revertButton;
     JPanel namePanel;
     int at;
     
@@ -95,21 +94,6 @@ public class MacroChildInspector extends WidgetList
             name.setToolTipText(NICKNAME_TOOLTIP);
             namePanel.setToolTipText(NICKNAME_TOOLTIP);
             }
-/*
-  if (macroUI != null)
-  {               
-  JButton revertButton = new JButton("Revert");
-  namePanel.add(revertButton, BorderLayout.EAST);
-  revertButton.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent e)
-  {
-  name.setValue(macroChild.getName());
-  macroUI.updateMacroChildName(at, macroChild.getName());
-  }
-  });
-  }
-*/
         build(new String[] { (macroUI == null ? "Name" : "Nickname"), },
             new JComponent[] 
                 {

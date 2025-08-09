@@ -100,6 +100,11 @@ public class NotesUI extends MotifUI
         return new NotesUI(seq, ui, new Notes(seq, autoArm));
         }
 
+    public static MotifUI create(Seq seq, SeqUI ui, Motif motif)
+        {
+        return new NotesUI(seq, ui, (Notes)motif);
+        }
+
     /** Returns the NoteUI corresponding to the given note and its pitch.  We specify pitch so we can look it up in the PitchUI. */
     public NoteUI getNoteUIFor(Notes.Note note, int pitch)
         {
@@ -405,8 +410,17 @@ public class NotesUI extends MotifUI
         	// we can still scroll!
         	p.y = (height - viewRect.height) / 2;
         	}
-        	
+        
         getPrimaryScroll().getViewport().setViewPosition(p);
+        
+        /*
+        JScrollBar bar = getPrimaryScroll().getVerticalScrollBar();
+        bar.setValue((bar.getMaximum() + bar.getMinimum()) / 2);
+        System.err.println(bar.getMaximum());
+        System.err.println(bar.getMinimum());
+        bar = getPrimaryScroll().getHorizontalScrollBar();
+        bar.setValue(bar.getMinimum());
+        */
         }
 
  	/** Scrolls to the start of the selected region, if it is not already in view. */

@@ -256,26 +256,26 @@ public abstract class TimeDisplay extends JPanel
         }
         
     public static String map(int ppq, boolean displaysTime)
-    	{
-		if (ppq == 12)  return "1|64";
-		else if  (ppq == 24)    return "1|32";
-		else if  (ppq == 36)    return "3|64";
-		else if  (ppq == 48)    return "1|16";
-		else if  (ppq == 64)    return "1 T";
-		else if  (ppq == 60)    return "5|64";
-		else if  (ppq == 72)    return "3|32";
-		else if  (ppq == 84)    return "7|64";
-		else if  (ppq == 96)    return "1|8";
-		else if  (ppq == 108)   return "9|64";
-		else if  (ppq == 120)   return "5|32";
-		else if  (ppq == 128)   return "2 T";
-		else if  (ppq == 132)   return "11|64";
-		else if  (ppq == 144)   return "3|16";
-		else if  (ppq == 156)   return "13|64";
-		else if  (ppq == 168)   return "7|32";
-		else if  (ppq == 180)   return "15|64";
-		else return String.valueOf((displaysTime ? 1 : 0) + ppq);
-    	}
+        {
+        if (ppq == 12)  return "1|64";
+        else if  (ppq == 24)    return "1|32";
+        else if  (ppq == 36)    return "3|64";
+        else if  (ppq == 48)    return "1|16";
+        else if  (ppq == 64)    return "1 T";
+        else if  (ppq == 60)    return "5|64";
+        else if  (ppq == 72)    return "3|32";
+        else if  (ppq == 84)    return "7|64";
+        else if  (ppq == 96)    return "1|8";
+        else if  (ppq == 108)   return "9|64";
+        else if  (ppq == 120)   return "5|32";
+        else if  (ppq == 128)   return "2 T";
+        else if  (ppq == 132)   return "11|64";
+        else if  (ppq == 144)   return "3|16";
+        else if  (ppq == 156)   return "13|64";
+        else if  (ppq == 168)   return "7|32";
+        else if  (ppq == 180)   return "15|64";
+        else return String.valueOf((displaysTime ? 1 : 0) + ppq);
+        }
     
     public TimeDisplay(int steps, int maxSteps, 
         int beats, int maxBeats, 

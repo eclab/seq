@@ -38,7 +38,7 @@ public class Parallel extends Motif
         int endingQuantization = QUANTIZATION_NONE;
         boolean override = false;
         boolean repeat = false;
-    	
+        
         public boolean getMute() { return mute; }
         public void setMute(boolean val) { mute = val; }
         
@@ -63,9 +63,9 @@ public class Parallel extends Motif
         public double getRate() { return rate; }
         public void setRate(double val) { rate = val; }
  
- 		public boolean getRepeat() { return repeat; }
- 		public void setRepeat(boolean val) { repeat = val; }
- 		
+        public boolean getRepeat() { return repeat; }
+        public void setRepeat(boolean val) { repeat = val; }
+                
         public int getEndingQuantization() { return endingQuantization; }
         public void setEndingQuantization(int val) { endingQuantization = val; }
        
@@ -130,14 +130,14 @@ public class Parallel extends Motif
     public void setNumChildrenToSelect(int val) { numChildrenToSelect = val; }
         
 
-         double crossFade = 0.5;
-         boolean crossFadeOn = false;
+    double crossFade = 0.5;
+    boolean crossFadeOn = false;
 
-    	public double getCrossFade() { return crossFade; }
-    	public void setCrossFade(double val) { crossFade = val; }
+    public double getCrossFade() { return crossFade; }
+    public void setCrossFade(double val) { crossFade = val; }
         
-    	public boolean getCrossFadeOn() { return crossFadeOn; }
-    	public void setCrossFadeOn(boolean val) { crossFadeOn = val; }
+    public boolean getCrossFadeOn() { return crossFadeOn; }
+    public void setCrossFadeOn(boolean val) { crossFadeOn = val; }
         
 
 
@@ -155,7 +155,7 @@ public class Parallel extends Motif
     public Motif copy()
         {
         Parallel other = (Parallel)(super.copy());
-		other.crossFade = crossFade;
+        other.crossFade = crossFade;
         other.crossFadeOn = crossFadeOn;
         return other;
         }

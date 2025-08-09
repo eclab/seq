@@ -82,6 +82,7 @@ public class DefaultParameterList extends JPanel
         add(disclosure, BorderLayout.CENTER);
         }
     
+    /*
     public void revise()
         {
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
@@ -89,4 +90,5 @@ public class DefaultParameterList extends JPanel
             names[i].update();
             }
         }
+    */
     }

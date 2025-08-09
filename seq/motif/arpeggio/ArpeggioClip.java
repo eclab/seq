@@ -17,9 +17,9 @@ public class ArpeggioClip extends Clip
     public static final int TRIES = 4;              // number of times we try to get a unique random number
 
 
-	// Note is used both to store incoming Note Off messages stored the Heap, and
-	// also to indicated notes being played by the arpeggio.  So not all four
-	// of the variables below (pitch, velocity, id, out) are used 
+    // Note is used both to store incoming Note Off messages stored the Heap, and
+    // also to indicated notes being played by the arpeggio.  So not all four
+    // of the variables below (pitch, velocity, id, out) are used 
     static class Note implements Comparable
         {
         int pitch;
@@ -27,12 +27,12 @@ public class ArpeggioClip extends Clip
         int id;
         int out;
 
-		// this version generates its own id
+        // this version generates its own id
         public Note(int pitch, int velocity)
             {
             this.pitch = pitch;
             this.velocity = velocity;
-        	id = noteID++;
+            id = noteID++;
             }
             
         public Note(int pitch, int velocity, int id)
@@ -52,9 +52,9 @@ public class ArpeggioClip extends Clip
             }
             
         public void setID(int val)
-        	{
-        	id = val;
-        	}
+            {
+            id = val;
+            }
             
         public int compareTo(Object obj)
             {
@@ -225,7 +225,7 @@ public class ArpeggioClip extends Clip
                 return true;
                 }
             }
-        return false;		// didn't find it
+        return false;           // didn't find it
         }
 
     void removeAll()
@@ -314,16 +314,16 @@ public class ArpeggioClip extends Clip
         else getParent().scheduleNoteOff(out, note, vel, time, id); 
         }
 
-	public boolean isActive()
-		{
-		return isActive(getPosition());
-		}
+    public boolean isActive()
+        {
+        return isActive(getPosition());
+        }
 
-	public boolean isActive(int time)
-		{
+    public boolean isActive(int time)
+        {
         Arpeggio arp = (Arpeggio)getMotif();
-		return (arp.isAlways() || (time >= arp.getFrom() && time < arp.getTo()));
-		}
+        return (arp.isAlways() || (time >= arp.getFrom() && time < arp.getTo()));
+        }
 
     /// INTERCEPTED MESSAGES
     /// These are overridden to intercept notes and send them to the
@@ -333,36 +333,36 @@ public class ArpeggioClip extends Clip
     public void noteOn(int out, int note, double vel, int id) 
         {
         Arpeggio arp = (Arpeggio)getMotif();
-        if (isActive() && (arp.isOmni() || out == arp.getOut()))		// if we're not active, send the note to our parent
+        if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
             {
             addNote(note, (int)vel, id);
             }
         else
             {
-             super.noteOn(out, note, vel, id);
+            super.noteOn(out, note, vel, id);
             }
         }
         
     public void noteOff(int out, int note, double vel, int id) 
         {
         Arpeggio arp = (Arpeggio)getMotif();
-        if (isActive() && (arp.isOmni() || out == arp.getOut()))		// if we're not active, send the note to our parent
+        if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
             {
-            if (!removeNote(id))		// couldn't find the note off, I better pass it through
-            	{
-             	super.noteOff(out, note, vel, id);
-            	}
+            if (!removeNote(id))                // couldn't find the note off, I better pass it through
+                {
+                super.noteOff(out, note, vel, id);
+                }
             }
         else
             {
-             super.noteOff(out, note, vel, id);
+            super.noteOff(out, note, vel, id);
             }
         }
         
     public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         Arpeggio arp = (Arpeggio)getMotif();
-        if (isActive() && (arp.isOmni() || out == arp.getOut()))		// if we're not active, send the note to our parent
+        if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
             {
             noteOff.add(new Note(out, note, (int)vel, id), Integer.valueOf(time + seq.getTime()));
             }
@@ -385,10 +385,10 @@ public class ArpeggioClip extends Clip
             if (all || position >= i.intValue())
                 {
                 Note note = (Note)(noteOff.extractMin());
-                if (!removeNote(note.id))							// it wasn't there, I should pass it on
-                	{
-                	sendScheduleNoteOff(note.out, note.pitch, note.velocity, i, note.id);
-                	}
+                if (!removeNote(note.id))                                                       // it wasn't there, I should pass it on
+                    {
+                    sendScheduleNoteOff(note.out, note.pitch, note.velocity, i, note.id);
+                    }
                 }
             else break;
             }       
@@ -565,7 +565,7 @@ public class ArpeggioClip extends Clip
     
     public boolean process()
         {
-        if (!isActive()) return clip.advance();							// If I'm not active, I just do what my child does
+        if (!isActive()) return clip.advance();                                                 // If I'm not active, I just do what my child does
         
         Arpeggio arp = (Arpeggio)getMotif();
                 
@@ -605,11 +605,11 @@ public class ArpeggioClip extends Clip
                 oldPitches = newPitches;
                 }
                                 
-        	if (!isActive(getPosition() + 1)) 						// this can only happen if I WAS active and am about to be INACTIVE.  I release my notes.
-        		{
-        		release();		
-        		removeAll();
-        		}
+            if (!isActive(getPosition() + 1))                                               // this can only happen if I WAS active and am about to be INACTIVE.  I release my notes.
+                {
+                release();              
+                removeAll();
+                }
         
             // I am done if my child is done
             return done;

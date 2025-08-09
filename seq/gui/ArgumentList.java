@@ -280,6 +280,7 @@ public class ArgumentList extends JPanel
         add(new DisclosurePanel("Arguments", list), BorderLayout.CENTER);
         }
     
+/*
     public void revise()
         {
         Seq old = seq;
@@ -298,4 +299,5 @@ public class ArgumentList extends JPanel
             dials[i].redraw();
             }
         }
+*/
     }

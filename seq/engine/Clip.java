@@ -38,8 +38,8 @@ public abstract class Clip
     {
     private static final long serialVersionUID = 1;
 
-	protected static int noteID = 0;
-	public static final int NO_NOTE_ID = -1; 
+    protected static int noteID = 0;
+    public static final int NO_NOTE_ID = -1; 
 
     // The Seq
     protected Seq seq;
@@ -593,7 +593,7 @@ public abstract class Clip
         }
 
     /** Sends a note on to the given Out, generating a new ID, which is returned.  This method
-	    should be used when creating a new Note from scratch.  Note that velocity is expressed as a double.
+        should be used when creating a new Note from scratch.  Note that velocity is expressed as a double.
         This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
@@ -605,15 +605,15 @@ public abstract class Clip
         }
         
     /** Sends a note on to the given Out, with the provided ID.  This version of the method
-    	should only be called if you are overriding it and calling super. Otherwise, call noteOn(out, note, vel) */
+        should only be called if you are overriding it and calling super. Otherwise, call noteOn(out, note, vel) */
     public void noteOn(int out, int note, double vel, int id) 
         {
         if (seq.root == this) seq.noteOn(out, note, vel);
         else parent.noteOn(out, note, vel, id); 
         }
         
-     /** Sends a note on to the given Out, generating a new ID, which is returned.  This method
-	    should be used when creating a new Note from scratch.    Note that velocity is expressed as a double.
+    /** Sends a note on to the given Out, generating a new ID, which is returned.  This method
+        should be used when creating a new Note from scratch.    Note that velocity is expressed as a double.
         This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
@@ -622,7 +622,7 @@ public abstract class Clip
         return noteOn(out, note, 64); 
         }
         
-   /** Sends a note off to the given Out, with the given ID.  Note that velocity is expressed as a double.
+    /** Sends a note off to the given Out, with the given ID.  Note that velocity is expressed as a double.
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
@@ -636,7 +636,7 @@ public abstract class Clip
         Returns true if the message was successfully sent.  */
     public void noteOff(int out, int note, int id) 
         {
-     	noteOff(out, note, 64, id);
+        noteOff(out, note, 64, id);
         }
 
     /** Sends a bend to the given Out. Bend goes -8192...8191.
@@ -650,21 +650,21 @@ public abstract class Clip
     /** Sends a CC to the given Out, associated with a given note (for MPE).
         Returns true if the message was successfully sent.  */
     /*
-    public void cc(int out, int note, int cc, int val) 
-        {
-        if (seq.root == this) seq.cc(out, note, cc, val);
-        else parent.cc(out, note, cc, val); 
-        }
+      public void cc(int out, int note, int cc, int val) 
+      {
+      if (seq.root == this) seq.cc(out, note, cc, val);
+      else parent.cc(out, note, cc, val); 
+      }
     */
         
     /** Sends a bend to the given Out, associated with a given note (for MPE). Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
     /*
-    public void bend(int out, int note, int val) 
-        {
-        if (seq.root == this) seq.bend(out, note, val);
-        else parent.bend(out, note, val); 
-        }
+      public void bend(int out, int note, int val) 
+      {
+      if (seq.root == this) seq.bend(out, note, val);
+      else parent.bend(out, note, val); 
+      }
     */
         
     /** Sends a CC to the given Out. 

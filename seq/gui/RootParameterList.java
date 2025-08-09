@@ -152,6 +152,7 @@ public class RootParameterList extends JPanel
         panel.setToolTipText(ROOT_ARGUMENTS_TOOLTIP);
         }
     
+    /*
     public void revise()
         {
         min.redraw();
@@ -162,6 +163,7 @@ public class RootParameterList extends JPanel
             dials[i].redraw();
             }
         }
+    */
 
 
 

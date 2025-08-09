@@ -133,9 +133,10 @@ public class MotifList extends JPanel
         seq.motif.parallel.gui.ParallelUI.class,
         seq.motif.automaton.gui.AutomatonUI.class,
         seq.motif.silence.gui.SilenceUI.class,
+        seq.motif.arpeggio.gui.ArpeggioUI.class,
+        seq.motif.filter.gui.FilterUI.class,
         seq.motif.macro.gui.MacroChildUI.class,
         seq.motif.macro.gui.MacroUI.class,
-        seq.motif.arpeggio.gui.ArpeggioUI.class,
 //        seq.motif.modulation.gui.ModulationUI.class,
         };
     
@@ -148,9 +149,10 @@ public class MotifList extends JPanel
         seq.motif.parallel.Parallel.class,
         seq.motif.automaton.Automaton.class,
         seq.motif.silence.Silence.class,
+        seq.motif.arpeggio.Arpeggio.class,
+        seq.motif.filter.Filter.class,
         seq.motif.macro.MacroChild.class,
         seq.motif.macro.Macro.class,
-        seq.motif.arpeggio.Arpeggio.class,
 //        seq.motif.modulation.Modulation.class,
         };
 

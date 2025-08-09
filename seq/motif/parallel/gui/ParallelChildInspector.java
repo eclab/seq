@@ -436,7 +436,7 @@ public class ParallelChildInspector extends WidgetList
                         getData().setMute(mute.isSelected()); 
                         }
                     finally { lock.unlock(); }      
-                    if (button != null) button.updateText();		// display the "MUTE"                        
+                    if (button != null) button.updateText();            // display the "MUTE"                        
                     }
                 });
             mute.setToolTipText(MIDI_CHANGES_MUTE_TOOLTIP);

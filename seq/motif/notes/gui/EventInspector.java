@@ -297,6 +297,8 @@ public class EventInspector extends WidgetList
                             finally { lock.unlock(); }
                             value.redraw();
                             updateTable();
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             }
                         };
                     valuePresets.setToolTipText(VALUE_PRESETS_TOOLTIP);

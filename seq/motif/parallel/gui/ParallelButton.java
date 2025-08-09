@@ -103,7 +103,7 @@ public class ParallelButton extends MotifButton
         }
     
     public boolean shouldPreHighlight()
-    	{
+        {
         boolean playing = false;
         Seq seq = sequi.getSeq();
         ReentrantLock lock = seq.getLock();
@@ -124,7 +124,7 @@ public class ParallelButton extends MotifButton
             }
         finally { lock.unlock(); }
         return playing;
-    	}
+        }
         
     public String getSubtext()
         {
@@ -184,7 +184,7 @@ public class ParallelButton extends MotifButton
         int bars = _delay / bar;
         
         return (override ? "Override   (" : "(") + bars + " . " + beats + ") " + ticks + "/192&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + (muted ? "Muted&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") +
-        	(repeating ? "Repeating&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
+            (repeating ? "Repeating&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;
         }
 
     public void doubleClick(MouseEvent e)

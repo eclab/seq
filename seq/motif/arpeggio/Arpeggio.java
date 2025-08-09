@@ -37,7 +37,7 @@ public class Arpeggio extends Motif
     boolean newChordReset = true;
     int from = 0;
     int to = 0;
-    boolean always = true;					
+    boolean always = true;                                      
     
     // pattern[PATTERN_NOTES/2] is the lowest note in the chord
     // BELOW that we go BELOW the chord
@@ -128,34 +128,34 @@ public class Arpeggio extends Motif
         }
         
     public int getFrom()
-    	{
-    	return from;
-    	}
+        {
+        return from;
+        }
     
     public void setFrom(int val)
-    	{
-    	from = val;
-    	}
+        {
+        from = val;
+        }
     
-     public int getTo()
-    	{
-    	return to;
-    	}
+    public int getTo()
+        {
+        return to;
+        }
     
     public void setTo(int val)
-    	{
-    	to = val;
-    	}
+        {
+        to = val;
+        }
     
-     public boolean isAlways()
-    	{
-    	return always;
-    	}
+    public boolean isAlways()
+        {
+        return always;
+        }
     
     public void setAlways(boolean val)
-    	{
-    	always = val;
-    	}
+        {
+        always = val;
+        }
     
 
 
@@ -179,7 +179,7 @@ public class Arpeggio extends Motif
 
     public void add(Motif motif)
         {
-        Motif.Child child = addChild(motif);
+        addChild(motif);
         } 
 
     public void load(JSONObject obj) throws JSONException

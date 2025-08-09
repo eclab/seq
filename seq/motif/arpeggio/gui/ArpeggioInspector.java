@@ -274,12 +274,15 @@ public class ArpeggioInspector extends WidgetList
             out.setSelectedIndex(arpeggio.getOut()); 
             omni.setSelected(arpeggio.isOmni()); 
             newChordReset.setSelected(arpeggio.getNewChordReset());
+            activeAlways.setSelected(arpeggio.isAlways());
             }
         finally { lock.unlock(); }                              
         seq = old;
         name.update();
         if (length != null) length.redraw();
         if (octaves != null) octaves.redraw();
+        if (activeFrom != null) activeFrom.revise();
+        if (activeTo != null) activeTo.revise();
         }
 
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +

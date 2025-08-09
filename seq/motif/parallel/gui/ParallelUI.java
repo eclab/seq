@@ -334,16 +334,16 @@ public class ParallelUI extends MotifUI
         
             ParallelButton newButton = new ParallelButton(sequi, motifui, ParallelUI.this, i);
 
-			ReentrantLock lock = parallel.getSeq().getLock();
-			lock.lock();
-			try 
-				{
-			    newButton.setDelay(((Parallel.Data)(parallel.getChild(i).getData())).getDelay());
-			    }
-			finally
-				{
-				lock.unlock();
-				}
+            ReentrantLock lock = parallel.getSeq().getLock();
+            lock.lock();
+            try 
+                {
+                newButton.setDelay(((Parallel.Data)(parallel.getChild(i).getData())).getDelay());
+                }
+            finally
+                {
+                lock.unlock();
+                }
 
             newButton.addActionListener(new ActionListener()
                 {

@@ -30,8 +30,8 @@ public class Ruler extends JComponent
     // The stroke of the play marker on the ruler
     public static final BasicStroke PLAY_STROKE = new BasicStroke(3.0f);
 
-	// Ruler Header
-	JLabel rulerSpace;
+    // Ruler Header
+    JLabel rulerSpace;
     // The owner NotesUI
     NotesUI notesui;
     // The Seq
@@ -359,15 +359,15 @@ public class Ruler extends JComponent
     public JComponent getHeader()
         {
         JPanel panel = new JPanel()
-        	{
+            {
             public Dimension getMinimumSize()
-            	{
-            	return new Dimension(GridUI.KEYBOARD_WIDTH, Ruler.RULER_HEIGHT);
-            	}
+                {
+                return new Dimension(GridUI.KEYBOARD_WIDTH, Ruler.RULER_HEIGHT);
+                }
             public Dimension getPreferredSize()
-            	{
-            	return new Dimension(GridUI.KEYBOARD_WIDTH, Ruler.RULER_HEIGHT);
-            	}
+                {
+                return new Dimension(GridUI.KEYBOARD_WIDTH, Ruler.RULER_HEIGHT);
+                }
             public void paint(Graphics _g)
                 {
                 super.paint(_g);
@@ -375,8 +375,8 @@ public class Ruler extends JComponent
                 Rectangle bounds = getBounds();
                 g.setColor(BORDER_COLOR);
                 g.draw(new Line2D.Double(0, bounds.height, bounds.width, bounds.height));
-            	}
-        	};
+                }
+            };
         panel.setBackground(BACKGROUND_COLOR);
         panel.setLayout(new BorderLayout());
         rulerSpace = new JLabel();

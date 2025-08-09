@@ -912,9 +912,9 @@ public class GridUI extends JComponent
                     }
                 }
             if (move.size() > 0)
-            	{
-            	pitchui.moveToBack(move);
-            	}
+                {
+                pitchui.moveToBack(move);
+                }
             }
         }
 
@@ -976,9 +976,9 @@ public class GridUI extends JComponent
     public void addToSelected(ArrayList<NoteUI> noteuis)
         {
         for(NoteUI noteui : noteuis)
-        	{
-        	addEventToSelected(noteui, SELECTED_SOURCE_NOTES);
-        	}
+            {
+            addEventToSelected(noteui, SELECTED_SOURCE_NOTES);
+            }
         }
 
     /** Removes the NoteUI from selected and deselects it. */

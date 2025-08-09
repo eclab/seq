@@ -518,7 +518,7 @@ public class ParameterUI extends JComponent
     /** Returns the difference, in value, between the origin and the event. */
     public double getValueDiff(MouseEvent origin, MouseEvent evt)
         {
-        return getValue(evt) - getValue(origin); //  - getValue(evt);		// note swapped
+        return getValue(evt) - getValue(origin); //  - getValue(evt);           // note swapped
         }
 
     /** Returns the difference, in time, between the origin and the event. */

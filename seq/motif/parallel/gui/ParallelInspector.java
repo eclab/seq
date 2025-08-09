@@ -81,26 +81,26 @@ public class ParallelInspector extends WidgetList
             childrenToSelect.setToolTipText(CHILDREN_PLAYING_TOOLTIP);
 
 
-			crossFade = new SmallDial(parallel.getCrossFade())
-				{
-				protected String map(double val) { return String.valueOf(val); }
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return parallel.getCrossFade(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { parallel.setCrossFade(val); }
-					finally { lock.unlock(); }
-					}
-				};
-			crossFade.setToolTipText(CROSS_FADE_TOOLTIP);
+            crossFade = new SmallDial(parallel.getCrossFade())
+                {
+                protected String map(double val) { return String.valueOf(val); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return parallel.getCrossFade(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { parallel.setCrossFade(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
+            crossFade.setToolTipText(CROSS_FADE_TOOLTIP);
 
             crossFadeOn = new JCheckBox("");
             crossFadeOn.setSelected(parallel.getCrossFadeOn());
@@ -171,7 +171,7 @@ public class ParallelInspector extends WidgetList
         "</ul>" +
         "The <b>probability</b> of each child is set in its inspector below.</html>";
 
-     static final String CROSS_FADE_TOOLTIP = "<html><b>Cross Fade</b><br>" +
+    static final String CROSS_FADE_TOOLTIP = "<html><b>Cross Fade</b><br>" +
         "The amount of cross-fade between the first two parallel children.  Only has an effect if<br>" +
         "<b>Cross Fade On</b> is selected.<br><br>" + 
         "A cross-fade of 0.0 sets the volume of child 1 to 100%, and the volume of child 2 to 0%.<br>" +
@@ -180,8 +180,8 @@ public class ParallelInspector extends WidgetList
         "in which case, you should set the <b>Cross-Fade Gain</b> of child 1 and 2 to 2.0" +
         "(also the default).</html>";
 
-     static final String CROSS_FADE_ON_TOOLTIP = "<html><b>Cross Fade On</b><br>" +
+    static final String CROSS_FADE_ON_TOOLTIP = "<html><b>Cross Fade On</b><br>" +
         "Select this to turn on <b>Cross Fade</b>.</html>";
 
 
-   }
+    }

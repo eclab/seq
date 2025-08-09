@@ -196,59 +196,59 @@ public class ParallelClip extends Clip
             
             // prepare weights
             for(int i = 0; i < children.size(); i++)
-            	{
-               double weight = getCorrectedValueDouble(((Parallel.Data)(candidates.get(i).child.getData())).getProbability());
-               weights.add(weight);
-            	}
+                {
+                double weight = getCorrectedValueDouble(((Parallel.Data)(candidates.get(i).child.getData())).getProbability());
+                weights.add(weight);
+                }
 
             // prepare children
             for(int i = 0; i < candidates.size(); i++)
-            	{
-				candidates.get(i).muted = true;
-            	}
+                {
+                candidates.get(i).muted = true;
+                }
             
             // Pick n children.  This will be O(n^2) because we have to update the distribution
             // each time.  If we were doing uniform selection we could do this in O(n) :-( :-(
             for(int i = 0; i < numChildrenToSelect; i++)
-            	{
-            	// Normalize weights
-            	double sum = 0.0;
-            	for(int j = 0; j < weights.size(); j++)
-            		{
-            		double weight = weights.get(j);
-            		sum += weights.get(j);
-            		}
-            	if (sum == 0)
-            		{
-            		for(int j = 0; j < weights.size(); j++)
-            			{
-            			weights.set(j, 1.0 / weights.size());
-            			}
-            		}
-            	else
-            		{
-            		for(int j = 0; j < weights.size(); j++)
-            			{
-            			weights.set(j, weights.get(j) / sum);
-            			}
-            		}
+                {
+                // Normalize weights
+                double sum = 0.0;
+                for(int j = 0; j < weights.size(); j++)
+                    {
+                    double weight = weights.get(j);
+                    sum += weights.get(j);
+                    }
+                if (sum == 0)
+                    {
+                    for(int j = 0; j < weights.size(); j++)
+                        {
+                        weights.set(j, 1.0 / weights.size());
+                        }
+                    }
+                else
+                    {
+                    for(int j = 0; j < weights.size(); j++)
+                        {
+                        weights.set(j, weights.get(j) / sum);
+                        }
+                    }
 
-				// Find and remove node  - I suppose we could do this in O(lg n)....
-				double pivot = random.nextDouble();
-				sum = 0.0;
-				for(int j = 0; j < weights.size(); j++)
-					{
-					sum += weights.get(j);
-					if (j == weights.size() - 1 || pivot < sum)	// it's the last one or we found the pivot
-						{
-						candidates.get(j).muted = false;
-						candidates.remove(j);
-						weights.remove((int)j);
-						break;
-						}
-					}
-				}
-			}
+                // Find and remove node  - I suppose we could do this in O(lg n)....
+                double pivot = random.nextDouble();
+                sum = 0.0;
+                for(int j = 0; j < weights.size(); j++)
+                    {
+                    sum += weights.get(j);
+                    if (j == weights.size() - 1 || pivot < sum)     // it's the last one or we found the pivot
+                        {
+                        candidates.get(j).muted = false;
+                        candidates.remove(j);
+                        weights.remove((int)j);
+                        break;
+                        }
+                    }
+                }
+            }
         }
 
     public void cut()  
@@ -335,15 +335,15 @@ public class ParallelClip extends Clip
                     if (done)                                               
                         {
                         if (data.repeat)
-                        	{
-                        	node.clip.loop();
-                        	node.repeating = true;
-                        	}
+                            {
+                            node.clip.loop();
+                            node.repeating = true;
+                            }
                         else
-                        	{
-	                        node.clip.terminate();
-    	                    node.clip.release();
-    	                    }
+                            {
+                            node.clip.terminate();
+                            node.clip.release();
+                            }
                         }
                     }
                     
@@ -402,11 +402,11 @@ public class ParallelClip extends Clip
             
         if (current >= 0)
             {
-        	Parallel.Data data = node.getData();
+            Parallel.Data data = node.getData();
             if (data.getMute()) 
-            	{
-            	return;
-            	}        
+                {
+                return;
+                }        
             
             if (data.getOut() != Parallel.Data.DISABLED)
                 {
@@ -419,27 +419,27 @@ public class ParallelClip extends Clip
             // if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
             }
 
-		Parallel parallel = (Parallel) getMotif();
-		if (parallel.getCrossFadeOn())
-			{
-			if (current == 0)
-				{
-				vel = vel * (1.0 - parallel.getCrossFade());
-				}
-			else if (current == 1)
-				{
-				vel = vel * parallel.getCrossFade();
-				}
-			}
+        Parallel parallel = (Parallel) getMotif();
+        if (parallel.getCrossFadeOn())
+            {
+            if (current == 0)
+                {
+                vel = vel * (1.0 - parallel.getCrossFade());
+                }
+            else if (current == 1)
+                {
+                vel = vel * parallel.getCrossFade();
+                }
+            }
 
-         super.noteOn(out, note, vel, id);
+        super.noteOn(out, note, vel, id);
         }
         
     public void noteOff(int out, int note, double vel, int id) 
         {
         if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
             {
-			return;
+            return;
             }
         if (current >= 0)
             {
@@ -453,7 +453,7 @@ public class ParallelClip extends Clip
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             }
-         super.noteOff(out, note, vel, id);
+        super.noteOff(out, note, vel, id);
         }
         
     public void scheduleNoteOff(int out, int note, double vel, int time, int id) 

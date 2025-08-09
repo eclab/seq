@@ -387,7 +387,8 @@ childOuter.setBorder(childBorder);
 
         outer.add(three, BorderLayout.WEST);
         }
-                
+
+/*
     public void setNickname(int index, String val)
         {
         ArrayList<Arpeggio.Child> children = arpeggio.getChildren(); 
@@ -399,6 +400,7 @@ childOuter.setBorder(childBorder);
         ArrayList<Arpeggio.Child> children = arpeggio.getChildren(); 
         return children.get(index).getNickname();
         }
+*/
 
     public JPanel buildConsole()
         {

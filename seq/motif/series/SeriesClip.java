@@ -602,7 +602,7 @@ public class SeriesClip extends Clip
             vel *= getCorrectedValueDouble(data.getGain(), Series.Data.MAX_GAIN);
             if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
             }
-         super.noteOn(out, note, vel, id);
+        super.noteOn(out, note, vel, id);
         }
         
     public void noteOff(int out, int note, double vel, int id) 
@@ -620,7 +620,7 @@ public class SeriesClip extends Clip
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             }
-         super.noteOff(out, note, vel, id);
+        super.noteOff(out, note, vel, id);
         }
         
     public void scheduleNoteOff(int out, int note, double vel, int time, int id) 

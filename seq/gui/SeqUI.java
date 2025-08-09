@@ -83,6 +83,7 @@ public class SeqUI extends JPanel
     boolean selectedFrameIsRoot;
     boolean smallButtons;
     boolean showToolTips;
+    boolean autoReseed;
     int initialMotif = STEP_SEQUENCE_INITIAL;
     
     JMenuItem undoItem;
@@ -91,6 +92,11 @@ public class SeqUI extends JPanel
     JMenuItem logItem;
     
     int rebuildInspectorsCount = 0;
+    
+    public boolean getAutoReseed()
+    	{
+    	return autoReseed;
+    	}
     
     // Arming
     boolean disarmsAllBeforeArming;
@@ -208,6 +214,7 @@ public class SeqUI extends JPanel
         removeAll();
         smallButtons = Prefs.getLastBoolean("SmallMotifButtons", false);        // must be before MotifList
         showToolTips = Prefs.getLastBoolean("ShowToolTips", true);
+		autoReseed = Prefs.getLastBoolean("AutoReseed", false);
 
         // Arming
         disarmsAllBeforeArming = Prefs.getLastBoolean("DisarmFirst", true);
@@ -297,6 +304,19 @@ public class SeqUI extends JPanel
         else return filename + ending;
         }
         
+    public void doReseed()
+		{
+		push();
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try 
+			{
+			seq.seedDeterministicRandom();
+			}
+		finally { lock.unlock(); }
+    	}
+    	
+        
     /* Makes a new document. */
     public void doNew()
         {
@@ -327,16 +347,16 @@ public class SeqUI extends JPanel
 
                 Motif dSeq = null;
                 Motif[] temp = new Motif[1];
-                MotifUI ssui = setupInitialMotif(temp, seq, this);
+                MotifUI mui = setupInitialMotif(temp, seq, this);
                 dSeq = temp[0];
 
                 /*
                 // We'll start with a blank step sequence
                 seq.motif.stepsequence.StepSequence ss = new seq.motif.stepsequence.StepSequence(seq, 16, 16);
-                seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, SeqUI.this, ss);
+                seq.motif.stepsequence.gui.StepSequenceUI mui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, SeqUI.this, ss);
                 */
-                addMotifUI(ssui);
-                list.setRoot(ssui.getPrimaryButton());          // this also calls setData, which builds the clip
+                addMotifUI(mui);
+                list.setRoot(mui.getPrimaryButton());          // this also calls setData, which builds the clip
                 revalidate();
                 repaint();
                 }
@@ -1058,22 +1078,43 @@ public class SeqUI extends JPanel
             });
 
 
-        motifMenu.addSeparator();
+        // Motif Menu
+        JMenu optionsMenu = new JMenu("Options");
+        menubar.add(optionsMenu);
+        JMenuItem reseedItem = new JMenuItem("New Random Number Generator");
+        optionsMenu.add(reseedItem);
+        reseedItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doReseed();
+                }
+            });
 
+        JMenuItem autoReseedItem = new JCheckBoxMenuItem("New Generator Each Play");
+        optionsMenu.add(autoReseedItem);
+        autoReseedItem.setSelected(autoReseed);
+        autoReseedItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                Prefs.setLastBoolean("AutoReseed", autoReseed);
+                }
+            });
+            
         JCheckBoxMenuItem showToolTipsItem = new JCheckBoxMenuItem("Show Tooltips");
-        motifMenu.add(showToolTipsItem);
+        optionsMenu.add(showToolTipsItem);
         showToolTipsItem.setSelected(showToolTips);
         ToolTipManager.sharedInstance().setEnabled(showToolTips);
         showToolTipsItem.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent event)
                 {
-                ToolTipManager.sharedInstance().setEnabled(showToolTipsItem.isSelected());
+                showToolTips = showToolTipsItem.isSelected();
+                ToolTipManager.sharedInstance().setEnabled(showToolTips);
                 Prefs.setLastBoolean("ShowToolTips", showToolTips);
                 }
             });
-
-            
         }
         
     public boolean getSmallButtons() { return smallButtons; }
@@ -1182,15 +1223,15 @@ public class SeqUI extends JPanel
         /// remove a menu, then put the same menu object back up, it will often make two
         /// copies (not removing the original!)
         JMenu newMotifUIMenu = motifui.getMenu();
-		if (newMotifUIMenu != motifUIMenu)
-			{
-	        if (motifUIMenu != null) menubar.remove(motifUIMenu);
-    		if (newMotifUIMenu != null) menubar.add(newMotifUIMenu);
-        	motifUIMenu = newMotifUIMenu;
-    		}
+        if (newMotifUIMenu != motifUIMenu)
+            {
+            if (motifUIMenu != null) menubar.remove(motifUIMenu);
+            if (newMotifUIMenu != null) menubar.add(newMotifUIMenu);
+            motifUIMenu = newMotifUIMenu;
+            }
 
         motifui.rebuildInspectors(rebuildInspectorsCount);
-        revalidate(); 
+        revalidate();
         repaint(); 
         }
 
@@ -1556,7 +1597,7 @@ public class SeqUI extends JPanel
         
         Motif dSeq = null;
         Motif[] temp = new Motif[1];
-        MotifUI ssui = setupInitialMotif(temp, seq, ui);
+        MotifUI mui = setupInitialMotif(temp, seq, ui);
         dSeq = temp[0];
                                 
         // Build Clip Tree
@@ -1567,7 +1608,7 @@ public class SeqUI extends JPanel
         seq.setFile(null);
         frame.setTitle("Untitled");
         ui.setupMenu(frame);
-        ui.addMotifUI(ssui);
+        ui.addMotifUI(mui);
         frame.getContentPane().add(ui);
         
         // figure out the right window size
@@ -1578,11 +1619,40 @@ public class SeqUI extends JPanel
         if (size.width < minWidth) size.width = minWidth;
         if (size.height < minHeight) size.height = minHeight;
         frame.setSize(size);
-        frame.setVisible(true);
-        addResizeListener(frame);
-                
+        addResizeListener(frame);    
         seq.reset();
-        ssui.revise();
+
+		// This weird little dance works around a MacOS bug
+		// where ScrollPanes do not properly provide viewport sizing information
+		// properly, nor properly scroll to requested locations, if the window
+		// isn't visible yet.  I'm guessing it has to do with retina displays.
+		// It appears that making the frame visible, then waiting for the event
+		// loop to process (that is, doing an invokeLater first), does SOMETHING 
+		// that fixes things, but we want the frame to be hidden while we scroll 
+		// the JScrollPanes to the right initial location.
+		//
+		// So what we'll do is (1) move the window to beyond the screen boundaries,
+		// (2) show it (thus triggering the thing that fixes things), (3) hide it,
+		// (4) move it back, (5) update the JScrollPanes in an invokeLater, which
+		// appears to be necessary to give Swing enough time to get things working,
+		// and finally (6) show the frame again.
+		//Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		//Point p = new Point(d.width + 1, d.height + 1);
+		//Point old = frame.getLocation();
+		//frame.setLocation(p);
+		//frame.setSize(new Dimension(0,0));
+		
+		frame.setVisible(true);
+		frame.setVisible(false);
+
+        SwingUtilities.invokeLater(new Runnable()
+        	{
+        	public void run()
+        		{
+ 	       		mui.frameCreated();			// Some dimensions are wrong until after the window is built
+				frame.setVisible(true);
+ 	       		}
+        	});
         }
         
         

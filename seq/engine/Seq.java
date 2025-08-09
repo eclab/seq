@@ -234,10 +234,10 @@ public class Seq
     static int deterministicRandomSeed = (int)System.currentTimeMillis();
     Random deterministicRandom = new Random(deterministicRandomSeed);
     public void seedDeterministicRandom(int seed) { deterministicRandom.setSeed(deterministicRandomSeed = seed); }
+    public void seedDeterministicRandom() { seedDeterministicRandom((int)System.currentTimeMillis()); }
     public void resetDeterministicRandom() { seedDeterministicRandom(deterministicRandomSeed); }
     public int getDeterministicRandomSeed() { return deterministicRandomSeed; }
     public Random getDeterministicRandom() { return deterministicRandom; }
-    public void incrementDeterministicRandomSeed() { seedDeterministicRandom(getDeterministicRandomSeed() + 1); }
 
     ///// PLAYING
     public static final int COUNT_IN_NONE = 0;
@@ -405,7 +405,7 @@ public class Seq
             }));
         shutdownHook.setName("Seq Shutdown Hook");
 
-        incrementDeterministicRandomSeed();
+        seedDeterministicRandom();
                 
         // 60 sec/min * 1000000000 nanos/sec / 120 beat/min / 192 PPQ/beat = 2604167 nanos/PPQ
         // timer = new HighResolutionTimer(true, 2604167L, true);
@@ -1510,7 +1510,18 @@ public class Seq
         seq.parameterValues = Motif.JSONToDoubleArray(obj.getJSONArray("params"));      // note not getJSONArray
         seq.randomMax = obj.optDouble("rmax", 0.0);
         seq.randomMin = obj.optDouble("rmin", 1.0);
-        seq.seedDeterministicRandom(obj.optInt("seed", 49231));         // an arbitrary seed
+        
+		// seed
+		int seed = obj.optInt("seed", 0);
+		if (seed == -1)
+			{
+			System.err.println("Motif.load WARNING: no random seed in sequence, so we're entirely reseeding.");
+			seq.seedDeterministicRandom();
+			}
+		else
+			{
+			seq.seedDeterministicRandom(seed);
+			}
         
         // Load the motifs
         seq.motifs = Motif.load(seq, obj.getJSONArray("motifs"), true);
