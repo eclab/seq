@@ -47,7 +47,7 @@ public class FilterClip extends Clip
                 {
                 if (seq.getRoot() == FilterClip.this) seq.noteOff(out, note, vel);
                 else getParent().noteOff(out, note, vel, id);
-                         }
+                }
             else nodes.get(index + 1).noteOff(out, note, vel, id, index + 1);
             }
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
@@ -64,101 +64,102 @@ public class FilterClip extends Clip
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.sysex(out, sysex);
-                    else getParent().sysex(out, sysex);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.sysex(out, sysex);
+                else getParent().sysex(out, sysex);
+                }
             else nodes.get(index + 1).sysex(out, sysex, index + 1);
             }
         public void bend(int out, int val, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.bend(out, val);
-                    else getParent().bend(out, val);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.bend(out, val);
+                else getParent().bend(out, val);
+                }
             else nodes.get(index + 1).bend(out, val, index + 1);
             }
         public void cc(int out, int cc, int val, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.cc(out, cc, val);
-                    else getParent().cc(out, cc, val);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.cc(out, cc, val);
+                else getParent().cc(out, cc, val);
+                }
             else nodes.get(index + 1).cc(out, cc, val, index + 1);
             }
         public void pc(int out, int val, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.pc(out, val);
-                    else getParent().pc(out, val);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.pc(out, val);
+                else getParent().pc(out, val);
+                }
             else nodes.get(index + 1).pc(out, val, index + 1);
             }
         public void aftertouch(int out, int note, int val, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.aftertouch(out, note, val);
-                    else getParent().aftertouch(out, note, val);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.aftertouch(out, note, val);
+                else getParent().aftertouch(out, note, val);
+                }
             else nodes.get(index + 1).aftertouch(out, note, val, index + 1);
             }
         public void nrpn(int out, int nrpn, int val, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.nrpn(out, nrpn, val);
-                    else getParent().nrpn(out, nrpn, val);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.nrpn(out, nrpn, val);
+                else getParent().nrpn(out, nrpn, val);
+                }
             else nodes.get(index + 1).nrpn(out, nrpn, val, index + 1);
             }
         public void nrpnCoarse(int out, int nrpn, int msb, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.nrpnCoarse(out, nrpn, msb);
-                    else getParent().nrpnCoarse(out, nrpn, msb);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.nrpnCoarse(out, nrpn, msb);
+                else getParent().nrpnCoarse(out, nrpn, msb);
+                }
             else nodes.get(index + 1).nrpnCoarse(out, nrpn, msb, index + 1);
             }
         public void rpn(int out, int rpn, int val, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1)  
-                    {
-                    if (seq.getRoot() == FilterClip.this) seq.rpn(out, rpn, val);
-                    else getParent().rpn(out, rpn, val);
-                             }
+                {
+                if (seq.getRoot() == FilterClip.this) seq.rpn(out, rpn, val);
+                else getParent().rpn(out, rpn, val);
+                }
             else nodes.get(index + 1).rpn(out, rpn, val, index + 1);
             }
         public void cut(int index) { }
         public void release(int index) { }
         public void process(int index) { }
         public boolean finished() { return true; }
+        public void reset(int index) { }
         }
 
     public class ChangeNote extends Node
         {
-        HashMap<Integer, Integer> map = new HashMap<>();		// Maps IDs to revised pitches
+        HashMap<Integer, Integer> map = new HashMap<>();                // Maps IDs to revised pitches
         
         public void release(int index)
-        	{
-        	map.clear();
-        	}
+            {
+            map.clear();
+            }
         
         public void cut(int index)
-        	{
-        	map.clear();
-        	}
+            {
+            map.clear();
+            }
         
         public void noteOn(int out, int note, double vel, int id, int index)    
             {
@@ -172,7 +173,7 @@ public class FilterClip extends Clip
             int length = func.getLength();
                         
             if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
-            note += (transpose - Filter.MAX_TRANSPOSE);		// this centers it
+            note += (transpose - Filter.MAX_TRANSPOSE);         // this centers it
             if (transposeV != 0) note += (seq.getDeterministicRandom().nextDouble() * transposeV * 2 - 1) * Filter.MAX_TRANSPOSE_NOISE;
             if (note > 127) note = 127;
             if (note < 0) note = 0;
@@ -190,9 +191,9 @@ public class FilterClip extends Clip
                 super.scheduleNoteOff(out, note, 0x64, length, id, index);
                 }
             else
-            	{
-            	map.put(id, note);
-            	}
+                {
+                map.put(id, note);
+                }
             }
         public void noteOff(int out, int note, double vel, int id, int index)
             {
@@ -212,14 +213,14 @@ public class FilterClip extends Clip
                 if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
                 vel *= val;
                 }
-        	
-        	Integer newNote = map.remove(id);
-        	if (newNote != null)				// revise note pitch?
-        		{
-        		note = newNote.intValue();
-        		}
-        		
-	        super.noteOff(out, note, vel, id, index);		// hope for the best
+                
+            Integer newNote = map.remove(id);
+            if (newNote != null)                            // revise note pitch?
+                {
+                note = newNote.intValue();
+                }
+                        
+            super.noteOff(out, note, vel, id, index);               // hope for the best
             }
             
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
@@ -234,12 +235,12 @@ public class FilterClip extends Clip
             double releaseGainV = func.getReleaseGainVariance();
             vel *= releaseGain;
             
-        	Integer newNote = map.remove(id);
-        	if (newNote != null)				// revise note pitch?
-        		{
-        		note = newNote.intValue();
-        		}
-        		
+            Integer newNote = map.remove(id);
+            if (newNote != null)                            // revise note pitch?
+                {
+                note = newNote.intValue();
+                }
+                        
             // FIXME: we can't screw with time in a meaningfuly way due to how Seq is set up for note generation.  :-(
             super.scheduleNoteOff(out, note, vel, time, id, index);
             }
@@ -312,28 +313,28 @@ public class FilterClip extends Clip
             double releaseVel = 64;                    // My release velocity
 
             public DelayNote(int out, int note, double vel, int pos) 
-            	{ 
-            	this.out = out; 
-            	this.note = note; 
-            	this.vel = vel; 
-            	this.pos = pos; 
-            	}
-            	
+                { 
+                this.out = out; 
+                this.note = note; 
+                this.vel = vel; 
+                this.pos = pos; 
+                }
+                
             // the timestamp we should be sorted by
             public int sortTime()
-            	{
-            	return played ? releasePos : pos;
-            	}
+                {
+                return played ? releasePos : pos;
+                }
 
-			public int compareTo(Object obj)
-				{
-				if (obj == null) return -1;
-				if (!(obj instanceof DelayNote)) return -1;
-				DelayNote note = (DelayNote)obj;
-				int st = sortTime();
-				int nst = note.sortTime();
-				return st < nst ? -1 : st == nst ? 0 : +1;
-				}
+            public int compareTo(Object obj)
+                {
+                if (obj == null) return -1;
+                if (!(obj instanceof DelayNote)) return -1;
+                DelayNote note = (DelayNote)obj;
+                int st = sortTime();
+                int nst = note.sortTime();
+                return st < nst ? -1 : st == nst ? 0 : +1;
+                }
             }
                         
         // All notes waiting to play or waiting to release, keyed by when they should be played or released
@@ -343,10 +344,10 @@ public class FilterClip extends Clip
                 
                 
         public boolean finished()
-        	{
-        	return delay.size() == 0;
-        	}
-        	
+            {
+            return delay.size() == 0;
+            }
+                
         // This is called when the Clip is processed, BEFORE noteOn/NoteOff/etc. may show up
         public void process(int index)
             {
@@ -424,27 +425,27 @@ public class FilterClip extends Clip
             int pos = getPosition();
                         
             if (original)
-            	{
-            	super.noteOn(out, note, vel, id, index);
-            	}            
+                {
+                super.noteOn(out, note, vel, id, index);
+                }            
 
             // Add delays to the heap and hash
             if (numTimes > 0)
-            	{
-				DelayNote[] notes = new DelayNote[numTimes];
-				for(int i = 0; i < numTimes; i++)
-					{
-					vel = vel * cut;
-					notes[i] = new DelayNote(out, note, vel, pos);
-					notes[i].delay = (i + 1) * laterDelay;
-					delay.add(notes[i], Integer.valueOf(notes[i].delay));
-					if (laterDelay == 0) // have to do it NOW
-						{
-						super.noteOn(out, note, vel, id, index);
-						}
-					}
-            	delayedNotes.put(id, notes);
-            	}
+                {
+                DelayNote[] notes = new DelayNote[numTimes];
+                for(int i = 0; i < numTimes; i++)
+                    {
+                    vel = vel * cut;
+                    notes[i] = new DelayNote(out, note, vel, pos);
+                    notes[i].delay = (i + 1) * laterDelay;
+                    delay.add(notes[i], Integer.valueOf(notes[i].delay));
+                    if (laterDelay == 0) // have to do it NOW
+                        {
+                        super.noteOn(out, note, vel, id, index);
+                        }
+                    }
+                delayedNotes.put(id, notes);
+                }
             }
 
         public void noteOff(int out, int note, double vel, int id, int index)
@@ -463,15 +464,15 @@ public class FilterClip extends Clip
                     notes[i].releaseVel = vel;
                     notes[i].releasePos = notes[i].pos + notes[i].delay;
                     if (laterDelay == 0) // have to do it NOW
-                    	{
-		                super.noteOff(out, notes[i].note, vel, id, index);
-                    	}
+                        {
+                        super.noteOff(out, notes[i].note, vel, id, index);
+                        }
                     }
                 }
-			else
+            else
                 {
-				// We don't have this note, we need to pass it through
-				// Or if we have an initial delay of 0 we have to pass it through NOW
+                // We don't have this note, we need to pass it through
+                // Or if we have an initial delay of 0 we have to pass it through NOW
                 super.noteOff(out, note, vel, id, index);
                 }
             }
@@ -491,13 +492,13 @@ public class FilterClip extends Clip
                     {
                     notes[i].releaseVel = vel;
                     notes[i].releasePos = notes[i].pos + time + notes[i].delay;
-		            super.scheduleNoteOff(out, notes[i].note, vel, notes[i].releasePos, id, index);
+                    super.scheduleNoteOff(out, notes[i].note, vel, notes[i].releasePos, id, index);
                     }
                 }
             else
                 {
-				// We don't have this note, we need to pass it through
-				// Or if we have an initial delay of 0 we have to pass it through NOW
+                // We don't have this note, we need to pass it through
+                // Or if we have an initial delay of 0 we have to pass it through NOW
                 super.scheduleNoteOff(out, note, vel, time, id, index); 
                 }
             }
@@ -511,6 +512,18 @@ public class FilterClip extends Clip
         int lastIndex = 0;
         int lastOut = 0;
         int lastNote = 0;
+        int lastTime = 0;
+        int lastRandom = 0; 
+               
+        public void reset(int index)
+            {
+            lastValue = -1;
+            lastRandom = 0;
+            lastIndex = 0;
+            lastOut = 0;
+            lastNote = 0;
+            lastTime = 0;
+            }
                 
         void emit(int index)     
             {
@@ -518,61 +531,101 @@ public class FilterClip extends Clip
                 {
                 Filter filter = (Filter)getMotif();
                 Filter.Noise func = (Filter.Noise)(filter.getFunction(index));
+
+                boolean updateRandom = false;
+                int position = getPosition();
+                if (position == 0 || position - lastTime >= func.getRate())
+                    {
+                    updateRandom = true;
+                    lastTime = position;
+                    }
                 
                 Random rand = seq.getDeterministicRandom();
                                 
                 if (func.getParameterType() == Filter.Noise.TYPE_BEND)
                     {
                     int newVal = lastValue;
-                    for(int i = 0; i < NUM_TRIES; i++)
+                    if (updateRandom)
                         {
-                        newVal = lastValue + func.generateRandomNoise(rand);
-                        if (newVal >= -8192 && newVal < 8191) break;
+                        for(int i = 0; i < NUM_TRIES; i++)
+                            {
+                            int rnd = (int)(func.generateRandomNoise(rand) * 8192);
+                            if (rnd + newVal >= -8192 && rnd + newVal <= 8191)
+                                {
+                                lastRandom = rnd;
+                                break;
+                                }
+                            }
                         }
+                    newVal += lastRandom;
                     if (newVal < -8192 || newVal > 8191) newVal = lastValue;
                     super.bend(lastOut, newVal, lastIndex);
                     }
                 else if (func.getParameterType() == Filter.Noise.TYPE_CC)
                     {
                     int newVal = lastValue;
-                    for(int i = 0; i < NUM_TRIES; i++)
-                        {
-                        newVal = lastValue + func.generateRandomNoise(rand) / 64;
-                        if (newVal >= 0 && newVal < 128) break;
-                        }
+                    if (updateRandom)
+                        for(int i = 0; i < NUM_TRIES; i++)
+                            {
+                            int rnd = (int)(func.generateRandomNoise(rand) * 128);
+                            if (rnd + newVal >= 0 && rnd + newVal <= 127)
+                                {
+                                lastRandom = rnd;
+                                break;
+                                }
+                            }
+                    newVal += lastRandom;
                     if (newVal < 0 || newVal > 128) newVal = lastValue;
                     super.cc(lastOut, func.getParameter(), newVal, lastIndex);
                     } 
                 else if (func.getParameterType() == Filter.Noise.TYPE_NRPN)
                     {
                     int newVal = lastValue;
-                    for(int i = 0; i < NUM_TRIES; i++)
-                        {
-                        newVal = lastValue + func.generateRandomNoise(rand);
-                        if (newVal >= 0 && newVal < 16384) break;
-                        }
+                    if (updateRandom)
+                        for(int i = 0; i < NUM_TRIES; i++)
+                            {
+                            int rnd = (int)(func.generateRandomNoise(rand) * 16384);
+                            if (rnd + newVal >= 0 && rnd + newVal <= 16383)
+                                {
+                                lastRandom = rnd;
+                                break;
+                                }
+                            }
+                    newVal += lastRandom;
                     if (newVal < 0 || newVal > 16384) newVal = lastValue;
                     super.nrpn(lastOut, func.getParameter(), newVal, lastIndex);
                     } 
                 else if (func.getParameterType() == Filter.Noise.TYPE_RPN)
                     {
                     int newVal = lastValue;
-                    for(int i = 0; i < NUM_TRIES; i++)
-                        {
-                        newVal = lastValue + func.generateRandomNoise(rand);
-                        if (newVal >= 0 && newVal < 16384) break;
-                        }
+                    if (updateRandom)
+                        for(int i = 0; i < NUM_TRIES; i++)
+                            {
+                            int rnd = (int)(func.generateRandomNoise(rand) * 16384);
+                            if (rnd + newVal >= 0 && rnd + newVal <= 16383)
+                                {
+                                lastRandom = rnd;
+                                break;
+                                }
+                            }
+                    newVal += lastRandom;
                     if (newVal < 0 || newVal > 16384) newVal = lastValue;
                     super.rpn(lastOut, func.getParameter(), newVal, lastIndex);
                     } 
                 else if (func.getParameterType() == Filter.Noise.TYPE_AFTERTOUCH)
                     {
                     int newVal = lastValue;
-                    for(int i = 0; i < NUM_TRIES; i++)
-                        {
-                        newVal = lastValue + func.generateRandomNoise(rand) / 64;
-                        if (newVal >= 0 && newVal < 128) break;
-                        }
+                    if (updateRandom)
+                        for(int i = 0; i < NUM_TRIES; i++)
+                            {
+                            int rnd = (int)(func.generateRandomNoise(rand) * 128);
+                            if (rnd + newVal >= 0 && rnd + newVal <= 127)
+                                {
+                                lastRandom = rnd;
+                                break;
+                                }
+                            }
+                    newVal += lastRandom;
                     if (newVal < 0 || newVal > 128) newVal = lastValue;
                     super.aftertouch(lastOut, lastNote, newVal, lastIndex);
                     } 
@@ -689,81 +742,81 @@ public class FilterClip extends Clip
     public void noteOn(int out, int note, double vel, int id)    
         {
         if (active())
-        	{
-        	nodes.get(0).noteOn(out, note, vel, id, 0);
-        	}
+            {
+            nodes.get(0).noteOn(out, note, vel, id, 0);
+            }
         else
-        	super.noteOn(out, note, vel, id);
+            super.noteOn(out, note, vel, id);
         }
     public void noteOff(int out, int note, double vel, int id)
         {
         if (active())
-        nodes.get(0).noteOff(out, note, vel, id, 0);
+            nodes.get(0).noteOff(out, note, vel, id, 0);
         else
-        	super.noteOff(out, note, vel, id);
+            super.noteOff(out, note, vel, id);
         }
     public void scheduleNoteOff(int out, int note, double vel, int time, int id)
         {
         if (active())
-        nodes.get(0).scheduleNoteOff(out, note, vel, time, id, 0);
+            nodes.get(0).scheduleNoteOff(out, note, vel, time, id, 0);
         else 
-        super.scheduleNoteOff(out, note, vel, time, id);
+            super.scheduleNoteOff(out, note, vel, time, id);
         }
     public void sysex(int out, byte[] sysex)
         {
         if (active())
-        nodes.get(0).sysex(out, sysex, 0);
+            nodes.get(0).sysex(out, sysex, 0);
         else 
-        super.sysex(out, sysex);
+            super.sysex(out, sysex);
         }
     public void bend(int out, int val)
         {
         if (active())
-        nodes.get(0).bend(out, val, 0);
+            nodes.get(0).bend(out, val, 0);
         else 
-        super.bend(out, val);
+            super.bend(out, val);
         }
     public void cc(int out, int cc, int val)
         {
         if (active())
-        nodes.get(0).cc(out, cc, val, 0);
+            nodes.get(0).cc(out, cc, val, 0);
         else
-        	super.cc(out, cc, val);
+            super.cc(out, cc, val);
         }
     public void pc(int out, int val)
         {
         if (active())
-        nodes.get(0).pc(out, val, 0);
+            nodes.get(0).pc(out, val, 0);
         else
-        	super.pc(out, val);
+            super.pc(out, val);
         }
     public void aftertouch(int out, int note, int val)
         {
         if (active())
-        nodes.get(0).aftertouch(out, note, val, 0);
+            nodes.get(0).aftertouch(out, note, val, 0);
         else 
-        	super.aftertouch(out, note, val);
+            super.aftertouch(out, note, val);
         }
     public void nrpn(int out, int nrpn, int val)
         {
         if (active())
-        nodes.get(0).nrpn(out, nrpn, val, 0);
+            nodes.get(0).nrpn(out, nrpn, val, 0);
         else
-        	super.nrpn(out, nrpn, val);
+            super.nrpn(out, nrpn, val);
         }
     public void nrpnCoarse(int out, int nrpn, int msb)
         {
         if (active())
-        nodes.get(0).nrpnCoarse(out, nrpn, msb, 0);
+            nodes.get(0).nrpnCoarse(out, nrpn, msb, 0);
         else
-        	super.nrpn(out, nrpn, msb);
+            super.nrpn(out, nrpn, msb);
         }
     public void rpn(int out, int rpn, int val)
         {
         if (active())
-        nodes.get(0).rpn(out, rpn, val, 0);
+            nodes.get(0).rpn(out, rpn, val, 0);
         else
-        	super.rpn(out, rpn, val);
+            super.rpn(out, rpn, val);
         }
                         
                         
@@ -811,8 +864,8 @@ public class FilterClip extends Clip
         }
         
     public Node buildNode(Filter trans, int index)
-    	{
-    	String type = trans.getFunction(index).getType();
+        {
+        String type = trans.getFunction(index).getType();
         if (Filter.IDENTITY.equals(type))
             {
             return new Node();
@@ -834,11 +887,11 @@ public class FilterClip extends Clip
             return new Noise();
             }
         else
-        	{
-        	System.err.println("FilterClip.buildNode() ERROR: unknown type " + type);
-        	return new Node();
-        	}
-    	}
+            {
+            System.err.println("FilterClip.buildNode() ERROR: unknown type " + type);
+            return new Node();
+            }
+        }
     
     boolean childDone = false;
 
@@ -850,7 +903,12 @@ public class FilterClip extends Clip
             buildClip();
             }
         clip.reset();
-    	childDone = false;
+        childDone = false;
+
+        for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+            {
+            nodes.get(i).reset(i);
+            }
         }
         
     public void loop()
@@ -903,13 +961,13 @@ public class FilterClip extends Clip
         }
         
     boolean active()
-    	{
+        {
         Filter filter = (Filter)getMotif();
-		int position = getPosition();
+        int position = getPosition();
         return (filter.isAlways() || (position >= filter.getFrom() && position < filter.getTo()));
-    	}
+        }
     
-    	    
+            
     public boolean process()
         {
         Filter filter = (Filter)getMotif();
@@ -918,45 +976,45 @@ public class FilterClip extends Clip
         if (clip != null)
             {
             if (!childDone)
-            	{
-            	childDone = clip.advance();
-            	}
+                {
+                childDone = clip.advance();
+                }
             done = childDone;
 
-			if (filter.isAlways() || filter.getTo() > filter.getFrom())
-				{
-				int position = getPosition();
-				
-				if (position == filter.getTo() - 1 && !filter.isAlways())
-					{
-					// we just completed the range
-					for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-						{
-						nodes.get(i).process(i);
-						}           
-					// release all notes
-					for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-						{
-						nodes.get(i).release(i);
-						}           
-					}
-				else if (active())
-					{
-					// we are in the range
-					for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-						{
-						nodes.get(i).process(i);
-						}                            
-					}
-				}
+            if (filter.isAlways() || filter.getTo() > filter.getFrom())
+                {
+                int position = getPosition();
+                                
+                if (position == filter.getTo() - 1 && !filter.isAlways())
+                    {
+                    // we just completed the range
+                    for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+                        {
+                        nodes.get(i).process(i);
+                        }           
+                    // release all notes
+                    for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+                        {
+                        nodes.get(i).release(i);
+                        }           
+                    }
+                else if (active())
+                    {
+                    // we are in the range
+                    for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+                        {
+                        nodes.get(i).process(i);
+                        }                            
+                    }
+                }
             }
         
         // Our child may be done but we're not done yet...
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-        	{
-        	done = done && nodes.get(i).finished();
-        	}
-        	
+            {
+            done = done && nodes.get(i).finished();
+            }
+                
         return done;
         }
     }

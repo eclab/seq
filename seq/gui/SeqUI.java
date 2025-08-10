@@ -94,9 +94,9 @@ public class SeqUI extends JPanel
     int rebuildInspectorsCount = 0;
     
     public boolean getAutoReseed()
-    	{
-    	return autoReseed;
-    	}
+        {
+        return autoReseed;
+        }
     
     // Arming
     boolean disarmsAllBeforeArming;
@@ -214,7 +214,7 @@ public class SeqUI extends JPanel
         removeAll();
         smallButtons = Prefs.getLastBoolean("SmallMotifButtons", false);        // must be before MotifList
         showToolTips = Prefs.getLastBoolean("ShowToolTips", true);
-		autoReseed = Prefs.getLastBoolean("AutoReseed", false);
+        autoReseed = Prefs.getLastBoolean("AutoReseed", false);
 
         // Arming
         disarmsAllBeforeArming = Prefs.getLastBoolean("DisarmFirst", true);
@@ -305,17 +305,17 @@ public class SeqUI extends JPanel
         }
         
     public void doReseed()
-		{
-		push();
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try 
-			{
-			seq.seedDeterministicRandom();
-			}
-		finally { lock.unlock(); }
-    	}
-    	
+        {
+        push();
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            seq.seedDeterministicRandom();
+            }
+        finally { lock.unlock(); }
+        }
+        
         
     /* Makes a new document. */
     public void doNew()
@@ -1622,37 +1622,37 @@ public class SeqUI extends JPanel
         addResizeListener(frame);    
         seq.reset();
 
-		// This weird little dance works around a MacOS bug
-		// where ScrollPanes do not properly provide viewport sizing information
-		// properly, nor properly scroll to requested locations, if the window
-		// isn't visible yet.  I'm guessing it has to do with retina displays.
-		// It appears that making the frame visible, then waiting for the event
-		// loop to process (that is, doing an invokeLater first), does SOMETHING 
-		// that fixes things, but we want the frame to be hidden while we scroll 
-		// the JScrollPanes to the right initial location.
-		//
-		// So what we'll do is (1) move the window to beyond the screen boundaries,
-		// (2) show it (thus triggering the thing that fixes things), (3) hide it,
-		// (4) move it back, (5) update the JScrollPanes in an invokeLater, which
-		// appears to be necessary to give Swing enough time to get things working,
-		// and finally (6) show the frame again.
-		//Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		//Point p = new Point(d.width + 1, d.height + 1);
-		//Point old = frame.getLocation();
-		//frame.setLocation(p);
-		//frame.setSize(new Dimension(0,0));
-		
-		frame.setVisible(true);
-		frame.setVisible(false);
+        // This weird little dance works around a MacOS bug
+        // where ScrollPanes do not properly provide viewport sizing information
+        // properly, nor properly scroll to requested locations, if the window
+        // isn't visible yet.  I'm guessing it has to do with retina displays.
+        // It appears that making the frame visible, then waiting for the event
+        // loop to process (that is, doing an invokeLater first), does SOMETHING 
+        // that fixes things, but we want the frame to be hidden while we scroll 
+        // the JScrollPanes to the right initial location.
+        //
+        // So what we'll do is (1) move the window to beyond the screen boundaries,
+        // (2) show it (thus triggering the thing that fixes things), (3) hide it,
+        // (4) move it back, (5) update the JScrollPanes in an invokeLater, which
+        // appears to be necessary to give Swing enough time to get things working,
+        // and finally (6) show the frame again.
+        //Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        //Point p = new Point(d.width + 1, d.height + 1);
+        //Point old = frame.getLocation();
+        //frame.setLocation(p);
+        //frame.setSize(new Dimension(0,0));
+                
+        frame.setVisible(true);
+        frame.setVisible(false);
 
         SwingUtilities.invokeLater(new Runnable()
-        	{
-        	public void run()
-        		{
- 	       		mui.frameCreated();			// Some dimensions are wrong until after the window is built
-				frame.setVisible(true);
- 	       		}
-        	});
+            {
+            public void run()
+                {
+                mui.frameCreated();                     // Some dimensions are wrong until after the window is built
+                frame.setVisible(true);
+                }
+            });
         }
         
         
@@ -1660,6 +1660,6 @@ public class SeqUI extends JPanel
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 
         "With Help from Filippo Carnovalini<br>" + 
-        "<b><font color='#3498db'>Version 5</font></b>, July 2025<br>" + 
+        "<b><font color='#3498db'>Version 6</font></b>, August 2025<br>" + 
         "https://github.com/eclab/seq</html>";
     }

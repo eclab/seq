@@ -38,8 +38,8 @@ public class Filter extends Motif
         
 
     // this index order is just the order of the combo box in FilterChildInspector
-	public int typeIndex(String type)
-		{
+    public int typeIndex(String type)
+        {
         if (IDENTITY.equals(type))
             {
             return 0;
@@ -65,11 +65,11 @@ public class Filter extends Motif
             System.err.println("Filter.typeIndex: could not find type " + type);
             return 0;
             }
-		}
+        }
         
     // this index order is just the order of the combo box in FilterChildInspector
     public Function buildFunction(int index)
-    	{
+        {
         if (index == 0)
             {
             return new Function();
@@ -96,7 +96,7 @@ public class Filter extends Motif
             return new Function();
             }
         }
-    	
+        
     public Function loadFunction(JSONObject obj)
         {
         String type = obj.optString("type", null);
@@ -131,8 +131,8 @@ public class Filter extends Motif
         {
         public String getType() { return IDENTITY; }
         public Function()
-        	{
-        	}
+            {
+            }
         public Function(JSONObject obj)
             {
             }
@@ -157,7 +157,7 @@ public class Filter extends Motif
         public static final int NO_OUT_CHANGE = -1;
         
         int out = NO_OUT_CHANGE;
-        int transpose = MAX_TRANSPOSE;		// this would center it at 0
+        int transpose = MAX_TRANSPOSE;          // this would center it at 0
         double transposeVariance;
         double gain = 1.0;
         double gainVariance;
@@ -182,7 +182,7 @@ public class Filter extends Motif
         public double getReleaseGainVariance() { return releaseGainVariance; }
         public void setReleaseGainVariance(double val) { releaseGainVariance = val; }
 
-		public ChangeNote() { }
+        public ChangeNote() { }
         public String getType() { return CHANGE_NOTE; }
         public ChangeNote(JSONObject obj)
             {
@@ -212,15 +212,15 @@ public class Filter extends Motif
         {
         boolean original;
         //int initialDelay;
-        int numTimes;			// min is 0, max is MAX_DELAY_TIMES
-        int laterDelay = Seq.PPQ / 4;			// sixteenth note
+        int numTimes;                   // min is 0, max is MAX_DELAY_TIMES
+        int laterDelay = Seq.PPQ / 4;                   // sixteenth note
         double cut;
         
         public boolean getOriginal() { return original; }
         public void setOriginal(boolean val) { original = val; }        
         /*
-        public int getInitialDelay() { return initialDelay; }
-        public void setInitialDelay(int val) { initialDelay = val; }
+          public int getInitialDelay() { return initialDelay; }
+          public void setInitialDelay(int val) { initialDelay = val; }
         */
         public double getCut() { return cut; }
         public void setCut(double val) { cut = val; }
@@ -229,7 +229,7 @@ public class Filter extends Motif
         public int getLaterDelay() { return laterDelay; }
         public void setLaterDelay(int val) { laterDelay = val; }
 
-		public Delay() { }
+        public Delay() { }
         public String getType() { return DELAY; }
         public Delay(JSONObject obj)
             {
@@ -259,7 +259,7 @@ public class Filter extends Motif
         public double getProbability() { return probability; }
         public void setProbability(double val) { probability = val; }
 
-		public Drop() { }
+        public Drop() { }
         public String getType() { return DROP; }
         public Drop(JSONObject obj)
             {
@@ -280,20 +280,14 @@ public class Filter extends Motif
         public static final int TYPE_NRPN = 2;
         public static final int TYPE_RPN = 3;                   // why would you need this?
         public static final int TYPE_AFTERTOUCH = 4;
-        
-        public static final int MIN_DIST = -64;
-        public static final int MAX_DIST = +64;
-    
-        int distMin;
-        int distMax;
+            
+        double distVar;
         int parameterType;
         int parameter;
         int rate;                       // How often is the Noise updated?
                 
-        public int getDistMin() { return distMin; }
-        public void setDistMin(int val) { distMin = val; }
-        public int getDistMax() { return distMax; }
-        public void setDistMax(int val) { distMax = val; }
+        public double getDistVar() { return distVar; }
+        public void setDistVar(double val) { distVar = val; }
         public int getParameterType() { return parameterType; }
         public void setParameterType(int val) { parameterType = val; }
         public int getParameter() { return parameter; }
@@ -301,18 +295,16 @@ public class Filter extends Motif
         public int getRate() { return rate; }
         public void setRate(int val) { rate = val; }
                 
-        // Generates a value from distMin * 128 to distMax * 128
-        public int generateRandomNoise(Random rand)
+        public double generateRandomNoise(Random rand)
             {
-            return rand.nextInt(distMax * 128 - distMin * 128 + 1) + distMin * 128;
+            return rand.nextDouble() * (distVar * 2) - distVar;
             }
 
-		public Noise() { }
+        public Noise() { }
         public String getType() { return NOISE; }
         public Noise(JSONObject obj)
             {
-            distMin = obj.optInt("min", -16);
-            distMax = obj.optInt("max", +16);
+            distVar = obj.optDouble("v", 1.0);
             parameterType = obj.optInt("pt", TYPE_BEND);
             parameter = obj.optInt("p", 0);
             rate = obj.optInt("r", Seq.PPQ);
@@ -320,8 +312,7 @@ public class Filter extends Motif
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
-            obj.put("min", distMin);
-            obj.put("max", distMax);
+            obj.put("v", distVar);
             obj.put("pt", parameterType);
             obj.put("p", parameter);
             obj.put("r", rate);
@@ -371,17 +362,17 @@ public class Filter extends Motif
         }
     
     public Function getFunction(int index)
-    	{
-    	return functions[index];
-    	}
-    	
+        {
+        return functions[index];
+        }
+        
     public void setFunction(int index, Function function)
-    	{
-    	functions[index] = function;
-    	incrementVersion();
-    	Clip clip = getPlayingClip();
-    	if (clip != null) clip.rebuild();
-    	}
+        {
+        functions[index] = function;
+        incrementVersion();
+        Clip clip = getPlayingClip();
+        if (clip != null) clip.rebuild();
+        }
     
     public Filter(Seq seq)
         {

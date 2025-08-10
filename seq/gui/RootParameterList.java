@@ -153,16 +153,16 @@ public class RootParameterList extends JPanel
         }
     
     /*
-    public void revise()
-        {
-        min.redraw();
-        max.redraw();
-        seed.update();
-        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-            {
-            dials[i].redraw();
-            }
-        }
+      public void revise()
+      {
+      min.redraw();
+      max.redraw();
+      seed.update();
+      for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+      {
+      dials[i].redraw();
+      }
+      }
     */
 
 

@@ -446,9 +446,9 @@ public class Transport extends JPanel implements SeqListener
         try
             {
             if (sequi.getAutoReseed())
-            	{
-            	seq.seedDeterministicRandom();
-            	}
+                {
+                seq.seedDeterministicRandom();
+                }
             seq.play();
             }
         finally

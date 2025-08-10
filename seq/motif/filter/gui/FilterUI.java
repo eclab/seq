@@ -1,4 +1,4 @@
- /* 
+/* 
    Copyright 2025 by Sean Luke and George Mason University
    Licensed under Apache 2.0
 */
@@ -161,20 +161,20 @@ public class FilterUI extends MotifUI
         FlowLayout flowlayout = new FlowLayout(FlowLayout.LEADING);
         flowlayout.setAlignOnBaseline(true);
 
-        functionGrid.setLayout(flowlayout);		// it's this by default anyway
-		functionGrid.setBackground(BACKGROUND);
-		outer.add(functionGrid, BorderLayout.CENTER);
-		
-       	filter = (Filter)getMotif();
-		JPanel subpanels[] = new JPanel[Filter.NUM_TRANSFORMERS];
-		                
+        functionGrid.setLayout(flowlayout);             // it's this by default anyway
+        functionGrid.setBackground(BACKGROUND);
+        outer.add(functionGrid, BorderLayout.CENTER);
+                
+        filter = (Filter)getMotif();
+        JPanel subpanels[] = new JPanel[Filter.NUM_TRANSFORMERS];
+                                
         ReentrantLock lock = seq.getLock();
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-        	{
-	    	FunctionInspector functionInspector = new FunctionInspector(seq, filter, i);
-	        functionGrid.add(functionInspector);
-	        }
-	    }	        
+            {
+            FunctionInspector functionInspector = new FunctionInspector(seq, filter, i);
+            functionGrid.add(functionInspector);
+            }
+        }           
         
     public JPanel buildConsole()
         {

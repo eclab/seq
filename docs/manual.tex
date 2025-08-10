@@ -236,9 +236,9 @@ George Mason University\\
 sean@cs.gmu.edu}\\
 \\
 \\
-\large\rm {\bf Seq Version 5}\\
-\large\rm {\bf Manual Version 5.0}\\
-\large\rm  July 2025\\
+\large\rm {\bf Seq Version 6}\\
+\large\rm {\bf Manual Version 6.0}\\
+\large\rm  August 2025\\
 
 \vspace{5in}
 \noindent\Large\bf Where to Obtain Seq\\
@@ -482,11 +482,12 @@ At bottom are {\bf Text Notes}.  You can resize this region and store all the no
 \clearpage\section{The Motifs}
 \label{motifs}
 
-Excluding Macros and Macro Children, there are presently seven Motifs available in Seq:
+Excluding Macros and Macro Children, there are presently nine Motifs available in Seq:
 
 \begin{itemize}
 \item Three {\bf Basic (Note-Generating) Motifs}: Step Sequence, Notes, and Silence.  These do not have children Motifs.
-\item Five {\bf Compositional Motifs}: Series, Parallel, Automaton, Arpeggio, and Select.  These have children Motifs.
+\item Four {\bf Compositional Motifs}: Series, Parallel, Automaton, and Select.  These have children Motifs.
+\item Two {\bf MIDI Effect Motifs}: Arpeggio and Filter.  These have a single child Motif each.
 \end{itemize}
 
 We'll be adding more Motifs in time.
@@ -1019,7 +1020,7 @@ To use a Novation LaunchPad to select Children, you specify it in the {\bf Contr
 
 \subsection{Arpeggio}
 
-Arpeggio doesn't make any sound on its own, nor does it control the order or time of play of its children.  Rather, it is a {\it MIDI Transformer}: it modifies the MIDI it receives from its (only) child.  Specifically, it interprets the MIDI coming from its child as chords, and replaces them with arpeggios, just like an arpeggiator on a synthesizer.
+Arpeggio doesn't make any sound on its own, nor does it control the order or time of play of its children.  Rather, it is a {\it MIDI Effect}: it modifies the MIDI it receives from its (only) child.  Specifically, it interprets the MIDI coming from its child as chords, and replaces them with arpeggios, just like an arpeggiator on a synthesizer.
 
 \paragraph{Source of Chords and Emitting MIDI}
 
@@ -1075,14 +1076,92 @@ Arpeggio is a filter: its main job is not to control how and when its child play
 
 When Arpeggio is {\it inactive} it just passes its child's MIDI straight through to its parent, rather than intercepting it to do arpeggios.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=6.5in]{Filter}
+\vspace{-2em}
+\caption{Filter Motif.}
+\label{filter}
+\end{figure}
+
+\subsection{Filter}
+
+Just like Arpeggio, Filter doesn't make any sound on its own, nor does it control the order or time of play of its children.  Rather, it applies a series of {\it MIDI Effects} which modify the MIDI received from Filter's (only) child.  Filter has many different ways of adding to, removing, or modifying this MIDI data.  
+
+Filter lets you choose a MIDI Effect for each of (at present) four {\bf stages}.  When it receives MIDI data, it hands it off to the first stage, which modifies it as it sees fit.  Then it is handed to the second stage for further modification, and so on.  When all the stages have completed modification, Filter hands the resulting MIDI data to its parent, and ultimately to be emitted by Seq.
+
+\paragraph{Activity}
+
+Filter's MIDI Effects are only active for a certain range of time.  Outside that time, MIDI is not modified, but just passed through.   Normally this range of time is {\it all the time}, because {\bf Always} is checked in the Inspector.  If you uncheck this checkbox, you can set the activity time range by changing {\bf From} and {\bf To}.  
+
+\paragraph{MIDI Effects}
+
+At present, Filter has five MIDI Effects available:
+
+\begin{itemize}
+\item {\bf None}\qquad Doesn't change the MIDI at all.
+\item {\bf Note}\qquad Changes note pitch, velocity, release velocity, and length.
+\item {\bf Delay}\qquad Delays the onset of a note, or repeats it multiple times with a delay in-between, or repeats it multiple times simultaneously (as in unison).
+\item {\bf Drop}\qquad With some probability, drops a note (don't let it pass through).
+\item {\bf Parameter}\qquad Changes the value of a non-note parameter such as pitch bend, CC, or aftertouch.
+\end{itemize}
+
+We'll describe these next in detail.  More MIDI effects are planned for the future.
+
+\paragraph{The Note Effect}
+
+This effect allows you to change features of the notes being passed in:
+
+\begin{itemize}
+\item {\bf Out}\qquad You can change the MIDI output device.
+\item {\bf Transpose and Trans Var}\qquad You can transpose all notes, and can also add random transpositions to them.  The variance ranges from \(0\) to \(\pm 2 octaves\).
+\item {\bf Gain and Gain Var}\qquad You can multiply the velocity (thus velocity) of all notes by a given gain, and can also multiply a random random gain to them.  The variance ranges from \(0\times\) to \(4\times\).
+\item {\bf Release and Release Var}\qquad You can multiply the {\it release velocity} of all notes by a given gain, and can also multiply a random random gain to them.  The variance ranges from \(0\times\) to \(4\times\).
+\item {\bf Length}\qquad You can set the length of all notes.
+\end{itemize}
+
+\paragraph{The Delay Effect}
+
+This effect adds delays and unison to notes.  You can add one or more delays to an original note, and choose whether to play the original at all.  If you set the delay interval to zero, you can bulk up your original note with more of the same note, creating a {\bf unison} effect.
+
+\begin{itemize}
+\item {\bf Original}\qquad Whether to play the original note at its original time.
+\item {\bf Interval}\qquad The interval between successive delays. 
+\item {\bf Cut}\qquad How much to multiply the current delay volume by to get the volume of the next delay.  This eventually will cut delays down to 0 volume.
+\item {\bf Num Delays}\qquad How many delays to do (besides the original, if you're playing that one).
+\end{itemize}
+
+\paragraph{The Drop Effect}
+
+This effect randomly deletes notes.
+
+\begin{itemize}
+\item {\bf Probability}\qquad The probability that a note would be deleted.
+\end{itemize}
+
+
+
+\paragraph{The Parameter Effect}
+
+This effect adds noise to the values of non-note parameters.  Every so often this effect chooses a new random value, then consistently adds that value to all the parameters that arrive of the given type.
+
+\begin{itemize}
+\item {\bf Type}\qquad The parameter type in question to add noise to.  The options are {\it Pitch Bend}, {\it Control Change} (CC), {\it Non-Registered Parameter Numbers} (NRPN), {\it Registered Parameter Numbers} (RPN), and {\it Aftertouch}.
+\item {\bf Param/Note/MSB}\qquad The parameter to add noise to.  Pitch Bend doesn't have a parameter.  Aftertouch's parameter is a note number.
+\item {\bf LSB}\qquad The {\it Least Significant Byte} of the parameter to add noise to.  This is only used by NRPN and RPN, and complements the MSB.
+\item {\bf Variance}\qquad The noise variance, from 0.0 to 1.0.  The highest noise variance adds extreme noise to the parameter.
+\item {\bf Rate}\qquad How often the parameter noise value is updated.
+\end{itemize}
+
+
+
 \clearpage\subsection{Motifs Planned for the Future}
 
-At present we have four motifs planned:
+At present we have a few motifs planned:
 
 \begin{itemize}
 \item A Motif for individual notes, or chords
 \item A Motif which implements functions that operates on Parameters, such as LFOs or Envelopes, Random Sequences, MIDI CC.  {\bf \color{red} We have this partially implemented in Seq (the ``Modulation'' motif) but it's not working yet.}
-\item Possibly a Motif which performs more complex MIDI Effects on incoming MIDI data
 \item Possibly a Motif which does Live Coding using some programming language
 \end{itemize}
 

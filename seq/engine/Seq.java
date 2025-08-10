@@ -1511,17 +1511,17 @@ public class Seq
         seq.randomMax = obj.optDouble("rmax", 0.0);
         seq.randomMin = obj.optDouble("rmin", 1.0);
         
-		// seed
-		int seed = obj.optInt("seed", 0);
-		if (seed == -1)
-			{
-			System.err.println("Motif.load WARNING: no random seed in sequence, so we're entirely reseeding.");
-			seq.seedDeterministicRandom();
-			}
-		else
-			{
-			seq.seedDeterministicRandom(seed);
-			}
+        // seed
+        int seed = obj.optInt("seed", 0);
+        if (seed == -1)
+            {
+            System.err.println("Motif.load WARNING: no random seed in sequence, so we're entirely reseeding.");
+            seq.seedDeterministicRandom();
+            }
+        else
+            {
+            seq.seedDeterministicRandom(seed);
+            }
         
         // Load the motifs
         seq.motifs = Motif.load(seq, obj.getJSONArray("motifs"), true);

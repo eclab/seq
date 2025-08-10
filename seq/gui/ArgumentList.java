@@ -281,23 +281,23 @@ public class ArgumentList extends JPanel
         }
     
 /*
-    public void revise()
-        {
-        Seq old = seq;
-        seq = null;
-        ReentrantLock lock = old.getLock();
-        lock.lock();
-        try 
-            { 
-            // empty
-            }
-        finally { lock.unlock(); }                              
-        seq = old;
+  public void revise()
+  {
+  Seq old = seq;
+  seq = null;
+  ReentrantLock lock = old.getLock();
+  lock.lock();
+  try 
+  { 
+  // empty
+  }
+  finally { lock.unlock(); }                              
+  seq = old;
 
-        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-            {
-            dials[i].redraw();
-            }
-        }
+  for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+  {
+  dials[i].redraw();
+  }
+  }
 */
     }

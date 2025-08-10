@@ -524,7 +524,7 @@ public abstract class SmallDial extends JPanel
         if (usesDefaults())
             {
             graphics.setPaint(def ? DEFAULTS_ON_DOT_COLOR : (getDefaultsList().length > 1 ? DEFAULT_STATIC_COLOR : DEFAULTS_OFF_DOT_COLOR));
-        	if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
+            if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
             double x = rect.getX() + rect.getWidth() / 2.0;
             double y = rect.getY() + rect.getHeight() / 2.0;
             Ellipse2D.Double circle = new Ellipse2D.Double(x - DEFAULTS_DOT_THICKNESS / 2.0, y - DEFAULTS_DOT_THICKNESS / 2.0, DEFAULTS_DOT_THICKNESS, DEFAULTS_DOT_THICKNESS);
@@ -544,7 +544,7 @@ public abstract class SmallDial extends JPanel
         if (dynamicallyChanging)
             {
             graphics.setPaint(DYNAMIC_COLOR);
-        	if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);	// should not happen
+            if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);    // should not happen
             if (value == min)
                 {
                 interval = -5;
@@ -553,7 +553,7 @@ public abstract class SmallDial extends JPanel
         else
             {
             graphics.setPaint(getStaticColor());
-        	if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
+            if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
             if (value == min)
                 {
                 interval = 0;

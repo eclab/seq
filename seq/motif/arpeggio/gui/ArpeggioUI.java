@@ -389,17 +389,17 @@ childOuter.setBorder(childBorder);
         }
 
 /*
-    public void setNickname(int index, String val)
-        {
-        ArrayList<Arpeggio.Child> children = arpeggio.getChildren(); 
-        children.get(index).setNickname(val);
-        }
+  public void setNickname(int index, String val)
+  {
+  ArrayList<Arpeggio.Child> children = arpeggio.getChildren(); 
+  children.get(index).setNickname(val);
+  }
               
-    public String getNickname(int index)
-        {
-        ArrayList<Arpeggio.Child> children = arpeggio.getChildren(); 
-        return children.get(index).getNickname();
-        }
+  public String getNickname(int index)
+  {
+  ArrayList<Arpeggio.Child> children = arpeggio.getChildren(); 
+  return children.get(index).getNickname();
+  }
 */
 
     public JPanel buildConsole()

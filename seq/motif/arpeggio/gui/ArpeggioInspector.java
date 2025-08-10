@@ -244,7 +244,7 @@ public class ArpeggioInspector extends WidgetList
         name.setToolTipText(NAME_TOOLTIP);
 
         build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "New Chord Reset", 
-        "Activity", "Always", "From", "To"}, 
+                "Activity", "Always", "From", "To"}, 
             new JComponent[] 
                 {
                 name,
@@ -255,7 +255,7 @@ public class ArpeggioInspector extends WidgetList
                 octaves.getLabelledDial("" + Arpeggio.MAX_OCTAVES),
                 length.getLabelledDial("" + Arpeggio.MAX_PATTERN_LENGTH),
                 newChordReset,
-                null,				// separator
+                null,                           // separator
                 activeAlways,
                 activeFrom,
                 activeTo

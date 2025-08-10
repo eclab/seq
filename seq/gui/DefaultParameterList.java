@@ -83,12 +83,12 @@ public class DefaultParameterList extends JPanel
         }
     
     /*
-    public void revise()
-        {
-        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-            {
-            names[i].update();
-            }
-        }
+      public void revise()
+      {
+      for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+      {
+      names[i].update();
+      }
+      }
     */
     }

@@ -308,9 +308,9 @@ public abstract class MotifUI extends JPanel
             }
         }
 
-	public void frameCreated()
-		{
-		}
+    public void frameCreated()
+        {
+        }
     
     public void recursiveDragError(MotifButton dropped, SeqUI sequi)
         {

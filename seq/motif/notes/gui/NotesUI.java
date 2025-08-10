@@ -396,7 +396,7 @@ public class NotesUI extends MotifUI
         gridui.repaint();
         }
  
- 	/** Scrolls to timestep 0 at roughly middle C. */
+    /** Scrolls to timestep 0 at roughly middle C. */
     public void doScrollToStart()
         {
         int height = PitchUI.PITCH_HEIGHT * 128;
@@ -406,30 +406,30 @@ public class NotesUI extends MotifUI
         
         // Now we change the height
         if (viewRect.height < height)
-        	{
-        	// we can still scroll!
-        	p.y = (height - viewRect.height) / 2;
-        	}
+            {
+            // we can still scroll!
+            p.y = (height - viewRect.height) / 2;
+            }
         
         getPrimaryScroll().getViewport().setViewPosition(p);
         
         /*
-        JScrollBar bar = getPrimaryScroll().getVerticalScrollBar();
-        bar.setValue((bar.getMaximum() + bar.getMinimum()) / 2);
-        System.err.println(bar.getMaximum());
-        System.err.println(bar.getMinimum());
-        bar = getPrimaryScroll().getHorizontalScrollBar();
-        bar.setValue(bar.getMinimum());
+          JScrollBar bar = getPrimaryScroll().getVerticalScrollBar();
+          bar.setValue((bar.getMaximum() + bar.getMinimum()) / 2);
+          System.err.println(bar.getMaximum());
+          System.err.println(bar.getMinimum());
+          bar = getPrimaryScroll().getHorizontalScrollBar();
+          bar.setValue(bar.getMinimum());
         */
         }
 
- 	/** Scrolls to the start of the selected region, if it is not already in view. */
+    /** Scrolls to the start of the selected region, if it is not already in view. */
     public void doScrollToSelected()
         {
         doScrollToRect(gridui.getEventBoundingBox(true), false);
         }
         
- 	/** Scrolls to the start of all notes, if it is not already in view. */
+    /** Scrolls to the start of all notes, if it is not already in view. */
     public void doScrollToAny()
         {
         Rectangle rect = gridui.getEventBoundingBox(true);
@@ -481,18 +481,18 @@ public class NotesUI extends MotifUI
 
             Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
             if (!forceScroll)
-            	{
-            	if (viewRect.x <= posx && viewRect.x + viewRect.width > posx)
-					{
-					// posx already contained, so we won't scroll to it
-					posx = viewRect.x;
-					}
-				if (viewRect.y <= posy && viewRect.y + viewRect.height > posy)
-					{
-					// posy already contained, so we won't scroll to it
-					posy = viewRect.y;
-					}
-				}
+                {
+                if (viewRect.x <= posx && viewRect.x + viewRect.width > posx)
+                    {
+                    // posx already contained, so we won't scroll to it
+                    posx = viewRect.x;
+                    }
+                if (viewRect.y <= posy && viewRect.y + viewRect.height > posy)
+                    {
+                    // posy already contained, so we won't scroll to it
+                    posy = viewRect.y;
+                    }
+                }
 
             getPrimaryScroll().getViewport().setViewPosition(new Point(posx, posy));
             }       
@@ -1228,21 +1228,21 @@ public class NotesUI extends MotifUI
         }
 
 
-	public int getNumNotes()
-		{
-				int size = 0;
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try
-					{
-					size = getNotes().getEvents().size();
-					}
-				finally
-					{
-					lock.unlock();
-					}
-				return size;
-		}
+    public int getNumNotes()
+        {
+        int size = 0;
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            size = getNotes().getEvents().size();
+            }
+        finally
+            {
+            lock.unlock();
+            }
+        return size;
+        }
 
     /** Builds the main view. */        
     public void buildPrimary(JScrollPane scroll)
@@ -1262,21 +1262,21 @@ public class NotesUI extends MotifUI
         box.add(eventsui, BorderLayout.CENTER);
         scroll.setColumnHeaderView(box);
                
-			gridui.reload();
-			rebuildSizes();
-			gridui.repaint();
+        gridui.reload();
+        rebuildSizes();
+        gridui.repaint();
 
-        	// This won't work if the frame hasn't been constructed yet. 
+        // This won't work if the frame hasn't been constructed yet. 
 
-			// Scroll to Middle C-ish?  Or Selected?
-			if (getNumNotes() > 0)
-				{
-				doScrollToAny();
-				}
-			else
-				{
-				doScrollToStart();
-				}
+        // Scroll to Middle C-ish?  Or Selected?
+        if (getNumNotes() > 0)
+            {
+            doScrollToAny();
+            }
+        else
+            {
+            doScrollToStart();
+            }
                                 
         // FIXME
         // This isn't working with two-finger trackpad scrolling.  :-(
@@ -1292,10 +1292,10 @@ public class NotesUI extends MotifUI
         }
         
     public void frameCreated()
-    	{
-		doScrollToStart();
-    	}
-    	
+        {
+        doScrollToStart();
+        }
+        
     /** Revalidates the entire GridUI, EventUI, and ruler */
     void rebuildSizes()
         {
