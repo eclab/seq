@@ -1062,7 +1062,13 @@ For example, if your incoming chord was C E G A, then the first four squares in 
 
 You can play notes {\it below} the chord as well!  The squares {\it below} the Root Marker represent notes one or more octaves below the chord.  For example, the first four squares below the Root Marker would be (going down) A -1, G -1, E -1, and C -1, which are all one octave below the chord.  The next four squares below them would be A -2, G -2, E -2, and C -2, and so on.
 
-You can play more than one note in the same step: just click multiple squares.  You can also play a rest: just have a column with no squares selected in it.  \footnote{One thing you can't do at present is a tie\,---\,lengthening a note length\,---but we might improve Arpeggio to allow that in the future.}
+You can play more than one note in the same step: just click multiple squares.  You can also play a rest: just have a column with no squares selected in it.
+
+Finally, you can make {\bf ties} to extend the length of notes.   If you shift-click on a pattern note, you will make a tie.  A tie indicates that the immediately previous note will be lengthened and continued.  If there is no immediately previous note (it's a rest), then the tie has no effect.  Ties are blue.
+
+\paragraph{Velocity}
+
+By default, the velocities (volumes) of the arpeggiated notes are based on the velocities of the underlying notes provided Arpeggio.  If you uncheck {\bf As Played} in the Inspector, then you can fix the velocity of all the arpeggiated notes to a given value by setting the {\bf Velocity} dial.
 
 \paragraph{Resetting Arpeggios}
 
@@ -1075,6 +1081,8 @@ If you want to override this chord reset behavior, so that Arpeggio doesn't rese
 Arpeggio is a filter: its main job is not to control how and when its child plays, but rather to process the MIDI received from its child.  You might wish to say {\it when} Arpeggio produces arpeggios from its child\,---\,that is,  when it is {\bf active}.  To do this, uncheck the {\bf Always} checkbox (which says that Arpeggio is always active no matter what), and set the activity time range by changing {\bf From} and {\bf To}.  
 
 When Arpeggio is {\it inactive} it just passes its child's MIDI straight through to its parent, rather than intercepting it to do arpeggios.
+
+\bump
 
 \begin{figure}[t]
 \centering
@@ -1147,7 +1155,8 @@ This effect adds noise to the values of non-note parameters.  Every so often thi
 
 \begin{itemize}
 \item {\bf Type}\qquad The parameter type in question to add noise to.  The options are {\it Pitch Bend}, {\it Control Change} (CC), {\it Non-Registered Parameter Numbers} (NRPN), {\it Registered Parameter Numbers} (RPN), and {\it Aftertouch}.
-\item {\bf Param/Note/MSB}\qquad The parameter to add noise to.  Pitch Bend doesn't have a parameter.  Aftertouch's parameter is a note number.
+\item {\bf Param/MSB}\qquad The parameter to add noise to.  Pitch Bend doesn't have a parameter.  Aftertouch also doesn't have a parameter (note is disregarded\,---\,all aftertouch messages are treated the same).
+  For NRPN and RPN, this serves as the {\it Most Significant Byte} (MSB) of the parameter to add noise to.
 \item {\bf LSB}\qquad The {\it Least Significant Byte} of the parameter to add noise to.  This is only used by NRPN and RPN, and complements the MSB.
 \item {\bf Variance}\qquad The noise variance, from 0.0 to 1.0.  The highest noise variance adds extreme noise to the parameter.
 \item {\bf Rate}\qquad How often the parameter noise value is updated.
@@ -1274,7 +1283,158 @@ The following MIDI output types are available for each Parameter.
 \item {\bf Channel Aftertouch}\quad Incoming parameters will be mapped to Channel Aftertouch values (0--127).
 \end{itemize}
 
+
+\section{Developing for Seq}
+
+Seq is written in pure Java, and is designed to have a simple model, even if the graphical interface code is relatively elaborate.  The reason for this was that, ultimately, we hope Seq's model can be rearranged and customized by optimization and machine learning tools.  For now, it's just an unusual sequencer.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=4in]{model}
+\caption{Model class relationships.}
+\label{modeldev}
+\end{figure}
+
+
+\subsection{Model and Dynamic Runtime Overview}
+
+The top-level class of Seq is {\sf seq.engine.Seq}\footnote{Well, that's not {\it quite} the case.  There's a small bootstrapping class called {\sf seq.Seq} so you can launch Seq as {\tt java seq.Seq}.}  Seq is a singleton object which contains the entire sequence.  It manages playing and recording the sequence,  as well loading and saving it, and stores the sequence model.  {\sf seq.engine.Seq} also contains the global lock, which synchronizes between playing / recording notes and modifying / displaying the sequence from the GUI.
+
+Seq runs the MIDI subsystem, both sending and receiving.  The MIDI subsystem itself is managed by the class {\sf seq.engine.Midi}, which Seq owns.  Seq permits 16 outputs and 4 inputs.  Each output and input represent a combination of a MIDI Device, a MIDI channel, and a nickname given by the user.  These outputs and inputs are stored in 16 {\sf seq.engine.Out} and 4 {\sf seq.engine.In} objects respectively.
+
+{\sf seq.engine.Seq} maintains the sequence using two separate data structures.  First, there is the {\bf Motif DAG}, which stores the model itself.  Second, there is the {\bf Clip Forest}, which manages dynamically changing data while the model is playing.  
+
+Each of these graph structures contains an entry point where the sequence begins when you press play.  For the DAG, it's a {\sf seq.engine.Motif} object called {\bf data}.  For the Clip Tree, it's a corresponding {\sf seq.engine.Clip} called {\bf root}.  This is called the root simply because it's the entry point for the sequence: though for the Clip tree, it {\it is} the root of the tree, the corresponding {\bf data} object isn't necessarily the root of the DAG at all (and there could be multiple roots).
+
+The Motif DAG consists, at the bottom, of note-generating Motif objects such as Step Sequence or Notes.  Every Motif may have multiple parent Motifs which indicate how to group their children together to play them, such as in series or in parallel.  This DAG is loaded from and saved to a JSON structure using the {\sf seq.load()} and {\sf seq.save()} methods, which in turn call similar methods on each of the Motifs.
+
+When the sequence is played, the {\sf seq.engine.Seq} prepares and resets playing data, then starts the clock (a {\sf java.util.Timer}\footnote{{\sf java.util.Timer} only has a resolution of 1ms.  That's pretty bad, but it's what we have to work with.  I can build a custom Timer using nanoTime rather than currentTimeMillis, but it only increases the resolution by about \(1.5\times\).  It's possible to build a timer using park and unpark, but it doesn't improve things much and is very computationally costly.  The fundamental issue is the typical multitasking time-slice of the operating system.}.  The clock calls {\sf Seq.step()} 192 times per beat (that is, 192 Parts Per Quarter-note, or PPQ) at the current BPM. {\sf step()} acquires the lock, then calls {\sf advance()} on the {\bf root}, which in turn calls {\sf process} on the root.  This kicks off the series of recursive calls to {\sf advance} and {\sf process} throughout the root's Clip Tree, which gives each {\sf sim.engine.Clip} in the tree a chance to advance itself forward one tick (1/192 PPQ).  When this process is done, Seq lets go of the lock.
+
+Each {\sf sim.engine.Clip} is associated with a {\sf sim.engine.Motif} in the model, and each will consult with its Motif to determine what notes to play, which children Clips to create and how to process them, and so on..  But there may be many Clips playing the same Motif at the same time, due to parallelism in play.  Each of these Clips must maintain its own dynamic information (such as its current timestamp), so they have to be distinct from one another.  To do this, the Clip must be a tree: parents cannot share the same child, they have to have their own distinct children.  Obviously this tree can be much larger than the DAG.  However it does not have to all exist at once.  The Clips in the Clip Tree are generated as needed, and garbage collected when their subtrees are finished playing their portion of the sequence.  
+
+While advancing forward, Clips will generate MIDI.  They do not directly emit MIDI to the operating system.  Rather, they send MIDI to their parents in the Clip Tree, who pass it to their parents, and so on.  Eventually the {\bf root} passes MIDI to Seq to process and emit to the operating system.  This procedure allows parents to filter or modify the MIDI of their children (as in the Filter and Arpeggio motifs).
+
+A module {\it foo} in Seq would be stored in the Java package {\sf seq.motif.foo}, and commonly would consist of at least the three following items:
+
+\begin{itemize}
+\item A Motif called {\sf seq.motif.foo.Foo}, which defines the parameters of the module and its relationship to child Motifs if any
+\item A Clip called {\sf seq.motif.foo.FooClip}, which performs the actions of the module when it is being played or recorded
+\item The GUI classes for the module, discussed next.  These would be stored in the Java package {\sf seq.motif.foo.gui}
+\end{itemize}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=5in]{gui}
+\caption{GUI class relationships.}
+\label{guidev}
+\end{figure}
+
+
+\subsection{Graphical Interface Overview}
+
+The graphical interface is written entirely in Swing, using FlatLAF to define the look and feel.  The top-level GUI class is {\sf seq.gui.SeqUI}, which handles top-level application management and is the counterpart to {\sf seq.engine.Seq}.  SeqUI manages (most of) the menu, the main window, and all dialogs.  SeqUI manages playing and recording through an object it owns, {\sf seq.gui.Transport}.  This object handles all the transport buttons as well as the disclosure panel for the clock options.
+
+SeqUI also manages the list of Motifs at the left of the window.  It does this through another object it owns, {\sf seq.gui.MotifList}.  MotifLIst not only displays the Motif buttons, but manages their creation, deletion, copying, ordering, and drag-and-drop into other Motifs.  The Motif buttons in the MotifList are drawn with {\sf seq.gui.MotifListButton}, which is a subclass of the more general {\sf seq.gui.MotifButton}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=5in]{inspectors}
+\caption{MotifUI relationships.}
+\label{inspectorsdev}
+\end{figure}
+
+SeqUI delegates the main drawing area and the inspector regions.  The main drawing area is handled by a subclass of {\sf seq.gui.MotifUI} which SeqUI creates when the appropriate MotifButton has been created or selected.  This class provides the main window region, and also provides the main structure for the inspectors.  Each MotifUI (and each MotifButton) is associated with a unique Motif.
+
+MotifUIs generally build inspectors by subclassing from {\sf seq.gui.WidgetList}, a simple class for creating a labelled vertical list of elements.  Each MotifUI has its own primary inspector, and certain elements in the MotifUI will have their own subinspectors created when those elements are selected. 
+
+Many Motifs have child Motifs, and MotifUIs represent these child Motifs with drag-and-drop objects which are subclasses of {\sf seq.gui.MotifButton}, just like {\sf seq.gui.MotifListButton} was.
+
+The GUI subsystem for a module {\it foo} would be stored in the Java package {\sf seq.motif.foo.gui} and typically consist of:
+
+\begin{itemize}
+\item A MotifUI called {\sf seq.motif.foo.gui.FooUI}, which interacts with the Motif and Clip, draws the Motif, and dictates which inspectors will be used.
+\item The primary inspector for the MotifUI, called {\sf seq.motif.foo.gui.FooInspector}
+\item Any additional inspectors for subelements of the Motif
+\item If the Motif has children, a subclass of MotifButton, likely called {\sf seq.motif.foo.gui.FooButton}, which displays those children.
+\end{itemize}
+
+\subsection{Common GUI Widgets}
+
+To make your life easier, and to provide a consistent experience, Seq has a number of standard widgets which your MotifUI and inspectors may use:
+
+\paragraph{seq.gui.WidgetList}  This is the superclass of inspectors, and is designed to make it easy to create labelled lists of JComponents.  Typically all the JComponents, and all their labels, are provided in the constructor; or you can provide them in a later {\sf build()} method.
+
+\paragraph{seq.gui.SmallDial}  This is how Seq makes all of its dials.  SmallDial has a range from 0.0 to 1.0, which you initialize up front.  Then you override up to three methods.  {\sf setValue()} informs you that the user has just set the widget.  Typically you'll acquire the lock (see Locking later) to update the model.  {\sf getValue()} asks you what value to display.  Typically you'll acquire the lock (again, see Locking later) to read from the model.  And {\sf map()} asks how to print the data value next to the widget: by default this method formats its double value (0.0 to 1.0) as x.xxxx.
+
+\paragraph{seq.gui.Dial}  A large version of SmallDial.
+
+\paragraph{seq.gui.DisclosurePanel}  This is a JComponent which hides its children components until the user clicks on a ``\(>\)'', expanding it to display them.  If you provide it with its parent component, it will inform the parent when it has expanded so the parent can revalidate itself.
+
+\paragraph{seq.gui.PushButton}  A convenient class for constructing a JButton which performs an action, or which produces a pop-up menu and performs an action based on what is selected.
+
+\paragraph{seq.gui.StringField}  A convenient class for editing text strings.  When the user has edited a string, StringField will call the method {\sf setValue()}, which you override, so you can update the Motif data or whatnot.  Similarly to request the latest string from you to display, StringField will call {\sf getValue()}.  Like SmallDial, these methods will likely require you to acquire a lock to access the model within them.
+
+\paragraph{seq.gui.TimeDisplay}  A rather convoluted collection of four SmallDials and a presets button which help the user to set a timestamp or a time interval.  You override the methods {\sf getTime()} to tell the TimeDisplay what time to display, and {\sf setTime()} to update the model when the TimeDisplay is changed.  These methods automatically acquire the lock, (see SmallDial), so you do not need to lock on the lock to manipulate the model in these methods.  Additionally, the method {\sf setTimeOutside()} allows you to update elements (such as the MotifUI) {\it outside} the lock.
+
+\paragraph{seq.gui.Stretch}  A class for making stretchy invisible JComponents which fill all available horizontal or vertical space.
+
+\paragraph{seq.gui.Collapse}  This transparent JComponent forces its child component to stay at its preferred size rather than expand to the (larger) size of the Collapse parent.
+
+\paragraph{seq.gui.Dialogs}  Utility methods for creating dialog boxes.
+
+\paragraph{seq.gui.SimpleColorMap}  A class for mapping real-numbered or integer values to colors.
+
+\paragraph{seq.gui.ArgumentList} Displays and edits the settings of arguments for child motifs.
+
+\paragraph{seq.gui.DefaultParameterList} Displays and edits the nicknames given to the Motif's parameters.
+
+\subsection{Building a Module}
+
+To build a module for Seq, you'll need to construct:
+
+\begin{enumerate}
+\item A Motif, which defines the parameters of the module and its relationship to child Motifs if any
+\item A Clip, which performs the actions of the module when it is being played or recorded
+\item a 
+\end{enumerate}
+
+\subsection{Hints}
+
+\paragraph{Locking}
+Whenever you modify the Motif from the MotifUI or one of its inspectors, you will need to acquire the global lock to prevent the model from attempting to play data while you are modifying it.  Your goal is to acquire this lock, modify the data very rapidly, and then let go of the lock.  You may even wish to acquire the lock multiple times in order to modify the data in a more fine-grained fashion.  This is because the overriding goal is to keep Seq's playing accurate, even at the expense of GUI update.  Seq needs to be able to acquire the lock to play the next step whenever it must.
+
+Seq uses a {\bf fair lock}.  You may not be familiar with locks of this type.   The standard Java lock, {\sf synchronized}, is {\it unfair}.  This means that the following starvation scenario can occur.  Thread A acquires the lock.  Thread B tries to acquire the lock but fails.  It is blocked and put to sleep by the operating system.  Thread A releases the lock.  Because Thread B is asleep and can't ask for the lock, Thread A then decides to {\it reacquire} the lock again.  Then Thread B wakes up and {\it still can't get the lock}.  Thus Thread A can starve Thread B.
+
+This actually happens quite a lot, especially in Linux, when dealing with GUI threads, and it is because on most operating systems (including MacOS, Windows, and Linux), the default lock mechanism is {\it unfair}: if a thread asks for a lock, there is no guarantee it will be the next in line to receive it (or ever!).
+
+Java also provides {\it fair} locks via its {\sf java.util.Concurrent} package, but they are less convenient to use, and unlike {\sf synchronized} you have to make sure to remember to {\it unlock} the lock.  Fair locks are also significantly slower than unfair locks, which is why operating system locks are unfair by default.  A fair lock is slow because when a thread fails to acquire the lock, it is is put into a {\it queue} for that lock, then blocks.  When a thread releases a lock, only the next thread in the queue is permitted to acquire the lock: all other requesting threads are stuck in the queue behind it.  It is this queue that keeps things fair, but this extra machinery slows things down a bit.  To be honest, even the high degree of locking and unlocking used in Seq is entirely inconsequential to performance. 
+
+You should lock like this:
+
+\begin{verbatim}
+import java.util.concurrent.*;
+
+    Seq seq = ...           // You need the Seq here
+    ReentrantLock lock = seq.getLock();    // This is Seq's global lock, and it is fair
+    lock.lock();            // acquire the lock
+    try
+        {
+        // do your stuff
+        }
+    finally
+        {
+        lock.unlock();      // always unlock in a finally so it's guaranteed to happen
+        }
+\end{verbatim}
+
+You will see this pattern many {\it many} times in Seq: it's one of the things that makes Seq's GUI code so verbose!  You do not ever need to lock in your Clip or your Motif: their methods are called while Seq's play thread has control of the lock.  
+
+You also don't need to lock when overriding the TimeDisplay's {\sf setTime()} or {\sf getTime}: they have already acquired the lock (in fact, to update the GUI {\it outside} the lock, TimeDisplay provides a special method called {\sf setTimeOutside()}.  
+
 \end{document}
+
+
+
 
 
 
