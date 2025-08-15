@@ -165,8 +165,8 @@ public class GridUI extends JComponent
                         notes.getEvents().add(note);
                                 
                         // now comes the costly part
+        				recomputeMaxTime();		// so they're in the same lock
                         notes.sortEvents();
-                        notes.computeMaxTime();
                         }
                     finally
                         {
@@ -502,6 +502,20 @@ public class GridUI extends JComponent
         return (((int)((evt.getX() - origin.getX()) * scale)) / snap) * snap;
         }
 
+	void recomputeMaxTime()
+		{
+        ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			notesui.getNotes().computeMaxTime();
+			}
+		finally
+			{
+			lock.unlock();
+			}
+		}
+
     /** Resizes the selected notes to a length indicated by the difference from the old origin
         to the new event, quantized. */
     public void resizeSelectedNotes(NoteUI originalNote, MouseEvent evt)
@@ -574,6 +588,8 @@ public class GridUI extends JComponent
                         break;
                         }
                     }
+                recomputeMaxTime();
+                
                 // now let's repaint
                 for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
                     {
@@ -695,6 +711,7 @@ public class GridUI extends JComponent
         
         // re-sort -- this is going to be EXPENSIVE
         lock.lock();
+        recomputeMaxTime();		// so they're in the same lock
         try
             {
             getNotesUI().getNotes().sortEvents();
@@ -792,6 +809,7 @@ public class GridUI extends JComponent
                 events.add(newNote);
                 newNotes.add(newNote);
                 }
+        	recomputeMaxTime();		// so they're in the same lock
             notesui.getNotes().sortEvents();                // costly
             }
         finally

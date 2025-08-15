@@ -376,8 +376,10 @@ public class NotesUI extends MotifUI
         {
         gridui.setScale(gridui.getScale() / 2.0);
         gridui.reload();
+        eventsui.reload();
         rebuildSizes();
         gridui.repaint();
+        eventsui.repaint();
         }
 
     /** Decreases the resolution of the GridUI */
@@ -385,8 +387,10 @@ public class NotesUI extends MotifUI
         {
         gridui.setScale(gridui.getScale() * 2.0);
         gridui.reload();
+        eventsui.reload();
         rebuildSizes();
         gridui.repaint();
+        eventsui.repaint();
         }
         
     public void doSelectAll()
