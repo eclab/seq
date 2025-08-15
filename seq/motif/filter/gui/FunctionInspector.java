@@ -17,7 +17,7 @@ public class FunctionInspector extends JPanel
     {
     public static final String[] INSPECTOR_NAMES = { "None", "Note", "Delay", "Drop", "Parameter" };
     public static final String[] PARAMETER_TYPES = { "Bend", "CC", "NRPN", "RPN", "Aftertouch" };
-    public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+    // public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
     Seq seq;
     Filter filter;
@@ -542,7 +542,7 @@ public class FunctionInspector extends JPanel
                 protected String map(double val) 
                     { 
                     int v = (int)(val * 127);
-                    return String.valueOf(v) + " / " +  NOTES[v % 12] + (v / 12);
+                    return String.valueOf(v) ; // + " / " +  NOTES[v % 12] + (v / 12);
                     }
                 public double getValue() 
                     { 
@@ -592,12 +592,12 @@ public class FunctionInspector extends JPanel
                 });
             updateParams(func.getParameterType());
 
-            build(new String[] { "", "Type", "Param/Note/MSB", "LSB", "Variance", "Rate"}, 
+            build(new String[] { "", "Type", "Param/MSB", "LSB", "Variance", "Rate"}, 
                 new JComponent[] 
                     {
                     null,
                     parameterType,
-                    parameterMSB.getLabelledDial("128 / Cb10"),
+                    parameterMSB.getLabelledDial("128"),
                     parameterLSB.getLabelledDial("128"),
                     distVar.getLabelledDial("0.0000"),
                     rate
@@ -628,7 +628,7 @@ public class FunctionInspector extends JPanel
                 }
             else if (result == 4)           // Aftertouch
                 {
-                parameterMSB.setEnabled(true);
+                parameterMSB.setEnabled(false);
                 parameterLSB.setEnabled(false);
                 }
             }

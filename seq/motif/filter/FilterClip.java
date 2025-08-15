@@ -14,6 +14,7 @@ public class FilterClip extends Clip
     {
     private static final long serialVersionUID = 1;
     
+    /// The four nodes representing our filter functions
     ArrayList<Node> nodes = new ArrayList<>();
     // Our child, if any
     Clip clip;
@@ -140,13 +141,23 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).rpn(out, rpn, val, index + 1);
             }
+        
+        // Informs the Node that we have been cut
         public void cut(int index) { }
+        // Informs the Node that we have been released
         public void release(int index) { }
+        // Called each timestep to let the node update itself, AFTER MIDI has been pushed through
         public void process(int index) { }
+        // Asks the node if it believes it is finished yet
         public boolean finished() { return true; }
+        // Informs the Node that we have been reset
         public void reset(int index) { }
         }
 
+
+
+
+	/// ChangeNote Node
     public class ChangeNote extends Node
         {
         HashMap<Integer, Integer> map = new HashMap<>();                // Maps IDs to revised pitches
@@ -245,7 +256,10 @@ public class FilterClip extends Clip
             super.scheduleNoteOff(out, note, vel, time, id, index);
             }
         }
-                
+               
+               
+               
+	/// Drop Node
     public class Drop extends Node
         {
         HashSet<Integer> dropped = new HashSet<>();
@@ -298,6 +312,10 @@ public class FilterClip extends Clip
             }
         }
 
+
+
+
+	/// Delay Node
     public class Delay extends Node
         {
         class DelayNote implements Comparable
@@ -504,16 +522,17 @@ public class FilterClip extends Clip
             }
         }
 
-    public static final int NUM_TRIES = 8;
-        
+	/// Noise Node
     public class Noise extends Node
         {
-        int lastValue = -1;
-        int lastIndex = 0;
-        int lastOut = 0;
-        int lastNote = 0;
-        int lastTime = 0;
-        int lastRandom = 0; 
+	    public static final int NUM_TRIES = 8;
+        
+        int lastValue = -1;			// The last value of the parameter I received from MIDI.  If -1, no value has been received.
+        int lastIndex = 0;			// The index of the last MIDI message for the parameter
+        int lastOut = 0;			// The out of the last MIDI message for the parameter
+        int lastNote = 0;			// The note of the last MIDI message for the parameter, assuming it's Aftertouch
+        int lastTime = 0;			// The time (position) of the last MIDI message for the parameter
+        int lastRandom = 0; 		// The last chosen random value.
                
         public void reset(int index)
             {
