@@ -33,6 +33,8 @@ public class ArpeggioUI extends MotifUI
     
     public static final Color PATTERN_ON_COLOR = Color.RED;
     public static final Color PATTERN_ON_DISABLED_COLOR = new Color(220, 160, 160);
+    public static final Color PATTERN_ON_TIE_COLOR = Color.BLUE;
+    public static final Color PATTERN_ON_TIE_DISABLED_COLOR = new Color(160, 160, 220);
     public static final Color PATTERN_OFF_COLOR = new Color(220, 220, 220);
     public static final Color PATTERN_BORDER_COLOR = Color.GRAY;
     public static final Stroke PATTERN_STROKE = new BasicStroke(1.0f);
@@ -247,12 +249,12 @@ childOuter.setBorder(childBorder);
                 {
                 final int _i = i;
                 final int _j = j;
-                JCheckBox button = new JCheckBox()
+                JComponent button = new JComponent()	//JCheckBox button = new JCheckBox()
                     {
                     public void paintComponent(Graphics _g)
                         {
                         Graphics2D g = (Graphics2D) _g;
-                        boolean state = false;
+                        int state = Arpeggio.PATTERN_REST;
                         int length = 0;
                         ReentrantLock lock = seq.getLock();
                         lock.lock();
@@ -270,7 +272,10 @@ childOuter.setBorder(childBorder);
                         Rectangle bounds = getBounds();
                         bounds.x = 0;
                         bounds.y = 0;
-                        g.setPaint(state ? (_j < length ? PATTERN_ON_COLOR : PATTERN_ON_DISABLED_COLOR) : PATTERN_OFF_COLOR);
+                        g.setPaint(state == Arpeggio.PATTERN_REST ? PATTERN_OFF_COLOR :
+                        	(state == Arpeggio.PATTERN_NOTE ? 
+                        		(_j < length ? PATTERN_ON_COLOR : PATTERN_ON_DISABLED_COLOR) :
+                        		(_j < length ? PATTERN_ON_TIE_COLOR : PATTERN_ON_TIE_DISABLED_COLOR)));
                         g.fill(bounds);
 
                         if (_i  == Arpeggio.PATTERN_NOTES / 2)
@@ -302,9 +307,10 @@ childOuter.setBorder(childBorder);
                         }
                     };
                 button.setPreferredSize(new Dimension(PATTERN_WIDTH, PATTERN_WIDTH));
-                button.setBorderPainted(true);
-                button.setOpaque(true);
+//                button.setBorderPainted(true);
+//                button.setOpaque(true);
                                                                         
+/*
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
                 try
@@ -316,7 +322,31 @@ childOuter.setBorder(childBorder);
                     {
                     lock.unlock();
                     }
+*/
                                         
+			button.addMouseListener(new MouseAdapter() 
+				{
+                public void mousePressed(MouseEvent e) 
+                	{
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try
+                            {
+                            Arpeggio arp = (Arpeggio)getMotif();
+                            arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, 
+                            	arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1) != Arpeggio.PATTERN_REST ? 
+                            		Arpeggio.PATTERN_REST :
+                            		((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ?
+                            			Arpeggio.PATTERN_TIE : Arpeggio.PATTERN_NOTE));
+                            }
+                        finally
+                            {
+                            lock.unlock();
+                            }
+                        repaint();
+	                    }
+    	            }
+/*
                 button.addActionListener(new ActionListener()
                     {
                     public void actionPerformed(ActionEvent e)
@@ -334,7 +364,8 @@ childOuter.setBorder(childBorder);
                             }
                         repaint();
                         }
-                    });
+                    }*/
+                    );
                                         
                 patternGrid.add(button);
 
