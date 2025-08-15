@@ -15,7 +15,7 @@ public class ArpeggioClip extends Clip
     private static final long serialVersionUID = 1;
 
     public static final int TRIES = 4;              // number of times we try to get a unique random number
-
+	public static final int RELEASE_VELOCITY = 64;
 
     // Note is used both to store incoming Note Off messages stored the Heap, and
     // also to indicated notes being played by the arpeggio.  So not all four
@@ -26,6 +26,7 @@ public class ArpeggioClip extends Clip
         int velocity;
         int id;
         int out;
+        boolean tie;
 
         // this version generates its own id
         public Note(int pitch, int velocity)
@@ -56,6 +57,11 @@ public class ArpeggioClip extends Clip
             id = val;
             }
             
+        public void setTie(boolean val)
+        	{
+        	tie = val;
+        	}
+            
         public int compareTo(Object obj)
             {
             if (obj == null) return -1;
@@ -66,7 +72,7 @@ public class ArpeggioClip extends Clip
                 
         public String toString()
             {
-            return "ArpeggioClip.Note pitch " + pitch + " vel " + velocity + " id " + id;
+            return "ArpeggioClip.Note pitch " + pitch + " vel " + velocity + (tie ? " tie " : "") + " id " + id;
             }
         }
 
@@ -182,7 +188,7 @@ public class ArpeggioClip extends Clip
             for(int i = 0; i < notes.length; i++)
                 {
                 Note current = currentNotes.get(pos++);
-                notes[i] = new Note(current.pitch + oct * 12, current.velocity);
+                notes[i] = new Note(current.pitch + oct * 12, arp.getVelocityAsPlayed() ? current.velocity : arp.getVelocity());
                 if (pos >= currentNotes.size())
                     {
                     pos = 0;
@@ -242,7 +248,7 @@ public class ArpeggioClip extends Clip
 
         for(int i = 0; i < oldPitches.length; i++)
             {
-            sendNoteOff(arp.getOut(), oldPitches[i].pitch, oldPitches[i].id);
+            sendNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, oldPitches[i].id);
             }
         oldPitches = new Note[0];
         
@@ -268,7 +274,7 @@ public class ArpeggioClip extends Clip
         Arpeggio arp = (Arpeggio)getMotif();
         for(int i = 0; i < oldPitches.length; i++)
             {
-            sendScheduleNoteOff(arp.getOut(), oldPitches[i].pitch, 0x40, countdown, oldPitches[i].id);
+            sendScheduleNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, countdown, oldPitches[i].id);
             }
         oldPitches = new Note[0];
 
@@ -302,10 +308,10 @@ public class ArpeggioClip extends Clip
         return id;
         }
         
-    public void sendNoteOff(int out, int note, int id) 
+    public void sendNoteOff(int out, int note, double vel, int id) 
         {
-        if (seq.getRoot() == this) seq.noteOff(out, note, 0x40);
-        else getParent().noteOff(out, note, 0x40, id); 
+        if (seq.getRoot() == this) seq.noteOff(out, note, vel);
+        else getParent().noteOff(out, note, vel, id); 
         }
         
     public void sendScheduleNoteOff(int out, int note, double vel, int time, int id) 
@@ -387,7 +393,7 @@ public class ArpeggioClip extends Clip
                 Note note = (Note)(noteOff.extractMin());
                 if (!removeNote(note.id))                                                       // it wasn't there, I should pass it on
                     {
-                    sendScheduleNoteOff(note.out, note.pitch, note.velocity, i, note.id);
+                    sendScheduleNoteOff(note.out, note.pitch, RELEASE_VELOCITY, i, note.id);
                     }
                 }
             else break;
@@ -526,7 +532,7 @@ public class ArpeggioClip extends Clip
         int count = 0;
         for(int i = 0; i < arp.PATTERN_NOTES; i++)
             {
-            if (arp.getPattern(state, i))
+            if (arp.getPattern(state, i) != Arpeggio.PATTERN_REST)
                 {
                 count++;
                 }
@@ -535,14 +541,15 @@ public class ArpeggioClip extends Clip
         count = 0;
         for(int i = 0; i < arp.PATTERN_NOTES; i++)
             {
-            if (arp.getPattern(state, i))
+            int val = arp.getPattern(state, i);
+            if (val != Arpeggio.PATTERN_REST)
                 {
                 if (i >= Arpeggio.PATTERN_NOTES / 2)
                     {
                     int pos = (i - Arpeggio.PATTERN_NOTES / 2) % currentNotes.size();
                     int octave = (i - Arpeggio.PATTERN_NOTES / 2) / currentNotes.size();
                     Note current = currentNotes.get(pos);
-                    pitches[count] = new Note(current.pitch + octave * 12, current.velocity);
+                    pitches[count] = new Note(current.pitch + octave * 12, arp.getVelocityAsPlayed() ? current.velocity : arp.getVelocity());
                     }
                 else
                     {
@@ -550,8 +557,12 @@ public class ArpeggioClip extends Clip
                     int pos = currentNotes.size() - (((Arpeggio.PATTERN_NOTES / 2) - i - 1) % currentNotes.size()) - 1;
                     int octave = (((Arpeggio.PATTERN_NOTES / 2) - i - 1) / currentNotes.size()) + 1;
                     Note current = currentNotes.get(pos);
-                    pitches[count] = new Note(current.pitch - octave * 12, current.velocity);
+                    pitches[count] = new Note(current.pitch - octave * 12, arp.getVelocityAsPlayed() ? current.velocity : arp.getVelocity());
                     }
+                if (val == Arpeggio.PATTERN_TIE)
+                	{
+                	pitches[count].tie = true;
+                	}
                 count++;
                 }
             }
@@ -562,6 +573,18 @@ public class ArpeggioClip extends Clip
             }
         return pitches;
         }    
+    
+    int tieNote(Note oldPitch, Note[] newPitches)
+    	{
+    	for(int i = 0; i < newPitches.length; i++)
+    		{
+    		if (newPitches[i].pitch == oldPitch.pitch && newPitches[i].tie)
+    			{
+    			return i;
+    			}
+    		}
+    	return -1;
+    	}
     
     public boolean process()
         {
@@ -585,24 +608,56 @@ public class ArpeggioClip extends Clip
                         
                 // Time's up!  Advance the arpeggio
                         
-                // First we release the old notes
-                for(int i = 0; i < oldPitches.length; i++)
-                    {
-                    sendNoteOff(arp.getOut(), oldPitches[i].pitch, oldPitches[i].id);
-                    }
-                        
-                // Next we compute the new notes.  These won't have IDs.
+                // First we compute the new notes.  These won't have IDs.
                 Note[] newPitches = advanceArpeggio(arp);
+                
+                boolean thereAreTies = false;
+                for(Note newPitch : newPitches)
+                	{
+                	if (newPitch.tie)
+                		{
+                		thereAreTies = true;
+                		break;
+                		}
+                	}
+                
+                if (thereAreTies)
+                	{
+                	// This is O(n^2) :-(
+    	            for(int i = 0; i < oldPitches.length; i++)
+        	            {
+        	            int tie = tieNote(oldPitches[i], newPitches);
+        	            if (tie >= 0)
+        	            	{
+        	            	newPitches[tie] = oldPitches[i];		// push it forward
+        	            	newPitches[tie].tie = true;					// So we don't do a Note On later on
+        	            	}
+        	            else
+        	            	{
+	            	        sendNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, oldPitches[i].id);
+	            	        }
+                	    }
+                	}
+                else
+                	{
+    	            for(int i = 0; i < oldPitches.length; i++)
+        	            {
+            	        sendNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, oldPitches[i].id);
+                	    }
+                	}
                         
                 // Next we play the new notes. We have to revise their IDs.
                 for(int i = 0; i < newPitches.length; i++)
                     {
-                    int id = sendNoteOn(arp.getOut(), newPitches[i].pitch, newPitches[i].velocity);
-                    newPitches[i].setID(id);
+                    if (!newPitches[i].tie)
+                    	{
+	                    int id = sendNoteOn(arp.getOut(), newPitches[i].pitch, newPitches[i].velocity);
+    	                newPitches[i].setID(id);
+    	                }
                     }
                                         
                 // Finally we set them to the new "old pitches"
-                oldPitches = newPitches;
+                oldPitches = (Note[])newPitches.clone();
                 }
                                 
             if (!isActive(getPosition() + 1))                                               // this can only happen if I WAS active and am about to be INACTIVE.  I release my notes.

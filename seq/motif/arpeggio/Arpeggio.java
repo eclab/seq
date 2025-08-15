@@ -37,11 +37,17 @@ public class Arpeggio extends Motif
     boolean newChordReset = true;
     int from = 0;
     int to = 0;
-    boolean always = true;                                      
+    boolean always = true;     
+    int velocity = 64;            
+    boolean velocityAsPlayed = true;                     
+    
+    public static final int PATTERN_REST = 0;
+    public static final int PATTERN_NOTE = 1;
+    public static final int PATTERN_TIE = 2;
     
     // pattern[PATTERN_NOTES/2] is the lowest note in the chord
     // BELOW that we go BELOW the chord
-    public boolean[][] pattern = new boolean[MAX_PATTERN_LENGTH][PATTERN_NOTES];
+    public int[][] pattern = new int[MAX_PATTERN_LENGTH][PATTERN_NOTES];
 
     public Clip buildClip(Clip parent)
         {
@@ -65,6 +71,26 @@ public class Arpeggio extends Motif
     public int getRate()
         {
         return rate;
+        }
+    
+    public void setVelocity(int velocity)
+        {
+        this.velocity = velocity;
+        }
+        
+    public int getVelocity()
+        {
+        return velocity;
+        }
+    
+    public void setVelocityAsPlayed(boolean val)
+        {
+        velocityAsPlayed = val;
+        }
+        
+    public boolean getVelocityAsPlayed()
+        {
+        return velocityAsPlayed;
         }
     
     public void setArpeggioType(int type)
@@ -117,12 +143,12 @@ public class Arpeggio extends Motif
         return patternLength;
         }
     
-    public void setPattern(int i, int j, boolean val)
+    public void setPattern(int i, int j, int val)
         {
         pattern[i][j] = val;
         }
         
-    public boolean getPattern(int i, int j)
+    public int getPattern(int i, int j)
         {
         return pattern[i][j];
         }
@@ -165,7 +191,7 @@ public class Arpeggio extends Motif
             {
             for(int j = 0; j < pattern[i].length; j++)
                 {
-                pattern[i][j] = false;
+                pattern[i][j] = PATTERN_REST;
                 }
             }
         }
@@ -194,6 +220,8 @@ public class Arpeggio extends Motif
         setFrom(obj.optInt("from", 0));
         setTo(obj.optInt("to", 0));
         setAlways(obj.optBoolean("always", false));
+        setVelocity(obj.optInt("vel", 64));
+        setVelocityAsPlayed(obj.optBoolean("play", true));
         //setIn(obj.optInt("int", 0));
         JSONArray array = obj.getJSONArray("pattern");
         clearPattern();
@@ -208,7 +236,7 @@ public class Arpeggio extends Motif
                 {
                 for(int j = 0; j < pattern[i].length; j++)
                     {
-                    setPattern(i, j, array.optBoolean(pos++, false));
+                    setPattern(i, j, array.optInt(pos++, PATTERN_REST));
                     }
                 }
             }
@@ -226,6 +254,8 @@ public class Arpeggio extends Motif
         obj.put("from", getFrom());
         obj.put("to", getTo());
         obj.put("always", isAlways());
+        obj.put("vel", getVelocity());
+        obj.put("play", getVelocityAsPlayed());
         // obj.put("int", getIn());
         JSONArray array = new JSONArray();
         int pos = 0;

@@ -31,6 +31,8 @@ public class ArpeggioInspector extends WidgetList
     TimeDisplay activeFrom;
     TimeDisplay activeTo;
     JCheckBox activeAlways;
+    SmallDial velocity;
+    JCheckBox asPlayed;
 
     public ArpeggioInspector(Seq seq, Arpeggio arpeggio, ArpeggioUI arpeggioui)
         {
@@ -135,7 +137,7 @@ public class ArpeggioInspector extends WidgetList
                 {
                 protected String map(double val) 
                     {
-                    return "" + (int)(val * ((double)Arpeggio.MAX_OCTAVES - 1) + 1);
+                    return String.valueOf((int)(val * ((double)Arpeggio.MAX_OCTAVES - 1) + 1));
                     }
                 public double getValue() 
                     { 
@@ -159,7 +161,7 @@ public class ArpeggioInspector extends WidgetList
                 {
                 protected String map(double val) 
                     {
-                    return "" + (int)(val * ((double)Arpeggio.MAX_PATTERN_LENGTH - 1) + 1);
+                    return String.valueOf((int)(val * ((double)Arpeggio.MAX_PATTERN_LENGTH - 1) + 1));
                     }
                 public double getValue() 
                     { 
@@ -178,6 +180,43 @@ public class ArpeggioInspector extends WidgetList
                     arpeggioui.getPatternGrid().repaint();
                     }
                 };
+
+            velocity = new SmallDial(arpeggio.getVelocity() / 127.0)
+                {
+                protected String map(double val) 
+                    {
+                    return String.valueOf((int)(val * 127.0));
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return arpeggio.getVelocity() / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { arpeggio.setVelocity((int)(val * 127.0)); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+            asPlayed = new JCheckBox("As Played");
+            asPlayed.setSelected(arpeggio.getVelocityAsPlayed());
+            asPlayed.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { arpeggio.setVelocityAsPlayed(asPlayed.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
 
             /// FIXME: TimeDisplay cannot have a minimum right now.  So we just hack it so
             /// so that 0 = 1...
@@ -240,10 +279,15 @@ public class ArpeggioInspector extends WidgetList
 
             }
         finally { lock.unlock(); }
+        
+        JPanel velocityPanel = new JPanel();
+        velocityPanel.setLayout(new BorderLayout());
+        velocityPanel.add(velocity.getLabelledDial("128"), BorderLayout.WEST);
+        velocityPanel.add(asPlayed, BorderLayout.EAST);
 
         name.setToolTipText(NAME_TOOLTIP);
 
-        build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "New Chord Reset", 
+        build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "Velocity", "New Chord Reset", 
                 "Activity", "Always", "From", "To"}, 
             new JComponent[] 
                 {
@@ -252,8 +296,9 @@ public class ArpeggioInspector extends WidgetList
                 omni,
                 rate,
                 arp,
-                octaves.getLabelledDial("" + Arpeggio.MAX_OCTAVES),
-                length.getLabelledDial("" + Arpeggio.MAX_PATTERN_LENGTH),
+                octaves.getLabelledDial(String.valueOf(Arpeggio.MAX_OCTAVES)),
+                length.getLabelledDial(String.valueOf(Arpeggio.MAX_PATTERN_LENGTH)),
+                velocityPanel,
                 newChordReset,
                 null,                           // separator
                 activeAlways,
@@ -279,6 +324,7 @@ public class ArpeggioInspector extends WidgetList
         finally { lock.unlock(); }                              
         seq = old;
         name.update();
+        if (velocity != null) velocity.redraw();
         if (length != null) length.redraw();
         if (octaves != null) octaves.redraw();
         if (activeFrom != null) activeFrom.revise();
