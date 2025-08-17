@@ -286,6 +286,19 @@ public class ArpeggioInspector extends WidgetList
         velocityPanel.add(asPlayed, BorderLayout.EAST);
 
         name.setToolTipText(NAME_TOOLTIP);
+        out.setToolTipText(OUT_TOOLTIP);
+        omni.setToolTipText(OMNI_INPUT_TOOLTIP);
+        rate.setToolTipText(STEP_RATE_TOOLTIP);
+        arp.setToolTipText(ARPEGGIO_TYPE_TOOLTIP);
+        octaves.setToolTipText(OCTAVES_TOOLTIP);
+        length.setToolTipText(PATTERN_LENGTH_TOOLTIP);
+        velocity.setToolTipText(VELOCITY_TOOLTIP);
+        asPlayed.setToolTipText(AS_PLAYED_TOOLTIP);
+        velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
+        newChordReset.setToolTipText(NEW_CHORD_RESET_TOOLTIP);
+        activeAlways.setToolTipText(ALWAYS_TOOLTIP);
+        activeFrom.setToolTipText(FROM_TOOLTIP);
+        activeTo.setToolTipText(FROM_TOOLTIP);
 
         build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "Velocity", "New Chord Reset", 
                 "Activity", "Always", "From", "To"}, 
@@ -331,7 +344,59 @@ public class ArpeggioInspector extends WidgetList
         if (activeTo != null) activeTo.revise();
         }
 
+
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
         "Sets the name of the Arpeggio.  This will appear in the Motif List at left.</html>";
 
+    static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
+        "Sets the MIDI output for the Arpeggio.  This also may restrict which notes are<br>"+
+        "arpeggiated (see <b>Omni Input</b>).</html>";
+        
+    static final String OMNI_INPUT_TOOLTIP = "<html><b>Omni Input</b><br>" +
+        "If checked, all notes from the underlying child Motif will be converted into arpeggios.<br>" +
+        "Otherwise, only the notes designated for the <b>Out</b> will be arpeggiated,<br>" +
+        "and the others will be simply passed through.</html>";
+
+    static final String STEP_RATE_TOOLTIP = "<html><b>Step Rate</b><br>" +
+        "Sets amount of time between each step of the arpeggio.</html>";
+        
+    static final String ARPEGGIO_TYPE_TOOLTIP = "<html><b>Arpeggio Type</b><br>" +
+        "Sets the arpeggio type" + 
+        "<ul>" +
+        "<li><b>Up</b>&nbsp;&nbsp;Each note in the chord is played in order, lowest to highest." +
+        "<li><b>Down</b>&nbsp;&nbsp;Each note in the chord is played in order, highest to lowest." +
+        "<li><b>Up-Down</b>&nbsp;&nbsp;Up and then Down, except the top note and bottom note are not played twice." +
+        "<li><b>Up-Down-Plus</b>&nbsp;&nbsp;Up, then the lowest note is transposed and played again at the top, then Down." +
+        "<li><b>Random</b>&nbsp;&nbsp;Chord notes are played randomly.  Seq tries to not play the same note twice in a row." +
+        "<li><b>Pattern</b>&nbsp;&nbsp;Chord notes are using the Pattern Grid at left." +
+        "</ul></html>";
+
+    static final String OCTAVES_TOOLTIP = "<html><b>Octaves</b><br>" +
+        "Sets the number of octaves that the arpeggio will repeat.</html>";
+
+    static final String PATTERN_LENGTH_TOOLTIP = "<html><b>Pattern Length</b><br>" +
+        "Sets the length of the Pattern in the Pattern Grid at left.</html>";
+
+    static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+        "Sets the Velocity (Volume) of all arpeggiated notes.<br><br>" +
+        "Only has an effect if <b>As Played</b> is unchecked.</html>";
+
+    static final String AS_PLAYED_TOOLTIP = "<html><b>As Played</b><br>" +
+        "Determines whether the Velocity (Volume) of the arpeggiated notes is determined<br>" +
+        "by the underlying notes of the child Motif, or by the <b>Velocity</b> knob.</html>";
+
+    static final String NEW_CHORD_RESET_TOOLTIP = "<html><b>New Chord Reset</b><br>" +
+        "Sets whether the arpeggio resets when all underlying notes are finished</br>" +
+        "and new ones are played in the underlying child Motif.</html>";
+
+    static final String ALWAYS_TOOLTIP = "<html><b>Always</b><br>" +
+        "Sets whether the Arpeggio plays for the full length of time of its underlying Child Motif.</html>";
+
+    static final String FROM_TOOLTIP = "<html><b>From</b><br>" +
+        "Sets when in the underlying Child Motif the Arpeggio starts arpeggiating its notes.<br><br>" +
+        "Only has an effect if <b>Always</b> is unchecked.</html>";
+        
+    static final String TO_TOOLTIP = "<html><b>To</b><br>" +
+        "Sets when in the underlying Child Motif the Arpeggio stops arpeggiating its notes.<br><br>" +
+        "Only has an effect if <b>Always</b> is unchecked.</html>";
     }

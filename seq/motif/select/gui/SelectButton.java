@@ -70,6 +70,7 @@ public class SelectButton extends MotifButton
                 {
                 int modifiers = e.getModifiers();
                 if (SwingUtilities.isRightMouseButton(e) ||
+		            SwingUtilities.isMiddleMouseButton(e) ||
                     ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
                     ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) ||
                     ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK) ||
@@ -257,6 +258,7 @@ public class SelectButton extends MotifButton
         // Don't double-click if doing a modifier, we're just launching rapidly
         int modifiers = e.getModifiers();
         if (SwingUtilities.isRightMouseButton(e) ||
+            SwingUtilities.isMiddleMouseButton(e) ||
             ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
             ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) ||
             ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK) ||

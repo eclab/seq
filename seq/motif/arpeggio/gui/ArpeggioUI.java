@@ -134,6 +134,7 @@ seq.forceNoteOn(out, note, PAD_DISABLED_MKI, 1);                             // 
         this.arpeggio = arpeggio;
         this.sequi = sequi;
         arpeggioGrid.setLayout(new GridLayout(1, 1));
+        arpeggioGrid.setToolTipText(CHILD_TOOLTIP);
         patternGrid.setLayout(new GridLayout(Arpeggio.PATTERN_NOTES, Arpeggio.MAX_PATTERN_LENGTH));
         }
         
@@ -163,6 +164,7 @@ seq.forceNoteOn(out, note, PAD_DISABLED_MKI, 1);                             // 
                 MotifUI motifui = list.getOrAddMotifUIFor(motif);
 
                 ArpeggioButton newButton = new ArpeggioButton(sequi, motifui, ArpeggioUI.this, i);
+                newButton.setToolTipText(CHILD_TOOLTIP);
                 Motif.Child child = null;
 
                 newButton.addActionListener(new ActionListener()
@@ -240,7 +242,9 @@ childOuter.setBorder(childBorder);
         
         arpeggioGrid.setDropTarget(new DropTarget(this, buildDropTargetListener()));
         arpeggioGrid.setLayout(new GridLayout(1, 1));
-        arpeggioGrid.add(new ArpeggioButton(sequi, this, 0));         // A "blank" button
+        ArpeggioButton arpeggioButton = new ArpeggioButton(sequi, this, 0);
+        arpeggioButton.setToolTipText(CHILD_TOOLTIP);
+        arpeggioGrid.add(arpeggioButton);         // A "blank" button
         
         // yes, this is backwards
         for(int i = 0; i < Arpeggio.PATTERN_NOTES; i++)
@@ -336,8 +340,7 @@ childOuter.setBorder(childBorder);
                             arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, 
                             	arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1) != Arpeggio.PATTERN_REST ? 
                             		Arpeggio.PATTERN_REST :
-                            		((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK ?
-                            			Arpeggio.PATTERN_TIE : Arpeggio.PATTERN_NOTE));
+                            		(shiftOrRightMouseButton(e) ? Arpeggio.PATTERN_TIE : Arpeggio.PATTERN_NOTE));
                             }
                         finally
                             {
@@ -368,6 +371,7 @@ childOuter.setBorder(childBorder);
                     );
                                         
                 patternGrid.add(button);
+        		button.setToolTipText(PATTERN_GRID_TOOLTIP);
 
                 patternGrid.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, PATTERN_BORDER_COLOR));
                                 
@@ -535,6 +539,7 @@ childOuter.setBorder(childBorder);
             // We'll swap in a blank ArpeggioButton
             arpeggioGrid.remove(at);
             ArpeggioButton blankButton = new ArpeggioButton(sequi, this, at);
+                blankButton.setToolTipText(CHILD_TOOLTIP);
             arpeggioGrid.add(blankButton, at);
             deselectAll();
 
@@ -753,5 +758,14 @@ childOuter.setBorder(childBorder);
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
         "Removes the selected motif from the Arpeggio Child slot.</html>";
         
+    static final String CHILD_TOOLTIP = "<html><b>Child Motif</b><br>" +
+        "Drag a Motif here to make it Arpeggio's child Motif.<br><br>"+
+        "Arpeggio will use MIDI notes generated from this Child Motif to make its arpeggios.</html>";
+
+    static final String PATTERN_GRID_TOOLTIP = "<html><b>Pattern Grid</b><br>" +
+        "Draw your arpeggio pattern here.  Boxes above the blue line represent the underlying<br>" +
+        "chord, going up and then repeating one or more octaves.  Boxes below the blue line represent<br>" +
+        "the underlying chord, one or more octaves below its actual notes.<br><br>" +
+        "If you <b>shift-click</b> or <b>right-click</b> on a box, you can make a <b>tie</b>, in blue.</html>";
 
     }
