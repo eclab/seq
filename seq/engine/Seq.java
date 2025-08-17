@@ -129,6 +129,9 @@ public class Seq
     String[] outNames;
     // The In objects for each input device in the tuple
     String[] inNames;
+    // Routing
+    int routeIn;
+    int routeOut;
     
     class UndoStuff
         {
@@ -414,7 +417,7 @@ public class Seq
           {
           public void run()
           {
-          step();
+           ;
           }
           });
         */
@@ -520,6 +523,14 @@ public class Seq
     public String[] getInNames() { return inNames; }
     public void setIn(int in, In val) { ins[in] = val; }
     public int getNumIns() { return ins.length; }
+
+	// ROUTING
+	public static final int ROUTE_IN_NONE = NUM_INS;
+	public int getRouteIn() { return routeIn; }
+	public void setRouteIn(int val) { routeIn = val; }
+	public int getRouteOut() { return routeOut; }
+	public void setRouteOut(int val) { routeOut = val; }
+	
 
     // PLAYING
     /** Returns whether the sequencer is currently playing. */
@@ -775,6 +786,16 @@ public class Seq
                     ins[i].pullMessages();
                     }
                 }
+                /*
+			// Route
+			if (routeIn != ROUTE_IN_NONE)
+				{
+				for(MidiMessage message : ins[routeIn].getMessages())
+					{
+					outs[routeOut].sendMIDI(message);
+					]
+				}
+			*/
             }
         finally
             {
@@ -1062,7 +1083,18 @@ public class Seq
                             ins[i].pullMessages();
                             }
                         }
-                                                                
+                        
+                        /*
+                    // Route
+                    if (routeIn != ROUTE_IN_NONE)
+                    	{
+                    	for(MidiMessage message : ins[routeIn].getMessages())
+                    		{
+                    		outs[routeOut].sendMIDI(message);
+                    		]
+                    	}
+                        */
+                                                              
                     // Handle beep
                     if (metronome == METRONOME_RECORDING_AND_PLAYING ||
                         (metronome == METRONOME_RECORDING_ONLY && recording))

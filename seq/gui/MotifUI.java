@@ -334,7 +334,19 @@ public abstract class MotifUI extends JPanel
         return this.getClass().getSimpleName() + "@" + System.identityHashCode(this);
         }
 
-
+/** A useful method for detecting if SHIFT is held or the right mouse button is clicked */
+public static boolean shiftOrRightMouseButton(MouseEvent evt)
+	{
+	return ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
+		SwingUtilities.isRightMouseButton(evt);
+	}
+	
+/** A useful method for detecting if ALT/OPTION is held or the center mouse button is clicked */
+public static boolean optionOrMiddleMouseButton(MouseEvent evt)
+	{
+	return ((evt.getModifiers() & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) ||
+		SwingUtilities.isMiddleMouseButton(evt);
+	}
 
 
 
