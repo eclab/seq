@@ -403,28 +403,66 @@ public class NotesUI extends MotifUI
     /** Scrolls to timestep 0 at roughly middle C. */
     public void doScrollToStart()
         {
-        int height = PitchUI.PITCH_HEIGHT * 128;
-        Rectangle viewRect = getPrimaryScroll().getViewport().getBounds();
+        int height = PitchUI.PITCH_HEIGHT * 64;
+        Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
 
         Point p = new Point(0, 0);
         
-        // Now we change the height
-        if (viewRect.height < height)
-            {
-            // we can still scroll!
-            p.y = (height - viewRect.height) / 2;
-            }
+        p.y = height - viewRect.height / 2;
+        if (p.y >= PitchUI.PITCH_HEIGHT * 128 - viewRect.height)	// maximum
+        	p.y = PitchUI.PITCH_HEIGHT * 128 - viewRect.height;
+        if (p.y < 0) p.y = 0;
+        	
+        getPrimaryScroll().getViewport().setViewPosition(p);
+        }
+
+	public boolean isPositionVisible(int time, int pitch)
+		{
+		return getPrimaryScroll().getViewport().getViewRect().contains(
+		    gridui.getPixels(time),
+		    PitchUI.PITCH_HEIGHT * pitch);
+		}
+
+	public boolean isPositionVisible(int time)
+		{
+		Rectangle rect = getPrimaryScroll().getViewport().getViewRect();
+		int pixels = gridui.getPixels(time);
+		return rect.getX() <= pixels && rect.getX() + rect.getWidth() >= pixels;
+		}
+
+
+    public void doScrollToPosition(int time)
+        {
+//        int height = PitchUI.PITCH_HEIGHT * pitch;
+        Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
+
+        Point p = new Point(0, 0);
+        p.x = gridui.getPixels(time);
+
+        p.y = (int)(getPrimaryScroll().getViewport().getViewPosition().getY()); 
         
         getPrimaryScroll().getViewport().setViewPosition(p);
-        
+        }
+
+    public void doScrollToPosition(int time, int pitch)
+        {
+        int height = PitchUI.PITCH_HEIGHT * pitch;
+        Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
+
+        Point p = new Point(0, 0);
+        p.x = gridui.getPixels(time);
+
+        p.y = height; // 
         /*
-          JScrollBar bar = getPrimaryScroll().getVerticalScrollBar();
-          bar.setValue((bar.getMaximum() + bar.getMinimum()) / 2);
-          System.err.println(bar.getMaximum());
-          System.err.println(bar.getMinimum());
-          bar = getPrimaryScroll().getHorizontalScrollBar();
-          bar.setValue(bar.getMinimum());
+        height - viewRect.height / 2;
+        if (p.y >= PitchUI.PITCH_HEIGHT * 128 - viewRect.height)	// maximum
+        	p.y = PitchUI.PITCH_HEIGHT * 128 - viewRect.height;
+        if (p.y < 0) p.y = 0;
         */
+
+		System.err.println("height " + height + " bounds " + viewRect + " p " + p);
+        
+        getPrimaryScroll().getViewport().setViewPosition(p);
         }
 
     /** Scrolls to the start of the selected region, if it is not already in view. */
@@ -1668,7 +1706,6 @@ public class NotesUI extends MotifUI
                 {
                 event.when = 0;
                 }
-            System.err.println(event.when);
             }
                 
         // Remove previous notes
@@ -1775,7 +1812,15 @@ public class NotesUI extends MotifUI
         eventsui.repaint();
         }
 
-    
+	/** This assumes you hold the lock already */
+    public NoteUI addRecordedNoteUI(Notes.Note note)
+    	{
+		PitchUI pitchui = gridui.getPitchUIs().get(note.pitch);
+		NoteUI noteui = new NoteUI(pitchui, note, true);				// just for recording display
+		pitchui.addRecordedNoteUI(noteui);
+		return noteui;
+		}
+
     public void doReplicateEvents()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();

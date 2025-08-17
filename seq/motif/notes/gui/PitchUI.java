@@ -15,7 +15,7 @@ import java.util.concurrent.locks.*;
 import java.awt.geom.*;
 import java.util.*;
 
-public class PitchUI extends JComponent
+public class PitchUI extends JLayeredPane
     {
     // Which pitches in the octave are black notes?
     public static final boolean BLACK[] = { false, true, false, true, false, false, true, false, true, false, true, false };
@@ -37,7 +37,7 @@ public class PitchUI extends JComponent
     public static final Stroke RUBBER_BAND_STROKE = new BasicStroke(3.0f);
     // The color for the End marker
     public static final Color END_COLOR = new Color(180, 0, 180);
-
+ 
     // The parent GridUI of this PitchUI
     GridUI gridui;
     // The pitch of this PitchUI
@@ -46,6 +46,8 @@ public class PitchUI extends JComponent
     boolean black;
     // All noteuis in the PitchUI.  Note that these may not be in any order.
     ArrayList<NoteUI> noteuis = new ArrayList<>();
+    // All recorded noteuis in the PitchUI.  Note that these may not be in any order.
+    ArrayList<NoteUI> recordeduis = new ArrayList<>();
 
     
     // The rubber band goes from (startx, starty) to (endx, endy).
@@ -106,6 +108,7 @@ public class PitchUI extends JComponent
     public void rebuild(ArrayList<Notes.Note> notes)
         {
         this.noteuis.clear();
+        this.recordeduis.clear();
         removeAll();
         for(Notes.Note note : notes)
             {
@@ -123,10 +126,46 @@ public class PitchUI extends JComponent
         noteuis.remove(noteui);
         }
                 
+    /** Adds the NoteUI to the PitchUI. The NoteUI must already
+    	have its recorded bit set.
+    	This assumes you hold the lock already */
+    public void addRecordedNoteUI(NoteUI noteui)
+        {
+        noteui.reload(noteui.getNote().when, noteui.getNote().length);
+        add(noteui, 0);
+        recordeduis.add(noteui);
+        //repaint();
+        }
+                
+    /** Sorts NoteUIs and also the children of this JComponent */
+    public void sortNoteUIs()
+    	{
+    	removeAll();
+    	
+    	// We have to obtain the lock in order to sort the NoteUIs as their compareTo method
+    	// does not lock got get the underlying note information.
+    	Seq seq = gridui.getSeq();
+    	ReentrantLock lock = seq.getLock();
+    	lock.lock();
+    	try
+    		{
+	    	Collections.sort(noteuis);
+	    	}
+	    finally
+	    	{
+	    	lock.unlock();
+	    	}
+	    	
+        for(NoteUI noteui : noteuis)
+        	{
+        	add(noteui, 0);
+        	}
+    	}
+    	
     /** Adds the NoteUI to the PitchUI */
     public void addNoteUI(NoteUI noteui)
         {
-        add(noteui);
+        add(noteui, 0);
         noteuis.add(noteui);
         }
                 
@@ -196,7 +235,7 @@ public class PitchUI extends JComponent
         removeAll();
         for(NoteUI noteui : noteuis)
             {
-            add(noteui);
+            add(noteui, 0);
             }
         repaint();
         }
@@ -208,7 +247,7 @@ public class PitchUI extends JComponent
         removeAll();
         for(NoteUI noteui : noteuis)
             {
-            add(noteui);
+            add(noteui, 0);
             }
         repaint();
         }
@@ -247,7 +286,7 @@ public class PitchUI extends JComponent
             g.draw(vertical);
             }
         }
-        
+
     protected void paintComponent(Graphics _g)
         {
         Graphics2D g = (Graphics2D) _g;

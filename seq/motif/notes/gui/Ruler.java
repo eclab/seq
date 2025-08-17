@@ -87,7 +87,7 @@ public class Ruler extends JComponent
                 
                 /// End Fix
                 
-                shifted = ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK);
+                shifted = MotifUI.shiftOrRightMouseButton(e);
                 if (shifted && (originalTime != finalTime))
                     {
                     int newTime = getGridUI().getQuantizedTime(e);

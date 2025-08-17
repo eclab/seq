@@ -199,7 +199,7 @@ public class EventUI extends JComponent
                         }
                     }, AWTEvent.MOUSE_EVENT_MASK);
 
-                if ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK)
+                if (MotifUI.shiftOrRightMouseButton(e))
                     {
                     if (!selected)
                         {
@@ -230,7 +230,7 @@ public class EventUI extends JComponent
                 mouseDown = false;
                 mouseDownEvent = null;
 
-                if ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK)
+                if (MotifUI.shiftOrRightMouseButton(e))
                     {
                     if (!dragged && originallySelected)
                         {
@@ -247,8 +247,8 @@ public class EventUI extends JComponent
                         
                         
         // NONE:        Adjust Value, not Time
-        // META:        Adjust Time, Not Value
-        // ALT:         Adjust Time AND Value
+        // ALT:       	Adjust Time, Not Value
+        // META:       	Adjust Time AND Value
         // CTRL:        Set value of everyone to the value
         
         addMouseMotionListener(new MouseMotionAdapter()
@@ -263,7 +263,7 @@ public class EventUI extends JComponent
                 ReentrantLock lock = getSeq().getLock();
                 for(EventUI eventui : getGridUI().getSelected())
                     {
-                    if ((e.getModifiers() & InputEvent.META_MASK) == InputEvent.META_MASK)
+                    if (MotifUI.optionOrMiddleMouseButton(e))
                         {
                         // Do not adjust value
                         }
@@ -284,8 +284,7 @@ public class EventUI extends JComponent
                         eventui.changeEventValue(mouseDownEvent, e);
                         }
 
-                    if ((e.getModifiers() & InputEvent.ALT_MASK) == InputEvent.ALT_MASK ||
-                        (e.getModifiers() & InputEvent.META_MASK) == InputEvent.META_MASK)
+                    if (MotifUI.optionOrMiddleMouseButton(e) || (e.getModifiers() & InputEvent.META_MASK) == InputEvent.META_MASK)
                         {
                         eventui.changeEventTime(mouseDownEvent, e, EventUI.this);    
                         }        

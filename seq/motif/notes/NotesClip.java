@@ -8,10 +8,11 @@ package seq.motif.notes;
 import seq.engine.*;
 import java.util.*;
 import javax.sound.midi.*;
-import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
 import seq.util.*;
 import javax.swing.*;
 import seq.gui.*;
+import seq.motif.notes.gui.*;
 
 public class NotesClip extends Clip
     {
@@ -202,6 +203,49 @@ public class NotesClip extends Clip
             }
         }
     
+    public void addRecorded(final Notes.Note note)
+    	{
+    	if (note == null) return; 	 // uh.....
+    	
+    	SwingUtilities.invokeLater(new Runnable()
+    		{
+    		public void run()
+    			{
+				int pitch = 0;
+				int when = 0;
+				NoteUI noteui = null;
+				NotesUI notesui = null;
+				Seq seq = getMotif().getSeq();
+				MotifUI motifui = seq.getSeqUI().getMotifUI();
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try
+					{
+					pitch = note.pitch;
+					when = note.when;
+					if (motifui.getMotif() == getMotif())		// it's my motifui being displayed
+						{
+						notesui = (NotesUI)motifui;
+						noteui = notesui.addRecordedNoteUI(note);
+						}
+					}
+				finally	
+					{
+					lock.unlock();
+					}
+					
+				if (noteui != null) 
+					{
+					if (!notesui.isPositionVisible(when))
+						{
+						notesui.doScrollToPosition(when);
+						}
+					noteui.repaint();		// is this sufficient?
+					}
+				}
+			});
+    	}
+    
     public boolean process()
         {
         Notes notes = (Notes) getMotif();
@@ -256,6 +300,7 @@ public class NotesClip extends Clip
                                     recordedNoteOn[pitch] = null;
                                     }
                                 if (notes.getEcho()) noteOff(out, pitch, release, NO_NOTE_ID);
+                                addRecorded(noteOn);
                                 }
                             else if (isPitchBend(shortmessage) && notes.getRecordBend())
                                 {

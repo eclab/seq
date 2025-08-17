@@ -15,7 +15,7 @@ import java.util.concurrent.locks.*;
 import java.awt.geom.*;
 import java.util.*;
 
-public class NoteUI extends EventUI
+public class NoteUI extends EventUI implements Comparable
     {
     // Smallest width I'm permitted to be.  Maybe this should be 5.
     public static final int MINIMUM_WIDTH = 3;
@@ -27,6 +27,8 @@ public class NoteUI extends EventUI
     public static final Color strokeColor = Color.BLACK; // new Color(64, 64, 64); 
     // Stroke color for drawing me while selected
     public static final Color selectedColor = Color.BLUE; 
+    // Stroke color for newly recorded notes
+    public static final Color recordedColor = Color.WHITE; 
     // Region at the far right of me where clicking in that region results in me trying to be resized
     public static final int RESIZE_REGION_WIDTH = 6;
     // Mapping of velocity to color
@@ -34,10 +36,13 @@ public class NoteUI extends EventUI
         new SimpleColorMap(0, 127, 64, 
             new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
             new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
+
                         
     // backpointer to the owner PitchUI
     PitchUI pitchui;
-        
+    
+    boolean recorded;
+    
     // Returns the Seq
     Seq getSeq() { return pitchui.getSeq(); }
 
@@ -104,6 +109,9 @@ public class NoteUI extends EventUI
             {
             lock.unlock();
             }
+
+        if (recorded) return;
+            
         if (pitch != pitchui.getPitch())
             {
             // move me to new pitch
@@ -157,20 +165,29 @@ public class NoteUI extends EventUI
         }
         
     public NoteUI(PitchUI pitchui, Notes.Note note)
+    	{
+    	this(pitchui, note, false);
+    	}
+    	
+    public NoteUI(PitchUI pitchui, Notes.Note note, boolean recorded)
         {
         this.event = note;
         this.pitchui = pitchui;
+        this.recorded = recorded;
+        
         reload();
         
         addMouseListener(new MouseAdapter()
             {   
             public void mouseEntered(MouseEvent e)
                 {
+                if (recorded) return;
                 if (!mouseDown) updateCursor(e);
                 }
 
             public void mouseExited(MouseEvent e)
                 {
+                if (recorded) return;
                 if (!mouseDown && cursor != Cursor.DEFAULT_CURSOR)
                     {
                     cursor = Cursor.DEFAULT_CURSOR;
@@ -180,6 +197,7 @@ public class NoteUI extends EventUI
 
             public void mousePressed(MouseEvent e)
                 {
+                if (recorded) return;
                 mouseDownEvent = SwingUtilities.convertMouseEvent(NoteUI.this, e, getGridUI());
                     
                 originallySelected = selected;
@@ -204,7 +222,7 @@ public class NoteUI extends EventUI
                         }
                     }, AWTEvent.MOUSE_EVENT_MASK);
 
-                if ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK)
+                if (MotifUI.shiftOrRightMouseButton(e))
                     {
                     if (!selected)
                         {
@@ -226,6 +244,7 @@ public class NoteUI extends EventUI
                         
             public void mouseReleased(MouseEvent e)
                 {
+                if (recorded) return;
                 if (!mouseDown) return;                                 // not released on me
 
                 if (releaseListener != null)
@@ -237,7 +256,7 @@ public class NoteUI extends EventUI
                 mouseDownEvent = null;
 
 
-                if ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK)
+                if (MotifUI.shiftOrRightMouseButton(e))
                     {
                     if (!originallySelected)
                         {
@@ -268,11 +287,13 @@ public class NoteUI extends EventUI
             {
             public void mouseMoved(MouseEvent e)
                 {
+                if (recorded) return;
                 if (!mouseDown) updateCursor(e);                // FIXME: it'd never be mouseDown...
                 }
                         
             public void mouseDragged(MouseEvent e)
                 {
+                if (recorded) return;
                 e = SwingUtilities.convertMouseEvent(NoteUI.this, e, getGridUI());
                 if (isResizing())
                     {
@@ -288,6 +309,28 @@ public class NoteUI extends EventUI
                 }
             });
         }
+        
+    
+    /** This REQUIRES that a lock has been obtained */
+    public int compareTo(Object other)
+    	{
+    	if (other == null) return -1;		// should not happen
+    	if (other instanceof NoteUI)
+    		{
+    		NoteUI o = (NoteUI)other;
+    		if (o.event.when > event.when)
+    			{
+    			return -1;
+    			}
+    		else if (o.event.when < event.when)
+    			{
+    			return 1;
+    			}
+    		else return 0;
+    		}
+    	else return -1;						// should not happen
+    	}
+    
                 
     public void paintComponent(Graphics _g)
         {
@@ -302,7 +345,17 @@ public class NoteUI extends EventUI
         g.setPaint(velocityMap.getColor((int)value));
         g.fill(bounds);
         
-        if (selected)
+        if (recorded)
+        	{
+            bounds.x++;
+            bounds.y++;
+            bounds.width -=2;
+            bounds.height -=2;
+            g.setPaint(recordedColor);
+            g.setStroke(selectedStroke);
+            g.draw(bounds);
+        	}
+        else if (selected)
             {
             bounds.x++;
             bounds.y++;

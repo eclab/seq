@@ -321,7 +321,7 @@ public class NotesInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
-
+/*
             quantize = new JCheckBox();
             quantize.setSelected(notes.getQuantize());
             quantize.addActionListener(new ActionListener()
@@ -393,6 +393,82 @@ public class NotesInspector extends WidgetList
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try { notes.setQuantizeBias(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
+*/
+
+            quantize = new JCheckBox();
+            quantize.setSelected(Prefs.getLastBoolean("QuantizeOnRecord", false));
+            quantize.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastBoolean("QuantizeOnRecord", quantize.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
+            quantizeNonNotes = new JCheckBox();
+            quantizeNonNotes.setSelected(Prefs.getLastBoolean("QuantizeNonNotesOnRecord", false));
+            quantizeNonNotes.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastBoolean("QuantizeNonNotesOnRecord", quantizeNonNotes.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
+            quantizeNoteEnds = new JCheckBox();
+            quantizeNoteEnds.setSelected(Prefs.getLastBoolean("QuantizeNoteEndsOnRecord", false));
+            quantizeNoteEnds.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastBoolean("QuantizeNoteEndsOnRecord", quantizeNoteEnds.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
+            quantizeTo = new JComboBox(Notes.QUANTIZE_STRINGS);
+            quantizeTo.setSelectedIndex(Prefs.getLastInt("QuantizeToOnRecord", 1));
+            quantizeTo.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastInt("QuantizeToOnRecord", quantizeTo.getSelectedIndex()); }
+                    finally { lock.unlock(); }     
+                    }
+                });
+ 
+            quantizeBias = new SmallDial(Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5))
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { Prefs.setLastDouble("QuantizeBiasOnRecord", val); }
                     finally { lock.unlock(); }
                     }
                 };
@@ -570,9 +646,23 @@ public class NotesInspector extends WidgetList
         recordAftertouch.setToolTipText(RECORD_AFTERTOUCH_TOOLTIP);
         recordCC.setToolTipText(RECORD_CC_TOOLTIP);
         recordPC.setToolTipText(RECORD_PC_TOOLTIP);
+        quantize.setToolTipText(QUANTIZE_ON_RECORD_TOOLTIP);
+        quantizeTo.setToolTipText(QUANTIZE_TO_TOOLTIP);
+        quantizeNoteEnds.setToolTipText(QUANTIZE_NOTE_ENDS_TOOLTIP);
+        quantizeNonNotes.setToolTipText(QUANTIZE_OTHER_EVENTS_TOOLTIP);
+        quantizeBias.setToolTipText(QUANTIZE_BIAS_TOOLTIP);
         convertNRPNRPN.setToolTipText(CONVERT_NRPN_RPN_TOOLTIP);
         defaultNoteVelocity.setToolTipText(DEFAULT_NOTE_VELOCITY_TOOLTIP);
         defaultNoteReleaseVelocity.setToolTipText(DEFAULT_NOTE_RELEASE_VELOCITY_TOOLTIP);
+        recordIntegration.setToolTipText(INTEGRATION_TOOLTIP);
+        for(int i = 0; i < 4; i++)
+        	{
+        	eventParameterPanel[i].setToolTipText(NON_NOTE_TYPE_TOOLTIP);
+			eventParameterLSB[i].setToolTipText(LSB_TOOLTIP);
+			eventParameterMSB[i].setToolTipText(MSB_TOOLTIP);
+        	}
+		logBend.setToolTipText(LOGARITHMIC_PITCH_BEND_TOOLTIP);
+		parameterHeight.setToolTipText(DISPLAY_HEIGHT_TOOLTIP);
 
         build(new String[] { "Name", "Out", "In", "End", "Armed", "Echo"}, 
             new JComponent[] 
@@ -875,6 +965,61 @@ public class NotesInspector extends WidgetList
         "into NRPN or RPN events after recording.  If not, the CC data will<br>" +
         "be retained as CC events.</html>";
         
+    static final String QUANTIZE_ON_RECORD_TOOLTIP = "<html><b>Quantize on Record</b><br>" +
+        "Sets whether the Notes will automatically quantize notes and events after recording.</html>";
+        
+    static final String QUANTIZE_TO_TOOLTIP = "<html><b>Quantize To...</b><br>" +
+        "Sets the amount of automatic quantization of notes and events after recording.<br><br>" +
+        "This has no effect unless <b>Quantize On Record</b> is checked.</html>";
+
+    static final String QUANTIZE_NOTE_ENDS_TOOLTIP = "<html><b>Quantize Note Ends</b><br>" +
+        "Sets whether note ends are automatically quantized after recording.<br><br>" +
+        "This has no effect unless <b>Quantize On Record</b> is checked.</html>";
+
+    static final String QUANTIZE_OTHER_EVENTS_TOOLTIP = "<html><b>Quantize Other Events</b><br>" +
+        "Sets whether non-note events are automatically quantized after recording.<br><br>" +
+        "This has no effect unless <b>Quantize On Record</b> is checked.</html>";
+
+    static final String QUANTIZE_BIAS_TOOLTIP = "<html><b>Quantize Bias</b><br>" +
+        "Sets the bias towards rounding forwards or backwards in quantization.  For example,<br>" +
+        "if the value is set to 0.25, and we are quantizing to beats, and we have entered<br>" +
+        "a note less than one sixteenth note after the beat, it will be quantized to that beat,<br>" +
+        "but if it is greater than one sxteenth note after the beat, it will be quantized to the<br>" +
+        "next beat.  All this has no effect unless <b>Quantize On Record</b> is checked.<br><br>" +
+        "The point of quantization bias is to compensate for your natural tendency to play notes too soon<br>" +
+        "or too late.  If you play too soon, you'd want to increase the quantization bias to improve quantization<br>" +
+        "accuracy.  If you play too late, you'd want to decrease the bias.</html>";
+        
+    static final String NON_NOTE_TYPE_TOOLTIP = "<html><b>Non-Note Type</b><br>" +
+        "Selects the type of non-note event to display.  Note types include<br>" +
+        "None, Control Change (CC), Polyphonic Aftertouch, Channel Aftertouch,<br>" + 
+        "Pitch Bend Program Change (PC), Non-Registered Parameter Numbers (NRPN),<br>" +
+        "and Registered Parameter Numbers (RPN).</html>";
+
+    static final String MSB_TOOLTIP = "<html><b>MSB</b><br>" +
+        "Selects the Parameter, or if LSB is also present, the Most Significant Byte of the Parameter.<br><br>" +
+        "If LSB and MSB are both present, then the Parameter is equal to MSB * 128 + LSB.</html>";
+
+    static final String LSB_TOOLTIP = "<html><b>LSB</b><br>" +
+        "Selects the Least Significant Byte of the Parameter.<br><br>" +
+        "If LSB and MSB are both present, then the Parameter is equal to MSB * 128 + LSB.</html>";
+
+    static final String LOGARITHMIC_PITCH_BEND_TOOLTIP = "<html><b>Logarithmic Pitch Bend</b><br>" +
+        "Selects whether Pitch Bend is displayed Logarithmically (as opposed to Linearly).<br><br>" +
+        "It's often useful to display Logarithmically because Pitch Bend values are often<br>" +
+        "more important close to zero.</html>";
+
+    static final String DISPLAY_HEIGHT_TOOLTIP = "<html><b>Display Height</b><br>" +
+        "Selects the height of non-note event displays.</html>";
+
+    static final String INTEGRATION_TOOLTIP = "<html><b>Integration</b><br>" +
+        "Selects how newly recorded notes are added to the Notes motif:" +
+        "<ul>" + 
+        "<li><b>Replace</b>&nbsp;&nbsp;The old notes are deleted and replaced with the new notes." +
+        "<li><b>Replace/Trim</b>&nbsp;&nbsp;Same as Replace, but new notes are shifted to start at timestep 0." +
+        "<li><b>Merge</b>&nbsp;&nbsp;New notes are merged in with the old notes." +
+        "</ul></html>";
+
     static final String OUTPUT_MIDI_VALUES_TOOLTIP = "<html><b>MIDI Parameters</b><br>" +
         "Convert user parameters into MIDI parameters to be output each timestep, including:" + 
         "<ul>" + 

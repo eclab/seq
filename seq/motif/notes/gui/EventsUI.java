@@ -47,7 +47,7 @@ public class EventsUI extends JComponent
     // Have we begun to drag?
     boolean dragging;
     // Is the user holding down the SHIFT key during selection?
-    boolean shifted;
+    //boolean shifted;
     // Current parameter height
     int parameterHeight;
     

@@ -782,7 +782,7 @@ public class EventInspector extends WidgetList
     static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
         "Sets the velocity (volume) of this note.</html>";
 
-    static final String RELEASE_VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+    static final String RELEASE_VELOCITY_TOOLTIP = "<html><b>Release Velocity</b><br>" +
         "Sets the release velocity of this note.  This is the velocity with<br>" +
         "which the key was released.  In MIDI, by default this is 64.</html>";
         

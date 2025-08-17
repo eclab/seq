@@ -213,7 +213,7 @@ public class GridUI extends JComponent
                 originalPitch = getPitch(e);
                 originalTime = getTime(e);
 
-                shifted = ((e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK);
+                shifted = (MotifUI.shiftOrRightMouseButton(e));
                 
                 if (shifted)
                     {
