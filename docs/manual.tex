@@ -602,7 +602,7 @@ You can select a note by clicking on it.  It will get a highlighted selection bo
 
 You can also select multiple notes by clicking on the display and dragging a rubber-band around them.  
 
-If you hold down the {\bf shift key} you can add and remove notes to your selection by clicking them or rubber-band dragging around them.
+If you hold down the {\bf shift key} you can add and remove notes to your selection by clicking them or rubber-band dragging around them.  You can do the same by {\bf right clicking}.
 
 If you have selected only one note, its Inspector will appear, and you can change its timestamp, length, pitch, velocity, and release velocity manually.
 
@@ -612,14 +612,14 @@ If you have lost your notes, just play the {\bf Show Notes} button (the {\bf ``S
 
 \paragraph{Selecting and Adjusting Non-Note Events}
 
-Just like notes, you can select events by clicking on them, rubber-band selecting them (the rubber band will be a 1-dimensional range, not two-dimensional), and using the {\bf shift key} in the same way.  And if you have selected only one event, its Inspector will appear allowing you to change it more precisely.
+Just like notes, you can select events by clicking on them, rubber-band selecting them (the rubber band will be a 1-dimensional range, not two-dimensional), and using the {\bf shift key} or {\bf right-click} in the same way.  And if you have selected only one event, its Inspector will appear allowing you to change it more precisely.
 
 You probably don't want to change both the time and value of a non-note event, so there are some constraints to help you out.  When you drag a non-note event what happens depends on what keys you are holding down:
 
 \begin{itemize}
 \item {\bf [Nothing]}\qquad Adjusts value but not time.
-\item {\bf Meta}\qquad Adjusts time but not value.
-\item {\bf Alt/Option}\qquad Adjusts both time and value.
+\item {\bf Option/Alt or Middle-Click}\qquad Adjusts time but not value.
+\item {\bf Command/Windows}\qquad Adjusts both time and value.
 \item {\bf Control}\qquad If adjusting value, all selected events are set to the same value.
 \end{itemize}        
 
@@ -652,6 +652,8 @@ In the {\bf Recording} disclosure panel there are a number of recording options.
 Next, if you check the {\bf Record Bend}, {\bf Record Aftertouch}, or {\bf Record CC} checkboxes, Notes will record these events: otherwise it will ignore and discard them while recording.   And if you check the {\bf Make NRPN/RPN} checkbox, Notes will attempt to build NRPN or RPN parameters as it receives them.  NRPN and RPN parameters are made up of collections of CC messages, so if those CC messages are used to build a parameter, the CC messages will not be recorded as CC messages but as NRPN or RPN.  
 
 Other recording options deal with automatic quantization.  You can turn {\bf Quantize} on for notes, instruct it to also {\bf Quantize Note Ends} and to {\bf Quantize Non-Note Events} (like pitch bend or CC), and tell it to {\bf Quantize To} a certain resolution.  There also is a mysterious {\bf Quantize Bias} knob.  Normally Quantize works by rounding your note to the nearest resolution point, before or after.  By adjusting the Quantize Bias knob you can push Quantize to more likely round to the note before or to the note after.  This is useful because as humans we each have a different tendency to either play too early or too late, and can set the Quantize Bias knob to adjust for our own nature.
+
+Recorded notes appear while recording.  However recorded non-note events will not appear until after recording is finished, simply because there can be too many of them to draw efficiently.
 
 \paragraph{The Notes Menu} Notes has a number of items under its menu.  Many of these items are applied to either all events or to a subset of them, depending on how you have selected notes or non-note events: 
 
@@ -948,7 +950,7 @@ Select defines a grid where you can place Children by dragging them in from the 
 
 You can drag a Child to a new location, and you can also  delete it by selecting it and pressing the {\bf Delete Button} at bottom, and similarly you can duplicate a Child by selecting it, then pressing the {\bf Duplicate Button}. 
 
-When you click on a Child, it is selected as usual and its Inspector will come up.  But it is not chosen to start playing.  How do you do that then?  By either right-clicking on it, or holding down any modifier key (Command, Control, Shift, Option, Alt) and clicking on it.
+When you click on a Child, it is selected as usual and its Inspector will come up.  But it is not chosen to start playing.  How do you do that then?  By either middle- or right-clicking on it, or holding down any modifier key (Command, Control, Shift, Option, Alt) and clicking on it.
 
 Each Child has a {\bf Nickname} which you can set in its Inspector.  This is useful for making a shorter name for it in the grid.
 
@@ -1052,19 +1054,17 @@ An arpeggio is played for some number of {\bf Octaves}.  For example, if you set
 
 \paragraph{Pattern Arpeggios}
 
-Arpeggios get fun when you start drawing patterns in the grid at the center of the window.  Each column is a step: you can have patterns up to 32 steps long, but you probably will want a shorter pattern: set the length of your pattern, in steps, with the {\bf Pattern Length} dial in the Inspector.
+Arpeggios get fun when you start drawing patterns in the grid at the center of the window.  Each column is a step: you can have patterns up to 32 steps long, but you probably will want a shorter pattern: set the length of your pattern, in steps, with the {\bf Pattern Length} dial in the Inspector.  You'll see a purple line mark the end of the pattern.
 
 You instruct the Arpeggio to play a note at a given step by clicking on a square to highlight it.
 
-The blue line is the {\it Root Marker}.  The square directly above it represents the root note in whatever chord is provided.  The square above {\it that} represents the second note in the chord, and so on.  When you run out of notes, the next squares represent the notes in the chord, repeated one octave above.
+The blue line is the {\it Root Marker}.  The square directly above it represents the root note in whatever chord is currently provided.  The square above {\it that} represents the second note in the chord, and so on.  When you run out of notes, the next squares represent the notes in the chord repeated again, but played one octave higher.
 
 For example, if your incoming chord was C E G A, then the first four squares in a column, above the root marker, would represent C, E, G, and A.  The next four squares would represent C1, E1, G1, and A1 (one octave above).  The next would represent C2, D2, G2, and A2, and so on
 
 You can play notes {\it below} the chord as well!  The squares {\it below} the Root Marker represent notes one or more octaves below the chord.  For example, the first four squares below the Root Marker would be (going down) A -1, G -1, E -1, and C -1, which are all one octave below the chord.  The next four squares below them would be A -2, G -2, E -2, and C -2, and so on.
 
-You can play more than one note in the same step: just click multiple squares.  You can also play a rest: just have a column with no squares selected in it.
-
-Finally, you can make {\bf ties} to extend the length of notes.   If you shift-click on a pattern note, you will make a tie.  A tie indicates that the immediately previous note will be lengthened and continued.  If there is no immediately previous note (it's a rest), then the tie has no effect.  Ties are blue.
+You can play more than one note in the same step: just click multiple squares.  You can also play a {\bf rest}: just have a column with no squares selected in it.  Finally, you can make {\bf ties} to extend the length of notes.   If you shift-click (or right-click) on a pattern note, you will make a tie.  A tie indicates that the immediately previous note will be lengthened and continued.  If there is no immediately previous note (it's a rest), then the tie has no effect.  Ties are blue.
 
 \paragraph{Velocity}
 
