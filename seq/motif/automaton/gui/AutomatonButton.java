@@ -196,6 +196,7 @@ public class AutomatonButton extends MotifButton
                 dragCount = 0;                          // sometimes the actionListener isn't triggered, so we do this here too
                 int modifiers = e.getModifiers();
                 if (SwingUtilities.isRightMouseButton(e) ||
+					SwingUtilities.isMiddleMouseButton(e) ||
                     ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
                     ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) ||
                     ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK) ||
@@ -333,6 +334,7 @@ public class AutomatonButton extends MotifButton
                     button.dragCount = 0;                           // sometimes the actionListener isn't triggered, so we do this here too
                     int modifiers = e.getModifiers();
                     if (SwingUtilities.isRightMouseButton(e) ||
+                        SwingUtilities.isMiddleMouseButton(e) ||
                         ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
                         ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) ||
                         ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK) ||
