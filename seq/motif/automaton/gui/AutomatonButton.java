@@ -184,7 +184,7 @@ public class AutomatonButton extends MotifButton
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalTextPosition(SwingConstants.BOTTOM);
         setHorizontalTextPosition(SwingConstants.CENTER);
-        setMargin(new Insets(10, 10, 10, 10));
+        setMargin(new Insets(10, 0, 10, 0));
         setFocusPainted(false);
         setEnabled(true);
         setIconTextGap(0);
@@ -425,7 +425,7 @@ public class AutomatonButton extends MotifButton
         if (seqPlaying && playingCount == 1) setForeground(Color.RED);
         else if (seqPlaying && playingCount > 1) setForeground(Color.BLUE);
         else setForeground(null);
-        setText(name);
+        setText("<html><center>" + StringUtility.sanitize(name) + "</center></html>");
         }
 
     public void disconnect()

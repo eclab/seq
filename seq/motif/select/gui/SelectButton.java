@@ -58,7 +58,7 @@ public class SelectButton extends MotifButton
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalTextPosition(SwingConstants.BOTTOM);
         setHorizontalTextPosition(SwingConstants.CENTER);
-        setMargin(new Insets(10, 10, 10, 10));
+        setMargin(new Insets(10, 0, 10, 0));
         setFocusPainted(false);
         setEnabled(true);
         setIconTextGap(0);
@@ -204,11 +204,11 @@ public class SelectButton extends MotifButton
                         
             if (subname == null || subname.equals(""))
                 {
-                setText(StringUtility.sanitize(name));
+                setText("<html><center>" + StringUtility.sanitize(name) + "</center></html>");
                 }
             else
                 {
-                setText(subname);
+                setText("<html><center>" + subname + "</center></html>");
                 }
             }
         }
