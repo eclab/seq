@@ -657,7 +657,7 @@ public class NotesInspector extends WidgetList
         recordIntegration.setToolTipText(INTEGRATION_TOOLTIP);
         for(int i = 0; i < 4; i++)
         	{
-        	eventParameterPanel[i].setToolTipText(NON_NOTE_TYPE_TOOLTIP);
+        	eventParameterType[i].setToolTipText(NON_NOTE_TYPE_TOOLTIP);
 			eventParameterLSB[i].setToolTipText(LSB_TOOLTIP);
 			eventParameterMSB[i].setToolTipText(MSB_TOOLTIP);
         	}
