@@ -14,12 +14,13 @@ public class StringUtility
     // Replace "<" with "[" and replace "&" with "@"
     public static String sanitize(String text)
         {
-        if (text.contains("<") || text.contains("&"))
+        if (text.contains("<") || text.contains("&") || text.contains(">"))
             {
             char[] chars = text.toCharArray();
             for(int i = 0; i < chars.length; i++)
                 {
                 if (chars[i] == '<') chars[i] = '[';
+                else if (chars[i] == '>') chars[i] = ']';
                 else if (chars[i] == '&') chars[i] = '@';
                 }
             return String.valueOf(chars);
