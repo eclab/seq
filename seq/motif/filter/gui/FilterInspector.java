@@ -102,6 +102,9 @@ public class FilterInspector extends WidgetList
         finally { lock.unlock(); }
 
         name.setToolTipText(NAME_TOOLTIP);
+        activeAlways.setToolTipText(ALWAYS_TOOLTIP);
+        activeFrom.setToolTipText(FROM_TOOLTIP);
+        activeTo.setToolTipText(FROM_TOOLTIP);
 
         build(new String[] { "Name", "Always", "From", "To" }, 
             new JComponent[] 
@@ -131,6 +134,22 @@ public class FilterInspector extends WidgetList
         }
 
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
-        "Sets the name of the Filter.  This will appear in the Motif List at left.</html>";
+        "Sets the name of the Filter Child.  This will appear in the Motif List at left.</html>";
+
+    static final String ALWAYS_TOOLTIP = "<html><b>Always</b><br>" +
+        "When checked, the filters be active at all times.  <b>From</b> and <b>To</b><br>" +
+        "below will be ignored.</html>";
+
+    static final String FROM_TOOLTIP = "<html><b>From</b><br>" +
+        "<b>To</b> and <b>From</b> together determine the <b>active range</b> of the filters.<br>" +
+        "If From &lt; To, then the active range is between To and From.<br>" +
+        "If To &lt; From, then the active range is from <i>before</i> To, then <i>after</i> From.<br><br>" +
+        "If <b>Active<b> is checked, then From and To are ignored, and the filters are always active.</html>";
+
+    static final String TO_TOOLTIP = "<html><b>To</b><br>" +
+        "<b>To</b> and <b>From</b> together determine the <b>active range</b> of the filters.<br>" +
+        "If From &lt; To, then the active range is between To and From.<br>" +
+        "If To &lt; From, then the active range is from <i>before</i> To, then <i>after</i> From.<br><br>" +
+        "If <b>Active<b> is checked, then From and To are ignored, and the filters are always active.</html>";
 
     }

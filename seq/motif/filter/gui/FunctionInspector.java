@@ -74,6 +74,7 @@ public class FunctionInspector extends JPanel
         add(subcombo, BorderLayout.NORTH);
         add(subinspector, BorderLayout.CENTER);
         setBorder(BorderFactory.createTitledBorder("Stage " + (index + 1)));
+        subcombo.setToolTipText(STAGE_TYPE_TOOLTIP);
         }
                 
     public void revise()                        // do I need to check if the subinspectors changed?  Do I need this function at all?
@@ -91,6 +92,7 @@ public class FunctionInspector extends JPanel
     public class ChangeNoteInspector extends SubInspector
         {
         JComboBox out;
+        JCheckBox allOut;
         SmallDial transpose;
         SmallDial transposeVariance;
         SmallDial gain;
@@ -126,6 +128,20 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 });            
+
+            allOut = new JCheckBox();
+            allOut.setSelected(func.isAllOut());
+            allOut.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setAllOut(allOut.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
 
             transpose = new SmallDial((func.getTranspose() + Filter.MAX_TRANSPOSE) / Filter.MAX_TRANSPOSE  / 2.0)
                 {
@@ -260,12 +276,23 @@ public class FunctionInspector extends JPanel
                     }
                 };
             length.setDisplaysTime(false);
+            
+            out.setToolTipText(NOTE_OUT_TOOLTIP);
+            allOut.setToolTipText(NOTE_ALL_OUT_TOOLTIP);
+            transpose.setToolTipText(NOTE_TRANSPOSE_TOOLTIP);
+            transposeVariance.setToolTipText(NOTE_TRANSPOSE_VARIANCE_TOOLTIP);
+            gain.setToolTipText(NOTE_GAIN_TOOLTIP);
+            gainVariance.setToolTipText(NOTE_GAIN_VARIANCE_TOOLTIP);
+            releaseGain.setToolTipText(NOTE_RELEASE_TOOLTIP);
+            releaseGainVariance.setToolTipText(NOTE_RELEASE_VARIANCE_TOOLTIP);
+            length.setToolTipText(NOTE_LENGTH_TOOLTIP);
                                                                         
-            build(new String[] { "", "Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Length"}, 
+            build(new String[] { "", "Out", "Non-Note Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Length"}, 
                 new JComponent[] 
                     {
                     null,
                     out,
+                    allOut,
                     transpose.getLabelledDial("24"),
                     transposeVariance.getLabelledDial("0.0000"),
                     gain.getLabelledDial("0.0000"),
@@ -288,6 +315,7 @@ public class FunctionInspector extends JPanel
             try 
                 { 
                 out.setSelectedIndex(func.getOut()); 
+                allOut.setSelected(func.isAllOut());
                 }
             finally { lock.unlock(); }                              
             seq = old;
@@ -398,6 +426,11 @@ public class FunctionInspector extends JPanel
                     }
                 };
 
+            original.setToolTipText(DELAY_ORIGINAL_TOOLTIP);
+            laterDelay.setToolTipText(DELAY_INTERVAL_TOOLTIP);
+            cut.setToolTipText(DELAY_CUT_TOOLTIP);
+            numTimes.setToolTipText(DELAY_NUM_DELAYS_TOOLTIP);
+                                                                        
             build(new String[] { "", "Original", /*"Initial",*/ "Interval", "Cut", "Num Delays"}, 
                 new JComponent[] 
                     {
@@ -434,12 +467,27 @@ public class FunctionInspector extends JPanel
 
     public class DropInspector extends SubInspector
         {
+        JCheckBox cut;
         SmallDial probability;
                 
         public DropInspector()
             {
             Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
                         
+            cut = new JCheckBox();
+            cut.setSelected(func.getCut());
+            cut.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setCut(cut.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
             probability = new SmallDial(func.getProbability())
                 {
                 protected String map(double val) { return String.format("%.4f", val); }
@@ -460,22 +508,29 @@ public class FunctionInspector extends JPanel
                     }
                 };
 
-            build(new String[] { "", "Probability"}, 
+            cut.setToolTipText(DROP_CUT_TOOLTIP);
+            probability.setToolTipText(DROP_PROBABILITY_TOOLTIP);
+                                                                        
+            build(new String[] { "", "Delete All", "Note Probability"}, 
                 new JComponent[] 
                     {
                     null,
+                    cut,
                     probability.getLabelledDial("0.0000"),
                     });
             }
                         
         public void revise() 
             {
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
             Seq old = seq;
             seq = null;
             ReentrantLock lock = old.getLock();
             lock.lock();
             try 
                 { 
+                cut.setSelected(func.getCut());
                 }
             finally { lock.unlock(); }                              
             seq = old;
@@ -592,6 +647,12 @@ public class FunctionInspector extends JPanel
                 });
             updateParams(func.getParameterType());
 
+            parameterType.setToolTipText(PARAMETER_TYPE_TOOLTIP);
+            parameterMSB.setToolTipText(PARAMETER_PARAM_MSB_TOOLTIP);
+            parameterLSB.setToolTipText(PARAMETER_PARAM_LSB_TOOLTIP);
+            distVar.setToolTipText(PARAMETER_VARIANCE_TOOLTIP);
+            rate.setToolTipText(PARAMETER_RATE_TOOLTIP);
+
             build(new String[] { "", "Type", "Param/MSB", "LSB", "Variance", "Rate"}, 
                 new JComponent[] 
                     {
@@ -698,11 +759,90 @@ public class FunctionInspector extends JPanel
         }
 
 
-    static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
-        "Sets the name of the Filter Child.  This will appear in the Motif List at left.</html>";
+    static final String STAGE_TYPE_TOOLTIP = "<html><b>Stage Type</b><br>" +
+        "Sets the stage function type, at present one of:" + 
+        "<ul>" +
+        "<li><b>None</b>&nbsp;&nbsp;No filtering." +
+        "<li><b>Note</b>&nbsp;&nbsp;Change note output, velocity, release velocity, pitch, or length." +
+        "<li><b>Delay</b>&nbsp;&nbsp;Delay the onset of the note, or repeat it one or more times." +
+        "<li><b>Drop</b>&nbsp;&nbsp;With a certain probability, filter out (delete) a note." +
+        "<li><b>Parameter</b>&nbsp;&nbsp;Vary a non-note parameter, such as CC or Pitch Bend." +
+        "</ul></html>";
 
-    static final String NICKNAME_TOOLTIP = "<html><b>Nickname</b><br>" +
-        "Sets a nickname for the Filter Child, overriding its name as originally set.</html>";
+    static final String NOTE_OUT_TOOLTIP = "<html><b>Out</b><br>" +
+        "Changes the output device of the incoming MIDI notes.</html>";
 
+    static final String NOTE_ALL_OUT_TOOLTIP = "<html><b>All Out</b><br>" +
+        "Sets whether <b>Out</b> sets the output device for all incoming events, not just MIDI notes.</html>";
+        
+    static final String NOTE_TRANSPOSE_TOOLTIP = "<html><b>Transpose</b><br>" +
+        "Transposes the pitch of the incoming MIDI notes.</html>";
+
+    static final String NOTE_TRANSPOSE_VARIANCE_TOOLTIP = "<html><b>Transpose Variance</b><br>" +
+        "Sets the variance of random noise with which to transpose the pitch of the incoming MIDI notes.</html>";
+
+    static final String NOTE_GAIN_TOOLTIP = "<html><b>Gain</b><br>" +
+        "Sets the gain to be multipled against the velocity (volume) of the incoming MIDI notes.</html>";
+
+    static final String NOTE_GAIN_VARIANCE_TOOLTIP = "<html><b>Gain Variance</b><br>" +
+        "Sets the variance of random noise to be multipled against the velocity (volume) of<br>" +
+        "the incoming MIDI notes.</html>";
+
+    static final String NOTE_RELEASE_TOOLTIP = "<html><b>Release</b><br>" +
+        "Sets the gain to be multipled against the release velocity of the incoming MIDI notes.</html>";
+
+    static final String NOTE_RELEASE_VARIANCE_TOOLTIP = "<html><b>Release Variance</b><br>" +
+        "Sets the variance of random noise to be multipled against the release velocity of<br>" +
+        "the incoming MIDI notes.</html>";
+
+    static final String NOTE_LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
+        "Sets the length of all incoming MIDI notes.</html>";
+
+    static final String DELAY_ORIGINAL_TOOLTIP = "<html><b>Original</b><br>" +
+        "When checked, the original MIDI note will be played (along with possible delayed versions).</html>";
+
+    static final String DELAY_INTERVAL_TOOLTIP = "<html><b>Interval</b><br>" +
+        "Sets the time interval between successive delayed, repeated notes.</html>";
+
+    static final String DELAY_CUT_TOOLTIP = "<html><b>Cut</b><br>" +
+        "Sets the amount of reduction in velocity (volume) of the next delayed note relative to<br>" +
+        "the current one.</html>";
+        
+    static final String DELAY_NUM_DELAYS_TOOLTIP = "<html><b>Num Delays</b><br>" +
+        "Sets the number of delayed versions of a note to play.</html>";
+        
+    static final String DROP_CUT_TOOLTIP = "<html><b>Delete All</b><br>" +
+        "If checked, then all events (note and non-note) will be deleted entirely.</html>";
+        
+    static final String DROP_PROBABILITY_TOOLTIP = "<html><b>Note Probability</b><br>" +
+        "Sets the probability that notes (not non-note events) will be deleted.<br><br>" +
+        "If <b>Cut</b> is checked, then Probability does nothing.</html>";
+        
+    static final String PARAMETER_TYPE_TOOLTIP = "<html><b>Type</b><br>" +
+        "Specifies the type of parameter to be modified.</html>";
+
+    static final String PARAMETER_PARAM_MSB_TOOLTIP = "<html><b>Param/MSB</b><br>" +
+        "Sets the parameter number of the parameter to be modified:" +
+        "<ul>" +
+        "<li><b>Control Change (CC)</b>&nbsp;&nbsp; Sets the CC parameter number (0-127)." +
+        "<li><b>Non-Registered Parameter Numbers (NRPN)</b>&nbsp;&nbsp; Sets the Most Significant Byte<br>" +
+        "(MSB) of the parameter number." +
+        "<li><b>Registered Parameter Numbers (RPN)</b>&nbsp;&nbsp; Sets the Most Significant Byte<br>" +
+        "(MSB) of the parameter number." +
+        "<li><b>All Others</b>&nbsp;&nbsp; Has no effect (there is no parameter number)." +
+        "</ul>" +
+        "</html>";
+
+    static final String PARAMETER_PARAM_LSB_TOOLTIP = "<html><b>LSB</b><br>" +
+        "Sets the Least Significant Byte (LSB) of the parameter number to be modified. This is only<br>" +
+        "relevant for <b>Non-Registered Parameter Numbers (NRPN)</b> and <b>Registered Parameter Numbers (RPN)</b></html>";
+        
+    static final String PARAMETER_VARIANCE_TOOLTIP = "<html><b>Variance</b><br>" +
+        "Sets the variance of random noise to be added to the parameter value for incoming events.<br><br>" + 
+        "Though random noise is added to all values, it only changes every once in a while, according to the <b>Rate</b>.</html>";
+        
+    static final String PARAMETER_RATE_TOOLTIP = "<html><b>Rate</b><br>" +
+        "Sets how often a new random value is chosen to be added to the parameter value for incoming events.<br><br>" + 
+        "Though random noise is added to all values, it only changes every once in a while, according to the <b>Rate</b>.</html>";
 
     }

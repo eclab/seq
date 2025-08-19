@@ -1110,7 +1110,7 @@ At present, Filter has five MIDI Effects available:
 \item {\bf None}\qquad Doesn't change the MIDI at all.
 \item {\bf Note}\qquad Changes note pitch, velocity, release velocity, and length.
 \item {\bf Delay}\qquad Delays the onset of a note, or repeats it multiple times with a delay in-between, or repeats it multiple times simultaneously (as in unison).
-\item {\bf Drop}\qquad With some probability, drops a note (don't let it pass through).
+\item {\bf Drop}\qquad With some probability, drops a note (don't let it pass through), or drops events within an interval of time.
 \item {\bf Parameter}\qquad Changes the value of a non-note parameter such as pitch bend, CC, or aftertouch.
 \end{itemize}
 
@@ -1122,7 +1122,8 @@ This effect allows you to change features of the notes being passed in:
 
 \begin{itemize}
 \item {\bf Out}\qquad You can change the MIDI output device.
-\item {\bf Transpose and Trans Var}\qquad You can transpose all notes, and can also add random transpositions to them.  The variance ranges from \(0\) to \(\pm 2 octaves\).
+\item {\bf Non-Note Out}\qquad You change the MIDI output device for all non-note events in addition to notes.
+\item {\bf Transpose and Trans Var}\qquad You can transpose all notes, and can also add random transpositions to them.  The variance ranges from \(0\) to \(\pm\) 2 octaves.
 \item {\bf Gain and Gain Var}\qquad You can multiply the velocity (thus velocity) of all notes by a given gain, and can also multiply a random random gain to them.  The variance ranges from \(0\times\) to \(4\times\).
 \item {\bf Release and Release Var}\qquad You can multiply the {\it release velocity} of all notes by a given gain, and can also multiply a random random gain to them.  The variance ranges from \(0\times\) to \(4\times\).
 \item {\bf Length}\qquad You can set the length of all notes.
@@ -1141,13 +1142,12 @@ This effect adds delays and unison to notes.  You can add one or more delays to 
 
 \paragraph{The Drop Effect}
 
-This effect randomly deletes notes.
+This effect randomly deletes notes, and also deletes all notes and non-note events within a certain region.
 
 \begin{itemize}
-\item {\bf Probability}\qquad The probability that a note would be deleted.
+\item {\bf Delete All}\qquad Whether we should delete all notes and non-note events.
+\item {\bf Note Probability}\qquad If {\bf Cut} is unchecked, then the probability that a note should be deleted at random.
 \end{itemize}
-
-
 
 \paragraph{The Parameter Effect}
 

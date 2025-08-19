@@ -164,7 +164,10 @@ public class Filter extends Motif
         double releaseGain = 1.0;                       // if length is changes, the base release will be changed to 0x64
         double releaseGainVariance;
         int length;                                                             // length = 0 means we don't change the length
+        boolean allOut = true;
                 
+        public boolean isAllOut() { return allOut; }
+        public void setAllOut(boolean val) { allOut = val; }
         public int getLength() { return length; }
         public void setLength(int val) { length = val; }
         public int getOut() { return out; }
@@ -186,6 +189,7 @@ public class Filter extends Motif
         public String getType() { return CHANGE_NOTE; }
         public ChangeNote(JSONObject obj)
             {
+            allOut= obj.optBoolean("a", true);
             transpose = obj.optInt("t", 0);
             transposeVariance = obj.optDouble("tv", 0);
             gain = obj.optDouble("g", 1.0);
@@ -197,6 +201,7 @@ public class Filter extends Motif
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
+            obj.put("a", allOut);
             obj.put("t", transpose);
             obj.put("tv", transposeVariance);
             obj.put("g", gain);
@@ -255,7 +260,11 @@ public class Filter extends Motif
                 
     public class Drop extends Function
         {
-        double probability;
+        boolean cut;
+        double probability = 0.0;
+
+        public boolean getCut() { return cut; }
+        public void setCut(boolean val) { cut = val; }
         public double getProbability() { return probability; }
         public void setProbability(double val) { probability = val; }
 
@@ -264,11 +273,13 @@ public class Filter extends Motif
         public Drop(JSONObject obj)
             {
             probability = obj.optDouble("p", 0);
+            cut = obj.optBoolean("c", false);
             }
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
             obj.put("p", probability);
+            obj.put("c", cut);
             return obj;
             }
         }

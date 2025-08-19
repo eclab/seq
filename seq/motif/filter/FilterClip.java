@@ -172,6 +172,69 @@ public class FilterClip extends Clip
             map.clear();
             }
         
+        public void bend(int out, int val, int index)
+            {
+            Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
+            if (func.isAllOut())
+            	{
+            	int _out = func.getOut();
+            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+            	}
+            super.bend(out, val, index);
+            }
+        public void cc(int out, int cc, int val, int index)
+            {
+            Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
+            if (func.isAllOut())
+            	{
+            	int _out = func.getOut();
+            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+            	}
+            super.cc(out, cc, val, index);
+            }
+        public void pc(int out, int val, int index)
+            {
+            Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
+            if (func.isAllOut())
+            	{
+            	int _out = func.getOut();
+            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+            	}
+            super.pc(out, val, index);
+            }
+
+        public void nrpn(int out, int nrpn, int val, int index)
+            {
+            Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
+            if (func.isAllOut())
+            	{
+            	int _out = func.getOut();
+            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+            	}
+            super.nrpn(out, nrpn, val, index);
+            }
+        public void nrpnCoarse(int out, int nrpn, int msb, int index)
+            {
+            Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
+            if (func.isAllOut())
+            	{
+            	int _out = func.getOut();
+            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+            	}
+            super.nrpnCoarse(out, nrpn, msb, index);
+            }
+
+        public void rpn(int out, int rpn, int val, int index)
+            {
+            Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
+            if (func.isAllOut())
+            	{
+            	int _out = func.getOut();
+            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+            	}
+            super.rpn(out, rpn, val, index);
+            }
+
         public void noteOn(int out, int note, double vel, int id, int index)    
             {
             Filter filter = (Filter)getMotif();
@@ -268,8 +331,9 @@ public class FilterClip extends Clip
             {
             Filter filter = (Filter)getMotif();
             Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
-                        
-            if (seq.getDeterministicRandom().nextDouble() < func.getProbability())
+            int pos = getPosition();
+            
+            if (func.getCut() || seq.getDeterministicRandom().nextDouble() < func.getProbability())
                 {
                 // drop
                 dropped.add(id);
@@ -310,6 +374,102 @@ public class FilterClip extends Clip
                 super.scheduleNoteOff(out, note, vel, time, id, index);
                 }
             }
+
+        public void bend(int out, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
+            if (func.getCut())
+                {
+                // drop
+                }
+            else
+                {
+                // don't drop
+                super.bend(out, val, index);
+                }
+            }
+        public void cc(int out, int cc, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
+            if (func.getCut())
+                {
+                // drop
+                }
+            else
+                {
+                // don't drop
+                super.cc(out, cc, val, index);
+                }
+            }
+        public void pc(int out, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
+            if (func.getCut())
+                {
+                // drop
+                }
+            else
+                {
+                // don't drop
+                super.pc(out, val, index);
+                }
+            }
+
+        public void nrpn(int out, int nrpn, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
+            if (func.getCut())
+                {
+                // drop
+                }
+            else
+                {
+                // don't drop
+                super.nrpn(out, nrpn, val, index);
+                }
+            }
+        public void nrpnCoarse(int out, int nrpn, int msb, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
+            if (func.getCut())
+                {
+                // drop
+                }
+            else
+                {
+                // don't drop
+                super.nrpnCoarse(out, nrpn, msb, index);
+                }
+            }
+
+        public void rpn(int out, int rpn, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
+            if (func.getCut())
+                {
+                // drop
+                }
+            else
+                {
+                // don't drop
+                super.rpn(out, rpn, val, index);
+                }
+            }
+
+
+
         }
 
 
@@ -983,7 +1143,9 @@ public class FilterClip extends Clip
         {
         Filter filter = (Filter)getMotif();
         int position = getPosition();
-        return (filter.isAlways() || (position >= filter.getFrom() && position < filter.getTo()));
+        return filter.isAlways() || 
+        	(filter.getTo() > filter.getFrom() && (position >= filter.getFrom() && position < filter.getTo())) ||
+        	(filter.getTo() < filter.getFrom() && (position >= filter.getFrom() || position < filter.getTo()));
         }
     
             
@@ -1000,31 +1162,28 @@ public class FilterClip extends Clip
                 }
             done = childDone;
 
-            if (filter.isAlways() || filter.getTo() > filter.getFrom())
-                {
-                int position = getPosition();
-                                
-                if (position == filter.getTo() - 1 && !filter.isAlways())
-                    {
-                    // we just completed the range
-                    for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-                        {
-                        nodes.get(i).process(i);
-                        }           
-                    // release all notes
-                    for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-                        {
-                        nodes.get(i).release(i);
-                        }           
-                    }
-                else if (active())
-                    {
-                    // we are in the range
-                    for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-                        {
-                        nodes.get(i).process(i);
-                        }                            
-                    }
+			int position = getPosition();
+							
+			if (position == filter.getTo() - 1 && !filter.isAlways())
+				{
+				// we just completed the range
+				for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+					{
+					nodes.get(i).process(i);
+					}           
+				// release all notes
+				for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+					{
+					nodes.get(i).release(i);
+					}           
+				}
+			else if (active())
+				{
+				// we are in the range
+				for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+					{
+					nodes.get(i).process(i);
+					}                            
                 }
             }
         
