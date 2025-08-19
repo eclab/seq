@@ -608,8 +608,8 @@ public class SeriesChildInspector extends WidgetList
         "selected, then the child motif transitions to the next motif with no further repeats.</html>";
         
     static final String UNTIL_TRIGGER_8_TOOLTIP = "<html><b>Until Trigger 8</b><br>" +
-        "If Checked, when a 1.0 is sent to <b>Parameter 8</b>, the child motif will transition to<br>" + 
-        "the next node regardless of the number of <b>initial repeats</b> or the <b>repeat probability</b>." + 
+        "If checked, when a 1.0 is sent to <b>Parameter 8</b>, the child motif will transition to<br>" + 
+        "the next node regardless of the number of <b>initial repeats</b> or the <b>repeat probability</b>.<br>" + 
         "Repeating works as follows:" +
         "<ol>" +
         "<li>The child motif is played once." +
