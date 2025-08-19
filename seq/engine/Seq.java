@@ -46,6 +46,8 @@ public class Seq
     public static final int NUM_PARTS = 256;
     public static final int DEFAULT_BPM = 120;
     public static final int MAX_BPM = 480;
+    /** The smallest possible maximum time, with subparts rounded to 0. */
+    public static final int MIN_MAX_TIME = PPQ * 1 * NUM_BARS_PER_PART * NUM_PARTS;
     // Current BPM
     int bpm = DEFAULT_BPM;
     // The timer, pulses at the approporiate amount to do 192 PPQ at the current BPM
