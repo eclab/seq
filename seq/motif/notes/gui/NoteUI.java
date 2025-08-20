@@ -294,14 +294,19 @@ public class NoteUI extends EventUI implements Comparable
             public void mouseDragged(MouseEvent e)
                 {
                 if (recorded) return;
-                e = SwingUtilities.convertMouseEvent(NoteUI.this, e, getGridUI());
+                GridUI gridui = getGridUI();
+                e = SwingUtilities.convertMouseEvent(NoteUI.this, e, gridui);
                 if (isResizing())
                     {
-                    getGridUI().resizeSelectedNotes(NoteUI.this, e);
+                    gridui.resizeSelectedNotes(NoteUI.this, e);
                     }
                 else
                     {
-                    getGridUI().moveSelectedNotes(mouseDownEvent, e, NoteUI.this);
+                    if (!dragged)
+                    	{
+                    	gridui.moveSelectedToTop();
+                    	}
+                    gridui.moveSelectedNotes(mouseDownEvent, e, NoteUI.this);
                     }
                 dragged = true;
 

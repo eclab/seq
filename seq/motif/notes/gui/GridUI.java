@@ -653,10 +653,17 @@ public class GridUI extends JComponent
             }
         else
             {
-            timeDiff = getTimeDiff(origin, evt);
-            int w = dragEventUI.getOriginalWhen() + timeDiff;
-            w = getQuantizedTime(w);
-            timeDiff = w - dragEventUI.getOriginalWhen();
+            if (snap == 1)
+            	{
+				timeDiff = getTimeDiff(origin, evt);
+				int w = dragEventUI.getOriginalWhen() + timeDiff;
+				w = getQuantizedTime(w);
+				timeDiff = w - dragEventUI.getOriginalWhen();
+            	}
+            else
+            	{
+				timeDiff = getQuantizedTime(evt) - dragEventUI.getOriginalWhen();
+				}
             }
         int pitchDiff = getPitchDiff(origin, evt);
 
@@ -914,6 +921,61 @@ public class GridUI extends JComponent
         selectedSource = SELECTED_SOURCE_NONE;
         }
        
+       
+  /** Makes the selected notes appear on top of other notes. */
+   public void moveSelectedToTop()
+    	{
+    	// Can't believe I have to do this
+    	HashSet<NoteUI> notes = new HashSet<>();
+    	for(EventUI event : getSelected())
+    		{
+    		if (event instanceof NoteUI)
+    			{
+	    		notes.add((NoteUI)event);
+	    		}
+    		}
+    	moveToTop(notes);
+    	}
+
+  /** Makes the selected notes appear on top of other notes. */
+   public void moveSelectedToBottom()
+    	{
+    	// Can't believe I have to do this
+    	HashSet<NoteUI> notes = new HashSet<>();
+    	for(EventUI event : getSelected())
+    		{
+    		if (event instanceof NoteUI)
+    			{
+	    		notes.add((NoteUI)event);
+	    		}
+    		}
+    	moveToBottom(notes);
+    	}
+       
+    /** Makes the given notes appear on top of other notes. */
+    public void moveToTop(HashSet<NoteUI> move)
+    	{
+    	if (move.size() > 0)
+    		{
+	    	for(PitchUI pitchui : pitchuis)
+    			{
+    			pitchui.moveToPosition(move, true);
+    			}
+    		}
+    	}
+    	
+    /** Makes the given notes appear beneath other notes. */
+    public void moveToBottom(HashSet<NoteUI> move)
+    	{
+    	if (move.size() > 0)
+    		{
+	    	for(PitchUI pitchui : pitchuis)
+    			{
+    			pitchui.moveToPosition(move, false);
+    			}
+    		}
+    	}
+    	
     /** Finds the NoteUIs for the given note, then adds them to selected and selects them. */
     public void addNotesToSelected(HashSet<Notes.Event> notes)
         {
@@ -929,11 +991,8 @@ public class GridUI extends JComponent
                     move.add(noteui);
                     }
                 }
-            if (move.size() > 0)
-                {
-                pitchui.moveToBack(move);
-                }
             }
+        moveToTop(move);		// I think this is SLIGHTLY more efficent than moveSelectedToTop?
         }
 
     /** Finds the EventUIs for the given event, then adds them to selected and selects them. */
@@ -1151,7 +1210,7 @@ public class GridUI extends JComponent
         PitchUI pitchui = pitchuis.get(pitch);
         pitchui.addNoteUI(noteui);
         // make sure it's up front
-        pitchui.moveToBack(noteui);
+        pitchui.moveToTop(noteui);
         return pitchui;
         }
                 

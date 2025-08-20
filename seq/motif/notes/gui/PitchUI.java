@@ -214,41 +214,59 @@ public class PitchUI extends JLayeredPane
         return new Dimension(gridui.getPixels(gridui.getMaximumTime()), PITCH_HEIGHT);
         }
         
-    public void moveToBack(HashSet<NoteUI> move)
+    /** Makes the given notes appear on top of other notes. */
+    // Notes are drawn in Z-order from front to back.  So notes added EARLIER to a container component
+    // are drawn on top of notes added LATER.
+    public void moveToPosition(HashSet<NoteUI> move, boolean onTop)
         {
-        ArrayList<NoteUI> front = new ArrayList<>();
-        ArrayList<NoteUI> back = new ArrayList<>();
+        ArrayList<NoteUI> top = new ArrayList<>();
+        ArrayList<NoteUI> bottom = new ArrayList<>();
         for(NoteUI noteui : noteuis)
             {
             if (move.contains(noteui))
                 {
-                back.add(noteui);
+                top.add(noteui);
                 }
-            else
+            else 
                 {
-                front.add(noteui);
+                bottom.add(noteui);
                 }
             }
         noteuis.clear();
-        noteuis.addAll(back);
-        noteuis.addAll(front);
+        if (onTop)
+        	{
+        	noteuis.addAll(top);
+	        noteuis.addAll(bottom);
+	        }
+	    else	
+	    	{
+	        noteuis.addAll(bottom);
+        	noteuis.addAll(top);
+	    	}
+
         removeAll();
         for(NoteUI noteui : noteuis)
             {
-            add(noteui, 0);
+            add(noteui);
             }
+
         repaint();
         }
 
-    public void moveToBack(NoteUI move)
+    /** Makes the given note appear on top of other notes. */
+    // Notes are drawn in Z-order from front to back.  So notes added EARLIER to a container component
+    // are drawn on top of notes added LATER.
+    public void moveToTop(NoteUI move)
         {
         noteuis.remove(move);
         noteuis.add(0, move);
+        
         removeAll();
         for(NoteUI noteui : noteuis)
             {
-            add(noteui, 0);
+            add(noteui);
             }
+            
         repaint();
         }
         

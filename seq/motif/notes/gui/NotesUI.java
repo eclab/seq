@@ -323,6 +323,26 @@ public class NotesUI extends MotifUI
 
         menu.addSeparator();
 
+        JMenuItem bringToFront = new JMenuItem("Bring to Front");
+        bringToFront.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doBringToFront();
+                }
+            });
+        menu.add(bringToFront);
+
+        JMenuItem sendToBack = new JMenuItem("Send to Back");
+        sendToBack.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doSendToBack();
+                }
+            });
+        menu.add(sendToBack);
+
         autoArmItem = new JCheckBoxMenuItem("Arm New Notes Motifs");
         autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
         menu.add(autoArmItem);
@@ -371,6 +391,17 @@ public class NotesUI extends MotifUI
     /** Returns the GridUI */
     public GridUI getGridUI() { return gridui; }
         
+        
+    public void doBringToFront()
+    	{
+		gridui.moveSelectedToTop();
+    	}
+    
+    public void doSendToBack()
+    	{
+		gridui.moveSelectedToBottom();
+    	}
+    	
     /** Increases the resolution of the GridUI */
     public void doZoomIn()
         {
