@@ -215,6 +215,58 @@ public class Seq
         else return null;
         }
 
+/*
+    public Motif undo(Motif displayMotif) 
+        { 
+        if (undo.canUndo())
+            {
+            if (undo.onUndo().motifs != null)			// heavyweight node
+            	{
+            	UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(data, displayMotif, motifs));
+				motifs = stuff.motifs;
+				data = stuff.data;
+				}
+			else
+				{
+				// push the display motif to 
+            	UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(displayMotif));
+				Motif.substituteMotif(stuff.data, motifs);
+				if (data == stuff.display)
+					{
+					data = stuff.data;
+					}
+				}
+			sequi.updateUndoMenus();
+			return stuff.display;
+            }
+        else return null;
+        }
+ 
+    public Motif redo(Motif displayMotif) 
+        { 
+        if (undo.canRedo())
+            {
+            if (undo.onRedo().motifs != null)			// heavyweight node
+            	{
+            	UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(data, displayMotif, motifs));
+            	motifs = stuff.motifs;
+           		data = stuff.data;
+           		}
+           	else
+           		{
+            	UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(displayMotif));
+				Motif.substituteMotif(stuff.data, motifs);
+				if (data == stuff.display)
+					{
+					data = stuff.data;
+					}
+           		}
+            sequi.updateUndoMenus();
+            return stuff.display;
+            }
+        else return null;
+        }
+*/
         
    
     ///// SEQUENCE DATA

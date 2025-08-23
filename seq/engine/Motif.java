@@ -464,6 +464,50 @@ public abstract class Motif implements Cloneable
 
         return e;
         }
+        
+	/** Substitutes withMotif for thisMotif in the motifs list.
+		thisMotif and withMotif must have identical children and parents already. 
+		You also need to change seq.data to withMotif if it was pointing to thisMotif.
+	*/
+/*	void substituteMotif(Motif withMotif, ArrayList<Motifs> motifs)
+		{
+		for(int i = 0; i < motifs.size(); i++)		// go through all motifs
+			{
+			Motif motif = motifs.get(i);
+			if (motif.getTag() == withMotif.getTag())	// we found thisMotif
+				{
+				motifs.set(i, withMotif);			// replace with withMotif
+				break;								// contains thisMotif exactly once
+				}
+			}
+			
+		for(Motif.Child child : thisMotif.getChildren())		// go through thisMotif's children
+			{
+			ArrayList<Motif> parents = child.getMotif().getParents();	// get their parents
+			for(int j = 0; j < parents.size(); j++)
+				{
+				if (parents.get(j).getTag() == withMotif.getTag())				// if a parent equals thisMotif
+					{
+					parents.set(j, withMotif);					// replace with withMotif
+					break;										// contains thisMotif exactly once
+					}
+				}
+			}
+			
+		for(Motif parent : thisMotif.getParents())				// go through thisMotif's parent
+			{
+			ArrayList<Motif.Child> children = parent.getChildren();	// get their children
+			for(int j = 0; j < children.size(); j++)
+				{
+				if (children.get(j).getMotif().getTag() == withMotif.getTag())	// if child equals thisMotif
+					{
+					children.get(j).setMotif(withMotif);		// replace with withMotif
+																// no break: can contain thisMotif multiple times
+					}
+				}
+			}
+		}
+	*/
 
 
 
@@ -1149,5 +1193,11 @@ public abstract class Motif implements Cloneable
             vals[i] = array.getString(i);
         return vals;
         }
-        
+       
+    static int tags = 0;
+    int tag = (++tags);
+    /** Returns an identifier for this Motif.  This identifier is unique
+    	between Motifs except for Motifs that were copied from others.
+    	Used in undo and redo mostly. */
+    public int getTag() { return tag; }
     }

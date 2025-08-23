@@ -837,6 +837,67 @@ public class MotifList extends JPanel
         ui.getPrimaryButton().getBounds(rect);
         list.scrollRectToVisible(rect);
         }
+        
+    /** Sorts the existing motifs in the same tag order as the provided ones */
+    public void sortInMotifOrder(ArrayList<Motif> oldMotifs)
+    	{
+    	HashMap<Integer, MotifUI> currentMotifUIs = new HashMap<>();
+    	HashMap<Integer, MotifListButton> currentButtons = new HashMap<>();
+    	
+    	// Load the hashmaps of tag -> motifui and tag -> button
+    	for(MotifUI motifui : motifuis)
+    		{
+    		currentMotifUIs.put(motifui.getTag(), motifui);
+    		}
+    	
+    	for(MotifListButton button : buttons)
+    		{
+    		currentButtons.put(button.getMotifUI().getTag(), button);
+    		}
+
+		// Load the new arrays based on whether any of the old motifs are in the hashmaps,
+		// and remoe the tags as we go along
+		ArrayList<MotifUI> newMotifUIs = new ArrayList<>();
+		ArrayList<MotifListButton> newButtons = new ArrayList<>();
+		
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            { 
+			for(Motif motif : oldMotifs)
+				{
+				int tag = motif.getTag();
+				MotifUI mui = currentMotifUIs.get(tag);
+				MotifListButton mlb = currentButtons.get(tag);
+				if (mui != null)
+					{
+					newMotifUIs.add(mui);
+					newButtons.add(mlb);
+					currentMotifUIs.remove(tag);
+					currentButtons.remove(tag);
+					}
+				}
+            }
+        finally { lock.unlock(); }
+
+		// Add the residue of any remaining tags if any, likely not
+    	for(Integer tag : currentMotifUIs.keySet())
+    		{
+    		newMotifUIs.add(currentMotifUIs.get(tag));
+    		newButtons.add(currentButtons.get(tag));
+    		}
+    	
+    	// Load and redrawx
+        motifuis = newMotifUIs;
+        buttons = newButtons;
+        list.removeAll();
+        for(MotifListButton button : buttons)
+            {
+            list.add(button);
+            }
+        list.revalidate();
+        list.repaint();
+    	}
 
       
 //// DRAG AND DROP

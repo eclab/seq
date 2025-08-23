@@ -337,7 +337,7 @@ public class GridUI extends JComponent
                     }
                 oldMinPitch = minPitch;
 
-                pitchuis.get(minPitch).setRubberBandTop(minX, maxX, minY % PitchUI.PITCH_HEIGHT);
+                pitchuis.get(minPitch).setRubberBandTop(minX, maxX, minY % PitchUI.getPitchHeight());
                 pitchuis.get(minPitch).repaint();
 
                 int maxPitch = getPitch(maxY);
@@ -350,7 +350,7 @@ public class GridUI extends JComponent
                     }
                 oldMaxPitch = maxPitch;
 
-                pitchuis.get(maxPitch).setRubberBandBottom(minX , maxX, maxY % PitchUI.PITCH_HEIGHT);
+                pitchuis.get(maxPitch).setRubberBandBottom(minX , maxX, maxY % PitchUI.getPitchHeight());
                 pitchuis.get(maxPitch).repaint();
 
                 repaint();
@@ -369,6 +369,7 @@ public class GridUI extends JComponent
         {
         Box box = new Box(BoxLayout.Y_AXIS);
         // add to box in reverse order
+        int pitchHeight = PitchUI.getPitchHeight();
         for(int i = 127; i >= 0; i--)
             {
             PitchUI pitchui = pitchuis.get(i);
@@ -381,7 +382,7 @@ public class GridUI extends JComponent
 
             JPanel panel = new JPanel()
                 {
-                final Line2D.Double cSeparator = new Line2D.Double(0, PitchUI.PITCH_HEIGHT - 1, width, PitchUI.PITCH_HEIGHT - 1);
+                final Line2D.Double cSeparator = new Line2D.Double(0, pitchHeight - 1, width, pitchHeight - 1);
                 public Dimension getPreferredSize()
                     {
                     return dim;
@@ -404,7 +405,19 @@ public class GridUI extends JComponent
 
             if (mod == 0)
                 {
-                JLabel label = new JLabel(" C" + i/12);
+                JLabel label = null;
+                if (pitchHeight <= PitchUI.DEFAULT_PITCH_HEIGHT / 2)
+                	{
+	                 label = new JLabel("<html><font size=1>&nbsp;C" + i/12 + "</font></html>");
+                	}
+                else if (pitchHeight < PitchUI.DEFAULT_PITCH_HEIGHT)
+                	{
+	                 label = new JLabel("<html><font size=2>&nbsp;C" + i/12 + "</font></html>");
+                	}
+                else
+                	{
+	                 label = new JLabel("<html>&nbsp;C" + i/12 + "</html>");
+                	}
                 panel.setLayout(new BorderLayout());
                 panel.add(label, BorderLayout.WEST);
                 }
@@ -443,13 +456,13 @@ public class GridUI extends JComponent
     /** Returns pitch corresponding to the given event. */
     public int getPitch(MouseEvent evt)
         {
-        return (127 - evt.getY() / PitchUI.PITCH_HEIGHT);
+        return (127 - evt.getY() / PitchUI.getPitchHeight());
         }
 
     /** Returns pitch corresponding to the given pixel */
     public int getPitch(int y)
         {
-        return (127 - y / PitchUI.PITCH_HEIGHT);
+        return (127 - y / PitchUI.getPitchHeight());
         }
 
     /** Returns number of pixels correponding to the given time. */
@@ -642,6 +655,9 @@ public class GridUI extends JComponent
         }
     
        
+        // NONE:        Adjust Pitch AND Time
+        // META:       	Adjust Pitch and NOT Time
+        
     /** Moves the selected NOTES, not EVENTS to a new location in pitch and time indicated by the difference from the old origin
         to the new event, quantized. */
     public void moveSelectedNotes(MouseEvent origin, MouseEvent evt, EventUI dragEventUI)
@@ -665,6 +681,9 @@ public class GridUI extends JComponent
 				timeDiff = getQuantizedTime(evt) - dragEventUI.getOriginalWhen();
 				}
             }
+
+		boolean dontChangeTime = (MotifUI.optionOrMiddleMouseButton(evt));
+
         int pitchDiff = getPitchDiff(origin, evt);
 
         int oldWhen = -1;
@@ -685,13 +704,18 @@ public class GridUI extends JComponent
                 oldWhen = note.when;
                 note.when = eventui.getOriginalWhen() + timeDiff;
 
+				if (dontChangeTime)
+					{
+					note.when = oldWhen;
+					}
+            
                 /// FIXME: should there be a maximum?
                 if (note.when < 0) note.when = 0;
                 newWhen = note.when;
                                 
                 length = note.length;
 
-                if (note.when != oldWhen)
+              if (note.when != oldWhen)
                     {
                     pitchesToRepaint[note.pitch] = true;    // slide the note
                     }
@@ -712,13 +736,16 @@ public class GridUI extends JComponent
                 {
                 lock.unlock();
                 }
-                        
+            
             ((NoteUI)eventui).reload(oldWhen, newWhen, oldPitch, newPitch, length);
             }
         
         // re-sort -- this is going to be EXPENSIVE
         lock.lock();
-        recomputeMaxTime();		// so they're in the same lock
+		if (!MotifUI.optionOrMiddleMouseButton(evt))
+			{
+			recomputeMaxTime();		// so they're in the same lock
+			}
         try
             {
             getNotesUI().getNotes().sortEvents();

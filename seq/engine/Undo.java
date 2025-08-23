@@ -23,7 +23,17 @@ public class Undo<T>
         redoStack.clear();
         undoStack.add(current);
         }
-                
+          
+    public T onUndo()
+    	{
+    	return undoStack.get(undoStack.size() - 1);
+    	}
+
+    public T onRedo()
+    	{
+    	return redoStack.get(redoStack.size() - 1);
+    	}
+    	      
     public T undo(T current)
         {
         if (canUndo())

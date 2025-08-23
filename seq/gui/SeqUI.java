@@ -163,16 +163,25 @@ public class SeqUI extends JPanel
         lock.lock();
         try 
             { 
-            seq.push(motifui.getMotif()); 
+            seq.push(); 
             }
-        finally { lock.unlock(); }
+        finally 
+        	{ 
+        	lock.unlock(); 
+        	}
         }
 
     public void doUndo()
         {
-        boolean canUndo = false;
-        boolean canRedo = false;
         if (this.seq != null) this.seq.stop();
+        
+        // Get the list of motifs in order so we can rebuild it
+        ArrayList<Motif> oldMotifs = new ArrayList<>();
+        for(MotifUI motifui : list.getMotifUIs())
+        	{
+        	oldMotifs.add(motifui.getMotif());
+        	}
+        
         Motif display = null;
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -180,18 +189,31 @@ public class SeqUI extends JPanel
             {
             display = seq.undo(motifui.getMotif());
             if (display == null) return;  // failed to undo
-            canUndo = seq.canUndo(); 
-            canRedo = seq.canRedo(); 
             }
         finally { lock.unlock(); }
         reset(seq);
-        setMotifUI(list.getMotifUIFor(display));
+        MotifUI newMotifUI = list.getMotifUIFor(display);
+        MotifUI oldMotifUI = motifui;
+        oldMotifUI.preUndoOrRedo(newMotifUI);
+        setMotifUI(newMotifUI);
+        newMotifUI.postUndoOrRedo(oldMotifUI);
+        // Sort the list in the same order as the original motifs
+		list.sortInMotifOrder(oldMotifs);
+		// Set root
         list.setRoot(list.getMotifUIFor(seq.getData()));
         }
  
     public void doRedo()
         {
         if (this.seq != null) this.seq.stop();
+
+        // Get the list of motifs in order so we can rebuild it
+        ArrayList<Motif> oldMotifs = new ArrayList<>();
+        for(MotifUI motifui : list.getMotifUIs())
+        	{
+        	oldMotifs.add(motifui.getMotif());
+        	}
+
         Motif display = null;
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -202,7 +224,15 @@ public class SeqUI extends JPanel
             }
         finally { lock.unlock(); }
         reset(seq);
-        setMotifUI(list.getMotifUIFor(display));
+        MotifUI newMotifUI = list.getMotifUIFor(display);
+        MotifUI oldMotifUI = motifui;
+        oldMotifUI.preUndoOrRedo(newMotifUI);
+        setMotifUI(newMotifUI);
+        newMotifUI.postUndoOrRedo(oldMotifUI);
+        list.setRoot(list.getMotifUIFor(seq.getData()));
+        // Sort the list in the same order as the original motifs
+		list.sortInMotifOrder(oldMotifs);
+		// Set root
         list.setRoot(list.getMotifUIFor(seq.getData()));
         }
    
@@ -1526,7 +1556,7 @@ public class SeqUI extends JPanel
         frame.setVisible(true);
         }
         
-        
+    
     public static MotifUI setupInitialMotif(Motif[] motif, Seq seq, SeqUI ui)
         {
         MotifUI mui;

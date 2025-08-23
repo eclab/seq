@@ -158,6 +158,9 @@ public abstract class Clip
     /** Gets the current position */
     public int getPosition() { return position; }
 
+    /** Sets the current position.  It'd be best if you only called this in reset() or in loop(). */
+    public void setPosition(int val) { position = val; }
+
     /** Plays the clip for the sliver of time at its current position.  The clip has already
         been set as its motif's playing clip, and the parameters have already been loaded. 
         Returns TRUE if the Clip believes it is FINISHED at the conclusion of this processing 

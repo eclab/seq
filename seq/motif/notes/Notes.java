@@ -292,8 +292,8 @@ public class Notes extends Motif
             return obj;
             }
         
-        public String toString() { return NOTES[pitch % 12] + (pitch / 12) + " : " +  velocity; }       // We don't include Length because it would appear in the table
-
+        public String toString() { return NOTES[pitch % 12] + (pitch / 12) + ":" +  velocity + "[" + when + "-" + (when + length) + "]"; }       // We don't include Length because it would appear in the table
+	
         public double getNormalizedValue(boolean log) { return velocity / 128.0; }
         public void setNormalizedValue(double value, boolean log) { velocity = (int)(value * 128); }
         public int getParameter() { return pitch; }
@@ -332,7 +332,7 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "Bend[" + value + "]"; }
+        public String toString() { return "Bend:" + value + "[" + when + "]"; }
 
         /** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
             have much bigger impact.  This is useful for displaying */
@@ -420,7 +420,7 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "NRPN[" + parameter + "->" + value + "]"; }
+        public String toString() { return "NRPN:" + parameter + "->" + value + "[" + when + "]"; }
 
         public double getNormalizedValue(boolean log) { return value / 16384.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
@@ -473,7 +473,7 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "RPN[" + parameter + "->" + value + "]"; }
+        public String toString() { return "RPN:" + parameter + "->" + value + "[" + when + "]"; }
 
         public double getNormalizedValue(boolean log) { return value / 16384.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
@@ -516,7 +516,7 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "CC[" + parameter + "->" + value + "]"; }
+        public String toString() { return "CC:" + parameter + "->" + value + "[" + when + "]"; }
 
         public double getNormalizedValue(boolean log) { return value / 128.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
@@ -555,7 +555,7 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "PC[" + value + "]"; }
+        public String toString() { return "PC:" + value + "[" + when + "]"; }
 
         public double getNormalizedValue(boolean log) { return value / 128.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
@@ -606,9 +606,9 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "AT[" + 
-                    (pitch == Out.CHANNEL_AFTERTOUCH ? "" : 
-                    "" + (NOTES[pitch % 12] + (pitch / 12)) + "->")  + value + "]"; }
+        public String toString() { return "AT" + 
+                    (pitch == Out.CHANNEL_AFTERTOUCH ? ":" : ":" + (NOTES[pitch % 12] + (pitch / 12)) + "->")
+                      + value + "[" + when + "]"; }
 
         public double getNormalizedValue(boolean log) { return value / 128.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
@@ -809,6 +809,8 @@ public class Notes extends Motif
     boolean echo = true;
     // Do I display bend as a log or linearly?
     boolean log = true;
+    // The start marker for the Notes
+    int start = 0;
     // The end marker for the Notes
     int end = 0;
     // Default velocity for new Notes
@@ -918,6 +920,11 @@ public class Notes extends Motif
     public void setEnd(int end) { this.end = end; }
     /** Sets the endpoint. */
     public int getEnd() { return end; }
+    
+    /** Returns the start point. */
+    public void setStart(int start) { this.start = start; }
+    /** Sets the start point. */
+    public int getStart() { return start; }
     
     /** Returns the highest timestamp of the onset of any event. */
     public int getMaxEventPosition() { return maxEventPosition; }
@@ -1529,25 +1536,34 @@ public class Notes extends Motif
               
 
     /** Stretches the onset and length of the provided events so that the previous time interval STRETCHFROM
-        is stretched to fill the time interval STRETCHTO.  If LOCKTOSTART is true, then the stretched events
+        is stretched to fill the time interval STRETCHTO.  The stretched events
         are shifted in time afterwards so that the first event's onset is the same as it originally was. */
-    public void stretch(ArrayList<Event> events, int stretchFrom, int stretchTo, boolean lockToStart)
+    public void stretch(ArrayList<Event> events, int stretchFrom, int stretchTo)
         {
         if (stretchFrom == stretchTo) return;
         if (events.isEmpty()) return;
         
+        // Find start time
         int startTime = -1;
         Event startEvent = null;
         for(Event event : events)
             {
-            if (lockToStart)
-                {
-                if (startTime == -1 || event.when < startTime)
-                    {
-                    startTime = event.when;
-                    startEvent = event;
-                    }
-                }
+			if (startTime == -1 || event.when < startTime)
+				{
+				startTime = event.when;
+				startEvent = event;
+				}
+            }
+
+		// Shift to start time 0
+        for(Event event : events)
+            {
+			event.when -= startTime;
+            }
+
+		// Multiply
+        for(Event event : events)
+			{
             event.when = (int)Math.round((event.when * stretchTo) / (double)stretchFrom);
             if (event instanceof Note)
                 {
@@ -1555,15 +1571,14 @@ public class Notes extends Motif
                 note.length = (int)Math.round((event.getLength() * stretchTo) / (double)stretchFrom);
                 }
             }
-            
-        if (lockToStart && startTime != -1)
-            {
-            for(Event event : events)
-                {
-                event.when -= (startEvent.when - startTime);    // reset to start time
-                }
-            }
         
+        // Shift back
+        int newStartTime = startEvent.when;
+        for(Event event : events)
+            {
+			event.when = event.when - newStartTime + startTime;
+            }
+
         sortEvents(events);
         computeMaxTime(); 
         }
@@ -1887,6 +1902,7 @@ public class Notes extends Motif
     /** Loads the Notes object from JSON */
     public void load(JSONObject obj) throws JSONException
         {
+        setStart(obj.optInt("start", 0));
         setEnd(obj.optInt("end", 0));
         setEcho(obj.optBoolean("echo", false));
         setOut(obj.optInt("out", 0));
@@ -1925,6 +1941,7 @@ public class Notes extends Motif
     /** Saves the Notes object to JSON */
     public void save(JSONObject obj) throws JSONException
         {
+        obj.put("start", getStart());
         obj.put("end", getEnd());
         obj.put("echo", getEcho());
         obj.put("out", getOut());
