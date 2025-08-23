@@ -80,6 +80,9 @@ public class NotesClip extends Clip
     public void loop()
         {
         super.loop();
+        // push position
+        Notes notes = (Notes) getMotif();
+        setPosition(notes.getStart());
         updateIndex();
         }
                 
@@ -88,6 +91,9 @@ public class NotesClip extends Clip
         {
         super.reset();
 //        moveRecording();                // also calls updateIndex() if nonempty
+        // push position
+        Notes notes = (Notes) getMotif();
+        setPosition(notes.getStart());
         updateIndex();
         }
 
@@ -149,7 +155,7 @@ public class NotesClip extends Clip
                     }
 
                 notes.clearRecording();
-                updateIndex();
+//                updateIndex();
                 setDidRecord(true);
                 }
             else 
@@ -168,7 +174,7 @@ public class NotesClip extends Clip
         {
         super.terminate();
         moveRecording();
-        updateIndex();
+//        updateIndex();
         }
         
     /** Cuts all current echoed notes. */

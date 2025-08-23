@@ -298,12 +298,17 @@ public class NoteUI extends EventUI implements Comparable
                 e = SwingUtilities.convertMouseEvent(NoteUI.this, e, gridui);
                 if (isResizing())
                     {
+                    if (!dragged)
+                    	{
+                    	gridui.getNotesUI().getSeqUI().push();
+                    	}
                     gridui.resizeSelectedNotes(NoteUI.this, e);
                     }
                 else
                     {
                     if (!dragged)
                     	{
+                    	gridui.getNotesUI().getSeqUI().push();
                     	gridui.moveSelectedToTop();
                     	}
                     gridui.moveSelectedNotes(mouseDownEvent, e, NoteUI.this);

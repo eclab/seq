@@ -25,6 +25,7 @@ public class NotesInspector extends WidgetList
     JComboBox in;
     JComboBox out;
     TimeDisplay end;
+    TimeDisplay start;
     WidgetList recordList1;
     WidgetList noteDisplayList;
     JCheckBox armed;
@@ -175,6 +176,25 @@ public class NotesInspector extends WidgetList
                     }
                 });
 
+            start = new TimeDisplay(0, seq)
+                {
+                public int getTime()
+                    {
+                    return notes.getStart();
+                    }
+                        
+                public void setTime(int time)
+                    {
+                    notes.setStart(time);
+                    }
+                public void setTimeOutside(int time)
+                    {
+                    notesui.getGridUI().repaint();
+                    notesui.getEventsUI().repaint();
+                    }
+                };
+            start.setDisplaysTime(true);
+                                                                        
             end = new TimeDisplay(0, seq)
                 {
                 public int getTime()
@@ -639,6 +659,7 @@ public class NotesInspector extends WidgetList
         name.setToolTipText(NAME_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
         in.setToolTipText(IN_TOOLTIP);
+        start.setToolTipText(START_TOOLTIP);
         end.setToolTipText(END_TOOLTIP);
         echo.setToolTipText(ECHO_TOOLTIP);
         armed.setToolTipText(ARMED_TOOLTIP);
@@ -664,13 +685,14 @@ public class NotesInspector extends WidgetList
 		logBend.setToolTipText(LOGARITHMIC_PITCH_BEND_TOOLTIP);
 		parameterHeight.setToolTipText(DISPLAY_HEIGHT_TOOLTIP);
 
-        build(new String[] { "Name", "Out", "In", "End", "Armed", "Echo"}, 
+        build(new String[] { "Name", "Out", "In", "Start", "End", "Armed", "Echo"}, 
             new JComponent[] 
                 {
                 name,
                 out,
                 in,
-                end, //endPanel,
+                start,
+                end,
                 armed,
                 echo,
                 });
@@ -908,6 +930,7 @@ public class NotesInspector extends WidgetList
         finally { lock.unlock(); }                              
         seq = old;
         name.update();
+        if (start != null) start.revise();
         if (end != null) end.revise();
         if (quantizeBias != null) quantizeBias.redraw();
         if (defaultNoteVelocity != null) defaultNoteVelocity.redraw();
@@ -932,15 +955,12 @@ public class NotesInspector extends WidgetList
     static final String IN_TOOLTIP = "<html><b>In</b><br>" +
         "Sets the MIDI input for recording to the Notes.</html>";
         
+    static final String START_TOOLTIP = "<html><b>Start</b><br>" +
+        "Sets the Start time of the Notes.</html>";
+        
     static final String END_TOOLTIP = "<html><b>End</b><br>" +
         "Sets the End time of the Notes.  The Notes will terminate after the End time,<br>" +
         "or after the last event has completed, whichever is later.</html>";
-        
-/*
-  static final String SET_END_TOOLTIP = "<html><b>Set End</b><br>" +
-  "Sets the End of the Notes to the time at left.  The Notes will terminate<br>" +
-  "after the End, or after the last event has completed, whichever is later.</html>";
-*/
         
     static final String ECHO_TOOLTIP = "<html><b>Echo</b><br>" +
         "Sets whether received MIDI data will be echoed out Output during recording.</html.";

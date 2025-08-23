@@ -8,6 +8,7 @@ package seq.motif.notes.gui;
 import seq.engine.*;
 import seq.gui.*;
 import seq.motif.notes.*;
+import seq.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -19,8 +20,6 @@ public class PitchUI extends JLayeredPane
     {
     // Which pitches in the octave are black notes?
     public static final boolean BLACK[] = { false, true, false, true, false, false, true, false, true, false, true, false };
-    // How tall am I?
-    public static final int PITCH_HEIGHT = 16;
     // My background color if I am a black note pitch
     public static final Color BLACK_BACKGROUND_COLOR = new Color(210, 210, 210);
     // My background color if I am a white note pitch
@@ -35,6 +34,8 @@ public class PitchUI extends JLayeredPane
     public static final Color RUBBER_BAND_COLOR = new Color(32, 64, 32);
     // The Stroke for the rubber band
     public static final Stroke RUBBER_BAND_STROKE = new BasicStroke(3.0f);
+    // The color for the Start marker
+    public static final Color START_COLOR = new Color(0, 160, 160);
     // The color for the End marker
     public static final Color END_COLOR = new Color(180, 0, 180);
  
@@ -82,7 +83,24 @@ public class PitchUI extends JLayeredPane
         rubberBandEndY = -1;
         }
     
-    /** Returns the GridUI */
+ 
+    public static final int DEFAULT_PITCH_HEIGHT = 16;
+    // How tall am I?
+ 	static int pitchHeight = DEFAULT_PITCH_HEIGHT;
+     // How tall am I?
+    public static final int getPitchHeight() { return pitchHeight; }
+    public static final void setPitchHeight(int val) 
+    	{ 
+    	pitchHeight = val;
+        Prefs.setLastInt("PitchHeight", val);
+    	}
+    	
+    static
+    	{
+		pitchHeight = Prefs.getLastInt("PitchHeight", DEFAULT_PITCH_HEIGHT);
+    	}
+
+   /** Returns the GridUI */
     public GridUI getGridUI() { return gridui; }
 
     /** Returns the NotesUI */
@@ -211,7 +229,7 @@ public class PitchUI extends JLayeredPane
     public Dimension getMinimumSize()
         {
         // The width is the largest current time, in pixels
-        return new Dimension(gridui.getPixels(gridui.getMaximumTime()), PITCH_HEIGHT);
+        return new Dimension(gridui.getPixels(gridui.getMaximumTime()), getPitchHeight());
         }
         
     /** Makes the given notes appear on top of other notes. */
@@ -272,9 +290,9 @@ public class PitchUI extends JLayeredPane
         
         
     // The line that separates two white notes with no black note in-between, namely B/C and E/F
-    static final Line2D.Double cSeparator = new Line2D.Double(0, PITCH_HEIGHT - 1, Integer.MAX_VALUE, PITCH_HEIGHT - 1);
+    static final Line2D.Double cSeparator = new Line2D.Double(0, getPitchHeight() - 1, Integer.MAX_VALUE, getPitchHeight() - 1);
     // Vertical lines
-    static final Line2D.Double vertical = new Line2D.Double(0, 0, 0, PITCH_HEIGHT);
+    static final Line2D.Double vertical = new Line2D.Double(0, 0, 0, getPitchHeight());
     // Ruber band lines
     static final Line2D.Double rubberBand = new Line2D.Double(0, 0, 0, 0);
         
@@ -300,7 +318,7 @@ public class PitchUI extends JLayeredPane
         for(int i = startWhen; i < endWhen; i += divisor)
             {
             double _i = i / scale;
-            vertical.setLine(_i, 0, _i, PITCH_HEIGHT);
+            vertical.setLine(_i, 0, _i, getPitchHeight());
             g.draw(vertical);
             }
         }
@@ -322,6 +340,7 @@ public class PitchUI extends JLayeredPane
             if (pitch != 0)         // don't draw the first one
                 {
                 g.setPaint(BLACK_BACKGROUND_COLOR);
+                cSeparator.setLine(0, getPitchHeight() - 1, Integer.MAX_VALUE, getPitchHeight() - 1);
                 g.draw(cSeparator);
                 }
             g.setPaint(Color.BLACK);
@@ -330,6 +349,7 @@ public class PitchUI extends JLayeredPane
         else if (mod == 5)              // F
             {
             g.setPaint(BLACK_BACKGROUND_COLOR);
+            cSeparator.setLine(0, getPitchHeight() - 1, Integer.MAX_VALUE, getPitchHeight() - 1);
             g.draw(cSeparator);
             } 
         
@@ -343,6 +363,7 @@ public class PitchUI extends JLayeredPane
         double scale = gridui.getScale();
         int beatsPerBar = 0;
         int endTime = 0;
+        int startTime = 0;
         Seq seq = getSeq();
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -350,6 +371,7 @@ public class PitchUI extends JLayeredPane
             {
             beatsPerBar = seq.getBar();
             endTime = notes.getEnd();
+            startTime = notes.getStart();
             }
         finally
             {
@@ -378,12 +400,21 @@ public class PitchUI extends JLayeredPane
         // draw bars
         drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, COLOR_BAR, scale, g);
 
+        // draw start
+        int startX = gridui.getPixels(startTime);
+        if (startX > 0)
+            {
+            g.setColor(START_COLOR);
+            vertical.setLine(startX, 0, startX, getPitchHeight());
+            g.draw(vertical);
+            }
+
         // draw end
         int endX = gridui.getPixels(endTime);
         if (endX > 0)
             {
             g.setColor(END_COLOR);
-            vertical.setLine(endX, 0, endX, PITCH_HEIGHT);
+            vertical.setLine(endX, 0, endX, getPitchHeight());
             g.draw(vertical);
             }
         }
