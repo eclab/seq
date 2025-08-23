@@ -604,6 +604,8 @@ You can also select multiple notes by clicking on the display and dragging a rub
 
 If you hold down the {\bf shift key} you can add and remove notes to your selection by clicking them or rubber-band dragging around them.  You can do the same by {\bf right clicking}.
 
+If you hold down the {\bf option} or {\bf alt} key while dragging, or drag with the {\bf middle mouse button}, then the selected notes will change in pitch but not in time.
+
 If you have selected only one note, its Inspector will appear, and you can change its timestamp, length, pitch, velocity, and release velocity manually.
 
 When you change the time or length of a note and you have {\bf Snap To} turned on (see the pop-up menu at the bottom of the screen), it will {\bf snap} to the nearest 64th note, 16th note, triplet, or beat.  If instead you have {\bf Snap By} turned on, it will {\bf jump} forward or backward by one 64th note, 16th note, triplet, or beat in distance.
@@ -631,7 +633,7 @@ You can delete your selection with the {\bf Delete Button} (the minus sign) at t
 
 \paragraph{Playing Notes (and other Events)}
 
-When Notes is played, it plays through and emits all its events in order exactly once, then stops.  You can optionally set an {\bf End} point in the Inspector sometime {\it after} the last notes and events.  This will tell the Notes to stop at an End point later than the notes and events.  If you set the End point earlier than the last notes and events, it does nothing.
+When Notes is played, it plays through and emits all its events in order exactly once, then stops.  You can optionally set a {\bf Start} point and an {\bf End} point in the Inspector.  Play will commence at the Start point, and will end after the End point, or after the last note or event in the sequence, whichever is later.  Start can obviously be equal to or after End: in this case, play commences at start and ends as soon as the last note or event is over.
 
 All notes and events are emitted out the same MIDI output specified by the {\bf Out} in the Notes Inspector.
 
