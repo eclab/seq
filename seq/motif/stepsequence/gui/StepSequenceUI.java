@@ -477,7 +477,7 @@ public class StepSequenceUI extends MotifUI
         TrackUI track = null;
         int where = selectedTrackNum;
 
-        seq.push();
+        sequi.push();
         seq.getLock().lock();
         try
             {
@@ -509,7 +509,7 @@ public class StepSequenceUI extends MotifUI
         TrackUI track = null;
         int where = tracks.size(); // selectedTrackNum + 1;
 
-        seq.push();
+        sequi.push();
         seq.getLock().lock();
         try
             {
@@ -539,7 +539,7 @@ public class StepSequenceUI extends MotifUI
         if (tracks.size() <= 1) return;     //leave at least one track
         int where = selectedTrackNum;   
                 
-        seq.push();
+        sequi.push();
         // Remove from step sequence
         seq.getLock().lock();
         try

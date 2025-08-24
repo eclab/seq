@@ -209,7 +209,7 @@ public class FilterUI extends MotifUI
             }
         if (at != -1)
             {
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -382,7 +382,7 @@ public class FilterUI extends MotifUI
                     else if (comp instanceof FilterButton)
                         {
                         int at = ((FilterButton)comp).getAt();
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof FilterButton)
                             {
                             //moveChild((FilterButton)dropped, at);

@@ -14,6 +14,7 @@ import javax.sound.midi.*;
 import javax.sound.midi.spi.*;
 import java.io.*;
 import java.net.*;
+import java.awt.*;
 
 public class Notes extends Motif
     {
@@ -817,6 +818,8 @@ public class Notes extends Motif
     int defaultVelocity;
     // Default release velocity for new Notes
     int defaultReleaseVelocity;
+    // Window view position, used for undo and not saved
+    Point viewPosition;
     
     public static final int INTEGRATE_REPLACE = 0;
     public static final int INTEGRATE_REPLACE_TRIM = 1;
@@ -825,9 +828,14 @@ public class Notes extends Motif
     
     int recordIntegration = INTEGRATE_REPLACE;
 
+
+	/** Returns the current view position undo cache */
+	public Point getViewPosition() { return viewPosition; }
+	/** Sets the current view position undo cache */
+	public void setViewPosition(Point val) { viewPosition = val; }
+	
     /** Returns the recorded note integration method. */
     public int getRecordIntegration() { return recordIntegration; }
-        
     /** Sets the recorded note integration method. */
     public void setRecordIntegration(int val) { recordIntegration = val; Prefs.setLastInt("seq.motif.notes.Notes.recordintegration", val); }
         

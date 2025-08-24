@@ -522,7 +522,7 @@ childOuter.setBorder(childBorder);
             }
         if (at != -1)
             {
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -732,7 +732,7 @@ childOuter.setBorder(childBorder);
                     else if (comp instanceof ArpeggioButton)
                         {
                         int at = ((ArpeggioButton)comp).getAt();
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof ArpeggioButton)
                             {
                             //moveChild((ArpeggioButton)dropped, at);

@@ -348,9 +348,9 @@ public static boolean optionOrMiddleMouseButton(MouseEvent evt)
 		SwingUtilities.isMiddleMouseButton(evt);
 	}
 
-/** A hook called on the OLD MotifUI prior to doing an undo or redo: you can override this method
+/** A hook called on the OLD MotifUI prior to doing a push: you can override this method
 	to prepare information to restore after the undo or redo (see NotesUI as an example). */
-public void preUndoOrRedo(MotifUI newMotifUI) { }
+public void prePush() { }
 
 /** A hook called on the NEW MotifUI after doing an undo or redo: you can override this method
 	to restore information after the undo or redo (see NotesUI as an example). */

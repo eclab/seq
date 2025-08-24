@@ -249,7 +249,7 @@ public class ParallelUI extends MotifUI
             }
         if (at != -1)
             {
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -296,7 +296,7 @@ public class ParallelUI extends MotifUI
             {
             Motif motif = null;
             int end = 0;
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -511,7 +511,7 @@ public class ParallelUI extends MotifUI
                             }
                         if (at != -1)
                             {
-                            seq.push();
+                            sequi.push();
                             if (dropped instanceof ParallelButton)
                                 {
                                 moveChild((ParallelButton)dropped, at);
@@ -534,7 +534,7 @@ public class ParallelUI extends MotifUI
                             {
                             seq.getLock().unlock();
                             }
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof ParallelButton)
                             {
                             moveChild((ParallelButton)dropped, at);

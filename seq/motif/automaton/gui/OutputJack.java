@@ -73,7 +73,7 @@ public class OutputJack extends InputOutput
             {
             public void mousePressed(MouseEvent e)
                 {
-                automatonui.getSeq().push();
+                automatonui.getSeqUI().push();
                 disconnect();
                                 
                 temp = new Wire(paintComponent);

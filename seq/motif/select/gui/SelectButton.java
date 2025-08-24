@@ -129,7 +129,9 @@ public class SelectButton extends MotifButton
         finally { lock.unlock(); }
         return false;
         }
-        
+    
+    String lastText = null;
+    
     public void updateText()
         {
         String name = null;
@@ -201,15 +203,22 @@ public class SelectButton extends MotifButton
                     subname = StringUtility.sanitize(subname);
                     }
                 }
-                        
+            
+            String text = null;    
             if (subname == null || subname.equals(""))
                 {
-                setText("<html><center>" + StringUtility.sanitize(name) + "</center></html>");
+                text = "<html><center>" + StringUtility.sanitize(name) + "</center></html>";
                 }
             else
                 {
-                setText("<html><center>" + subname + "</center></html>");
+                text = "<html><center>" + subname + "</center></html>";
                 }
+
+			if (!text.equals(lastText))
+				{
+				setText(text);
+				lastText = text;
+				}
             }
         }
 
@@ -222,6 +231,7 @@ public class SelectButton extends MotifButton
             }
         }
 
+/*
     public String getSubtext()
         {
         Seq seq = sequi.getSeq();
@@ -252,6 +262,7 @@ public class SelectButton extends MotifButton
         
         return subname;
         }
+*/
 
     public void doubleClick(MouseEvent e)
         {

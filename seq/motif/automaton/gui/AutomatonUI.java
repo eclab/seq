@@ -112,7 +112,7 @@ public class AutomatonUI extends MotifUI
             sequi.showSimpleError("Cannot Make Start Node", "Select a node before making it the start node.");
             return;
             }
-        seq.push();
+        sequi.push();
         seq.getLock().lock();
         try
             {
@@ -573,7 +573,7 @@ public class AutomatonUI extends MotifUI
             return;
             }
         
-        seq.push();
+        sequi.push();
         // First, we remove all incoming and outgoing edges
         button.disconnectJacks();
         
@@ -642,7 +642,7 @@ public class AutomatonUI extends MotifUI
             return;
             }
 
-        seq.push();
+        sequi.push();
         // okay, we can make the copy, go ahead and do it
         seq.getLock().lock();
         Automaton.Node node = null;
@@ -892,7 +892,7 @@ public class AutomatonUI extends MotifUI
                     else if (comp instanceof AutomatonButton)
                         {
                         int at = ((AutomatonButton)comp).getAt();
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof AutomatonButton)
                             {
                             doMove((AutomatonButton)dropped, at);
@@ -916,7 +916,7 @@ public class AutomatonUI extends MotifUI
                     else if (comp instanceof AutomatonButton)
                         {
                         int at = ((AutomatonButton)comp).getAt();
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof AutomatonNodeButton)
                             {
                             doAdd(((AutomatonNodeButton)dropped).getType(), at);

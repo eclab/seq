@@ -437,7 +437,7 @@ public class SelectUI extends MotifUI
             }
         if (at != -1)
             {
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -501,7 +501,7 @@ public class SelectUI extends MotifUI
                 return;
                 }
                 
-            seq.push();
+            sequi.push();
             // okay, we can make the copy, go ahead and do it
             seq.getLock().lock();
             try
@@ -714,7 +714,7 @@ public class SelectUI extends MotifUI
                     else if (comp instanceof SelectButton)
                         {
                         int at = ((SelectButton)comp).getAt();
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof SelectButton)
                             {
                             moveChild((SelectButton)dropped, at);

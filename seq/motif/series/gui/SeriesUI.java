@@ -243,7 +243,7 @@ public class SeriesUI extends MotifUI
         if (at != -1)
             {
             ArrayList<Motif.Child> children = null;
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -291,7 +291,7 @@ public class SeriesUI extends MotifUI
             {
             Motif motif = null;
             int end = 0;
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -501,7 +501,7 @@ public class SeriesUI extends MotifUI
                             }
                         if (at != -1)
                             {
-                            seq.push();
+                            sequi.push();
                             if (dropped instanceof SeriesButton)
                                 {
                                 moveChild((SeriesButton)dropped, at);
@@ -524,7 +524,7 @@ public class SeriesUI extends MotifUI
                             {
                             seq.getLock().unlock();
                             }
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof SeriesButton)
                             {
                             moveChild((SeriesButton)dropped, at);

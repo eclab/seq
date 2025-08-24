@@ -159,11 +159,17 @@ public class SeqUI extends JPanel
         
     public void push()
         {
+			for(MotifUI motifui : list.getMotifUIs())
+				{
+				motifui.prePush();
+				}
+
+		Motif motif = getMotifUI().getMotif();
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
             { 
-            seq.push(); 
+            seq.push(motif); 
             }
         finally 
         	{ 
@@ -194,13 +200,17 @@ public class SeqUI extends JPanel
         reset(seq);
         MotifUI newMotifUI = list.getMotifUIFor(display);
         MotifUI oldMotifUI = motifui;
-        oldMotifUI.preUndoOrRedo(newMotifUI);
+//        oldMotifUI.preUndoOrRedo(newMotifUI);
         setMotifUI(newMotifUI);
-        newMotifUI.postUndoOrRedo(oldMotifUI);
+//        newMotifUI.postUndoOrRedo(oldMotifUI);
         // Sort the list in the same order as the original motifs
 		list.sortInMotifOrder(oldMotifs);
 		// Set root
         list.setRoot(list.getMotifUIFor(seq.getData()));
+		for(MotifUI motifui : list.getMotifUIs())
+			{
+			 motifui.postUndoOrRedo(oldMotifUI);
+			}
         }
  
     public void doRedo()
@@ -226,14 +236,18 @@ public class SeqUI extends JPanel
         reset(seq);
         MotifUI newMotifUI = list.getMotifUIFor(display);
         MotifUI oldMotifUI = motifui;
-        oldMotifUI.preUndoOrRedo(newMotifUI);
+//        oldMotifUI.preUndoOrRedo(newMotifUI);
         setMotifUI(newMotifUI);
-        newMotifUI.postUndoOrRedo(oldMotifUI);
+//        newMotifUI.postUndoOrRedo(oldMotifUI);
         list.setRoot(list.getMotifUIFor(seq.getData()));
         // Sort the list in the same order as the original motifs
 		list.sortInMotifOrder(oldMotifs);
 		// Set root
         list.setRoot(list.getMotifUIFor(seq.getData()));
+		for(MotifUI motifui : list.getMotifUIs())
+			{
+			 motifui.postUndoOrRedo(oldMotifUI);
+			}
         }
    
     public boolean getSelectedFrameIsRoot() { return selectedFrameIsRoot; }
@@ -413,7 +427,7 @@ public class SeqUI extends JPanel
         try
             {
             p = new PrintWriter(new GZIPOutputStream(new FileOutputStream(seq.getFile())));
-            if (seq != null) seq.stop();
+            //if (seq != null) seq.stop();
             p.println(seq.save(true));          // we just print the JSONObject
             p.flush();
             p.close();
@@ -457,7 +471,7 @@ public class SeqUI extends JPanel
                 frame.setTitle(fd.getFile());
                                 
                 p = new PrintWriter(new GZIPOutputStream(new FileOutputStream(f)));
-                if (seq != null) seq.stop();
+                //if (seq != null) seq.stop();
                 p.println(seq.save(true));          // we just print the JSONObject
                 p.flush();
                 p.close();

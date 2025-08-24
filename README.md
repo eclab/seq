@@ -125,4 +125,5 @@ Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq
 
 3. Run Seq as:   `java -jar seq.jar`
 
+4. Seq benefits from a lower-latency garbage collector to prevent it from glitching.  You might instead run Seq as:     `java -XX:+UseZGC -XX:MaxGCPauseMillis=1 -jar seq.jar` 
 

@@ -32,7 +32,7 @@ public class NotesUI extends MotifUI
     // Options for pitch magnification
     public static final String[] PITCH_OPTIONS = { "Small Notes", "Medium Notes", "Large Notes" };
     // Options for snapping to or by
-    public static final int[] PITCH_HEIGHTS = { 8, 12, 16 };
+    public static final int[] PITCH_HEIGHTS = { 9, 12, 16 };
     // Options for snapping to or by
     public static final String[] SNAP_OPTIONS = { "No Snap", "Snap to 64th", "Snap to 16th", "Snap to Triplet", "Snap to Beat", "Snap by 64th", "Snap by 16th", "Snap by Triplet", "Snap by Beat" };
     // Quantizations for the snap options
@@ -654,7 +654,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            seq.push();
+            sequi.push();
                 notes.quantize(events, divisor, _ends, _nonNotes, _bias);
                 }
             finally
@@ -738,7 +738,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            seq.push();
+            sequi.push();
                 notes.randomizeTime(events, _variance, _lengths, _nonNotes, seq.getDeterministicRandom());
                 }
             finally
@@ -810,7 +810,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            seq.push();
+            sequi.push();
                 notes.randomizeVelocity(events, _variance, _releases, seq.getDeterministicRandom());
                 }
             finally
@@ -878,7 +878,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            seq.push();
+            sequi.push();
                 notes.setVelocity(events, _velocity);
                 }
             finally
@@ -962,7 +962,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            seq.push();
+            sequi.push();
                 notes.filter(events, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removePC, _removeAftertouch);
                 }
             finally
@@ -990,7 +990,7 @@ public class NotesUI extends MotifUI
         lock.lock();
         try
             {
-        seq.push();
+        sequi.push();
             notes.trim();
             }
         finally
@@ -1062,7 +1062,7 @@ public class NotesUI extends MotifUI
             lock.lock();
             try
                 {
-            seq.push();
+            sequi.push();
                 if (all)
                     {
                     notes.shift(_by);
@@ -1139,7 +1139,7 @@ public class NotesUI extends MotifUI
             lock.lock();
             try
                 {
-             seq.push();
+             sequi.push();
                notes.stretch(events, _from, _to);
                 }
             finally
@@ -1245,7 +1245,7 @@ public class NotesUI extends MotifUI
                 lock.lock();
                 try
                     {
-            seq.push();
+            sequi.push();
                     notes.read(stream = new FileInputStream(fd.getDirectory() + fd.getFile()));
                     events = new ArrayList<Notes.Event>(notes.getEvents());         // copy?
                     }
@@ -1701,7 +1701,7 @@ public class NotesUI extends MotifUI
         lock.lock();
         try
             {
-        seq.push();
+        sequi.push();
 
         for(Notes.Event event : events)
             {
@@ -1890,7 +1890,7 @@ public class NotesUI extends MotifUI
             lock.lock();
             try
                 {
-                seq.push();
+                sequi.push();
         for(Notes.Event event : events)
             {
             eventsCopy.add(event.copy());
@@ -1909,26 +1909,31 @@ public class NotesUI extends MotifUI
         newNotesUI.doScrollToSelected();
         }
         
-	static Point undoScrollPosition = null;
-
-	// FIXME:  Maybe we should do these tests based on whether the tag is the same
-	
 	// Here we store the previous JViewport position so we can restore it in the new MotifUI
-	public void preUndoOrRedo(MotifUI newMotifUI) 
+	public void prePush() 
 		{
-		if (newMotifUI instanceof NotesUI && newMotifUI.getTag() == getTag()) 
-			{
-			undoScrollPosition = getPrimaryScroll().getViewport().getViewPosition(); 
-			}
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                notes.setViewPosition(getPrimaryScroll().getViewport().getViewPosition());
+                }
+            finally { lock.unlock(); }
 		}
 
 	// Here we restore the JViewport position from the old MotifUI
 	public void postUndoOrRedo(MotifUI oldMotifUI) 
 		{ 
-		if (oldMotifUI instanceof NotesUI && undoScrollPosition != null && oldMotifUI.getTag() == getTag()) 
-			{ 
-			getPrimaryScroll().getViewport().setViewPosition(undoScrollPosition); 
-			}
+			Point vp = null;
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                vp = notes.getViewPosition();
+                }
+            finally { lock.unlock(); }
+
+			getPrimaryScroll().getViewport().setViewPosition(vp); 
 		}
 
                           

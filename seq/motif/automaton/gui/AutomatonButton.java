@@ -422,10 +422,19 @@ public class AutomatonButton extends MotifButton
             }
         finally { lock.unlock(); }
 
-        if (seqPlaying && playingCount == 1) setForeground(Color.RED);
-        else if (seqPlaying && playingCount > 1) setForeground(Color.BLUE);
-        else setForeground(null);
-        setText("<html><center>" + StringUtility.sanitize(name) + "</center></html>");
+/*
+		String color = "<font color=black>";
+        if (seqPlaying && playingCount == 1 ) { color = "<font color=red>"; }
+        else if (seqPlaying && playingCount > 1) { color = "<font color=blue>"; }
+*/        // </color>
+		String color = "";
+		setForeground(seqPlaying && playingCount == 1 ? Color.RED : Color.GREEN);
+        String text = "<html><center><font size=1>" + color + StringUtility.sanitize(name) + "</font></center></html>";
+		if (!text.equals(lastText))
+			{
+			setText(text);
+			lastText = text;
+			}
         }
 
     public void disconnect()
@@ -437,6 +446,7 @@ public class AutomatonButton extends MotifButton
             }
         }
 
+/*
     public String getSubtext()
         {
         Seq seq = sequi.getSeq();
@@ -467,6 +477,7 @@ public class AutomatonButton extends MotifButton
         
         return subname;
         }
+*/
 
     public void doubleClick(MouseEvent e)
         {

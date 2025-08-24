@@ -17,6 +17,7 @@ import java.util.*;
 
 public class GridUI extends JComponent
     {
+    public static final Color COLOR_CLEAR = new Color(0,0,0,0);
     // Default scaling factor.  Scaling factors are powers of 2
     public static final double DEFAULT_SCALE = 2.0;
     // Highest (most zoomed out) scaling factor.  Scaling factors are powers of 2
@@ -418,6 +419,8 @@ public class GridUI extends JComponent
                 	{
 	                 label = new JLabel("<html>&nbsp;C" + i/12 + "</html>");
                 	}
+                // pushing up makes the small notes a little clearer
+                label.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, COLOR_CLEAR));
                 panel.setLayout(new BorderLayout());
                 panel.add(label, BorderLayout.WEST);
                 }

@@ -528,7 +528,7 @@ public class MotifList extends JPanel
         MotifUI copy = buildMotifUIFor(motif);
         if (copy == null) return;       // uh oh
 
-        seq.push();        
+        sequi.push();        
         lock = seq.getLock();
         lock.lock();
         try { seq.addMotif(copy.getMotif()); }
@@ -579,7 +579,7 @@ public class MotifList extends JPanel
         primary button, selects it, and redraws everything. */
     public void doAdd(MotifUI motifui, boolean pushUndo)
         {
-        if (pushUndo) seq.push();
+        if (pushUndo) sequi.push();
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try { seq.addMotif(motifui.getMotif()); }
@@ -678,7 +678,7 @@ public class MotifList extends JPanel
             try
                 {
                 Macro macro = new Macro(seq, new JSONObject(new JSONTokener(stream = new GZIPInputStream(new FileInputStream(fd.getDirectory()+fd.getFile())))));
-                seq.push();
+                sequi.push();
                 doAdd(MacroUI.create(seq, sequi, macro));
                 }
             catch (Exception ex)
@@ -772,7 +772,7 @@ public class MotifList extends JPanel
                 if (sequi.showSimpleConfirm("Stop and Delete Root", "To delete the root, we'll need stop the sequence make something else the root first.", "Stop and Change Root", "Cancel"))
                     {
                     // Finally, we'll do the push
-                    seq.push();
+                    sequi.push();
                     if (buttons.indexOf(selectedButton) == 0)
                         {
                         setRoot(buttons.get(1));
@@ -787,7 +787,7 @@ public class MotifList extends JPanel
             else 
                 {
                 // Finally, we'll do the push
-                seq.push();
+                sequi.push();
                 if (buttons.indexOf(selectedButton) == 0)
                     {
                     setRoot(buttons.get(1));
@@ -838,13 +838,14 @@ public class MotifList extends JPanel
         list.scrollRectToVisible(rect);
         }
         
-    /** Sorts the existing motifs in the same tag order as the provided ones */
+    /** Sorts the existing motifs in the same tag order as the provided ones, putting the remainder at the end */
     public void sortInMotifOrder(ArrayList<Motif> oldMotifs)
     	{
+    	// Load the hashmaps of tag -> motifui and tag -> button
+
     	HashMap<Integer, MotifUI> currentMotifUIs = new HashMap<>();
     	HashMap<Integer, MotifListButton> currentButtons = new HashMap<>();
     	
-    	// Load the hashmaps of tag -> motifui and tag -> button
     	for(MotifUI motifui : motifuis)
     		{
     		currentMotifUIs.put(motifui.getTag(), motifui);
@@ -883,11 +884,12 @@ public class MotifList extends JPanel
 		// Add the residue of any remaining tags if any, likely not
     	for(Integer tag : currentMotifUIs.keySet())
     		{
+    		System.err.println("Residue " + tag);
     		newMotifUIs.add(currentMotifUIs.get(tag));
     		newButtons.add(currentButtons.get(tag));
     		}
     	
-    	// Load and redrawx
+    	// Load and redraw
         motifuis = newMotifUIs;
         buttons = newButtons;
         list.removeAll();

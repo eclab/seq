@@ -322,7 +322,7 @@ public class MacroUI extends MotifUI
             }
         if (at != -1)
             {
-            seq.push();
+            sequi.push();
             seq.getLock().lock();
             try
                 {
@@ -385,7 +385,7 @@ public class MacroUI extends MotifUI
            return;
            }
                 
-           seq.push();
+           sequi.push();
            // okay, we can make the copy, go ahead and do it
            seq.getLock().lock();
            try
@@ -606,7 +606,7 @@ public class MacroUI extends MotifUI
                     else if (comp instanceof MacroButton)
                         {
                         int at = ((MacroButton)comp).getAt();
-                        seq.push();
+                        sequi.push();
                         if (dropped instanceof MacroButton)
                             {
                             moveChild((MacroButton)dropped, at);

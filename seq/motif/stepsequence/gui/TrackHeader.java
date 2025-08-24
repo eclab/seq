@@ -417,7 +417,7 @@ public class TrackHeader extends JPanel implements Transferable
                         {
                         Point p = dtde.getLocation();
                         int onto = ((TrackHeader)comp).track.getTrackNum();
-                        seq.push();
+                        ssui.getSeqUI().push();
                         seq.getLock().lock();
                         try
                             {
