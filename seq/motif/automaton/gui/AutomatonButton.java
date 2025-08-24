@@ -422,14 +422,11 @@ public class AutomatonButton extends MotifButton
             }
         finally { lock.unlock(); }
 
-/*
 		String color = "<font color=black>";
         if (seqPlaying && playingCount == 1 ) { color = "<font color=red>"; }
         else if (seqPlaying && playingCount > 1) { color = "<font color=blue>"; }
-*/        // </color>
-		String color = "";
-		setForeground(seqPlaying && playingCount == 1 ? Color.RED : Color.GREEN);
-        String text = "<html><center><font size=1>" + color + StringUtility.sanitize(name) + "</font></center></html>";
+        
+        String text = "<html><center>" + color + StringUtility.sanitize(name) + "</color></center></html>";
 		if (!text.equals(lastText))
 			{
 			setText(text);

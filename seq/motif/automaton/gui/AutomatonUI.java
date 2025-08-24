@@ -476,11 +476,29 @@ public class AutomatonUI extends MotifUI
             nodeInspector.revise();
             }
         }
-        
+    
+    
+    /// AutomatonUI is VERY COSTLY to redraw.  Doing a full-speed redraw
+    /// costs about 200% CPU.  So we cut it to one redraw every 4 steps here.
+    /// The difference is negligible and it cuts the CPU radically.
+    public static final int REDRAW_COUNT = 4;
+    int redrawCount=0;
     public void redraw(boolean inResponseToStep) 
         {
-        updateText();
-        super.redraw(inResponseToStep);
+        boolean doRedraw = false;
+        redrawCount++;
+        
+        if (redrawCount >= REDRAW_COUNT)
+        	{
+        	redrawCount = 0;
+        	doRedraw = true;
+        	}
+        	
+        if (doRedraw || !inResponseToStep)
+        	{
+            updateText();
+    	    super.redraw(inResponseToStep);
+    	    }
         }
     
     public void updateText()
