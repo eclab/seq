@@ -94,6 +94,11 @@ public class In implements Receiver
                 latestMessages = EMPTY;
                 }
             latestMessages = ((MidiMessage[])(messages.toArray(EMPTY)));
+            if (latestMessages.length > 0) 
+            	{
+            	System.err.println("Message");
+             	seq.getOut(0).sendMIDI(latestMessages[0]);
+             	}
             messages.clear();
             }
         }

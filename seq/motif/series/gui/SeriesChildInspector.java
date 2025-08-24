@@ -17,7 +17,9 @@ import java.util.concurrent.locks.*;
 
 public class SeriesChildInspector extends WidgetList
     {
-    public static final double MAX_RATE_LOG = Math.log(Series.Data.MAX_RATE);
+    public static final double MAX_RATE = 16.0;
+//    public static final double MAX_RATE_LOG = Math.log(Series.Data.MAX_RATE);
+    public static final double RATE_LOG_FIX = 0.000000001;
     public static final String[] RATE_OPTIONS = ParallelChildInspector.RATE_OPTIONS; 
     public static final double[] RATES = ParallelChildInspector.RATES;
     
@@ -235,6 +237,7 @@ public class SeriesChildInspector extends WidgetList
             // defaults.  This causes problems when we're queried for our value, but we're currently negative so
             // we compute the log of a negative value.  So instead here, in the initialization and in getValue(),
             // we return DEFAULT_RATE instead.   This issue doesn't come up when just doing 0...1 as normal.
+            /*
             double d = getData().getRate(); 
             if (d < 0) d = Series.Data.DEFAULT_RATE;
             rate = new SmallDial((Math.log(d) + MAX_RATE_LOG) / MAX_RATE_LOG / 2.0, defaults)
@@ -266,6 +269,45 @@ public class SeriesChildInspector extends WidgetList
                     try { if (val != SmallDial.NO_DEFAULT) getData().setRate(-(val + 1)); }
                     finally { lock.unlock(); }
                     seriesui.updateText();                  // FIXME: is this needed?
+                    }
+    
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = getData().getRate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+            rate.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
+            */
+            rate = new SmallDial(getData().getRate() / MAX_RATE, defaults)
+                {
+                public String map(double d)
+                	{
+                	return super.map(d * 16.0);
+                	}
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return getData().getRate() / MAX_RATE; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { getData().setRate(val * MAX_RATE);}
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) getData().setRate(-(val + 1)); }
+                    finally { lock.unlock(); }
                     }
     
                 public int getDefault()

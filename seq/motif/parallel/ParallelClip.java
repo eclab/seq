@@ -275,7 +275,7 @@ public class ParallelClip extends Clip
             {
             boolean result = false;
             node.cumulativeRate += rate;
-            for( /* Empty */ ; node.lastPos < node.cumulativeRate; node.lastPos++)
+            for( /* Empty */ ; node.lastPos + 1.0 < node.cumulativeRate; node.lastPos++)
                 {
                 result = result || node.clip.advance();
                 }
@@ -441,10 +441,14 @@ public class ParallelClip extends Clip
             {
             return;
             }
-        if (current >= 0)
+       if (current >= 0)
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();
+            if (data.getMute()) 
+                {
+                return;
+                }        
             if (data.getOut() != Parallel.Data.DISABLED)
                 {
                 out = data.getOut();
@@ -466,6 +470,10 @@ public class ParallelClip extends Clip
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();
+            if (data.getMute()) 
+                {
+                return;
+                }        
             if (data.getOut() != Parallel.Data.DISABLED)
                 {
                 out = data.getOut();

@@ -369,7 +369,7 @@ public class AutomatonClip extends Clip
                 {
                 boolean result = false;
                 cumulativeRate += rate;
-                for( /* Empty */ ; lastPos < cumulativeRate; lastPos++)
+                for( /* Empty */ ; lastPos + 1.0 < cumulativeRate; lastPos++)
                     {
                     result = result || child.advance();
                     }

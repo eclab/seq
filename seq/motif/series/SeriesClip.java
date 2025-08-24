@@ -266,7 +266,7 @@ public class SeriesClip extends Clip
             {
             boolean result = false;
             node.cumulativeRate += rate;
-            for( /* Empty */ ; node.lastPos < node.cumulativeRate; node.lastPos++)
+            for( /* Empty */ ; node.lastPos + 1.0 < node.cumulativeRate; node.lastPos++)
                 {
                 result = result || node.clip.advance();
                 }

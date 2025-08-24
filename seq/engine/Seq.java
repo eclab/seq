@@ -26,6 +26,8 @@ public class Seq
     {
     private static final long serialVersionUID = 1;
 
+    public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
     ///// FILE
     File file = null;
 
@@ -166,14 +168,17 @@ public class Seq
     Undo<UndoStuff> undo;
     
     /** Pushes the current state of the sequencer on the undo stack, using the currently displayed motif,
-        for purposes of going back to when we undo/redo. */
+        for purposes of going back to when we undo/redo. Don't call this method, call SeqUI.push() */
+    /*
     public void push() 
         {
         push(sequi.getMotifUI().getMotif());
         }
+    */
 
     /** Pushes the current state of the sequencer on the undo stack. displayMotif
-        is the currently displayed Motif, for purposes of going back to when we undo/redo. */
+        is the currently displayed Motif, for purposes of going back to when we undo/redo.
+         Don't call this method, call SeqUI.push() */
     public void push(Motif displayMotif) 
         {
         undo.push(new UndoStuff(data, displayMotif, motifs));
@@ -1137,18 +1142,7 @@ public class Seq
                             ins[i].pullMessages();
                             }
                         }
-                        
-                        /*
-                    // Route
-                    if (routeIn != ROUTE_IN_NONE)
-                    	{
-                    	for(MidiMessage message : ins[routeIn].getMessages())
-                    		{
-                    		outs[routeOut].sendMIDI(message);
-                    		]
-                    	}
-                        */
-                                                              
+
                     // Handle beep
                     if (metronome == METRONOME_RECORDING_AND_PLAYING ||
                         (metronome == METRONOME_RECORDING_ONLY && recording))
@@ -1157,7 +1151,7 @@ public class Seq
                         }
                         
                     processNoteOffs(false);
-//                    playingClips.clear();
+
                     boolean atEnd = (time == NUM_BARS_PER_PART * NUM_PARTS * bar - 1);
                     if (ccount == 0)
                         {
@@ -1180,10 +1174,8 @@ public class Seq
                                 {
                                 root.release();
                                 processNoteOffs(true);
-//                                data.endArmed();
                                 resetTime();
                                 recording = false;
-//                                playingClips.clear();
                                 root.terminate();
                                 root.reset();
                                 endOfLoop = false;
@@ -1275,12 +1267,25 @@ public class Seq
         return outs[out].sysex(sysex);
         }
 
+	public String noteToString(int pitch)
+		{
+		return NOTES[pitch % 12] + (pitch / 12);
+		}
+
+	public String noteToString(int pitch, int vel)
+		{
+		return NOTES[pitch % 12] + (pitch / 12) + ":" + vel;
+		}
+
     /** Sends a note on to the given Out.  Note that velocity is expressed as a double.
         This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
+    int lastTime = 0;
     public boolean noteOn(int out, int note, double vel) 
         {
+//        System.err.println("" + out + " "  + (getTime() - lastTime) + " " + noteToString(note));
+        lastTime = getTime();
         if (isPlaying()) return outs[out].noteOn(note, vel);
         else return false;
         }
