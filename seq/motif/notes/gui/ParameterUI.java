@@ -102,18 +102,18 @@ public class ParameterUI extends JComponent
                     lock.lock();
                     try
                         {
-                        Notes events = getNotesUI().getNotes();
+                        Notes notes = getNotesUI().getNotes();
  
-                        if (event instanceof Notes.Bend && events.getLog())
+                        if (event instanceof Notes.Bend && notes.getLog())
                             {
                             ((Notes.Bend)event).setNormalizedLogValue(value);
                             }
 
-                        events.getEvents().add(event);
+                        notes.getEvents().add(event);
                                 
                         // now comes the costly part
-                        events.sortEvents();
-                        events.computeMaxTime();
+                        notes.sortEvents();
+                        notes.computeMaxTime();
                         }
                     finally
                         {
@@ -202,6 +202,20 @@ public class ParameterUI extends JComponent
                 gridui.getBackupSelected().clear();
                  
                 getNotesUI().updateChildInspector(true);
+
+				// FIXME: Should this be in mouseDragged?  It's be less buggy there but
+				// much less efficient.
+        		Notes notes = eventsui.getNotesUI().getNotes();
+                ReentrantLock lock = getSeq().getLock();
+                    lock.lock();
+                    try 
+                        {
+                        notes.computeMaxTime();
+                        }
+                    finally
+                        {
+                        lock.unlock();
+                        }
                 }
             });
 

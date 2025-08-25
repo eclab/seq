@@ -1516,6 +1516,7 @@ public class Notes extends Motif
             }
         // Need to sort
         if (sort) sortEvents(events);
+		computeMaxTime(); 
         }
         
     /** Transposes the given events by the provided semitones. */

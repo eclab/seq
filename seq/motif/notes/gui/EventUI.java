@@ -238,6 +238,23 @@ public class EventUI extends JComponent
                         }
                     }
                 
+				// FIXME: Should this be in mouseDragged?  It's be less buggy there but
+				// much less efficient.
+        		if (dragged)
+        			{
+        			Notes notes = getNotesUI().getNotes();
+					ReentrantLock lock = getSeq().getLock();
+					lock.lock();
+					try 
+						{
+						notes.computeMaxTime();
+						}
+					finally
+						{
+						lock.unlock();
+						}
+					}
+
                 dragged = false;
                 originallySelected = false;
                 getNotesUI().updateChildInspector(true);
