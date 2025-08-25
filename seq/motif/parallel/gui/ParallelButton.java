@@ -36,11 +36,21 @@ public class ParallelButton extends MotifButton
     Border originalBorder;
     Color originalBackground;
     
+    public static int timeToPixels(int time)
+    	{
+    	return time * BUTTON_DELAY_MULTIPLIER / Seq.PPQ;
+    	}
+    
+    public static int pixelsToTime(int pixels)
+    	{
+    	return pixels * Seq.PPQ / BUTTON_DELAY_MULTIPLIER;
+    	}
+    
     public void setDelay(int val)
         {
         delay = val;
         updateText();
-        int slide = val * BUTTON_DELAY_MULTIPLIER / Seq.PPQ;
+        int slide = timeToPixels(val);
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0,slide,0,0, /*originalBackground*/ Color.GRAY),
                 originalBorder));

@@ -36,6 +36,8 @@ public class ParallelUI extends MotifUI
     JPanel parallelOuter;
     TitledBorder parallelBorder;
     ParallelInspector parallelInspector;
+    
+    Ruler ruler;
         
         
     Box parallelBox = new Box(BoxLayout.Y_AXIS);
@@ -101,6 +103,8 @@ public class ParallelUI extends MotifUI
     public void buildPrimary(JScrollPane scroll)
         {
         scroll.setViewportView(parallelBox);
+        ruler = new Ruler(seq, this);
+        scroll.setColumnHeaderView(ruler);
         parallelBox.setDropTarget(new DropTarget(this, buildDropTargetListener()));
         }
                 
