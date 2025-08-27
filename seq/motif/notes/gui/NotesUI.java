@@ -28,7 +28,7 @@ import java.awt.datatransfer.*;
 public class NotesUI extends MotifUI
     {
     // The default length of new notes (1 beat)
-    public static final int DEFAULT_NOTE_LENGTH = 192;
+    public static final int DEFAULT_NOTE_LENGTH = Seq.PPQ;
     // Options for pitch magnification
     public static final String[] PITCH_OPTIONS = { "Small Notes", "Medium Notes", "Large Notes" };
     // Options for snapping to or by
@@ -36,13 +36,23 @@ public class NotesUI extends MotifUI
     // Options for snapping to or by
     public static final String[] SNAP_OPTIONS = { "No Snap", "Snap to 64th", "Snap to 16th", "Snap to Triplet", "Snap to Beat", "Snap by 64th", "Snap by 16th", "Snap by Triplet", "Snap by Beat" };
     // Quantizations for the snap options
-    public static final int[] SNAP_QUANTIZATIONS = { 192 / 192, 192 / 16, 192 / 4, 192 / 3, 192, -192 / 16, -192 / 4, -192 / 3, -192 };
+    public static final int[] SNAP_QUANTIZATIONS = 
+    		{ 
+    		1,
+    		Seq.PPQ / 16, 
+    		Seq.PPQ / 4, 
+    		Seq.PPQ / 3, 
+    		-Seq.PPQ / 16, 
+    		-Seq.PPQ / 4, 
+    		-Seq.PPQ / 3, 
+    		-Seq.PPQ
+    		};
     // The default snap option index ("Snap to Beat")
     public static final int SNAP_DEFAULT_OPTION = 4;
     // Options for total grid length
     public static final String[] MAX_OPTIONS = { "64 Bars", "256 Bars", "1024 Bars", "4096 Bars", "16384 Bars", "65536 Bars" };
     // Grid lengths corresponding to the grid length options
-    public static final int[] MAX_MEASURES = { 192 * 4 * 64, 192 * 4 * 256, 192 * 4 * 1024, 192 * 4 * 4096, 192 * 4 * 16384, 192 * 4 * 65536 };
+    public static final int[] MAX_MEASURES = { Seq.PPQ  * 4 * 64, Seq.PPQ  * 4 * 256, Seq.PPQ  * 4 * 1024, Seq.PPQ  * 4 * 4096, Seq.PPQ  * 4 * 16384, Seq.PPQ  * 4 * 65536 };
     // The default grid length option ("256 Bars"
     public static final int MAX_DEFAULT_OPTION = 1;
     

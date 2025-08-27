@@ -42,7 +42,7 @@ public class GridUI extends JComponent
     // The current maximum time length
     int maximumTime = DEFAULT_MAXIMUM_TIME;
     // Current snap
-    int snap = 192;
+    int snap = Seq.PPQ;
     // Snap by or snap to?
     boolean snapBy = false;
     

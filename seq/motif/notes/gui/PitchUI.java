@@ -207,6 +207,10 @@ public class PitchUI extends JLayeredPane
             {
             noteui.reload();
             }
+        for(NoteUI recordedui : recordeduis)
+            {
+            recordedui.reload();
+            }
         }
 
     /** Recaches note information in all the underlying NoteUIs */

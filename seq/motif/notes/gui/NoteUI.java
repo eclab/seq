@@ -110,9 +110,7 @@ public class NoteUI extends EventUI implements Comparable
             lock.unlock();
             }
 
-        if (recorded) return;
-            
-        if (pitch != pitchui.getPitch())
+        if (pitch != pitchui.getPitch() && !recorded)
             {
             // move me to new pitch
             pitchui.removeNoteUI(this);
