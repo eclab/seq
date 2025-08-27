@@ -671,6 +671,12 @@ public class Seq
         return motifs;
         }
 
+    /** Changes the motif set.  Be very careful with this. */
+    public void setMotifs(ArrayList<Motif> motifs)
+        {
+        this.motifs = motifs;
+        }
+
     // ROOT MOTIF
     public Clip getRoot() { return root; }
     public Motif getData() { return data; }
@@ -1156,7 +1162,6 @@ public class Seq
                     if (ccount == 0)
                         {
                         long cur = System.currentTimeMillis();
-                        //System.err.println(cur - lastCCTime);
                         lastCCTime = cur;
                         }
                     ccount++;
@@ -1284,7 +1289,6 @@ public class Seq
     int lastTime = 0;
     public boolean noteOn(int out, int note, double vel) 
         {
-//        System.err.println("" + out + " "  + (getTime() - lastTime) + " " + noteToString(note));
         lastTime = getTime();
         if (isPlaying()) return outs[out].noteOn(note, vel);
         else return false;

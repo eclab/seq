@@ -1038,7 +1038,6 @@ public abstract class Motif implements Cloneable
     static Motif load(Seq seq, HashMap<Integer, Motif> loadedMotifs, JSONArray motifs, int id) throws JSONException
         {
         JSONObject obj = motifs.getJSONObject(id);
-        //System.err.println("" + id + " " + obj);
         Motif motif = null;
         try
             {
@@ -1200,4 +1199,6 @@ public abstract class Motif implements Cloneable
     	between Motifs except for Motifs that were copied from others.
     	Used in undo and redo mostly. */
     public int getTag() { return tag; }
+    
+    public String toString() { return super.toString() + "(" + getTag() + ")"; }
     }

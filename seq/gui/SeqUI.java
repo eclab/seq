@@ -159,10 +159,10 @@ public class SeqUI extends JPanel
         
     public void push()
         {
-			for(MotifUI motifui : list.getMotifUIs())
-				{
-				motifui.prePush();
-				}
+		for(MotifUI motifui : list.getMotifUIs())
+			{
+			motifui.prePush();
+			}
 
 		Motif motif = getMotifUI().getMotif();
         ReentrantLock lock = seq.getLock();
@@ -204,7 +204,7 @@ public class SeqUI extends JPanel
         setMotifUI(newMotifUI);
 //        newMotifUI.postUndoOrRedo(oldMotifUI);
         // Sort the list in the same order as the original motifs
-		list.sortInMotifOrder(oldMotifs);
+//		list.sortInMotifOrder(oldMotifs);
 		// Set root
         list.setRoot(list.getMotifUIFor(seq.getData()));
 		for(MotifUI motifui : list.getMotifUIs())
@@ -241,7 +241,7 @@ public class SeqUI extends JPanel
 //        newMotifUI.postUndoOrRedo(oldMotifUI);
         list.setRoot(list.getMotifUIFor(seq.getData()));
         // Sort the list in the same order as the original motifs
-		list.sortInMotifOrder(oldMotifs);
+//		list.sortInMotifOrder(oldMotifs);
 		// Set root
         list.setRoot(list.getMotifUIFor(seq.getData()));
 		for(MotifUI motifui : list.getMotifUIs())
@@ -291,8 +291,6 @@ public class SeqUI extends JPanel
                     {
                     MotifUI motifui = list.buildMotifUIFor(motif);
                     map.put(motif, motifui);
-                    //System.err.println("Mapping " + motif + " -> " + motifui);
-                    //list.doAddSimple(motifui);
                     }
                 }
                 
@@ -301,7 +299,6 @@ public class SeqUI extends JPanel
 
             for(Motif motif : seq.getMotifs())
                 {
-                //System.err.println("Trying to get " + motif + " -> " + map.get(motif));
                 list.doAddSimple(map.get(motif));
                 }
             }

@@ -48,7 +48,6 @@ public class In implements Receiver
     // Also removes the receiver from the wrapper just in case
     public void setWrapper(Midi.MidiDeviceWrapper wrapper) 
         { 
-        /* System.err.println("changed wrapper from " + this.wrapper + " to " + wrapper); */ 
         if (this.wrapper != null) this.wrapper.removeFromTransmitter(this); 
         this.wrapper = wrapper; 
         //if (wrapper != null) wrapper.addToTransmitter(this); 
@@ -68,8 +67,6 @@ public class In implements Receiver
     /** Receives the given message and adds it to the mailbox. */
     public void send(MidiMessage message, long timestamp)
         {
-        //System.err.println("" + index + " " + channel + " " + wrapper + " Received " + message);
-        //new Throwable().printStackTrace();
         synchronized(this)
             {
             messages.add(message);
@@ -96,7 +93,6 @@ public class In implements Receiver
             latestMessages = ((MidiMessage[])(messages.toArray(EMPTY)));
             if (latestMessages.length > 0) 
             	{
-            	System.err.println("Message");
              	seq.getOut(0).sendMIDI(latestMessages[0]);
              	}
             messages.clear();

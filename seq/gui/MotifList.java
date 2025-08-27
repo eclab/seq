@@ -621,6 +621,25 @@ public class MotifList extends JPanel
         list.add(button, at);
         list.revalidate();
         list.repaint();
+        
+        // Update the Seq
+        ArrayList<Motif> motifs = new ArrayList<>();
+        for(MotifUI motifui : motifuis)
+        	{
+        	motifs.add(motifui.getMotif());
+        	}
+        
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+        	{
+        	// We must be very careful here, we're rearranging Seq's motifs entirely
+        	seq.setMotifs(motifs);
+        	}
+        finally
+        	{
+        	lock.unlock();
+        	}
         }
         
 
@@ -798,6 +817,10 @@ public class MotifList extends JPanel
                     }
                 }
             }
+        else
+        	{
+            sequi.push();
+        	}
         
         // At this point we can probably delete it.
         selectedButton.getMotifUI().disconnect();
@@ -884,7 +907,6 @@ public class MotifList extends JPanel
 		// Add the residue of any remaining tags if any, likely not
     	for(Integer tag : currentMotifUIs.keySet())
     		{
-    		System.err.println("Residue " + tag);
     		newMotifUIs.add(currentMotifUIs.get(tag));
     		newButtons.add(currentButtons.get(tag));
     		}
