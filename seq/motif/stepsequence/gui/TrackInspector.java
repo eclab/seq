@@ -40,6 +40,11 @@ public class TrackInspector extends WidgetList
     JCheckBox trackExclusive;
     JComboBox trackOut;
     StringField trackName;
+    SmallDial euclidK;
+	double euclidKVal = 0.0;
+    SmallDial euclidRotate;
+	double euclidRotateVal = 0.0;
+    PushButton doEuclid;
 
     static final String[] WHEN_STRINGS =
         { "Always", "0.1 Probability", "0.2 Probability", "0.3 Probability", "0.4 Probability", "0.5 Probability", "0.6 Probability", "0.7 Probability", "0.8 Probability", "0.9 Probability",
@@ -380,6 +385,71 @@ public class TrackInspector extends WidgetList
             trackName.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
             trackName.setToolTipText(NAME_TOOLTIP);
 
+            euclidK = new SmallDial(euclidKVal)
+                {
+                protected String map(double val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        { 
+                    	return String.valueOf((int)(val * ss.getNumSteps(trackNum)));
+                    	}
+                    finally
+                    	{
+                    	lock.unlock();
+                    	}
+                    }
+                public double getValue() 
+                    { 
+                    return euclidKVal;
+                    }
+                public void setValue(double val) 
+                    { 
+                    euclidKVal = val;
+                    }
+                };
+                
+            euclidRotate = new SmallDial(euclidRotateVal)
+                {
+                protected String map(double val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        { 
+                    	return String.valueOf((int)(val * ss.getNumSteps(trackNum)));
+                    	}
+                    finally
+                    	{
+                    	lock.unlock();
+                    	}
+                    }
+                public double getValue() 
+                    { 
+                    return euclidRotateVal;
+                    }
+                public void setValue(double val) 
+                    { 
+                    euclidRotateVal = val;
+                    }
+                };
+
+            doEuclid = new PushButton("Set")
+                {
+                public void perform()
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        {
+                        ss.applyEuclideanRhythm(trackNum, euclidKVal, euclidRotateVal);
+                        }
+                    finally { lock.unlock(); }
+                    ssui.getTrack(trackNum).repaint();		// is this sufficient?
+                    }
+                };
             }
         finally { lock.unlock(); }
                 
@@ -413,8 +483,17 @@ public class TrackInspector extends WidgetList
         whenPanel.add(trackWhen, BorderLayout.CENTER);          // so it stretches
         whenPanel.add(setTrackWhen, BorderLayout.EAST);
         whenPanel.setToolTipText(WHEN_TOOLTIP);
-
-        build(new String[] { "Name", "Gain", "Note", "   Velocity", "Flams", "When", "Choke", "Swing", "Ex. Rand.", "Out", "Length" }, 
+        
+        JPanel euclidPanel = new JPanel();
+        euclidPanel.setLayout(new BorderLayout());
+        Box euclidBox = new Box(BoxLayout.X_AXIS);
+        euclidBox.add(euclidK.getLabelledDial("128"));
+        euclidBox.add(new JLabel("  Rotate  "));
+        euclidBox.add(euclidRotate.getLabelledDial("128"));
+        euclidPanel.add(euclidBox, BorderLayout.WEST);
+        euclidPanel.add(doEuclid, BorderLayout.EAST);
+        
+        build(new String[] { "Name", "Gain", "Note", "   Velocity", "Flams", "When", "Choke", "Swing", "Ex. Rand.", "Out", "Length", "Euclid" }, 
             new JComponent[] 
                 { 
                 trackName,
@@ -428,6 +507,7 @@ public class TrackInspector extends WidgetList
                 trackExclusive, 
                 trackOut,
                 lengthPanel,
+                euclidPanel
                 });
         }
 

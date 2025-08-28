@@ -17,6 +17,7 @@
 %%%% Sean Luke
 
 \documentclass[twoside,10pt]{article}
+%\usepackage[tagged]{accessibility}
 \usepackage{fullpage}
 \usepackage{mathpazo}
 \usepackage[noend]{algpseudocode}
@@ -40,6 +41,7 @@
 \usepackage{tabto}
 \usepackage[font=footnotesize,labelsep=quad,labelfont=it]{caption}
 \usepackage{todonotes}
+%\usepackage[tagged, highstructure]{accessibility}
 
 \usepackage{listings}		% distributed 
 \usepackage{xcolor}			% distributed
@@ -540,11 +542,21 @@ A Track can be a member of the {\bf Exclusive Random Group} (or ``Ex. Rand.''). 
 
 Finally, a track has a {\bf Length}, that is, the number of steps.  This is not set until the {\bf Set} button is pressed.
 
+\paragraph{Euclidean Rhythms}
+
+In 2004 Godfried Toussaint published a paper suggesting that large numbers of common rhythms worldwide could be automatically generated using Bjorklund's Algorithm, which is somewhat related to Euclid's Algorithm.  He called these {\bf Euclidean Rhythms}.  Bjorklund's Algorithm takes a track \(K\) steps long and attempts to fill it with \(N\) steps that are statistically evenly spaced from one another.  So there are two parameters, \(0 < N < K\).  Euclidean rhythms have since become all the rage.
+
+Seq can fill a track with a Euclidean Rhythm with {\bf Euclid}.  You specify \(N\), the number of steps you want on (the rest will be off.  \(K\) is just the length of the track.  You can also {\bf Rotate} your Euclidean Rhythm to a new starting point  The Rhythm is generated when you press {\bf Set}.
+
 \paragraph{The Step Sequence Inspector}
 
 At top, the Step Sequence inspector defines the global settings for the Step Sequence.  There is its {\bf Name} of course.  After this there is the {\bf Duration}, that is, the length of time (in 16th notes) that this Step Sequence will take to complete.  For example, even if the Step Sequence is 16 steps long, if you set the Duration to 4, it'll run at the speed necessary to complete those 16 steps in one quarter note of time.  The default is of course 16: 16 steps in 4 quarter notes.
 
 You can also set the default {\bf Swing}, {\bf Velocity}, and {\bf Out}, and Tracks will defer to these if set to {\it Default}.  The {\bf Track Length} indicates the initial number of Steps for newly added Tracks. Finally, {\bf In} specifies the MIDI Input to use when recording tracks.
+
+\paragraph{The Menu}
+
+The {\bf Step Sequence} menu allows you to use keystrokes make your away around the sequence ({\bf Up, Down, Left, Right}).  You can also {\bf Toggle} the selected step to be on or off.  And you can {\bf Rotate} all the steps in the selected track {\bf Left} or {\bf Right} by one step.
 
 \ignore{
 \paragraph{Recording a Step Sequence}
@@ -556,7 +568,7 @@ If you arm one or more Tracks, set their Notes, and set the Sequence's MIDI Inpu
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=6.5in]{Notes}
+\includegraphics[alt={yo},width=6.5in]{Notes}
 \vspace{-2em}
 \caption{Notes Motif.}
 \label{notes}

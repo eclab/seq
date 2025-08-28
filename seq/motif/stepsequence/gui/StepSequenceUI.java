@@ -34,6 +34,8 @@ public class StepSequenceUI extends MotifUI
     TitledBorder stepBorder;
     Ruler ruler;
     
+    JMenu menu;
+    
     int selectedTrackNum = 0;
     int selectedStepNum = 0;
     boolean mouseDown = false;
@@ -159,9 +161,101 @@ public class StepSequenceUI extends MotifUI
     public int getSelectedStepNum() { return selectedStepNum; }
     public void setSelectedStepNum(int val) 
         { 
+        StepUI oldStepUI = getTrack(getSelectedTrackNum()).getStep(getSelectedStepNum());
         selectedStepNum = val; 
         setStepInspector(tracks.get(selectedTrackNum).getStep(selectedStepNum).getInspector());
+        StepUI newStepUI = getTrack(getSelectedTrackNum()).getStep(getSelectedStepNum());
+        
+        oldStepUI.repaint();
+        newStepUI.repaint();
         }
+    public void shiftSelectionHorizontally(boolean right)
+    	{
+    	int val = getSelectedStepNum();
+    	int len = getTrack(getSelectedTrackNum()).getSteps().size();
+    	if (right)
+    		{
+    		val++;
+    		if (val >= len) val = 0;
+    		}
+    	else
+    		{
+    		val--;
+    		if (val < 0) val = len - 1;
+    		}
+    	setSelectedStepNum(val);
+
+        if (getStepInspector() != null)
+            setStepInspector(getStepInspector());
+    	}
+    
+    public void shiftSelectionVertically(boolean down)
+    	{
+    	int val = getSelectedStepNum();
+    	int track = getSelectedTrackNum();
+    	int numTracks = getTracks().size();
+    	
+    	if (down)
+    		{
+    		track++;
+    		if (track >= numTracks) track = 0;
+    		}
+    	else
+    		{
+    		track--;
+    		if (track < 0) track = numTracks - 1;
+    		}
+
+    	setSelectedTrackNum(track);
+    	
+    	// adjust step
+    	int len = getTrack(getSelectedTrackNum()).getSteps().size();
+    	if (val >= len) val = len - 1;
+    	setSelectedStepNum(val);
+
+        if (getTrackInspector()!= null)
+            setTrackInspector(getTrackInspector());
+        if (getStepInspector() != null)
+            setStepInspector(getStepInspector());
+    	}
+
+    public void doToggle()
+    	{
+    	int step = getSelectedStepNum();
+    	int track = getSelectedTrackNum();
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try 
+			{
+			ss.setOn(track, step, !ss.isOn(track, step));
+			}
+		finally
+			{
+			lock.unlock();
+			}
+        getTrack(track).getStep(step).repaint();
+
+        if (getStepInspector() != null)
+            setStepInspector(getStepInspector());
+   	}
+    	
+    public void doRotate(int rotate)
+    	{
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try 
+                {
+                ss.rotate(getSelectedTrackNum(), rotate);
+                }
+            finally
+            	{
+            	lock.unlock();
+            	}
+            getTrack(getSelectedTrackNum()).repaint();
+
+        if (getStepInspector() != null)
+            setStepInspector(getStepInspector());
+    	}
         
     public static MotifUI create(Seq seq, SeqUI ui)
         {
@@ -628,6 +722,92 @@ public class StepSequenceUI extends MotifUI
             setStepInspector(getStepInspector());
         }
                 
+    /** Returns the NotesUI menu */
+    public JMenu getMenu()
+        {
+        return menu;
+        }
+
+    /** Constructs the menu for the NotesUI */
+    public void buildMenu()
+        {
+        menu = new JMenu("Step Sequence");
+        JMenuItem up = new JMenuItem("Up");
+        up.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                shiftSelectionVertically(false);
+                }
+            });
+        up.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        menu.add(up);
+        JMenuItem down = new JMenuItem("Down");
+        down.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                shiftSelectionVertically(true);
+                }
+            });
+        down.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        menu.add(down);
+        JMenuItem left = new JMenuItem("Left");
+        left.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                shiftSelectionHorizontally(false);
+                }
+            });
+        left.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        menu.add(left);
+        JMenuItem right = new JMenuItem("Right");
+        right.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                shiftSelectionHorizontally(true);
+                }
+            });
+        right.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        menu.add(right);
+
+        JMenuItem toggle = new JMenuItem("Toggle");
+        toggle.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doToggle();
+                }
+            });
+        toggle.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        menu.add(toggle);
+
+        menu.addSeparator();
+        
+        JMenuItem rotateLeft = new JMenuItem("Rotate Left");
+        rotateLeft.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRotate(-1);
+                }
+            });
+        rotateLeft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        menu.add(rotateLeft);
+
+        JMenuItem rotateRight = new JMenuItem("Rotate Right");
+        rotateRight.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRotate(1);
+                }
+            });
+        rotateRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        menu.add(rotateRight);
+        }
 
 /*
   void swapTracks(int x, int y)
