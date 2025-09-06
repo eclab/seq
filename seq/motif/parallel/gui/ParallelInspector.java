@@ -24,6 +24,26 @@ public class ParallelInspector extends WidgetList
     SmallDial crossFade;
     JCheckBox crossFadeOn;
     
+    String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
+
+    public void buildDefaults(Motif parent)
+        {
+        defaults[0] = "Rand";
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            String name = parent.getParameterName(i);
+            if (name == null || name.length() == 0)
+                {
+                defaults[1 + i] = "Param " + (i + 1);
+                }
+            else
+                {
+                defaults[1 + i] = "" + (i + 1) + ": " + name;
+                }
+            }
+        }
+
+
     public static final String[] CHILDREN_TO_SELECT_STRINGS = 
         { 
         "All", "1", "2", "3", "4", "5", "6", "7", "8", 
@@ -35,6 +55,7 @@ public class ParallelInspector extends WidgetList
         this.seq = seq;
         this.parallel = parallel;
         this.parallelui = parallelui;
+        buildDefaults(parallel);
 
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -81,7 +102,7 @@ public class ParallelInspector extends WidgetList
             childrenToSelect.setToolTipText(CHILDREN_PLAYING_TOOLTIP);
 
 
-            crossFade = new SmallDial(parallel.getCrossFade())
+            crossFade = new SmallDial(parallel.getCrossFade(), defaults)
                 {
                 protected String map(double val) { return String.valueOf(val); }
                 public double getValue() 
@@ -97,6 +118,20 @@ public class ParallelInspector extends WidgetList
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try { parallel.setCrossFade(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) parallel.setCrossFade(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = parallel.getCrossFade(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
                     finally { lock.unlock(); }
                     }
                 };

@@ -424,11 +424,11 @@ public class ParallelClip extends Clip
             {
             if (current == 0)
                 {
-                vel = vel * (1.0 - parallel.getCrossFade());
+            	vel = vel * (1.0 - getCorrectedValueDouble(parallel.getCrossFade()));
                 }
             else if (current == 1)
                 {
-                vel = vel * parallel.getCrossFade();
+            	vel = vel * getCorrectedValueDouble(parallel.getCrossFade());
                 }
             }
 
