@@ -43,6 +43,7 @@ public class MotifListButton extends MotifButton
         if (sequi.getMotifList().isCompressed())
             {
             String name = null;
+            boolean armed = false;
                 
             if (motifui != null)
                 {
@@ -52,12 +53,14 @@ public class MotifListButton extends MotifButton
                 try 
                     { 
                     name = motif.getDisplayedName();
+                    armed = motif.isArmed();
                     }
                 finally { lock.unlock(); }
                 name = StringUtility.sanitize(name);
                 boolean root = (this instanceof MotifListButton && sequi.getMotifList().getRoot() == this);
                 String text = 
-                    "<html><font color=" + 
+                    "<html>" + 
+                    (armed ? "<font color=red>&#x25CF; </font><font color=" : "<font color=") + 
                     (motifui.isPlaying() && shouldHighlight() ? PLAYING_TEXT_COLOR : 
                     (shouldPreHighlight() ? PREHIGHLIGHT_TEXT_COLOR : DEFAULT_TEXT_COLOR)) + ">" +
                     (root ? "<b>" + name + "</b>" : name) +

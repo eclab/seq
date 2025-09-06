@@ -206,6 +206,8 @@ public class MotifList extends JPanel
     
     public ArrayList<MotifUI> getMotifUIs() { return motifuis; }
     
+    public ArrayList<MotifListButton> getButtons() { return buttons; }
+    
     public MotifUI getOrAddMotifUIFor(Motif motif) 
         {
         MotifUI ui = getMotifUIFor(motif);

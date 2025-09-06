@@ -1115,6 +1115,11 @@ public class SeqUI extends JPanel
                     
                 setMotifUI(motifui);    // rebuild
                 incrementRebuildInspectorsCount();              // show disarmed
+
+				for(MotifListButton button : getMotifList().getButtons())
+					{
+					button.updateText();
+					}
                 }
             });
 

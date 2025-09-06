@@ -390,7 +390,9 @@ Each motif has a slot in the {\bf Motif List}, where it is shown with its curren
 
 When you select a motif, other motifs may appear in light blue.  These are the {\bf parents} of the motif, that is, the motifs which include the motif among their children.  Others are appear in pink: these are the {\bf children} of the motif.
 
-When a motif is currently playing, its text will be highlighted in red.  Since a currently playing motif may also be playing its children, multiple motifs may appear in red at the same time.
+When a motif is currently playing, its text will be highlighted in red.  Since a currently playing motif may also be playing its children, multiple motifs may appear in red at the same time.  
+
+If a motif is armed for recording, it will appear with a little red circle before it.
 
 Below the Motif List are the {\bf Motif List Editing Buttons}, which let you add new motifs to the list, delete them, and copy them.   Most importantly, clicking the ``\(+\)'' button will pop up the a {\bf List of Available Motifs}, as shown at right in Figure~\ref{motiflist}.  Select a motif and a new one will appear in the Motif List.   You can also choose the same motifs from the {\bf Add Menu}.
 
@@ -513,6 +515,8 @@ You can loop the entire sequence\,---\,that is, loop the {\bf Root Motif}\,---\,
 \subsection{Step Sequence}
 
 Step Sequence is one of the most complex motifs, as it is a reasonably full-featured multitrack step sequencer.  Step Sequence defines a single multitrack pattern, which is played once and then declares it is finished.  The Step Sequence can have any number of Tracks, and each Track can have any number of Steps (and that number can vary from Track to Track).  By default the Step Sequence presents itself with 16 Tracks of 16 Steps.  
+
+You select a Step by clicking on it.  This also selects the Step's Track.  You can also select a different Track (and its equivalent Step) by clicking on the Track Header (see below).  When you select a Step and Track, they will show their respective Inspectors at right below the primary Step Sequence Inspector.
 
 \paragraph{Steps}
 
