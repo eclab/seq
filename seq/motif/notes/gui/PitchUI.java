@@ -19,17 +19,17 @@ import java.util.*;
 public class PitchUI extends JLayeredPane
     {
     // Which pitches in the octave are black notes?
-    public static final boolean BLACK[] = { false, true, false, true, false, false, true, false, true, false, true, false };
+    public static final boolean BLACK_KEYS[] = { false, true, false, true, false, false, true, false, true, false, true, false };
     // My background color if I am a black note pitch
-    public static final Color BLACK_BACKGROUND_COLOR = new Color(210, 210, 210);
+    public static final Color BLACK_KEY_BACKGROUND_COLOR = new Color(210, 210, 210);
     // My background color if I am a white note pitch
-    public static final Color WHITE_BACKGROUND_COLOR = new Color(220, 220, 220);
+    public static final Color WHITE_KEY_BACKGROUND_COLOR = new Color(220, 220, 220);
     // The color for vertical lines representing 16th notes
-    public static final Color COLOR_16TH_NOTE = new Color(200, 200, 200);
+    public static final Color SIXTEENTH_NOTE_COLOR = new Color(200, 200, 200);
     // The color for vertical lines representing beats
-    public static final Color COLOR_BEAT = new Color(180, 180, 180); // new Color(128, 128, 128);
+    public static final Color BEAT_COLOR = new Color(180, 180, 180); // new Color(128, 128, 128);
     // The color for vertical lines representing bars
-    public static final Color COLOR_BAR = new Color(64, 64, 220);
+    public static final Color BAR_COLOR = new Color(64, 64, 220);
     // The color for the rubber band
     public static final Color RUBBER_BAND_COLOR = new Color(32, 64, 32);
     // The Stroke for the rubber band
@@ -119,7 +119,7 @@ public class PitchUI extends JLayeredPane
         {
         this.gridui = gridui;
         this.pitch = pitch;
-        this.black = BLACK[pitch % 12];
+        this.black = BLACK_KEYS[pitch % 12];
         }
 
     /** Rebuilds the PitchUI entirely.  This discards all the NoteUIs and creates new ones. */
@@ -185,6 +185,7 @@ public class PitchUI extends JLayeredPane
         {
         add(noteui, 0);
         noteuis.add(noteui);
+        noteui.setPitchUI(this);
         }
                 
     /** Finds and returns the NoteUI for the given Note.  This is O(n) */
@@ -334,7 +335,7 @@ public class PitchUI extends JLayeredPane
         int start = bounds.x;
         int end = bounds.x + bounds.width;
         
-        g.setPaint(black ? BLACK_BACKGROUND_COLOR : WHITE_BACKGROUND_COLOR);
+        g.setPaint(black ? BLACK_KEY_BACKGROUND_COLOR : WHITE_KEY_BACKGROUND_COLOR);
         g.fill(bounds);
         
         int mod = pitch % 12;
@@ -343,7 +344,7 @@ public class PitchUI extends JLayeredPane
             {
             if (pitch != 0)         // don't draw the first one
                 {
-                g.setPaint(BLACK_BACKGROUND_COLOR);
+                g.setPaint(BLACK_KEY_BACKGROUND_COLOR);
                 cSeparator.setLine(0, getPitchHeight() - 1, Integer.MAX_VALUE, getPitchHeight() - 1);
                 g.draw(cSeparator);
                 }
@@ -352,7 +353,7 @@ public class PitchUI extends JLayeredPane
 
         else if (mod == 5)              // F
             {
-            g.setPaint(BLACK_BACKGROUND_COLOR);
+            g.setPaint(BLACK_KEY_BACKGROUND_COLOR);
             cSeparator.setLine(0, getPitchHeight() - 1, Integer.MAX_VALUE, getPitchHeight() - 1);
             g.draw(cSeparator);
             } 
@@ -393,16 +394,16 @@ public class PitchUI extends JLayeredPane
         
         if (scale < 4.0)                // draw 16th notes
             {
-            drawVerticalBars(startWhen, endWhen, Seq.PPQ / 4, COLOR_16TH_NOTE, scale, g);
+            drawVerticalBars(startWhen, endWhen, Seq.PPQ / 4, SIXTEENTH_NOTE_COLOR, scale, g);
             }
                 
         if (scale < 16.0)               // draw beats
             {
-            drawVerticalBars(startWhen, endWhen, Seq.PPQ, COLOR_BEAT, scale, g);
+            drawVerticalBars(startWhen, endWhen, Seq.PPQ, BEAT_COLOR, scale, g);
             }
 
         // draw bars
-        drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, COLOR_BAR, scale, g);
+        drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, BAR_COLOR, scale, g);
 
         // draw start
         int startX = gridui.getPixels(startTime);

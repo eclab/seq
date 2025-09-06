@@ -320,16 +320,16 @@ public class Ruler extends JComponent
         
         if (scale < 4.0)                // draw 16th notes
             {
-            drawVerticalBars(startWhen, endWhen, Seq.PPQ / 4, PitchUI.COLOR_16TH_NOTE, scale, g, beatsPerBar);
+            drawVerticalBars(startWhen, endWhen, Seq.PPQ / 4, PitchUI.SIXTEENTH_NOTE_COLOR, scale, g, beatsPerBar);
             }
         
         if (scale < 16.0)               // draw beats
             {
-            drawVerticalBars(startWhen, endWhen, Seq.PPQ, PitchUI.COLOR_BEAT, scale, g, beatsPerBar);
+            drawVerticalBars(startWhen, endWhen, Seq.PPQ, PitchUI.BEAT_COLOR, scale, g, beatsPerBar);
             }
 
         // draw bars
-        drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, PitchUI.COLOR_BAR, scale, g, beatsPerBar);
+        drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, PitchUI.BAR_COLOR, scale, g, beatsPerBar);
 
         // draw play
         // FIXME: Merge this lock with the one above?

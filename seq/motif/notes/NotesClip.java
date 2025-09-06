@@ -373,15 +373,19 @@ public class NotesClip extends Clip
                 if (event instanceof Notes.Note)
                     {
                     Notes.Note note = (Notes.Note)event;
-                    if (note.velocity > 0)
+                    int velocity = getCorrectedValueInt(note.velocity, 126);		// 0 .. 126 representing 1...127 because we can't have 0 velocity, that is a note off
+                    int release = getCorrectedValueInt(note.release, 127);
+                    // at present we're not doing pitch because we'd have to move the note
+                    // at present we're also not doing the length for the same reason
+                    if (velocity > 0)
                         {
-                        int id = noteOn(out, note.pitch, note.velocity);
+                        int id = noteOn(out, note.pitch, velocity);
                         // NOTE: We have to schedule the note off, rather than turn it off at a later time,
                         // because the musician could change the transpose before the note was turned off
                         // and then the note to turn off would be a different note and we'd be in a whole,
                         // um, HEAP of trouble
                                    
-                        if (id >= 0) scheduleNoteOff(out, note.pitch, note.release, note.length, id);
+                        if (id >= 0) scheduleNoteOff(out, note.pitch, release, note.length, id);
                         }
                     }
                 else if (event instanceof Notes.Bend)

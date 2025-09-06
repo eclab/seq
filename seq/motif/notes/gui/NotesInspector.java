@@ -222,22 +222,31 @@ public class NotesInspector extends WidgetList
                     {
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
-                    boolean disarm = false;
+                    boolean disarmAll = false;
+                    boolean isArmed = armed.isSelected();
                     lock.lock();
                     try 
                         {
-                        if (armed.isSelected() && notesui.getSeqUI().getDisarmsAllBeforeArming())
+                        if (isArmed && notesui.getSeqUI().getDisarmsAllBeforeArming())
                             {
                             seq.disarmAll();
-                            disarm = true;
+                            disarmAll = true;
                             } 
-                        notes.setArmed(armed.isSelected()); 
+                        notes.setArmed(isArmed); 
                         }
                     finally { lock.unlock(); }                              
-                    if (disarm)         // outside lock
+                    if (disarmAll)         // outside lock
                         {
                         notesui.getSeqUI().incrementRebuildInspectorsCount();           // show disarmed
+                    	for(MotifListButton button : notesui.getSeqUI().getMotifList().getButtons())
+                    		{
+                    		button.updateText();
+                    		}
                         }
+                    else
+                    	{
+                    	notesui.getPrimaryButton().updateText();
+                    	}
                     }
                 });
 
@@ -748,6 +757,15 @@ public class NotesInspector extends WidgetList
         
     public void reviseEventParameters()
         {
+        // what is being displayed in the inspector?  Should I get rid of it?
+		EventUI first = notesui.getGridUI().getFirstSelected();
+		if (first != null && !(first instanceof NoteUI))
+			{
+			// deselect it all
+			notesui.getGridUI().clearSelected();
+			notesui.updateChildInspector(false);
+			}
+		
         if (eventParameterType[Notes.NUM_EVENT_PARAMETERS - 1] == null) return;                 // not set up yet
         if (eventParameterLSB[Notes.NUM_EVENT_PARAMETERS - 1] == null) return;          // not set up yet
                 

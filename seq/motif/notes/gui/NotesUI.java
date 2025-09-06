@@ -506,8 +506,6 @@ public class NotesUI extends MotifUI
         	p.y = PitchUI.getPitchHeight() * 128 - viewRect.height;
         if (p.y < 0) p.y = 0;
         */
-
-		System.err.println("height " + height + " bounds " + viewRect + " p " + p);
         
         getPrimaryScroll().getViewport().setViewPosition(p);
         }

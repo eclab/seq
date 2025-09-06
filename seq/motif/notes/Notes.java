@@ -123,7 +123,7 @@ public class Notes extends Motif
         
         if (type < TYPE_CC) return header + " " + footer;
         if (type < TYPE_POLYPHONIC_AFTERTOUCH) return header + " " + footer;
-        if (type < TYPE_CHANNEL_AFTERTOUCH) return header + " " + footer;
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return header ; // " " + footer;
         if (type == TYPE_CHANNEL_AFTERTOUCH) return header;
         if (type == TYPE_PITCH_BEND) return header;
         if (type == TYPE_PC) return header;
@@ -295,7 +295,7 @@ public class Notes extends Motif
         
         public String toString() { return NOTES[pitch % 12] + (pitch / 12) + ":" +  velocity + "[" + when + "-" + (when + length) + "]"; }       // We don't include Length because it would appear in the table
 	
-        public double getNormalizedValue(boolean log) { return velocity / 128.0; }
+        public double getNormalizedValue(boolean log) { return (velocity < 0 ? velocity : velocity / 128.0); }
         public void setNormalizedValue(double value, boolean log) { velocity = (int)(value * 128); }
         public int getParameter() { return pitch; }
         public int getType() { return TYPE_NOTE + pitch; }
@@ -370,8 +370,8 @@ public class Notes extends Motif
             this.value = (int)fromNormalizedLog(value);
             }
                         
-        public double getNormalizedValue(boolean log) { if (log) return getNormalizedLogValue(); else return (value + 8192) / 16384.0; }
-        public void setNormalizedValue(double value, boolean log) { if (log) setNormalizedLogValue(value); else this.value = ((int)(value * 16384) - 8192); }
+        public double getNormalizedValue(boolean log) { if (value < -8192) return (value + 8192); else if (log) return getNormalizedLogValue(); else return (value + 8192) / 16384.0; }
+        public void setNormalizedValue(double value, boolean log) { if (value < 0) this.value = ((int)value) - 8192; else if (log) setNormalizedLogValue(value); else this.value = ((int)(value * 16384) - 8192); }
         public int getParameter() { return 0; }
         public int getType() { return TYPE_PITCH_BEND; }
         }
@@ -423,7 +423,7 @@ public class Notes extends Motif
             }
         public String toString() { return "NRPN:" + parameter + "->" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value / 16384.0; }
+        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 16384.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_NRPN + parameter; }
@@ -476,7 +476,7 @@ public class Notes extends Motif
             }
         public String toString() { return "RPN:" + parameter + "->" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value / 16384.0; }
+        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 16384.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_RPN + parameter; }
@@ -519,7 +519,7 @@ public class Notes extends Motif
             }
         public String toString() { return "CC:" + parameter + "->" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value / 128.0; }
+        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 128.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_CC + parameter; }
@@ -558,7 +558,7 @@ public class Notes extends Motif
             }
         public String toString() { return "PC:" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value / 128.0; }
+        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 128.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
         public int getParameter() { return 0; }
         public int getType() { return TYPE_PC; }
@@ -611,7 +611,7 @@ public class Notes extends Motif
                     (pitch == Out.CHANNEL_AFTERTOUCH ? ":" : ":" + (NOTES[pitch % 12] + (pitch / 12)) + "->")
                       + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value / 128.0; }
+        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 128.0; }
         public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
         public int getParameter() { return pitch; }
         public int getType() { return (pitch == Out.CHANNEL_AFTERTOUCH ? 384 : TYPE_POLYPHONIC_AFTERTOUCH + pitch); }

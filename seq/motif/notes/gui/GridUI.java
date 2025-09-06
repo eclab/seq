@@ -647,7 +647,8 @@ public class GridUI extends JComponent
                     }
                 else
                     {
-                    eventui.setOriginalValue(event.getNormalizedValue(getNotesUI().getNotes().getLog()));
+                    double val = event.getNormalizedValue(getNotesUI().getNotes().getLog());
+                    eventui.setOriginalValue(val < 0 ? 0.5 : val);
                     }
                 }
             finally

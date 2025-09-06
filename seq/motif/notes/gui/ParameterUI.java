@@ -24,6 +24,11 @@ public class ParameterUI extends JComponent
     // The color of the lower border of the ruler
     public static final Color BORDER_COLOR = Color.BLACK;
 
+    // Vertical lines
+    static final Line2D.Double vertical = new Line2D.Double(0, 0, 0, 0);
+    // Ruber band lines
+    static final Line2D.Double rubberBand = new Line2D.Double(0, 0, 0, 0);
+        
     // The GridUI
     GridUI gridui;
     // The parent EventsUI of this ParameterUI
@@ -63,7 +68,7 @@ public class ParameterUI extends JComponent
         rubberBandStartX = -1;
         rubberBandEndX = -1;
         }
-                
+             
     /** Returns the EventsUI */
     public EventsUI getEventsUI() { return eventsui; }
 
@@ -311,6 +316,7 @@ public class ParameterUI extends JComponent
         {
         add(eventui);
         eventuis.add(eventui);
+        eventui.setParameterUI(this);		// just in case
         }
                 
     /** Finds and returns the EventUI for the given Event.  This is O(n) */
@@ -358,11 +364,6 @@ public class ParameterUI extends JComponent
         return new Dimension(getPixels(eventsui.getMaximumTime()), eventsui.getParameterHeight());
         }
         
-        
-    // Vertical lines
-    static final Line2D.Double vertical = new Line2D.Double(0, 0, 0, 0);
-    // Ruber band lines
-    static final Line2D.Double rubberBand = new Line2D.Double(0, 0, 0, 0);
         
     // Draws vertical bars for a given divisor.  The divisors at present are:
     // 192 / 4                  Quarter events
@@ -435,16 +436,16 @@ public class ParameterUI extends JComponent
         
         if (scale < 4.0)                // draw 16th events
             {
-            drawVerticalBars(startWhen, endWhen, Seq.PPQ / 4, PitchUI.COLOR_16TH_NOTE, scale, g);
+            drawVerticalBars(startWhen, endWhen, Seq.PPQ / 4, PitchUI.SIXTEENTH_NOTE_COLOR, scale, g);
             }
                 
         if (scale < 16.0)               // draw beats
             {
-            drawVerticalBars(startWhen, endWhen, Seq.PPQ, PitchUI.COLOR_BEAT, scale, g);
+            drawVerticalBars(startWhen, endWhen, Seq.PPQ, PitchUI.BEAT_COLOR, scale, g);
             }
 
         // draw bars
-        drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, PitchUI.COLOR_BAR, scale, g);
+        drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, PitchUI.BAR_COLOR, scale, g);
 
 
         // draw end

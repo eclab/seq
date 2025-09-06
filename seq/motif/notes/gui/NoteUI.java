@@ -19,28 +19,21 @@ public class NoteUI extends EventUI implements Comparable
     {
     // Smallest width I'm permitted to be.  Maybe this should be 5.
     public static final int MINIMUM_WIDTH = 3;
-    // Stroke for drawing me normally
-    public static final Stroke stroke = new BasicStroke(1.0f);
-    // Stroke for drawing me while selected
-    public static final Stroke selectedStroke = new BasicStroke(3.0f);
-    // Stroke color for drawing me normally
-    public static final Color strokeColor = Color.BLACK; // new Color(64, 64, 64); 
+    // Stroke color for drawing me normally -- overrides EventUI ?
+    public static final Color STROKE_COLOR = Color.BLACK; // new Color(64, 64, 64); 
     // Stroke color for drawing me while selected
-    public static final Color selectedColor = Color.BLUE; 
-    // Stroke color for newly recorded notes
-    public static final Color recordedColor = Color.WHITE; 
+    public static final Color RECORDED_COLOR = Color.WHITE; 
     // Region at the far right of me where clicking in that region results in me trying to be resized
     public static final int RESIZE_REGION_WIDTH = 6;
     // Mapping of velocity to color
-    public static final SimpleColorMap velocityMap = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
+    public static final SimpleColorMap VELOCITY_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
         new SimpleColorMap(0, 127, 64, 
             new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
             new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
-
-                        
+               
     // backpointer to the owner PitchUI
     PitchUI pitchui;
-    
+    // is this a temporary displayed noteui for a recorded note?
     boolean recorded;
     
     // Returns the Seq
@@ -51,6 +44,10 @@ public class NoteUI extends EventUI implements Comparable
 
     // Returns the NotesUI
     NotesUI getNotesUI() { return getGridUI().getNotesUI(); }
+    
+    PitchUI getPitchUI() { return pitchui; }
+
+	void setPitchUI(PitchUI val) { pitchui = val; }
 
     /** Returns the original pitch (a temporary variable for GridUI to compute moving notes */
     public int getOriginalPitch() { return (int)originalValue; }
@@ -63,7 +60,7 @@ public class NoteUI extends EventUI implements Comparable
         {
         int width = (int)(length / getGridUI().getScale());
         if (width < MINIMUM_WIDTH) width = MINIMUM_WIDTH;
-        setBounds((int)(when / getGridUI().getScale()), 0, width, pitchui.getHeight());
+        setBounds((int)(when / getGridUI().getScale()), 0, width, pitchui.getPitchHeight());
         }
         
     /** Reloads the NoteUI to a new time, pitch, and length, using the provided values.  This
@@ -101,7 +98,6 @@ public class NoteUI extends EventUI implements Comparable
             pitch = note.pitch;
             when = note.when;
             length = note.length;
-            //velocity = note.velocity;
             value = note.velocity;
             selected = note.selected;
             }
@@ -369,7 +365,14 @@ public class NoteUI extends EventUI implements Comparable
             {
             bounds.width = MINIMUM_WIDTH;
             }
-        g.setPaint(velocityMap.getColor((int)value));
+        if (value < 0)
+        	{
+        	g.setPaint(DEFAULT_COLOR);
+        	}
+        else
+        	{
+        	g.setPaint(VELOCITY_MAP.getColor((int)value));
+        	}
         g.fill(bounds);
         
         if (recorded)
@@ -378,8 +381,8 @@ public class NoteUI extends EventUI implements Comparable
             bounds.y++;
             bounds.width -=2;
             bounds.height -=2;
-            g.setPaint(recordedColor);
-            g.setStroke(selectedStroke);
+            g.setPaint(RECORDED_COLOR);
+            g.setStroke(SELECTED_STROKE);
             g.draw(bounds);
         	}
         else if (selected)
@@ -388,14 +391,14 @@ public class NoteUI extends EventUI implements Comparable
             bounds.y++;
             bounds.width -=2;
             bounds.height -=2;
-            g.setPaint(selectedColor);
-            g.setStroke(selectedStroke);
+            g.setPaint(SELECTED_COLOR);
+            g.setStroke(SELECTED_STROKE);
             g.draw(bounds);
             }
         else    
             {
-            g.setPaint(strokeColor);
-            g.setStroke(stroke);
+            g.setPaint(STROKE_COLOR);
+            g.setStroke(STROKE);
             g.draw(bounds);
             }
         }

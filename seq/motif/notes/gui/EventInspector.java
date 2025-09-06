@@ -47,6 +47,26 @@ public class EventInspector extends WidgetList
         
     public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
+    String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
+
+    public void buildDefaults(Motif parent)
+        {
+        defaults[0] = "Rand";
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            String name = parent.getParameterName(i);
+            if (name == null || name.length() == 0)
+                {
+                defaults[1 + i] = "Param " + (i + 1);
+                }
+            else
+                {
+                defaults[1 + i] = "" + (i + 1) + ": " + name;
+                }
+            }
+        }
+
+
     public Notes.Event getEvent() { return event; }
 
     void updateTable()
@@ -70,12 +90,12 @@ public class EventInspector extends WidgetList
         {
         String[] strs = null;
         JComponent[] comps = null;
-
         this.seq = seq;
         this.notes = notes;
         this.notesui = notesui;
         this.type = event.getType();
         this.event = event;
+        buildDefaults(notes);
 
         if (event == null)
             {
@@ -201,7 +221,7 @@ public class EventInspector extends WidgetList
                         };
                     pitch.setToolTipText(PITCH_TOOLTIP);
 
-                    velocity = new SmallDial((note.velocity == 0 ? 0 : note.velocity - 1) / 126.0)              // we dont allow 0 velocity
+                    velocity = new SmallDial((note.velocity == 0 ? 0 : note.velocity - 1) / 126.0, defaults)              // we dont allow 0 velocity
                         {
                         protected String map(double val) { return "" + ((int)(val * 126.0) + 1); }
                         public double getValue() 
@@ -221,10 +241,26 @@ public class EventInspector extends WidgetList
                             updateTable(); 
                             notesui.getGridUI().reloadSelected();
                             }
+						public void setDefault(int val) 
+							{ 
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { if (val != SmallDial.NO_DEFAULT) note.velocity = (-(val + 1)); }
+							finally { lock.unlock(); }
+                            updateTable(); 
+                            notesui.getGridUI().reloadSelected();
+							}
+						public int getDefault()
+							{
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { double val = note.velocity; return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+							finally { lock.unlock(); }
+							}
                         };
                     velocity.setToolTipText(VELOCITY_TOOLTIP);
 
-                    release = new SmallDial(note.velocity / 127.0)
+                    release = new SmallDial(note.velocity / 127.0, defaults)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
@@ -244,6 +280,22 @@ public class EventInspector extends WidgetList
                             updateTable(); 
                             notesui.getGridUI().reloadSelected();               // Maybe not necessary?
                             }
+						public void setDefault(int val) 
+							{ 
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { if (val != SmallDial.NO_DEFAULT) note.release = (-(val + 1)); }
+							finally { lock.unlock(); }
+                            updateTable(); 
+                            notesui.getGridUI().reloadSelected();
+							}
+						public int getDefault()
+							{
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { double val = note.release; return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+							finally { lock.unlock(); }
+							}
                         };
                     release.setToolTipText(RELEASE_VELOCITY_TOOLTIP);
 
@@ -282,7 +334,24 @@ public class EventInspector extends WidgetList
                             EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
                             if (eventui != null) eventui.reload();
                             }
-                        };
+ 						public void setDefault(int val) 
+							{ 
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { if (val != SmallDial.NO_DEFAULT) bend.value = (-(val + 1) - 8192); }
+							finally { lock.unlock(); }
+                            updateTable(); 
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
+							}
+						public int getDefault()
+							{
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { double val = bend.value; return (val < -8192 ? -(int)(val + 1) + 8192 : SmallDial.NO_DEFAULT); }
+							finally { lock.unlock(); }
+							}
+                       };
                     value.setScale(512.0);      // increase resolution
                     value.setToolTipText(VALUE_TOOLTIP);
 
@@ -345,7 +414,7 @@ public class EventInspector extends WidgetList
                         };
                     parameter.setToolTipText(PARAMETER_TOOLTIP);
 
-                    value = new SmallDial(cc.value / 127.0)
+                    value = new SmallDial(cc.value / 127.0, defaults)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
@@ -366,6 +435,23 @@ public class EventInspector extends WidgetList
                             EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
                             if (eventui != null) eventui.reload();
                             }
+						public void setDefault(int val) 
+							{ 
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { if (val != SmallDial.NO_DEFAULT) cc.value = (-(val + 1)); }
+							finally { lock.unlock(); }
+                            updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
+							}
+						public int getDefault()
+							{
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { double val = cc.value; return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+							finally { lock.unlock(); }
+							}
                         };
                     value.setToolTipText(VALUE_TOOLTIP);
 
@@ -696,7 +782,7 @@ public class EventInspector extends WidgetList
 
                     pitch.setToolTipText(AFTERTOUCH_PITCH_TOOLTIP);
 
-                    value = new SmallDial(aftertouch.value / 127.0)
+                    value = new SmallDial(aftertouch.value / 127.0, defaults)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
@@ -717,19 +803,99 @@ public class EventInspector extends WidgetList
                             EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
                             if (eventui != null) eventui.reload();
                             }
+						public void setDefault(int val) 
+							{ 
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { if (val != SmallDial.NO_DEFAULT) aftertouch.value = (-(val + 1)); }
+							finally { lock.unlock(); }
+                            updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
+							}
+						public int getDefault()
+							{
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { double val = aftertouch.value; return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+							finally { lock.unlock(); }
+							}
                         };
                     value.setToolTipText(VALUE_TOOLTIP);
 
-                    strs = new String[] { /*"Type",*/ "When", "Pitch", "Value" };
+					if (aftertouch.pitch == Out.CHANNEL_AFTERTOUCH)
+						{
+						strs = new String[] { /*"Type",*/ "When", "Value" };
+						comps = new JComponent[] 
+							{
+							//new JLabel("Aftertouch"),
+							when,
+							value.getLabelledDial("127")
+							};
+						}
+					else
+						{
+						strs = new String[] { /*"Type",*/ "When", "Pitch", "Value" };
+						comps = new JComponent[] 
+							{
+							//new JLabel("Aftertouch"),
+							when,
+							pitch.getLabelledDial("A#"),
+							value.getLabelledDial("127")
+							};
+						}
+                    }
+                 else if (event instanceof Notes.PC)
+                    {
+                    Notes.PC pc = (Notes.PC) event;
+                    value = new SmallDial(pc.value / 127.0, defaults)
+                        {
+                        protected String map(double val) { return "" + (int)(val * 127.0); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return pc.value / 127.0; }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { pc.value = (int)(val * 127.0); }
+                            finally { lock.unlock(); }
+                            updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
+                            }
+						public void setDefault(int val) 
+							{ 
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { if (val != SmallDial.NO_DEFAULT) pc.value = (-(val + 1)); }
+							finally { lock.unlock(); }
+                            updateTable();  
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
+							}
+						public int getDefault()
+							{
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { double val = pc.value; return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+							finally { lock.unlock(); }
+							}
+                        };
+                    value.setToolTipText(VALUE_TOOLTIP);
+
+                    strs = new String[] {  "Value" };
                     comps = new JComponent[] 
                         {
-                        //new JLabel("Aftertouch"),
-                        when,
-                        pitch.getLabelledDial("A#"),
                         value.getLabelledDial("127")
                         };
                     }
-                }
+               }
             finally { lock.unlock(); }
             build(strs, comps);
             }

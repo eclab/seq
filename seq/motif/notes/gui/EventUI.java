@@ -22,15 +22,17 @@ public class EventUI extends JComponent
     // The Event's Width.
     public static final int WIDTH = 9;
     // Stroke for drawing me normally
-    public static final Stroke stroke = new BasicStroke(1.0f);
+    public static final Stroke STROKE = new BasicStroke(1.0f);
     // Stroke for drawing me while selected
-    public static final Stroke selectedStroke = new BasicStroke(3.0f);
+    public static final Stroke SELECTED_STROKE = new BasicStroke(3.0f);
     // Stroke color for drawing me normally
-    public static final Color strokeColor = new Color(64, 64, 64); 
+    public static final Color STROKE_COLOR = new Color(64, 64, 64); 
     // Stroke color for drawing me while selected
-    public static final Color selectedColor = Color.BLUE; 
+    public static final Color SELECTED_COLOR = Color.BLUE; 
+    // Fill color for my velocity if set to a parameter default
+    public static final Color DEFAULT_COLOR = new Color(128, 128, 255); 
     // Mapping of value to color
-    public static final SimpleColorMap valueMap = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
+    public static final SimpleColorMap VALUE_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
         new SimpleColorMap(0, 127, 64, 
             new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
             new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
@@ -42,12 +44,13 @@ public class EventUI extends JComponent
     // Event parameter, also used for pitch by NoteUI
     //int parameter;
     // Normalized Event value, also used for velocity by NoteUI
-    double value;
+    protected double value;
     // Am I selected?
     boolean selected;
     // Temporary storage of old time and value to allow us to compute new locations while moving events
     int originalWhen;
-    double originalValue;               // reused as originalPitch
+    protected double originalValue;               // reused as originalPitch
+    boolean boundsSet = false;
     
 
     // These are carefully chosen to be static variables so we can save some memory
@@ -77,6 +80,8 @@ public class EventUI extends JComponent
     EventsUI getEventsUI() { return parameterui.getEventsUI(); }
         
     ParameterUI getParameterUI() { return parameterui; }
+    
+    void setParameterUI(ParameterUI val) { parameterui = val; }
         
     /** Returns the Note */
     public Notes.Event getEvent() { return event; }
@@ -114,10 +119,11 @@ public class EventUI extends JComponent
     
     int computeY()
         {
-        // Centery ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
-        return HEIGHT / 2 + (int)((parameterui.getBounds().height - HEIGHT) * (1.0 - value));
+        // Center y ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
+        int parameteruiHeight = parameterui.getBounds().height;
+        boundsSet = (parameteruiHeight != 0);	// uh oh, gotta set later
+        return HEIGHT / 2 + (int)((parameteruiHeight - HEIGHT) * (1.0 - (value < 0 ? 0.5 : value)));
         }
-    
     
     /** Reloads the EventUI to a new time, using the provided values.  Reloading
         simply sets the bounds of the EventUI.  */ 
@@ -432,12 +438,26 @@ public class EventUI extends JComponent
     public void paintComponent(Graphics _g)
         {
         Graphics2D g = (Graphics2D) _g;
+        
+        // bounds may not have been set yet
+        if (!boundsSet) // uh oh
+        	{
+        	reload();
+        	}
+        
         Rectangle bounds = getBounds();
         bounds.x = 0;
         bounds.y = 0;
         bounds.height = HEIGHT;
         
-        g.setPaint(valueMap.getColor(value * 127.0));
+        if (value < 0)
+        	{
+        	g.setPaint(DEFAULT_COLOR);
+        	}
+        else
+        	{
+	        g.setPaint(VALUE_MAP.getColor(value * 127.0));
+	        }
         g.fill(bounds);
         
         if (selected)
@@ -446,14 +466,14 @@ public class EventUI extends JComponent
             bounds.y++;
             bounds.width -=2 ;
             bounds.height -=2;
-            g.setPaint(selectedColor);
-            g.setStroke(selectedStroke);
+            g.setPaint(SELECTED_COLOR);
+            g.setStroke(SELECTED_STROKE);
             g.draw(bounds);
             }
         else    
             {
-            g.setPaint(strokeColor);
-            g.setStroke(stroke);
+            g.setPaint(STROKE_COLOR);
+            g.setStroke(STROKE);
             g.draw(bounds);
             }
         }
