@@ -345,7 +345,7 @@ public class Automaton extends Motif
         public int getNote(int n) { return notes[n]; }
         public void setNote(int n, int val) { notes[n] = val; }
         public int getVelocity() { return velocity; }
-        public void setVelocity(int val) { velocity = val; }
+        public void setVelocity(int val) { velocity = val; }		// cannot be 0
         public int getRelease() { return release; }
         public void setRelease(int val) { release = val; }
         public double getTimeOn() { return timeOn; }
@@ -422,8 +422,10 @@ public class Automaton extends Motif
         public String getBaseName() { return "Random"; }
         public void save(JSONObject to, Automaton automaton) throws JSONException { to.put("type", "random"); super.save(to, automaton); }
         public Node[] selectOut() { throw new RuntimeException("Automaton.Random does not support selectOut()"); }
-        public Node[] selectOut(java.util.Random rand) 
+        public Node[] selectOut(java.util.Random rand, AutomatonClip clip) 
             {
+            double correctedAux[] = new double[aux.length];
+            
             // Compute total
             double total = 0; 
             int count = 0;
@@ -432,7 +434,8 @@ public class Automaton extends Motif
                 if (out[i] != null) 
                     { 
                     count++; 
-                    total += aux[i];
+                    correctedAux[i] = clip.getCorrectedValueDouble(aux[i], 1.0);
+                    total += correctedAux[i];
                     }
                 }
                         
@@ -467,7 +470,7 @@ public class Automaton extends Motif
                     if (out[i] != null)
                         {
                         last = out[i];
-                        total -= aux[i];
+                        total -= correctedAux[i];
                         if (select >= total) return new Node[] { out[i] }; 
                         }
                     }
@@ -485,7 +488,8 @@ public class Automaton extends Motif
         output, we either STOP and not transition any more (the thread dies) or we wrap back around to the first input. */
     public static class Iterate extends Node
         {
-        boolean loop;
+    	public static final int MAX_REPEATS = 64;
+		boolean loop;
         
         public int maxOut() { return MAX_OUT; }
         public Node copy() { Iterate copy = new Iterate(); copy.copyFrom(this); copy.loop = loop; return copy; } 
@@ -498,14 +502,17 @@ public class Automaton extends Motif
         public Iterate() { this(false); }
         
         public Node[] selectOut() { throw new RuntimeException("Automaton.Iterate does not support selectOut()"); }
-        public Node[] selectOut(int counter)  // not to be confused with Automaton.counter
+        public Node[] selectOut(int counter, AutomatonClip clip)  // not to be confused with Automaton.counter
             {
+            int correctedAux[] = new int[aux.length];
+
             int total = 0;
             for(int i = 0; i < out.length; i++)
                 {
                 if (out[i] != null) 
                     {
-                    total += (int)aux[i];
+                    correctedAux[i] = clip.getCorrectedValueInt((int)aux[i], MAX_REPEATS);
+                    total += correctedAux[i];
                     }
                 }
                 
@@ -524,7 +531,7 @@ public class Automaton extends Motif
             total = 0;
             for(int i = 0; i < out.length; i++)
                 {
-                if (out[i] != null) { total += (int)aux[i]; last = out[i]; }
+                if (out[i] != null) { total += correctedAux[i]; last = out[i]; }
                 if (counter < total) { return new Node[] { out[i] }; }
                 }
                 
