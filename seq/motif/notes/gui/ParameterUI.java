@@ -109,9 +109,9 @@ public class ParameterUI extends JComponent
                         {
                         Notes notes = getNotesUI().getNotes();
  
-                        if (event instanceof Notes.Bend && notes.getLog())
+                        if (event instanceof Notes.Bend && notes.getWarped())
                             {
-                            ((Notes.Bend)event).setNormalizedLogValue(value);
+                            ((Notes.Bend)event).setWarpedNormalizedValue(value);
                             }
 
                         notes.getEvents().add(event);
@@ -465,7 +465,7 @@ public class ParameterUI extends JComponent
     public void paint(Graphics _g)
         {
         super.paint(_g);
-
+        
         Graphics2D g = (Graphics2D) _g;
         Rectangle bounds = getBounds();
             

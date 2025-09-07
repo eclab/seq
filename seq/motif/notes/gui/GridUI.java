@@ -645,9 +645,14 @@ public class GridUI extends JComponent
                     {
                     ((NoteUI)eventui).setOriginalPitch(((Notes.Note)event).pitch);
                     }
+                else if (event instanceof Notes.Bend && getNotesUI().getNotes().getWarped())
+                	{
+                	double val = ((Notes.Bend)event).getWarpedNormalizedValue();
+                    eventui.setOriginalValue(val < 0 ? 0.5 : val);
+                	}
                 else
                     {
-                    double val = event.getNormalizedValue(getNotesUI().getNotes().getLog());
+                    double val = event.getNormalizedValue();
                     eventui.setOriginalValue(val < 0 ? 0.5 : val);
                     }
                 }

@@ -313,14 +313,14 @@ public class EventInspector extends WidgetList
                 else if (event instanceof Notes.Bend)
                     {
                     Notes.Bend bend = (Notes.Bend) event;
-                    value = new SmallDial((bend.value + 8192) / 16383.0)
+                    value = new SmallDial(bend.value / 16383.0, defaults)
                         {
                         protected String map(double val) { return "" + (((int)(val * 16383.0)) - 8192); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { return (bend.value + 8192) / 16383.0; }
+                            try { return bend.value / 16383.0; }
                             finally { lock.unlock(); }
                             }
                         public void setValue(double val) 
@@ -328,7 +328,7 @@ public class EventInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { bend.value = (((int)(val * 16383.0)) - 8192);  }
+                            try { bend.value = (int)(val * 16383.0);  }
                             finally { lock.unlock(); }
                             updateTable(); 
                             EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
@@ -338,7 +338,7 @@ public class EventInspector extends WidgetList
 							{ 
 							ReentrantLock lock = seq.getLock();
 							lock.lock();
-							try { if (val != SmallDial.NO_DEFAULT) bend.value = (-(val + 1) - 8192); }
+							try { if (val != SmallDial.NO_DEFAULT) bend.value = (-(val + 1)); }
 							finally { lock.unlock(); }
                             updateTable(); 
                             EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
@@ -348,7 +348,7 @@ public class EventInspector extends WidgetList
 							{
 							ReentrantLock lock = seq.getLock();
 							lock.lock();
-							try { double val = bend.value; return (val < -8192 ? -(int)(val + 1) + 8192 : SmallDial.NO_DEFAULT); }
+							try { double val = bend.value; return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
 							finally { lock.unlock(); }
 							}
                        };

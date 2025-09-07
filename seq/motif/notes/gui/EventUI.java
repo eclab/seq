@@ -117,22 +117,6 @@ public class EventUI extends JComponent
     public double getOriginalValue() { return originalValue; }
     public void setOriginalValue(double value) { originalValue = value; }
     
-    int computeY()
-        {
-        // Center y ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
-        int parameteruiHeight = parameterui.getBounds().height;
-        boundsSet = (parameteruiHeight != 0);	// uh oh, gotta set later
-        return HEIGHT / 2 + (int)((parameteruiHeight - HEIGHT) * (1.0 - (value < 0 ? 0.5 : value)));
-        }
-    
-    /** Reloads the EventUI to a new time, using the provided values.  Reloading
-        simply sets the bounds of the EventUI.  */ 
-    public void reload(int when)
-        {
-        // We subtract WIDTH / 2 to center it
-        setBounds((int)(when / getGridUI().getScale()) - WIDTH / 2, computeY() - HEIGHT / 2, WIDTH, HEIGHT);
-        }
-                    
     /** Reloads the EventUI to a new time, value, velocity, selected, and length,
         using the values in the Event.  Reloading
         simply sets the bounds of the EventUI and moves it to the proper EventsUI if needed,
@@ -146,17 +130,36 @@ public class EventUI extends JComponent
         try 
             {
             when = event.when;
-            //parameter = event.getParameter();
-            value = event.getNormalizedValue(parameterui.getNotesUI().getNotes().getLog());
-            selected = event.selected;
+            if (event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
+            	{
+	            value = ((Notes.Bend)event).getWarpedNormalizedValue();
+            	}
+            else
+            	{
+    	         value = event.getNormalizedValue();
+	           	}
+            selected = event.selected; 
             }
         finally
             {
             lock.unlock();
             }
             
-        reload(when);
         if (selected) getGridUI().addEventToSelected(this, getEventsUI().getParameterUIs().indexOf(parameterui));
+
+        int parameteruiHeight = parameterui.getBounds().height;
+		// can we set our bounds?
+        boundsSet = (parameteruiHeight != 0);	// uh oh, gotta set later
+
+		// even if the bounds aren't set, we still have to set the bounds so we have bounds, otherwise
+		// Java won't even send a paintComponent to this EventUI when ParameterUI.paintChildren is called.
+		
+			// compute Y
+        	// Center y ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
+	        int computedY = HEIGHT / 2 + (int)((parameteruiHeight - HEIGHT) * (1.0 - (value < 0 ? 0.5 : value)));
+
+        	// We subtract WIDTH / 2 to center it
+        	setBounds((int)(when / getGridUI().getScale()) - WIDTH / 2, computedY - HEIGHT / 2, WIDTH, HEIGHT);
         }
         
         
@@ -295,7 +298,14 @@ public class EventUI extends JComponent
                         lock.lock();
                         try 
                             {
-                            eventui.event.setNormalizedValue(newValue, parameterui.getNotesUI().getNotes().getLog());
+							if (eventui.event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
+								{
+								((Notes.Bend)(eventui.event)).setWarpedNormalizedValue(newValue);
+								}
+							else
+								{
+								(eventui.event).setNormalizedValue(newValue);
+								}
                             }
                         finally
                             {
@@ -426,7 +436,14 @@ public class EventUI extends JComponent
         lock.lock();
         try 
             {
-            event.setNormalizedValue(newValue, parameterui.getNotesUI().getNotes().getLog());
+            if (event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
+            	{
+	            ((Notes.Bend)event).setWarpedNormalizedValue(newValue);
+            	}
+            else
+            	{
+    	        event.setNormalizedValue(newValue);
+	           	}
             }
         finally
             {
@@ -438,13 +455,13 @@ public class EventUI extends JComponent
     public void paintComponent(Graphics _g)
         {
         Graphics2D g = (Graphics2D) _g;
-        
+                
         // bounds may not have been set yet
         if (!boundsSet) // uh oh
         	{
         	reload();
         	}
-        
+
         Rectangle bounds = getBounds();
         bounds.x = 0;
         bounds.y = 0;

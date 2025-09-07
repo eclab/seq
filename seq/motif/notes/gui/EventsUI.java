@@ -80,6 +80,16 @@ public class EventsUI extends JComponent
             }
         }
     
+    public boolean validType(int pos)
+        {
+        if (types[pos] == 0) return false;
+        for(int i = 0; i < pos; i++)
+            {
+            if (types[i] == types[pos]) return false;
+            }
+        return true;
+        }
+        
     public EventsUI(GridUI gridui)
         {
         this.gridui = gridui;
@@ -94,6 +104,7 @@ public class EventsUI extends JComponent
         parameterBoxLayout = new GridLayout(0, 1);
         parameterBox.setLayout(parameterBoxLayout);  // So we're using GridLayout, which doesn't appear to have this problem
         add(parameterBox, BorderLayout.CENTER);
+                
         rebuild();
         repaint();
         }
