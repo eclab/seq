@@ -17,7 +17,6 @@ import java.util.concurrent.locks.*;
 public class AutomatonNodeInspector extends WidgetList
     {
     public static final String[] QUANTIZATIONS = { "None", "16th Note", "Quarter Note", "Measure" };
-    public static final int MAX_ITERATIONS = 64;
     public static final int MAX_JOINS = 8;                      // this should be >= 2 and <= Automaton.MAX_THREADS
     
     public static final double MAX_RATE = 16.0;
@@ -233,14 +232,14 @@ public class AutomatonNodeInspector extends WidgetList
                             }
                         };
                     delay.setToolTipText(CHORD_LENGTH_TOOLTIP);
-                    velocity = new SmallDial(nchord.getVelocity()/127.0)
+                    velocity = new SmallDial((nchord.getVelocity() - 1) / 126, defaults)
                         {
-                        protected String map(double val) { return String.valueOf((int)(val * 127)); }
+                        protected String map(double val) { return String.valueOf((int)(val * 126) + 1); }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { return nchord.getVelocity() / 127.0; }
+                            try { return (nchord.getVelocity() - 1) / 126.0; }
                             finally { lock.unlock(); }
                             }
                         public void setValue(double val) 
@@ -248,12 +247,27 @@ public class AutomatonNodeInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { nchord.setVelocity((int)(val * 127));}
+                            try { nchord.setVelocity((int)(val * 126) + 1);}
+                            finally { lock.unlock(); }
+                            }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) nchord.setVelocity(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = nchord.getVelocity(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
                             finally { lock.unlock(); }
                             }
                         };
                     velocity.setToolTipText(CHORD_VELOCITY_TOOLTIP);
-                    release = new SmallDial(nchord.getRelease())
+                    release = new SmallDial(nchord.getRelease(), defaults)
                         {
                         protected String map(double val) { return String.valueOf((int)(val * 127)); }
                         public double getValue() 
@@ -271,10 +285,25 @@ public class AutomatonNodeInspector extends WidgetList
                             try { nchord.setRelease((int)(val * 127)); }
                             finally { lock.unlock(); }
                             }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) nchord.setRelease(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = nchord.getRelease(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                         };
                     release.setToolTipText(CHORD_RELEASE_TOOLTIP);
                                                 
-                    gate = new SmallDial(nchord.getTimeOn())
+                    gate = new SmallDial(nchord.getTimeOn(), defaults)
                         {
                         protected String map(double val) { return String.format("%.4f", val); }
                         public double getValue() 
@@ -292,12 +321,27 @@ public class AutomatonNodeInspector extends WidgetList
                             try { nchord.setTimeOn(val); }
                             finally { lock.unlock(); }
                             }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) nchord.setTimeOn(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = nchord.getTimeOn(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                         };
                     gate.setToolTipText(CHORD_GATE_TOOLTIP);
                                                 
                     /// FIXME: Okay this should be done with a for-loop....
                                         
-                    pitch1 = new SmallDial(nchord.getNote(0)/128.0)
+                    pitch1 = new SmallDial(nchord.getNote(0)/128.0, defaults)
                         {
                         protected String map(double val) 
                             { 
@@ -320,9 +364,24 @@ public class AutomatonNodeInspector extends WidgetList
                             try { nchord.setNote(0, (int)(val * 128)); }
                             finally { lock.unlock(); }
                             }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) nchord.setNote(0, -(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = nchord.getNote(0); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                         };
                     pitch1.setToolTipText(CHORD_PITCH_1_TOOLTIP);
-                    pitch2 = new SmallDial(nchord.getNote(1) / 128.0)
+                    pitch2 = new SmallDial(nchord.getNote(1) / 128.0, defaults)
                         {
                         protected String map(double val) 
                             { 
@@ -345,9 +404,24 @@ public class AutomatonNodeInspector extends WidgetList
                             try { nchord.setNote(1, (int)(val * 128)); }
                             finally { lock.unlock(); }
                             }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) nchord.setNote(1, -(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = nchord.getNote(1); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                         };
                     pitch2.setToolTipText(CHORD_PITCH_2_TOOLTIP);
-                    pitch3 = new SmallDial(nchord.getNote(2) / 128.0)
+                    pitch3 = new SmallDial(nchord.getNote(2) / 128.0, defaults)
                         {
                         protected String map(double val) 
                             { 
@@ -370,9 +444,24 @@ public class AutomatonNodeInspector extends WidgetList
                             try { nchord.setNote(2, (int)(val * 128)); }
                             finally { lock.unlock(); }
                             }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) nchord.setNote(2, -(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = nchord.getNote(2); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                         };
                     pitch3.setToolTipText(CHORD_PITCH_3_TOOLTIP);
-                    pitch4 = new SmallDial(nchord.getNote(3) / 128.0)
+                    pitch4 = new SmallDial(nchord.getNote(3) / 128.0, defaults)
                         {
                         protected String map(double val) 
                             { 
@@ -393,6 +482,21 @@ public class AutomatonNodeInspector extends WidgetList
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
                             try { nchord.setNote(3, (int)(val * 128)); }
+                            finally { lock.unlock(); }
+                            }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) nchord.setNote(3, -(val + 1)); }
+                            finally { lock.unlock(); }
+                            owner.updateText();                  // FIXME: is this needed?
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = nchord.getNote(3); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
                             finally { lock.unlock(); }
                             }
                         };
@@ -439,7 +543,7 @@ public class AutomatonNodeInspector extends WidgetList
                     for(int i = 0; i < aux.length; i++)
                         {
                         final int _i = i;
-                        aux[i] = new SmallDial(nrandom.getAux(_i))
+                        aux[i] = new SmallDial(nrandom.getAux(_i), defaults)
                             {
                             protected String map(double val) { return String.format("%.4f", val); }
                             public double getValue() 
@@ -457,6 +561,21 @@ public class AutomatonNodeInspector extends WidgetList
                                 try { nrandom.setAux(_i, val); }
                                 finally { lock.unlock(); }
                                 }
+							public void setDefault(int val) 
+								{ 
+								ReentrantLock lock = seq.getLock();
+								lock.lock();
+								try { if (val != SmallDial.NO_DEFAULT) nrandom.setAux(_i, -(val + 1)); }
+								finally { lock.unlock(); }
+								owner.updateText();                  // FIXME: is this needed?
+								}
+							public int getDefault()
+								{
+								ReentrantLock lock = seq.getLock();
+								lock.lock();
+								try { double val = nrandom.getAux(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+								finally { lock.unlock(); }
+								}
                             };
                         }
                     aux[0].setToolTipText(RANDOM_WEIGHT_1_TOOLTIP);
@@ -481,14 +600,14 @@ public class AutomatonNodeInspector extends WidgetList
                     for(int i = 0; i < aux.length; i++)
                         {
                         final int _i = i;
-                        aux[i] = new SmallDial((niterate.getAux(_i) - 1) / (double)MAX_ITERATIONS)
+                        aux[i] = new SmallDial((niterate.getAux(_i) - 1) / (double)Automaton.Iterate.MAX_REPEATS, defaults)
                             {
-                            protected String map(double val) { return "" + (1 + (int)(val * (MAX_ITERATIONS - 1))); }
+                            protected String map(double val) { return "" + (1 + (int)(val * (Automaton.Iterate.MAX_REPEATS - 1))); }
                             public double getValue() 
                                 { 
                                 ReentrantLock lock = seq.getLock();
                                 lock.lock();
-                                try { return (niterate.getAux(_i) - 1) / (double)(MAX_ITERATIONS - 1); }
+                                try { return (niterate.getAux(_i) - 1) / (double)(Automaton.Iterate.MAX_REPEATS - 1); }
                                 finally { lock.unlock(); }
                                 }
                             public void setValue(double val) 
@@ -496,9 +615,24 @@ public class AutomatonNodeInspector extends WidgetList
                                 if (seq == null) return;
                                 ReentrantLock lock = seq.getLock();
                                 lock.lock();
-                                try { niterate.setAux(_i, 1 + (int)(val * (MAX_ITERATIONS - 1)));  }
+                                try { niterate.setAux(_i, 1 + (int)(val * (Automaton.Iterate.MAX_REPEATS - 1)));  }
                                 finally { lock.unlock(); }
                                 }
+							public void setDefault(int val) 
+								{ 
+								ReentrantLock lock = seq.getLock();
+								lock.lock();
+								try { if (val != SmallDial.NO_DEFAULT) niterate.setAux(_i, -(val + 1)); }
+								finally { lock.unlock(); }
+								owner.updateText();                  // FIXME: is this needed?
+								}
+							public int getDefault()
+								{
+								ReentrantLock lock = seq.getLock();
+								lock.lock();
+								try { double val = niterate.getAux(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+								finally { lock.unlock(); }
+								}
                             };
                         }
                     aux[0].setToolTipText(ITERATE_ITERATIONS_1_TOOLTIP);

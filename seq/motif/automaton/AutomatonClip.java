@@ -287,7 +287,7 @@ public class AutomatonClip extends Clip
                     shouldResetTriggers = true;             // we have multiple threads so we can't check and reset now, just check, then reset everyone later after process()
                     return !isTriggered(TRIGGER_PARAMETER);
                     }
-                else if (repeatCount >= getCorrectedValueInt(mnode.getRepeats(), Automaton.MotifNode.MAX_REPEATS))
+                else if (repeatCount >= getCorrectedValueInt(mnode.getRepeats(), Automaton.Iterate.MAX_REPEATS))
                     {
                     java.util.Random random = ThreadLocalRandom.current();
                     double prob = getCorrectedValueDouble(mnode.getRepeatProbability(), 1.0);
@@ -419,12 +419,12 @@ public class AutomatonClip extends Clip
                 java.util.Random random = ThreadLocalRandom.current();
                 Automaton.Iterate aiterate = (Automaton.Iterate) node;
                 Iterate iterate = getIterateFor(aiterate);
-                return aiterate.selectOut(++iterate.count);
+                return aiterate.selectOut(++iterate.count, AutomatonClip.this);
                 }
             else if (node instanceof Automaton.Random)
                 {
                 java.util.Random random = ThreadLocalRandom.current();
-                return (((Automaton.Random)node).selectOut(random));
+                return (((Automaton.Random)node).selectOut(random, AutomatonClip.this));
                 }
             else if (node instanceof Automaton.Delay)
                 {
@@ -444,11 +444,11 @@ public class AutomatonClip extends Clip
                 int d = achord.getLength();
                 if (delayCount == 0) // play the chord
                     {
-                    int velocity = achord.getVelocity();
+					int velocity = getCorrectedValueInt(achord.getVelocity(), 127); 		// cannot be 0
                     int out = achord.getMIDIOut();
                     for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                         {
-                        int pitch = achord.getNote(i);
+						int pitch = getCorrectedValueInt(achord.getNote(i), 127); 
                         if (pitch != Automaton.Chord.NO_NOTE)
                             {
                             ids[i] = AutomatonClip.super.noteOn(out, pitch, velocity);
@@ -461,9 +461,10 @@ public class AutomatonClip extends Clip
                         }
                     }
                 delayCount++;
-                if (delayCount >= d * achord.getTimeOn())        // stop playing the chord
+                double timeOn = getCorrectedValueDouble(achord.getTimeOn(), 1.0);
+                if (delayCount >= d * timeOn)        // stop playing the chord
                     {
-                    int release = achord.getRelease();
+					int release = getCorrectedValueInt(achord.getRelease(), 127);
                     int out = achord.getMIDIOut();
                     for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                         {
@@ -516,7 +517,7 @@ public class AutomatonClip extends Clip
                 {
                 Automaton.Chord achord = (Automaton.Chord) node;
                 double timeOn = achord.getTimeOn();
-                int release = achord.getRelease();
+				int release = getCorrectedValueInt(achord.getRelease(), 127);
                 int out = achord.getMIDIOut();
                 for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                     {
@@ -545,7 +546,7 @@ public class AutomatonClip extends Clip
                 {
                 Automaton.Chord achord = (Automaton.Chord) node;
                 int out = achord.getMIDIOut();
-                int release = achord.getRelease();
+				int release = getCorrectedValueInt(achord.getRelease(), 127);
                 for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                     {
                     int pitch = pitches[i];
