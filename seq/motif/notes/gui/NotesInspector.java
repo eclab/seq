@@ -238,15 +238,15 @@ public class NotesInspector extends WidgetList
                     if (disarmAll)         // outside lock
                         {
                         notesui.getSeqUI().incrementRebuildInspectorsCount();           // show disarmed
-                    	for(MotifListButton button : notesui.getSeqUI().getMotifList().getButtons())
-                    		{
-                    		button.updateText();
-                    		}
+                        for(MotifListButton button : notesui.getSeqUI().getMotifList().getButtons())
+                            {
+                            button.updateText();
+                            }
                         }
                     else
-                    	{
-                    	notesui.getPrimaryButton().updateText();
-                    	}
+                        {
+                        notesui.getPrimaryButton().updateText();
+                        }
                     }
                 });
 
@@ -351,80 +351,80 @@ public class NotesInspector extends WidgetList
                     }
                 });
 /*
-            quantize = new JCheckBox();
-            quantize.setSelected(notes.getQuantize());
-            quantize.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { notes.setQuantize(quantize.isSelected()); }
-                    finally { lock.unlock(); }                              
-                    }
-                });
+  quantize = new JCheckBox();
+  quantize.setSelected(notes.getQuantize());
+  quantize.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { notes.setQuantize(quantize.isSelected()); }
+  finally { lock.unlock(); }                              
+  }
+  });
 
-            quantizeNonNotes = new JCheckBox();
-            quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
-            quantizeNonNotes.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { notes.setQuantizeNonNotes(quantizeNonNotes.isSelected()); }
-                    finally { lock.unlock(); }                              
-                    }
-                });
+  quantizeNonNotes = new JCheckBox();
+  quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
+  quantizeNonNotes.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { notes.setQuantizeNonNotes(quantizeNonNotes.isSelected()); }
+  finally { lock.unlock(); }                              
+  }
+  });
 
-            quantizeNoteEnds = new JCheckBox();
-            quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
-            quantizeNoteEnds.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { notes.setQuantizeNoteEnds(quantizeNoteEnds.isSelected()); }
-                    finally { lock.unlock(); }                              
-                    }
-                });
+  quantizeNoteEnds = new JCheckBox();
+  quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
+  quantizeNoteEnds.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { notes.setQuantizeNoteEnds(quantizeNoteEnds.isSelected()); }
+  finally { lock.unlock(); }                              
+  }
+  });
 
-            quantizeTo = new JComboBox(Notes.QUANTIZE_STRINGS);
-            quantizeTo.setSelectedIndex(notes.getQuantizeTo());
-            quantizeTo.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { notes.setQuantizeTo(quantizeTo.getSelectedIndex()); }
-                    finally { lock.unlock(); }     
-                    }
-                });
+  quantizeTo = new JComboBox(Notes.QUANTIZE_STRINGS);
+  quantizeTo.setSelectedIndex(notes.getQuantizeTo());
+  quantizeTo.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { notes.setQuantizeTo(quantizeTo.getSelectedIndex()); }
+  finally { lock.unlock(); }     
+  }
+  });
  
-            quantizeBias = new SmallDial(notes.getQuantizeBias())
-                {
-                public double getValue() 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { return notes.getQuantizeBias(); }
-                    finally { lock.unlock(); }
-                    }
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { notes.setQuantizeBias(val); }
-                    finally { lock.unlock(); }
-                    }
-                };
+  quantizeBias = new SmallDial(notes.getQuantizeBias())
+  {
+  public double getValue() 
+  { 
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { return notes.getQuantizeBias(); }
+  finally { lock.unlock(); }
+  }
+  public void setValue(double val) 
+  { 
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { notes.setQuantizeBias(val); }
+  finally { lock.unlock(); }
+  }
+  };
 */
 
             quantize = new JCheckBox();
@@ -686,13 +686,13 @@ public class NotesInspector extends WidgetList
         defaultNoteReleaseVelocity.setToolTipText(DEFAULT_NOTE_RELEASE_VELOCITY_TOOLTIP);
         recordIntegration.setToolTipText(INTEGRATION_TOOLTIP);
         for(int i = 0; i < 4; i++)
-        	{
-        	eventParameterType[i].setToolTipText(NON_NOTE_TYPE_TOOLTIP);
-			eventParameterLSB[i].setToolTipText(LSB_TOOLTIP);
-			eventParameterMSB[i].setToolTipText(MSB_TOOLTIP);
-        	}
-		warpedBend.setToolTipText(WARPED_PITCH_BEND_TOOLTIP);
-		parameterHeight.setToolTipText(DISPLAY_HEIGHT_TOOLTIP);
+            {
+            eventParameterType[i].setToolTipText(NON_NOTE_TYPE_TOOLTIP);
+            eventParameterLSB[i].setToolTipText(LSB_TOOLTIP);
+            eventParameterMSB[i].setToolTipText(MSB_TOOLTIP);
+            }
+        warpedBend.setToolTipText(WARPED_PITCH_BEND_TOOLTIP);
+        parameterHeight.setToolTipText(DISPLAY_HEIGHT_TOOLTIP);
 
         build(new String[] { "Name", "Out", "In", "Start", "End", "Armed", "Echo"}, 
             new JComponent[] 
@@ -748,14 +748,14 @@ public class NotesInspector extends WidgetList
     public void reviseEventParameters()
         {
         // what is being displayed in the inspector?  Should I get rid of it?
-		EventUI first = notesui.getGridUI().getFirstSelected();
-		if (first != null && !(first instanceof NoteUI))
-			{
-			// deselect it all
-			notesui.getGridUI().clearSelected();
-			notesui.updateChildInspector(false);
-			}
-		
+        EventUI first = notesui.getGridUI().getFirstSelected();
+        if (first != null && !(first instanceof NoteUI))
+            {
+            // deselect it all
+            notesui.getGridUI().clearSelected();
+            notesui.updateChildInspector(false);
+            }
+                
         if (eventParameterType[Notes.NUM_EVENT_PARAMETERS - 1] == null) return;                 // not set up yet
         if (eventParameterLSB[Notes.NUM_EVENT_PARAMETERS - 1] == null) return;          // not set up yet
                 
@@ -783,32 +783,32 @@ public class NotesInspector extends WidgetList
                 parameterui.repaint();
                 
                 // Set the preferences so these types/msb/lsb show up next time
-				int type;
-				int eventParamMSB;
-				int eventParamLSB;
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try 
-					{ 
-					 type = eventParameterType[i].getSelectedIndex();
-					 eventParamMSB = (int)(eventParameterMSB[i].getValue() * 127.0);
-					 eventParamLSB = (int)(eventParameterLSB[i].getValue() * 127.0);
-					 }
-				finally	
-					{
-					lock.unlock();
-					}
+                int type;
+                int eventParamMSB;
+                int eventParamLSB;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    type = eventParameterType[i].getSelectedIndex();
+                    eventParamMSB = (int)(eventParameterMSB[i].getValue() * 127.0);
+                    eventParamLSB = (int)(eventParameterLSB[i].getValue() * 127.0);
+                    }
+                finally 
+                    {
+                    lock.unlock();
+                    }
                 
-				Prefs.setLastInt("seq.motif.notes.Notes.eventType" + i, type);
-				Prefs.setLastInt("seq.motif.notes.Notes.eventMSB" + i, eventParamMSB);
-				Prefs.setLastInt("seq.motif.notes.Notes.eventLSB" + i, eventParamLSB);
+                Prefs.setLastInt("seq.motif.notes.Notes.eventType" + i, type);
+                Prefs.setLastInt("seq.motif.notes.Notes.eventMSB" + i, eventParamMSB);
+                Prefs.setLastInt("seq.motif.notes.Notes.eventLSB" + i, eventParamLSB);
                 }
-			else
-				{
-				Prefs.setLastInt("seq.motif.notes.Notes.eventType" + i, 0);
-				Prefs.setLastInt("seq.motif.notes.Notes.eventMSB" + i, 0);
-				Prefs.setLastInt("seq.motif.notes.Notes.eventLSB" + i, 0);
-				}
+            else
+                {
+                Prefs.setLastInt("seq.motif.notes.Notes.eventType" + i, 0);
+                Prefs.setLastInt("seq.motif.notes.Notes.eventMSB" + i, 0);
+                Prefs.setLastInt("seq.motif.notes.Notes.eventLSB" + i, 0);
+                }
             }
         eventsui.parameterBox.revalidate();
         eventsui.parameterBox.repaint();

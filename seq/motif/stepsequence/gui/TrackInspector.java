@@ -41,9 +41,9 @@ public class TrackInspector extends WidgetList
     JComboBox trackOut;
     StringField trackName;
     SmallDial euclidK;
-	double euclidKVal = 0.0;
+    double euclidKVal = 0.0;
     SmallDial euclidRotate;
-	double euclidRotateVal = 0.0;
+    double euclidRotateVal = 0.0;
     PushButton doEuclid;
 
     static final String[] WHEN_STRINGS =
@@ -393,12 +393,12 @@ public class TrackInspector extends WidgetList
                     lock.lock();
                     try 
                         { 
-                    	return String.valueOf((int)(val * ss.getNumSteps(trackNum)));
-                    	}
+                        return String.valueOf((int)(val * ss.getNumSteps(trackNum)));
+                        }
                     finally
-                    	{
-                    	lock.unlock();
-                    	}
+                        {
+                        lock.unlock();
+                        }
                     }
                 public double getValue() 
                     { 
@@ -418,12 +418,12 @@ public class TrackInspector extends WidgetList
                     lock.lock();
                     try 
                         { 
-                    	return String.valueOf((int)(val * ss.getNumSteps(trackNum)));
-                    	}
+                        return String.valueOf((int)(val * ss.getNumSteps(trackNum)));
+                        }
                     finally
-                    	{
-                    	lock.unlock();
-                    	}
+                        {
+                        lock.unlock();
+                        }
                     }
                 public double getValue() 
                     { 
@@ -447,7 +447,7 @@ public class TrackInspector extends WidgetList
                         ss.applyEuclideanRhythm(trackNum, euclidKVal, euclidRotateVal);
                         }
                     finally { lock.unlock(); }
-                    ssui.getTrack(trackNum).repaint();		// is this sufficient?
+                    ssui.getTrack(trackNum).repaint();          // is this sufficient?
                     }
                 };
             }

@@ -131,13 +131,13 @@ public class EventUI extends JComponent
             {
             when = event.when;
             if (event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
-            	{
-	            value = ((Notes.Bend)event).getWarpedNormalizedValue();
-            	}
+                {
+                value = ((Notes.Bend)event).getWarpedNormalizedValue();
+                }
             else
-            	{
-    	         value = event.getNormalizedValue();
-	           	}
+                {
+                value = event.getNormalizedValue();
+                }
             selected = event.selected; 
             }
         finally
@@ -148,18 +148,18 @@ public class EventUI extends JComponent
         if (selected) getGridUI().addEventToSelected(this, getEventsUI().getParameterUIs().indexOf(parameterui));
 
         int parameteruiHeight = parameterui.getBounds().height;
-		// can we set our bounds?
-        boundsSet = (parameteruiHeight != 0);	// uh oh, gotta set later
+        // can we set our bounds?
+        boundsSet = (parameteruiHeight != 0);   // uh oh, gotta set later
 
-		// even if the bounds aren't set, we still have to set the bounds so we have bounds, otherwise
-		// Java won't even send a paintComponent to this EventUI when ParameterUI.paintChildren is called.
-		
-			// compute Y
-        	// Center y ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
-	        int computedY = HEIGHT / 2 + (int)((parameteruiHeight - HEIGHT) * (1.0 - (value < 0 ? 0.5 : value)));
+        // even if the bounds aren't set, we still have to set the bounds so we have bounds, otherwise
+        // Java won't even send a paintComponent to this EventUI when ParameterUI.paintChildren is called.
+                
+        // compute Y
+        // Center y ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
+        int computedY = HEIGHT / 2 + (int)((parameteruiHeight - HEIGHT) * (1.0 - (value < 0 ? 0.5 : value)));
 
-        	// We subtract WIDTH / 2 to center it
-        	setBounds((int)(when / getGridUI().getScale()) - WIDTH / 2, computedY - HEIGHT / 2, WIDTH, HEIGHT);
+        // We subtract WIDTH / 2 to center it
+        setBounds((int)(when / getGridUI().getScale()) - WIDTH / 2, computedY - HEIGHT / 2, WIDTH, HEIGHT);
         }
         
         
@@ -247,22 +247,22 @@ public class EventUI extends JComponent
                         }
                     }
                 
-				// FIXME: Should this be in mouseDragged?  It's be less buggy there but
-				// much less efficient.
-        		if (dragged)
-        			{
-        			Notes notes = getNotesUI().getNotes();
-					ReentrantLock lock = getSeq().getLock();
-					lock.lock();
-					try 
-						{
-						notes.computeMaxTime();
-						}
-					finally
-						{
-						lock.unlock();
-						}
-					}
+                // FIXME: Should this be in mouseDragged?  It's be less buggy there but
+                // much less efficient.
+                if (dragged)
+                    {
+                    Notes notes = getNotesUI().getNotes();
+                    ReentrantLock lock = getSeq().getLock();
+                    lock.lock();
+                    try 
+                        {
+                        notes.computeMaxTime();
+                        }
+                    finally
+                        {
+                        lock.unlock();
+                        }
+                    }
 
                 dragged = false;
                 originallySelected = false;
@@ -273,8 +273,8 @@ public class EventUI extends JComponent
                         
                         
         // NONE:        Adjust Value, not Time
-        // ALT:       	Adjust Time, Not Value
-        // META:       	Adjust Time AND Value
+        // ALT:         Adjust Time, Not Value
+        // META:        Adjust Time AND Value
         // CTRL:        Set value of everyone to the value
         
         addMouseMotionListener(new MouseMotionAdapter()
@@ -298,14 +298,14 @@ public class EventUI extends JComponent
                         lock.lock();
                         try 
                             {
-							if (eventui.event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
-								{
-								((Notes.Bend)(eventui.event)).setWarpedNormalizedValue(newValue);
-								}
-							else
-								{
-								(eventui.event).setNormalizedValue(newValue);
-								}
+                            if (eventui.event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
+                                {
+                                ((Notes.Bend)(eventui.event)).setWarpedNormalizedValue(newValue);
+                                }
+                            else
+                                {
+                                (eventui.event).setNormalizedValue(newValue);
+                                }
                             }
                         finally
                             {
@@ -437,13 +437,13 @@ public class EventUI extends JComponent
         try 
             {
             if (event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
-            	{
-	            ((Notes.Bend)event).setWarpedNormalizedValue(newValue);
-            	}
+                {
+                ((Notes.Bend)event).setWarpedNormalizedValue(newValue);
+                }
             else
-            	{
-    	        event.setNormalizedValue(newValue);
-	           	}
+                {
+                event.setNormalizedValue(newValue);
+                }
             }
         finally
             {
@@ -458,9 +458,9 @@ public class EventUI extends JComponent
                 
         // bounds may not have been set yet
         if (!boundsSet) // uh oh
-        	{
-        	reload();
-        	}
+            {
+            reload();
+            }
 
         Rectangle bounds = getBounds();
         bounds.x = 0;
@@ -468,13 +468,13 @@ public class EventUI extends JComponent
         bounds.height = HEIGHT;
         
         if (value < 0)
-        	{
-        	g.setPaint(DEFAULT_COLOR);
-        	}
+            {
+            g.setPaint(DEFAULT_COLOR);
+            }
         else
-        	{
-	        g.setPaint(VALUE_MAP.getColor(value * 127.0));
-	        }
+            {
+            g.setPaint(VALUE_MAP.getColor(value * 127.0));
+            }
         g.fill(bounds);
         
         if (selected)

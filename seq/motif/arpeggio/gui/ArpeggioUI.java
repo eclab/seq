@@ -253,7 +253,7 @@ childOuter.setBorder(childBorder);
                 {
                 final int _i = i;
                 final int _j = j;
-                JComponent button = new JComponent()	//JCheckBox button = new JCheckBox()
+                JComponent button = new JComponent()    //JCheckBox button = new JCheckBox()
                     {
                     public void paintComponent(Graphics _g)
                         {
@@ -277,9 +277,9 @@ childOuter.setBorder(childBorder);
                         bounds.x = 0;
                         bounds.y = 0;
                         g.setPaint(state == Arpeggio.PATTERN_REST ? PATTERN_OFF_COLOR :
-                        	(state == Arpeggio.PATTERN_NOTE ? 
-                        		(_j < length ? PATTERN_ON_COLOR : PATTERN_ON_DISABLED_COLOR) :
-                        		(_j < length ? PATTERN_ON_TIE_COLOR : PATTERN_ON_TIE_DISABLED_COLOR)));
+                                (state == Arpeggio.PATTERN_NOTE ? 
+                                (_j < length ? PATTERN_ON_COLOR : PATTERN_ON_DISABLED_COLOR) :
+                                (_j < length ? PATTERN_ON_TIE_COLOR : PATTERN_ON_TIE_DISABLED_COLOR)));
                         g.fill(bounds);
 
                         if (_i  == Arpeggio.PATTERN_NOTES / 2)
@@ -315,51 +315,32 @@ childOuter.setBorder(childBorder);
 //                button.setOpaque(true);
                                                                         
 /*
-                ReentrantLock lock = seq.getLock();
-                lock.lock();
-                try
-                    {
-                    Arpeggio arp = (Arpeggio)getMotif();
-                    button.setSelected(arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1));
-                    }
-                finally
-                    {
-                    lock.unlock();
-                    }
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try
+  {
+  Arpeggio arp = (Arpeggio)getMotif();
+  button.setSelected(arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1));
+  }
+  finally
+  {
+  lock.unlock();
+  }
 */
                                         
-			button.addMouseListener(new MouseAdapter() 
-				{
-                public void mousePressed(MouseEvent e) 
-                	{
-                        ReentrantLock lock = seq.getLock();
-                        lock.lock();
-                        try
-                            {
-                            Arpeggio arp = (Arpeggio)getMotif();
-                            arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, 
-                            	arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1) != Arpeggio.PATTERN_REST ? 
-                            		Arpeggio.PATTERN_REST :
-                            		(shiftOrRightMouseButton(e) ? Arpeggio.PATTERN_TIE : Arpeggio.PATTERN_NOTE));
-                            }
-                        finally
-                            {
-                            lock.unlock();
-                            }
-                        repaint();
-	                    }
-    	            }
-/*
-                button.addActionListener(new ActionListener()
+                button.addMouseListener(new MouseAdapter() 
                     {
-                    public void actionPerformed(ActionEvent e)
+                    public void mousePressed(MouseEvent e) 
                         {
                         ReentrantLock lock = seq.getLock();
                         lock.lock();
                         try
                             {
                             Arpeggio arp = (Arpeggio)getMotif();
-                            arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, button.isSelected());
+                            arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, 
+                                arp.getPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1) != Arpeggio.PATTERN_REST ? 
+                                Arpeggio.PATTERN_REST :
+                                (shiftOrRightMouseButton(e) ? Arpeggio.PATTERN_TIE : Arpeggio.PATTERN_NOTE));
                             }
                         finally
                             {
@@ -367,11 +348,30 @@ childOuter.setBorder(childBorder);
                             }
                         repaint();
                         }
-                    }*/
+                    }
+/*
+  button.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try
+  {
+  Arpeggio arp = (Arpeggio)getMotif();
+  arp.setPattern(_j, Arpeggio.PATTERN_NOTES - _i - 1, button.isSelected());
+  }
+  finally
+  {
+  lock.unlock();
+  }
+  repaint();
+  }
+  }*/
                     );
                                         
                 patternGrid.add(button);
-        		button.setToolTipText(PATTERN_GRID_TOOLTIP);
+                button.setToolTipText(PATTERN_GRID_TOOLTIP);
 
                 patternGrid.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, PATTERN_BORDER_COLOR));
                                 
@@ -539,7 +539,7 @@ childOuter.setBorder(childBorder);
             // We'll swap in a blank ArpeggioButton
             arpeggioGrid.remove(at);
             ArpeggioButton blankButton = new ArpeggioButton(sequi, this, at);
-                blankButton.setToolTipText(CHILD_TOOLTIP);
+            blankButton.setToolTipText(CHILD_TOOLTIP);
             arpeggioGrid.add(blankButton, at);
             deselectAll();
 

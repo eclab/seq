@@ -37,14 +37,14 @@ public class ParallelButton extends MotifButton
     Color originalBackground;
     
     public static int timeToPixels(int time)
-    	{
-    	return time * BUTTON_DELAY_MULTIPLIER / Seq.PPQ;
-    	}
+        {
+        return time * BUTTON_DELAY_MULTIPLIER / Seq.PPQ;
+        }
     
     public static int pixelsToTime(int pixels)
-    	{
-    	return pixels * Seq.PPQ / BUTTON_DELAY_MULTIPLIER;
-    	}
+        {
+        return pixels * Seq.PPQ / BUTTON_DELAY_MULTIPLIER;
+        }
     
     public void setDelay(int val)
         {

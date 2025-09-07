@@ -38,7 +38,7 @@ public class MotifButton extends JToggleButton implements Transferable
     public static final Color NEXT_COLOR = Color.BLUE;
     public static final Color REMOVE_COLOR = Color.MAGENTA;
 
-	protected String lastText = null;
+    protected String lastText = null;
 
     // DRAG COUNT
     // This counter should be increased with successive mouseDragged messages
@@ -75,10 +75,10 @@ public class MotifButton extends JToggleButton implements Transferable
                 (root ? "<br><b>Root</b>" : "") +
                 (owner == null ? "</html>" : ("<br>" + getSubtext() + "</html>"));
             if (!text.equals(lastText))
-            	{
-            	setText(text);
-            	lastText = text;
-            	}
+                {
+                setText(text);
+                lastText = text;
+                }
             }
         }
 

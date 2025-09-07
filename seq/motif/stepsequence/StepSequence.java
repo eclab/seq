@@ -902,95 +902,95 @@ public class StepSequence extends Motif
     
     
     public void rotate(int track, int rotate)
-    	{
-    	int len = on[track].length;
-    	boolean[] _on = new boolean[len];
-    	int[] _velocities = new int[len];
-    	int[] _flams = new int[len];
-    	int[] _when = new int[len];
-    	int[] _notes = new int[len];
-    	for(int i = 0; i < len; i++)
-    		{
-    		int pos = i + rotate;
-    		if (pos != 0) { pos = pos % len; }
-    		if (pos < 0) { pos += len; pos = pos % len; }
-    		_on[pos] = on[track][i];
-    		_velocities[pos] = velocities[track][i];
-    		_flams[pos] = flams[track][i];
-    		_notes[pos] = notes[track][i];
-    		}
-    	on[track] = _on;
-    	velocities[track] = _velocities;
-    	flams[track] = _flams;
-    	notes[track] = _notes;
-    	}
+        {
+        int len = on[track].length;
+        boolean[] _on = new boolean[len];
+        int[] _velocities = new int[len];
+        int[] _flams = new int[len];
+        int[] _when = new int[len];
+        int[] _notes = new int[len];
+        for(int i = 0; i < len; i++)
+            {
+            int pos = i + rotate;
+            if (pos != 0) { pos = pos % len; }
+            if (pos < 0) { pos += len; pos = pos % len; }
+            _on[pos] = on[track][i];
+            _velocities[pos] = velocities[track][i];
+            _flams[pos] = flams[track][i];
+            _notes[pos] = notes[track][i];
+            }
+        on[track] = _on;
+        velocities[track] = _velocities;
+        flams[track] = _flams;
+        notes[track] = _notes;
+        }
     
 
-	/** Applies Euclidean Rhythm to the given track, using n = trackLength,
-		k = (int)(n * ratioK), and rotate=(int)(n * ratioRotate).
-	*/
+    /** Applies Euclidean Rhythm to the given track, using n = trackLength,
+        k = (int)(n * ratioK), and rotate=(int)(n * ratioRotate).
+    */
     public void applyEuclideanRhythm(int track, double ratioK, double ratioRotate)
-    	{
-    	on[track] = buildEuclideanRhythm(
-    		on[track].length,
-    		(int)(on[track].length * ratioK),
-    		(int)(on[track].length * ratioRotate));
-    	}
+        {
+        on[track] = buildEuclideanRhythm(
+            on[track].length,
+            (int)(on[track].length * ratioK),
+            (int)(on[track].length * ratioRotate));
+        }
     
     /** Generates a Euclidean Rhythm sequence (true/false) of length n, 
-    	with exactly k "true" values, the rest being false.  rotate
-    	indicates the number of steps that the sequence should be rotated by
-    	after the fact -- this can be any integer but it only makes sense
-    	to do so for values of  -n < rotate < n.
-    	
-    	For more on Euclidean Rhythms, see https://en.wikipedia.org/wiki/Euclidean_rhythm
-    	
-    	Godfried Toussaint developed this method using Bjorklund’s algorithm,
-    	but tried to argue (unconvincingly to me) that it could be derived
-    	from Euclid's algorithm.  It's since been determined that the same
-    	results can be produced from Bressenham's Line algorithm, albeit with
-    	certain rotations (in fact, Toussaint's original algorithm required
-    	rotations to achieve the published results in several cases, something
-    	that was not disclosed).  
-    	
-    	The code below just does Bressenham's line algorithm using floats and
-    	floor rather than the cool all-integer way.
+        with exactly k "true" values, the rest being false.  rotate
+        indicates the number of steps that the sequence should be rotated by
+        after the fact -- this can be any integer but it only makes sense
+        to do so for values of  -n < rotate < n.
+        
+        For more on Euclidean Rhythms, see https://en.wikipedia.org/wiki/Euclidean_rhythm
+        
+        Godfried Toussaint developed this method using Bjorklund’s algorithm,
+        but tried to argue (unconvincingly to me) that it could be derived
+        from Euclid's algorithm.  It's since been determined that the same
+        results can be produced from Bressenham's Line algorithm, albeit with
+        certain rotations (in fact, Toussaint's original algorithm required
+        rotations to achieve the published results in several cases, something
+        that was not disclosed).  
+        
+        The code below just does Bressenham's line algorithm using floats and
+        floor rather than the cool all-integer way.
     */
     
     boolean[] buildEuclideanRhythm(int n, int k, int rotate)
-    	{
-    	// Check for validity, make initial array
-    	if (n < 0) return new boolean[0];
-    	boolean[] steps = new boolean[n];
-    	if (k == 0) return steps;
-    	if (k >= n)
-    		{
-    		for(int i = 0; i < steps.length; i++)
-    			{
-    			steps[i] = true;
-    			}
-    		return steps;
-    		}
-    	
-    	// fake Bressenham's by just using floor 
-    	int lastY = -1;
-    	double slope = k / (double) n;
-    	for(int i = 0; i < n; i++)
-    		{
-    		int y = (int)Math.floor(i * slope);
-    		steps[i] = (lastY != y);
-    		lastY = y;
-    		}
-    	
-    	// rotate and return
-    	boolean[] finalSteps = new boolean[steps.length];
-    	for(int i = 0; i < steps.length; i++)
-    		{
-    		int pos = i + rotate;
-    		if (pos != 0) { pos = pos % steps.length; }
-    		if (pos < 0) { pos += steps.length; pos = pos % steps.length; }
-    		finalSteps[pos] = steps[i];
-    		}
-    	return finalSteps;
-    	}
+        {
+        // Check for validity, make initial array
+        if (n < 0) return new boolean[0];
+        boolean[] steps = new boolean[n];
+        if (k == 0) return steps;
+        if (k >= n)
+            {
+            for(int i = 0; i < steps.length; i++)
+                {
+                steps[i] = true;
+                }
+            return steps;
+            }
+        
+        // fake Bressenham's by just using floor 
+        int lastY = -1;
+        double slope = k / (double) n;
+        for(int i = 0; i < n; i++)
+            {
+            int y = (int)Math.floor(i * slope);
+            steps[i] = (lastY != y);
+            lastY = y;
+            }
+        
+        // rotate and return
+        boolean[] finalSteps = new boolean[steps.length];
+        for(int i = 0; i < steps.length; i++)
+            {
+            int pos = i + rotate;
+            if (pos != 0) { pos = pos % steps.length; }
+            if (pos < 0) { pos += steps.length; pos = pos % steps.length; }
+            finalSteps[pos] = steps[i];
+            }
+        return finalSteps;
+        }
     }

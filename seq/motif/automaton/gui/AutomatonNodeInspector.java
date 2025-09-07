@@ -689,20 +689,59 @@ public class AutomatonNodeInspector extends WidgetList
                     // we compute the log of a negative value.  So instead here, in the initialization and in getValue(),
                     // we return DEFAULT_RATE instead.   This issue doesn't come up when just doing 0...1 as normal.
                     /*
-                    double d = motifnode.getRate(); 
-                    if (d < 0) d = Automaton.MotifNode.DEFAULT_RATE;
-                    rate = new SmallDial((Math.log(d) + MAX_RATE_LOG) / MAX_RATE_LOG / 2.0, defaults)
+                      double d = motifnode.getRate(); 
+                      if (d < 0) d = Automaton.MotifNode.DEFAULT_RATE;
+                      rate = new SmallDial((Math.log(d) + MAX_RATE_LOG) / MAX_RATE_LOG / 2.0, defaults)
+                      {
+                      protected String map(double val) 
+                      {
+                      double d = Math.exp(val * 2 * MAX_RATE_LOG - MAX_RATE_LOG);
+                      return super.map(d);
+                      }
+                      public double getValue() 
+                      { 
+                      ReentrantLock lock = seq.getLock();
+                      lock.lock();
+                      try { double d = motifnode.getRate(); if (d < 0) return Automaton.MotifNode.DEFAULT_RATE; else return (Math.log(d) + MAX_RATE_LOG) / MAX_RATE_LOG / 2.0;}
+                      finally { lock.unlock(); }
+                      }
+                      public void setValue(double val) 
+                      { 
+                      if (seq == null) return;
+                      ReentrantLock lock = seq.getLock();
+                      lock.lock();
+                      try { motifnode.setRate(Math.exp(val * 2 * MAX_RATE_LOG - MAX_RATE_LOG));}
+                      finally { lock.unlock(); }
+                      }
+                      public void setDefault(int val) 
+                      { 
+                      ReentrantLock lock = seq.getLock();
+                      lock.lock();
+                      try { if (val != SmallDial.NO_DEFAULT) motifnode.setRate(-(val + 1)); }
+                      finally { lock.unlock(); }
+                      owner.updateText();                  // FIXME: is this needed?
+                      }
+    
+                      public int getDefault()
+                      {
+                      ReentrantLock lock = seq.getLock();
+                      lock.lock();
+                      try { double val = motifnode.getRate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                      finally { lock.unlock(); }
+                      }
+                      };
+                    */
+                    rate = new SmallDial(motifnode.getRate() / MAX_RATE, defaults)
                         {
-                        protected String map(double val) 
+                        public String map(double d)
                             {
-                            double d = Math.exp(val * 2 * MAX_RATE_LOG - MAX_RATE_LOG);
-                            return super.map(d);
+                            return super.map(d * 16.0);
                             }
                         public double getValue() 
                             { 
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { double d = motifnode.getRate(); if (d < 0) return Automaton.MotifNode.DEFAULT_RATE; else return (Math.log(d) + MAX_RATE_LOG) / MAX_RATE_LOG / 2.0;}
+                            try { return motifnode.getRate() / MAX_RATE; }
                             finally { lock.unlock(); }
                             }
                         public void setValue(double val) 
@@ -710,7 +749,7 @@ public class AutomatonNodeInspector extends WidgetList
                             if (seq == null) return;
                             ReentrantLock lock = seq.getLock();
                             lock.lock();
-                            try { motifnode.setRate(Math.exp(val * 2 * MAX_RATE_LOG - MAX_RATE_LOG));}
+                            try { motifnode.setRate(val * MAX_RATE);}
                             finally { lock.unlock(); }
                             }
                         public void setDefault(int val) 
@@ -719,7 +758,6 @@ public class AutomatonNodeInspector extends WidgetList
                             lock.lock();
                             try { if (val != SmallDial.NO_DEFAULT) motifnode.setRate(-(val + 1)); }
                             finally { lock.unlock(); }
-                            owner.updateText();                  // FIXME: is this needed?
                             }
     
                         public int getDefault()
@@ -730,44 +768,6 @@ public class AutomatonNodeInspector extends WidgetList
                             finally { lock.unlock(); }
                             }
                         };
-                    */
-            rate = new SmallDial(motifnode.getRate() / MAX_RATE, defaults)
-                {
-                public String map(double d)
-                	{
-                	return super.map(d * 16.0);
-                	}
-                public double getValue() 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { return motifnode.getRate() / MAX_RATE; }
-                    finally { lock.unlock(); }
-                    }
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { motifnode.setRate(val * MAX_RATE);}
-                    finally { lock.unlock(); }
-                    }
-                public void setDefault(int val) 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { if (val != SmallDial.NO_DEFAULT) motifnode.setRate(-(val + 1)); }
-                    finally { lock.unlock(); }
-                    }
-    
-                public int getDefault()
-                    {
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { double val = motifnode.getRate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                    finally { lock.unlock(); }
-                    }
-                };
                     rate.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
                 
                     ratePresets = new PushButton("Presets...", RATE_OPTIONS)

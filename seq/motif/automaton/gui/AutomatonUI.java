@@ -489,16 +489,16 @@ public class AutomatonUI extends MotifUI
         redrawCount++;
         
         if (redrawCount >= REDRAW_COUNT)
-        	{
-        	redrawCount = 0;
-        	doRedraw = true;
-        	}
-        	
+            {
+            redrawCount = 0;
+            doRedraw = true;
+            }
+                
         if (doRedraw || !inResponseToStep)
-        	{
+            {
             updateText();
-    	    super.redraw(inResponseToStep);
-    	    }
+            super.redraw(inResponseToStep);
+            }
         }
     
     public void updateText()

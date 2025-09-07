@@ -157,7 +157,7 @@ public class FilterClip extends Clip
 
 
 
-	/// ChangeNote Node
+    /// ChangeNote Node
     public class ChangeNote extends Node
         {
         HashMap<Integer, Integer> map = new HashMap<>();                // Maps IDs to revised pitches
@@ -176,30 +176,30 @@ public class FilterClip extends Clip
             {
             Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
             if (func.isAllOut())
-            	{
-            	int _out = func.getOut();
-            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
-            	}
+                {
+                int _out = func.getOut();
+                if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+                }
             super.bend(out, val, index);
             }
         public void cc(int out, int cc, int val, int index)
             {
             Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
             if (func.isAllOut())
-            	{
-            	int _out = func.getOut();
-            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
-            	}
+                {
+                int _out = func.getOut();
+                if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+                }
             super.cc(out, cc, val, index);
             }
         public void pc(int out, int val, int index)
             {
             Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
             if (func.isAllOut())
-            	{
-            	int _out = func.getOut();
-            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
-            	}
+                {
+                int _out = func.getOut();
+                if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+                }
             super.pc(out, val, index);
             }
 
@@ -207,20 +207,20 @@ public class FilterClip extends Clip
             {
             Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
             if (func.isAllOut())
-            	{
-            	int _out = func.getOut();
-            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
-            	}
+                {
+                int _out = func.getOut();
+                if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+                }
             super.nrpn(out, nrpn, val, index);
             }
         public void nrpnCoarse(int out, int nrpn, int msb, int index)
             {
             Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
             if (func.isAllOut())
-            	{
-            	int _out = func.getOut();
-            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
-            	}
+                {
+                int _out = func.getOut();
+                if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+                }
             super.nrpnCoarse(out, nrpn, msb, index);
             }
 
@@ -228,10 +228,10 @@ public class FilterClip extends Clip
             {
             Filter.ChangeNote func = (Filter.ChangeNote)(((Filter)getMotif()).getFunction(index));
             if (func.isAllOut())
-            	{
-            	int _out = func.getOut();
-            	if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
-            	}
+                {
+                int _out = func.getOut();
+                if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+                }
             super.rpn(out, rpn, val, index);
             }
 
@@ -322,7 +322,7 @@ public class FilterClip extends Clip
                
                
                
-	/// Drop Node
+    /// Drop Node
     public class Drop extends Node
         {
         HashSet<Integer> dropped = new HashSet<>();
@@ -475,7 +475,7 @@ public class FilterClip extends Clip
 
 
 
-	/// Delay Node
+    /// Delay Node
     public class Delay extends Node
         {
         class DelayNote implements Comparable
@@ -682,17 +682,17 @@ public class FilterClip extends Clip
             }
         }
 
-	/// Noise Node
+    /// Noise Node
     public class Noise extends Node
         {
-	    public static final int NUM_TRIES = 8;
+        public static final int NUM_TRIES = 8;
         
-        int lastValue = -1;			// The last value of the parameter I received from MIDI.  If -1, no value has been received.
-        int lastIndex = 0;			// The index of the last MIDI message for the parameter
-        int lastOut = 0;			// The out of the last MIDI message for the parameter
-        int lastNote = 0;			// The note of the last MIDI message for the parameter, assuming it's Aftertouch
-        int lastTime = 0;			// The time (position) of the last MIDI message for the parameter
-        int lastRandom = 0; 		// The last chosen random value.
+        int lastValue = -1;                     // The last value of the parameter I received from MIDI.  If -1, no value has been received.
+        int lastIndex = 0;                      // The index of the last MIDI message for the parameter
+        int lastOut = 0;                        // The out of the last MIDI message for the parameter
+        int lastNote = 0;                       // The note of the last MIDI message for the parameter, assuming it's Aftertouch
+        int lastTime = 0;                       // The time (position) of the last MIDI message for the parameter
+        int lastRandom = 0;             // The last chosen random value.
                
         public void reset(int index)
             {
@@ -1144,8 +1144,8 @@ public class FilterClip extends Clip
         Filter filter = (Filter)getMotif();
         int position = getPosition();
         return filter.isAlways() || 
-        	(filter.getTo() > filter.getFrom() && (position >= filter.getFrom() && position < filter.getTo())) ||
-        	(filter.getTo() < filter.getFrom() && (position >= filter.getFrom() || position < filter.getTo()));
+            (filter.getTo() > filter.getFrom() && (position >= filter.getFrom() && position < filter.getTo())) ||
+            (filter.getTo() < filter.getFrom() && (position >= filter.getFrom() || position < filter.getTo()));
         }
     
             
@@ -1162,28 +1162,28 @@ public class FilterClip extends Clip
                 }
             done = childDone;
 
-			int position = getPosition();
-							
-			if (position == filter.getTo() - 1 && !filter.isAlways())
-				{
-				// we just completed the range
-				for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-					{
-					nodes.get(i).process(i);
-					}           
-				// release all notes
-				for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-					{
-					nodes.get(i).release(i);
-					}           
-				}
-			else if (active())
-				{
-				// we are in the range
-				for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-					{
-					nodes.get(i).process(i);
-					}                            
+            int position = getPosition();
+                                                        
+            if (position == filter.getTo() - 1 && !filter.isAlways())
+                {
+                // we just completed the range
+                for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+                    {
+                    nodes.get(i).process(i);
+                    }           
+                // release all notes
+                for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+                    {
+                    nodes.get(i).release(i);
+                    }           
+                }
+            else if (active())
+                {
+                // we are in the range
+                for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+                    {
+                    nodes.get(i).process(i);
+                    }                            
                 }
             }
         

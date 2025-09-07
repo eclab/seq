@@ -9,12 +9,12 @@ import java.awt.*;
 import javax.swing.*;
 
 /**
-	WIDGETLIST
-	
-	This is a simple component which displays other components vertically, each one with a label to their left,
-	as is often the case in object inspectors.  It is designed to easily add a border.  WidgetList itself uses
-	a BorderLayout with a single inner object located at BorderLayout.NORTH, so you can add additional objects
-	below it.
+   WIDGETLIST
+        
+   This is a simple component which displays other components vertically, each one with a label to their left,
+   as is often the case in object inspectors.  It is designed to easily add a border.  WidgetList itself uses
+   a BorderLayout with a single inner object located at BorderLayout.NORTH, so you can add additional objects
+   below it.
 **/
  
 public class WidgetList extends JPanel
@@ -101,7 +101,7 @@ public class WidgetList extends JPanel
         }
 
     /** If you have set tooltips for all the widgets, calling this method will cause their corresponding labels
-    	to adopt the same tooltips, which looks and feels more proper. */
+        to adopt the same tooltips, which looks and feels more proper. */
     public void updateToolTips()
         {
         for(int i = 0; i < labels.length; i++)

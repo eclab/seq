@@ -70,7 +70,7 @@ public class SelectButton extends MotifButton
                 {
                 int modifiers = e.getModifiers();
                 if (SwingUtilities.isRightMouseButton(e) ||
-		            SwingUtilities.isMiddleMouseButton(e) ||
+                    SwingUtilities.isMiddleMouseButton(e) ||
                     ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
                     ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) ||
                     ((modifiers & InputEvent.META_MASK) == InputEvent.META_MASK) ||
@@ -214,11 +214,11 @@ public class SelectButton extends MotifButton
                 text = "<html><center>" + subname + "</center></html>";
                 }
 
-			if (!text.equals(lastText))
-				{
-				setText(text);
-				lastText = text;
-				}
+            if (!text.equals(lastText))
+                {
+                setText(text);
+                lastText = text;
+                }
             }
         }
 
@@ -232,36 +232,36 @@ public class SelectButton extends MotifButton
         }
 
 /*
-    public String getSubtext()
-        {
-        Seq seq = sequi.getSeq();
+  public String getSubtext()
+  {
+  Seq seq = sequi.getSeq();
         
-        String subname = null;
-        int repeats = 0;
-        ReentrantLock lock = seq.getLock();
-        lock.lock();
-        try 
-            {
-            ArrayList<Motif.Child> children = owner.getMotif().getChildren();
-            if (at >= children.size())  // uh
-                return "BAD CHILD? " + at;
-            Motif.Child child = children.get(at);
-            subname = child.getNickname();                    // FIXME: could this be made just volatile?
-            }
-        finally { lock.unlock(); }
+  String subname = null;
+  int repeats = 0;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try 
+  {
+  ArrayList<Motif.Child> children = owner.getMotif().getChildren();
+  if (at >= children.size())  // uh
+  return "BAD CHILD? " + at;
+  Motif.Child child = children.get(at);
+  subname = child.getNickname();                    // FIXME: could this be made just volatile?
+  }
+  finally { lock.unlock(); }
 
-        if (subname != null) 
-            { 
-            subname = subname.trim();
-            if (!subname.equals(""))
-                {
-                subname = StringUtility.sanitize(subname);
-                }
-            }
-        else subname = "";
+  if (subname != null) 
+  { 
+  subname = subname.trim();
+  if (!subname.equals(""))
+  {
+  subname = StringUtility.sanitize(subname);
+  }
+  }
+  else subname = "";
         
-        return subname;
-        }
+  return subname;
+  }
 */
 
     public void doubleClick(MouseEvent e)

@@ -208,19 +208,19 @@ public class ParameterUI extends JComponent
                  
                 getNotesUI().updateChildInspector(true);
 
-				// FIXME: Should this be in mouseDragged?  It's be less buggy there but
-				// much less efficient.
-        		Notes notes = eventsui.getNotesUI().getNotes();
+                // FIXME: Should this be in mouseDragged?  It's be less buggy there but
+                // much less efficient.
+                Notes notes = eventsui.getNotesUI().getNotes();
                 ReentrantLock lock = getSeq().getLock();
-                    lock.lock();
-                    try 
-                        {
-                        notes.computeMaxTime();
-                        }
-                    finally
-                        {
-                        lock.unlock();
-                        }
+                lock.lock();
+                try 
+                    {
+                    notes.computeMaxTime();
+                    }
+                finally
+                    {
+                    lock.unlock();
+                    }
                 }
             });
 
@@ -316,7 +316,7 @@ public class ParameterUI extends JComponent
         {
         add(eventui);
         eventuis.add(eventui);
-        eventui.setParameterUI(this);		// just in case
+        eventui.setParameterUI(this);           // just in case
         }
                 
     /** Finds and returns the EventUI for the given Event.  This is O(n) */

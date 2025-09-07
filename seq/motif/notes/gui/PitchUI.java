@@ -86,21 +86,21 @@ public class PitchUI extends JLayeredPane
  
     public static final int DEFAULT_PITCH_HEIGHT = 16;
     // How tall am I?
- 	static int pitchHeight = DEFAULT_PITCH_HEIGHT;
-     // How tall am I?
+    static int pitchHeight = DEFAULT_PITCH_HEIGHT;
+    // How tall am I?
     public static final int getPitchHeight() { return pitchHeight; }
     public static final void setPitchHeight(int val) 
-    	{ 
-    	pitchHeight = val;
+        { 
+        pitchHeight = val;
         Prefs.setLastInt("PitchHeight", val);
-    	}
-    	
+        }
+        
     static
-    	{
-		pitchHeight = Prefs.getLastInt("PitchHeight", DEFAULT_PITCH_HEIGHT);
-    	}
+        {
+        pitchHeight = Prefs.getLastInt("PitchHeight", DEFAULT_PITCH_HEIGHT);
+        }
 
-   /** Returns the GridUI */
+    /** Returns the GridUI */
     public GridUI getGridUI() { return gridui; }
 
     /** Returns the NotesUI */
@@ -145,8 +145,8 @@ public class PitchUI extends JLayeredPane
         }
                 
     /** Adds the NoteUI to the PitchUI. The NoteUI must already
-    	have its recorded bit set.
-    	This assumes you hold the lock already */
+        have its recorded bit set.
+        This assumes you hold the lock already */
     public void addRecordedNoteUI(NoteUI noteui)
         {
         noteui.reload(noteui.getNote().when, noteui.getNote().length);
@@ -157,29 +157,29 @@ public class PitchUI extends JLayeredPane
                 
     /** Sorts NoteUIs and also the children of this JComponent */
     public void sortNoteUIs()
-    	{
-    	removeAll();
-    	
-    	// We have to obtain the lock in order to sort the NoteUIs as their compareTo method
-    	// does not lock got get the underlying note information.
-    	Seq seq = gridui.getSeq();
-    	ReentrantLock lock = seq.getLock();
-    	lock.lock();
-    	try
-    		{
-	    	Collections.sort(noteuis);
-	    	}
-	    finally
-	    	{
-	    	lock.unlock();
-	    	}
-	    	
+        {
+        removeAll();
+        
+        // We have to obtain the lock in order to sort the NoteUIs as their compareTo method
+        // does not lock got get the underlying note information.
+        Seq seq = gridui.getSeq();
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            Collections.sort(noteuis);
+            }
+        finally
+            {
+            lock.unlock();
+            }
+                
         for(NoteUI noteui : noteuis)
-        	{
-        	add(noteui, 0);
-        	}
-    	}
-    	
+            {
+            add(noteui, 0);
+            }
+        }
+        
     /** Adds the NoteUI to the PitchUI */
     public void addNoteUI(NoteUI noteui)
         {
@@ -257,15 +257,15 @@ public class PitchUI extends JLayeredPane
             }
         noteuis.clear();
         if (onTop)
-        	{
-        	noteuis.addAll(top);
-	        noteuis.addAll(bottom);
-	        }
-	    else	
-	    	{
-	        noteuis.addAll(bottom);
-        	noteuis.addAll(top);
-	    	}
+            {
+            noteuis.addAll(top);
+            noteuis.addAll(bottom);
+            }
+        else        
+            {
+            noteuis.addAll(bottom);
+            noteuis.addAll(top);
+            }
 
         removeAll();
         for(NoteUI noteui : noteuis)

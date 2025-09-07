@@ -170,15 +170,15 @@ public class Seq
     /** Pushes the current state of the sequencer on the undo stack, using the currently displayed motif,
         for purposes of going back to when we undo/redo. Don't call this method, call SeqUI.push() */
     /*
-    public void push() 
-        {
-        push(sequi.getMotifUI().getMotif());
-        }
+      public void push() 
+      {
+      push(sequi.getMotifUI().getMotif());
+      }
     */
 
     /** Pushes the current state of the sequencer on the undo stack. displayMotif
         is the currently displayed Motif, for purposes of going back to when we undo/redo.
-         Don't call this method, call SeqUI.push() */
+        Don't call this method, call SeqUI.push() */
     public void push(Motif displayMotif) 
         {
         undo.push(new UndoStuff(data, displayMotif, motifs));
@@ -221,56 +221,56 @@ public class Seq
         }
 
 /*
-    public Motif undo(Motif displayMotif) 
-        { 
-        if (undo.canUndo())
-            {
-            if (undo.onUndo().motifs != null)			// heavyweight node
-            	{
-            	UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(data, displayMotif, motifs));
-				motifs = stuff.motifs;
-				data = stuff.data;
-				}
-			else
-				{
-				// push the display motif to 
-            	UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(displayMotif));
-				Motif.substituteMotif(stuff.data, motifs);
-				if (data == stuff.display)
-					{
-					data = stuff.data;
-					}
-				}
-			sequi.updateUndoMenus();
-			return stuff.display;
-            }
-        else return null;
-        }
+  public Motif undo(Motif displayMotif) 
+  { 
+  if (undo.canUndo())
+  {
+  if (undo.onUndo().motifs != null)                   // heavyweight node
+  {
+  UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(data, displayMotif, motifs));
+  motifs = stuff.motifs;
+  data = stuff.data;
+  }
+  else
+  {
+  // push the display motif to 
+  UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(displayMotif));
+  Motif.substituteMotif(stuff.data, motifs);
+  if (data == stuff.display)
+  {
+  data = stuff.data;
+  }
+  }
+  sequi.updateUndoMenus();
+  return stuff.display;
+  }
+  else return null;
+  }
  
-    public Motif redo(Motif displayMotif) 
-        { 
-        if (undo.canRedo())
-            {
-            if (undo.onRedo().motifs != null)			// heavyweight node
-            	{
-            	UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(data, displayMotif, motifs));
-            	motifs = stuff.motifs;
-           		data = stuff.data;
-           		}
-           	else
-           		{
-            	UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(displayMotif));
-				Motif.substituteMotif(stuff.data, motifs);
-				if (data == stuff.display)
-					{
-					data = stuff.data;
-					}
-           		}
-            sequi.updateUndoMenus();
-            return stuff.display;
-            }
-        else return null;
-        }
+  public Motif redo(Motif displayMotif) 
+  { 
+  if (undo.canRedo())
+  {
+  if (undo.onRedo().motifs != null)                   // heavyweight node
+  {
+  UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(data, displayMotif, motifs));
+  motifs = stuff.motifs;
+  data = stuff.data;
+  }
+  else
+  {
+  UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(displayMotif));
+  Motif.substituteMotif(stuff.data, motifs);
+  if (data == stuff.display)
+  {
+  data = stuff.data;
+  }
+  }
+  sequi.updateUndoMenus();
+  return stuff.display;
+  }
+  else return null;
+  }
 */
         
    
@@ -476,7 +476,7 @@ public class Seq
           {
           public void run()
           {
-           ;
+          ;
           }
           });
         */
@@ -583,13 +583,13 @@ public class Seq
     public void setIn(int in, In val) { ins[in] = val; }
     public int getNumIns() { return ins.length; }
 
-	// ROUTING
-	public static final int ROUTE_IN_NONE = NUM_INS;
-	public int getRouteIn() { return routeIn; }
-	public void setRouteIn(int val) { routeIn = val; }
-	public int getRouteOut() { return routeOut; }
-	public void setRouteOut(int val) { routeOut = val; }
-	
+    // ROUTING
+    public static final int ROUTE_IN_NONE = NUM_INS;
+    public int getRouteIn() { return routeIn; }
+    public void setRouteIn(int val) { routeIn = val; }
+    public int getRouteOut() { return routeOut; }
+    public void setRouteOut(int val) { routeOut = val; }
+        
 
     // PLAYING
     /** Returns whether the sequencer is currently playing. */
@@ -851,16 +851,16 @@ public class Seq
                     ins[i].pullMessages();
                     }
                 }
-                /*
-			// Route
-			if (routeIn != ROUTE_IN_NONE)
-				{
-				for(MidiMessage message : ins[routeIn].getMessages())
-					{
-					outs[routeOut].sendMIDI(message);
-					]
-				}
-			*/
+            /*
+            // Route
+            if (routeIn != ROUTE_IN_NONE)
+            {
+            for(MidiMessage message : ins[routeIn].getMessages())
+            {
+            outs[routeOut].sendMIDI(message);
+            ]
+            }
+            */
             }
         finally
             {
@@ -1272,15 +1272,15 @@ public class Seq
         return outs[out].sysex(sysex);
         }
 
-	public String noteToString(int pitch)
-		{
-		return NOTES[pitch % 12] + (pitch / 12);
-		}
+    public String noteToString(int pitch)
+        {
+        return NOTES[pitch % 12] + (pitch / 12);
+        }
 
-	public String noteToString(int pitch, int vel)
-		{
-		return NOTES[pitch % 12] + (pitch / 12) + ":" + vel;
-		}
+    public String noteToString(int pitch, int vel)
+        {
+        return NOTES[pitch % 12] + (pitch / 12) + ":" + vel;
+        }
 
     /** Sends a note on to the given Out.  Note that velocity is expressed as a double.
         This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 

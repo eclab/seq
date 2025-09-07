@@ -86,15 +86,15 @@ public class Ruler extends JComponent
             if (i != 0) 
                 {
                 if ((i / (divisor * 4)) * (divisor * 4) == i)
-                	{
-                	starty = 4;
-                	g.setPaint(color);
-                	}
+                    {
+                    starty = 4;
+                    g.setPaint(color);
+                    }
                 else
-                	{
-                	starty = 12;
-                	g.setPaint(Color.BLACK);                	
-                	}
+                    {
+                    starty = 12;
+                    g.setPaint(Color.BLACK);                        
+                    }
                 vertical.setLine(_i, starty, _i, RULER_HEIGHT);
                 g.draw(vertical);
                 }

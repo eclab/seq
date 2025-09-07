@@ -335,44 +335,44 @@ public abstract class MotifUI extends JPanel
         }
 
 /** A useful method for detecting if SHIFT is held or the right mouse button is clicked */
-public static boolean shiftOrRightMouseButton(MouseEvent evt)
-	{
-	return ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
-		SwingUtilities.isRightMouseButton(evt);
-	}
-	
+    public static boolean shiftOrRightMouseButton(MouseEvent evt)
+        {
+        return ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) ||
+            SwingUtilities.isRightMouseButton(evt);
+        }
+        
 /** A useful method for detecting if ALT/OPTION is held or the center mouse button is clicked */
-public static boolean optionOrMiddleMouseButton(MouseEvent evt)
-	{
-	return ((evt.getModifiers() & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) ||
-		SwingUtilities.isMiddleMouseButton(evt);
-	}
+    public static boolean optionOrMiddleMouseButton(MouseEvent evt)
+        {
+        return ((evt.getModifiers() & InputEvent.ALT_MASK) == InputEvent.ALT_MASK) ||
+            SwingUtilities.isMiddleMouseButton(evt);
+        }
 
 /** A hook called on the OLD MotifUI prior to doing a push: you can override this method
-	to prepare information to restore after the undo or redo (see NotesUI as an example). */
-public void prePush() { }
+    to prepare information to restore after the undo or redo (see NotesUI as an example). */
+    public void prePush() { }
 
 /** A hook called on the NEW MotifUI after doing an undo or redo: you can override this method
-	to restore information after the undo or redo (see NotesUI as an example). */
-public void postUndoOrRedo(MotifUI oldMotifUI) { }
+    to restore information after the undo or redo (see NotesUI as an example). */
+    public void postUndoOrRedo(MotifUI oldMotifUI) { }
 
 
     /** Returns an identifier for the underlying Motif.  This identifier is unique
-    	between Motifs except for Motifs that were copied from others.
-    	Used in undo and redo mostly. */
+        between Motifs except for Motifs that were copied from others.
+        Used in undo and redo mostly. */
     public int getTag() 
-    	{ 
-    	ReentrantLock lock = seq.getLock();
+        { 
+        ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
             { 
             return motif.getTag();
             }
         finally 
-        	{ 
-        	lock.unlock(); 
-        	}
-    	}
+            { 
+            lock.unlock(); 
+            }
+        }
 
     static final String TEXT_NOTES_TOOLTIP = "<html><b>Notes</b><br>" +
         "Add notes about this motif.</html>";

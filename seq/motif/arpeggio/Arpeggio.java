@@ -274,5 +274,5 @@ public class Arpeggio extends Motif
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }
         
     public String getBaseName() { return "Arpeggio"; }
-	}
+    }
         

@@ -47,7 +47,7 @@ public class NoteUI extends EventUI implements Comparable
     
     PitchUI getPitchUI() { return pitchui; }
 
-	void setPitchUI(PitchUI val) { pitchui = val; }
+    void setPitchUI(PitchUI val) { pitchui = val; }
 
     /** Returns the original pitch (a temporary variable for GridUI to compute moving notes */
     public int getOriginalPitch() { return (int)originalValue; }
@@ -159,10 +159,10 @@ public class NoteUI extends EventUI implements Comparable
         }
         
     public NoteUI(PitchUI pitchui, Notes.Note note)
-    	{
-    	this(pitchui, note, false);
-    	}
-    	
+        {
+        this(pitchui, note, false);
+        }
+        
     public NoteUI(PitchUI pitchui, Notes.Note note, boolean recorded)
         {
         this.event = note;
@@ -271,22 +271,22 @@ public class NoteUI extends EventUI implements Comparable
                     }
                 
 
-				// FIXME: Should this be in mouseDragged?  It's be less buggy there but
-				// much less efficient.
-        		if (dragged)
-        			{
-        			Notes notes = getNotesUI().getNotes();
-					ReentrantLock lock = getSeq().getLock();
-					lock.lock();
-					try 
-						{
-						notes.computeMaxTime();
-						}
-					finally
-						{
-						lock.unlock();
-						}
-					}
+                // FIXME: Should this be in mouseDragged?  It's be less buggy there but
+                // much less efficient.
+                if (dragged)
+                    {
+                    Notes notes = getNotesUI().getNotes();
+                    ReentrantLock lock = getSeq().getLock();
+                    lock.lock();
+                    try 
+                        {
+                        notes.computeMaxTime();
+                        }
+                    finally
+                        {
+                        lock.unlock();
+                        }
+                    }
 
 
                 dragged = false;
@@ -312,18 +312,18 @@ public class NoteUI extends EventUI implements Comparable
                 if (isResizing())
                     {
                     if (!dragged)
-                    	{
-                    	gridui.getNotesUI().getSeqUI().push();
-                    	}
+                        {
+                        gridui.getNotesUI().getSeqUI().push();
+                        }
                     gridui.resizeSelectedNotes(NoteUI.this, e);
                     }
                 else
                     {
                     if (!dragged)
-                    	{
-                    	gridui.getNotesUI().getSeqUI().push();
-                    	gridui.moveSelectedToTop();
-                    	}
+                        {
+                        gridui.getNotesUI().getSeqUI().push();
+                        gridui.moveSelectedToTop();
+                        }
                     gridui.moveSelectedNotes(mouseDownEvent, e, NoteUI.this);
                     }
                 dragged = true;
@@ -336,23 +336,23 @@ public class NoteUI extends EventUI implements Comparable
     
     /** This REQUIRES that a lock has been obtained */
     public int compareTo(Object other)
-    	{
-    	if (other == null) return -1;		// should not happen
-    	if (other instanceof NoteUI)
-    		{
-    		NoteUI o = (NoteUI)other;
-    		if (o.event.when > event.when)
-    			{
-    			return -1;
-    			}
-    		else if (o.event.when < event.when)
-    			{
-    			return 1;
-    			}
-    		else return 0;
-    		}
-    	else return -1;						// should not happen
-    	}
+        {
+        if (other == null) return -1;           // should not happen
+        if (other instanceof NoteUI)
+            {
+            NoteUI o = (NoteUI)other;
+            if (o.event.when > event.when)
+                {
+                return -1;
+                }
+            else if (o.event.when < event.when)
+                {
+                return 1;
+                }
+            else return 0;
+            }
+        else return -1;                                         // should not happen
+        }
     
                 
     public void paintComponent(Graphics _g)
@@ -366,17 +366,17 @@ public class NoteUI extends EventUI implements Comparable
             bounds.width = MINIMUM_WIDTH;
             }
         if (value < 0)
-        	{
-        	g.setPaint(DEFAULT_COLOR);
-        	}
+            {
+            g.setPaint(DEFAULT_COLOR);
+            }
         else
-        	{
-        	g.setPaint(VELOCITY_MAP.getColor((int)value));
-        	}
+            {
+            g.setPaint(VELOCITY_MAP.getColor((int)value));
+            }
         g.fill(bounds);
         
         if (recorded)
-        	{
+            {
             bounds.x++;
             bounds.y++;
             bounds.width -=2;
@@ -384,7 +384,7 @@ public class NoteUI extends EventUI implements Comparable
             g.setPaint(RECORDED_COLOR);
             g.setStroke(SELECTED_STROKE);
             g.draw(bounds);
-        	}
+            }
         else if (selected)
             {
             bounds.x++;

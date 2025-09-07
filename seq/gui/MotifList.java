@@ -627,21 +627,21 @@ public class MotifList extends JPanel
         // Update the Seq
         ArrayList<Motif> motifs = new ArrayList<>();
         for(MotifUI motifui : motifuis)
-        	{
-        	motifs.add(motifui.getMotif());
-        	}
+            {
+            motifs.add(motifui.getMotif());
+            }
         
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
-        	{
-        	// We must be very careful here, we're rearranging Seq's motifs entirely
-        	seq.setMotifs(motifs);
-        	}
+            {
+            // We must be very careful here, we're rearranging Seq's motifs entirely
+            seq.setMotifs(motifs);
+            }
         finally
-        	{
-        	lock.unlock();
-        	}
+            {
+            lock.unlock();
+            }
         }
         
 
@@ -820,9 +820,9 @@ public class MotifList extends JPanel
                 }
             }
         else
-        	{
+            {
             sequi.push();
-        	}
+            }
         
         // At this point we can probably delete it.
         selectedButton.getMotifUI().disconnect();
@@ -865,55 +865,55 @@ public class MotifList extends JPanel
         
     /** Sorts the existing motifs in the same tag order as the provided ones, putting the remainder at the end */
     public void sortInMotifOrder(ArrayList<Motif> oldMotifs)
-    	{
-    	// Load the hashmaps of tag -> motifui and tag -> button
+        {
+        // Load the hashmaps of tag -> motifui and tag -> button
 
-    	HashMap<Integer, MotifUI> currentMotifUIs = new HashMap<>();
-    	HashMap<Integer, MotifListButton> currentButtons = new HashMap<>();
-    	
-    	for(MotifUI motifui : motifuis)
-    		{
-    		currentMotifUIs.put(motifui.getTag(), motifui);
-    		}
-    	
-    	for(MotifListButton button : buttons)
-    		{
-    		currentButtons.put(button.getMotifUI().getTag(), button);
-    		}
+        HashMap<Integer, MotifUI> currentMotifUIs = new HashMap<>();
+        HashMap<Integer, MotifListButton> currentButtons = new HashMap<>();
+        
+        for(MotifUI motifui : motifuis)
+            {
+            currentMotifUIs.put(motifui.getTag(), motifui);
+            }
+        
+        for(MotifListButton button : buttons)
+            {
+            currentButtons.put(button.getMotifUI().getTag(), button);
+            }
 
-		// Load the new arrays based on whether any of the old motifs are in the hashmaps,
-		// and remoe the tags as we go along
-		ArrayList<MotifUI> newMotifUIs = new ArrayList<>();
-		ArrayList<MotifListButton> newButtons = new ArrayList<>();
-		
+        // Load the new arrays based on whether any of the old motifs are in the hashmaps,
+        // and remoe the tags as we go along
+        ArrayList<MotifUI> newMotifUIs = new ArrayList<>();
+        ArrayList<MotifListButton> newButtons = new ArrayList<>();
+                
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
             { 
-			for(Motif motif : oldMotifs)
-				{
-				int tag = motif.getTag();
-				MotifUI mui = currentMotifUIs.get(tag);
-				MotifListButton mlb = currentButtons.get(tag);
-				if (mui != null)
-					{
-					newMotifUIs.add(mui);
-					newButtons.add(mlb);
-					currentMotifUIs.remove(tag);
-					currentButtons.remove(tag);
-					}
-				}
+            for(Motif motif : oldMotifs)
+                {
+                int tag = motif.getTag();
+                MotifUI mui = currentMotifUIs.get(tag);
+                MotifListButton mlb = currentButtons.get(tag);
+                if (mui != null)
+                    {
+                    newMotifUIs.add(mui);
+                    newButtons.add(mlb);
+                    currentMotifUIs.remove(tag);
+                    currentButtons.remove(tag);
+                    }
+                }
             }
         finally { lock.unlock(); }
 
-		// Add the residue of any remaining tags if any, likely not
-    	for(Integer tag : currentMotifUIs.keySet())
-    		{
-    		newMotifUIs.add(currentMotifUIs.get(tag));
-    		newButtons.add(currentButtons.get(tag));
-    		}
-    	
-    	// Load and redraw
+        // Add the residue of any remaining tags if any, likely not
+        for(Integer tag : currentMotifUIs.keySet())
+            {
+            newMotifUIs.add(currentMotifUIs.get(tag));
+            newButtons.add(currentButtons.get(tag));
+            }
+        
+        // Load and redraw
         motifuis = newMotifUIs;
         buttons = newButtons;
         list.removeAll();
@@ -923,7 +923,7 @@ public class MotifList extends JPanel
             }
         list.revalidate();
         list.repaint();
-    	}
+        }
 
       
 //// DRAG AND DROP

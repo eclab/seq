@@ -170,92 +170,92 @@ public class StepSequenceUI extends MotifUI
         newStepUI.repaint();
         }
     public void shiftSelectionHorizontally(boolean right)
-    	{
-    	int val = getSelectedStepNum();
-    	int len = getTrack(getSelectedTrackNum()).getSteps().size();
-    	if (right)
-    		{
-    		val++;
-    		if (val >= len) val = 0;
-    		}
-    	else
-    		{
-    		val--;
-    		if (val < 0) val = len - 1;
-    		}
-    	setSelectedStepNum(val);
+        {
+        int val = getSelectedStepNum();
+        int len = getTrack(getSelectedTrackNum()).getSteps().size();
+        if (right)
+            {
+            val++;
+            if (val >= len) val = 0;
+            }
+        else
+            {
+            val--;
+            if (val < 0) val = len - 1;
+            }
+        setSelectedStepNum(val);
 
         if (getStepInspector() != null)
             setStepInspector(getStepInspector());
-    	}
+        }
     
     public void shiftSelectionVertically(boolean down)
-    	{
-    	int val = getSelectedStepNum();
-    	int track = getSelectedTrackNum();
-    	int numTracks = getTracks().size();
-    	
-    	if (down)
-    		{
-    		track++;
-    		if (track >= numTracks) track = 0;
-    		}
-    	else
-    		{
-    		track--;
-    		if (track < 0) track = numTracks - 1;
-    		}
+        {
+        int val = getSelectedStepNum();
+        int track = getSelectedTrackNum();
+        int numTracks = getTracks().size();
+        
+        if (down)
+            {
+            track++;
+            if (track >= numTracks) track = 0;
+            }
+        else
+            {
+            track--;
+            if (track < 0) track = numTracks - 1;
+            }
 
-    	setSelectedTrackNum(track);
-    	
-    	// adjust step
-    	int len = getTrack(getSelectedTrackNum()).getSteps().size();
-    	if (val >= len) val = len - 1;
-    	setSelectedStepNum(val);
+        setSelectedTrackNum(track);
+        
+        // adjust step
+        int len = getTrack(getSelectedTrackNum()).getSteps().size();
+        if (val >= len) val = len - 1;
+        setSelectedStepNum(val);
 
         if (getTrackInspector()!= null)
             setTrackInspector(getTrackInspector());
         if (getStepInspector() != null)
             setStepInspector(getStepInspector());
-    	}
+        }
 
     public void doToggle()
-    	{
-    	int step = getSelectedStepNum();
-    	int track = getSelectedTrackNum();
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try 
-			{
-			ss.setOn(track, step, !ss.isOn(track, step));
-			}
-		finally
-			{
-			lock.unlock();
-			}
+        {
+        int step = getSelectedStepNum();
+        int track = getSelectedTrackNum();
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            ss.setOn(track, step, !ss.isOn(track, step));
+            }
+        finally
+            {
+            lock.unlock();
+            }
         getTrack(track).getStep(step).repaint();
 
         if (getStepInspector() != null)
             setStepInspector(getStepInspector());
-   	}
-    	
+        }
+        
     public void doRotate(int rotate)
-    	{
-            ReentrantLock lock = seq.getLock();
-            lock.lock();
-            try 
-                {
-                ss.rotate(getSelectedTrackNum(), rotate);
-                }
-            finally
-            	{
-            	lock.unlock();
-            	}
-            getTrack(getSelectedTrackNum()).repaint();
+        {
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            ss.rotate(getSelectedTrackNum(), rotate);
+            }
+        finally
+            {
+            lock.unlock();
+            }
+        getTrack(getSelectedTrackNum()).repaint();
 
         if (getStepInspector() != null)
             setStepInspector(getStepInspector());
-    	}
+        }
         
     public static MotifUI create(Seq seq, SeqUI ui)
         {

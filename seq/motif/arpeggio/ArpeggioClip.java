@@ -15,7 +15,7 @@ public class ArpeggioClip extends Clip
     private static final long serialVersionUID = 1;
 
     public static final int TRIES = 4;              // number of times we try to get a unique random number
-	public static final int RELEASE_VELOCITY = 64;
+    public static final int RELEASE_VELOCITY = 64;
 
     // Note is used both to store incoming Note Off messages stored the Heap, and
     // also to indicated notes being played by the arpeggio.  So not all four
@@ -58,9 +58,9 @@ public class ArpeggioClip extends Clip
             }
             
         public void setTie(boolean val)
-        	{
-        	tie = val;
-        	}
+            {
+            tie = val;
+            }
             
         public int compareTo(Object obj)
             {
@@ -560,9 +560,9 @@ public class ArpeggioClip extends Clip
                     pitches[count] = new Note(current.pitch - octave * 12, arp.getVelocityAsPlayed() ? current.velocity : arp.getVelocity());
                     }
                 if (val == Arpeggio.PATTERN_TIE)
-                	{
-                	pitches[count].tie = true;
-                	}
+                    {
+                    pitches[count].tie = true;
+                    }
                 count++;
                 }
             }
@@ -575,16 +575,16 @@ public class ArpeggioClip extends Clip
         }    
     
     int tieNote(Note oldPitch, Note[] newPitches)
-    	{
-    	for(int i = 0; i < newPitches.length; i++)
-    		{
-    		if (newPitches[i].pitch == oldPitch.pitch && newPitches[i].tie)
-    			{
-    			return i;
-    			}
-    		}
-    	return -1;
-    	}
+        {
+        for(int i = 0; i < newPitches.length; i++)
+            {
+            if (newPitches[i].pitch == oldPitch.pitch && newPitches[i].tie)
+                {
+                return i;
+                }
+            }
+        return -1;
+        }
     
     public boolean process()
         {
@@ -613,47 +613,47 @@ public class ArpeggioClip extends Clip
                 
                 boolean thereAreTies = false;
                 for(Note newPitch : newPitches)
-                	{
-                	if (newPitch.tie)
-                		{
-                		thereAreTies = true;
-                		break;
-                		}
-                	}
+                    {
+                    if (newPitch.tie)
+                        {
+                        thereAreTies = true;
+                        break;
+                        }
+                    }
                 
                 if (thereAreTies)
-                	{
-                	// This is O(n^2) :-(
-    	            for(int i = 0; i < oldPitches.length; i++)
-        	            {
-        	            int tie = tieNote(oldPitches[i], newPitches);
-        	            if (tie >= 0)
-        	            	{
-        	            	newPitches[tie] = oldPitches[i];		// push it forward
-        	            	newPitches[tie].tie = true;					// So we don't do a Note On later on
-        	            	}
-        	            else
-        	            	{
-	            	        sendNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, oldPitches[i].id);
-	            	        }
-                	    }
-                	}
+                    {
+                    // This is O(n^2) :-(
+                    for(int i = 0; i < oldPitches.length; i++)
+                        {
+                        int tie = tieNote(oldPitches[i], newPitches);
+                        if (tie >= 0)
+                            {
+                            newPitches[tie] = oldPitches[i];                // push it forward
+                            newPitches[tie].tie = true;                                     // So we don't do a Note On later on
+                            }
+                        else
+                            {
+                            sendNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, oldPitches[i].id);
+                            }
+                        }
+                    }
                 else
-                	{
-    	            for(int i = 0; i < oldPitches.length; i++)
-        	            {
-            	        sendNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, oldPitches[i].id);
-                	    }
-                	}
+                    {
+                    for(int i = 0; i < oldPitches.length; i++)
+                        {
+                        sendNoteOff(arp.getOut(), oldPitches[i].pitch, RELEASE_VELOCITY, oldPitches[i].id);
+                        }
+                    }
                         
                 // Next we play the new notes. We have to revise their IDs.
                 for(int i = 0; i < newPitches.length; i++)
                     {
                     if (!newPitches[i].tie)
-                    	{
-	                    int id = sendNoteOn(arp.getOut(), newPitches[i].pitch, newPitches[i].velocity);
-    	                newPitches[i].setID(id);
-    	                }
+                        {
+                        int id = sendNoteOn(arp.getOut(), newPitches[i].pitch, newPitches[i].velocity);
+                        newPitches[i].setID(id);
+                        }
                     }
                                         
                 // Finally we set them to the new "old pitches"

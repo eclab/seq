@@ -424,11 +424,11 @@ public class ParallelClip extends Clip
             {
             if (current == 0)
                 {
-            	vel = vel * (1.0 - getCorrectedValueDouble(parallel.getCrossFade()));
+                vel = vel * (1.0 - getCorrectedValueDouble(parallel.getCrossFade()));
                 }
             else if (current == 1)
                 {
-            	vel = vel * getCorrectedValueDouble(parallel.getCrossFade());
+                vel = vel * getCorrectedValueDouble(parallel.getCrossFade());
                 }
             }
 
@@ -441,7 +441,7 @@ public class ParallelClip extends Clip
             {
             return;
             }
-       if (current >= 0)
+        if (current >= 0)
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();

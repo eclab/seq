@@ -210,47 +210,47 @@ public class NotesClip extends Clip
         }
     
     public void addRecorded(final Notes.Note note)
-    	{
-    	if (note == null) return; 	 // uh.....
-    	
-    	SwingUtilities.invokeLater(new Runnable()
-    		{
-    		public void run()
-    			{
-				int pitch = 0;
-				int when = 0;
-				NoteUI noteui = null;
-				NotesUI notesui = null;
-				Seq seq = getMotif().getSeq();
-				MotifUI motifui = seq.getSeqUI().getMotifUI();
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try
-					{
-					pitch = note.pitch;
-					when = note.when;
-					if (motifui.getMotif() == getMotif())		// it's my motifui being displayed
-						{
-						notesui = (NotesUI)motifui;
-						noteui = notesui.addRecordedNoteUI(note);
-						}
-					}
-				finally	
-					{
-					lock.unlock();
-					}
-					
-				if (noteui != null) 
-					{
-					if (!notesui.isPositionVisible(when))
-						{
-						notesui.doScrollToPosition(when);
-						}
-					noteui.repaint();		// is this sufficient?
-					}
-				}
-			});
-    	}
+        {
+        if (note == null) return;        // uh.....
+        
+        SwingUtilities.invokeLater(new Runnable()
+            {
+            public void run()
+                {
+                int pitch = 0;
+                int when = 0;
+                NoteUI noteui = null;
+                NotesUI notesui = null;
+                Seq seq = getMotif().getSeq();
+                MotifUI motifui = seq.getSeqUI().getMotifUI();
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try
+                    {
+                    pitch = note.pitch;
+                    when = note.when;
+                    if (motifui.getMotif() == getMotif())           // it's my motifui being displayed
+                        {
+                        notesui = (NotesUI)motifui;
+                        noteui = notesui.addRecordedNoteUI(note);
+                        }
+                    }
+                finally 
+                    {
+                    lock.unlock();
+                    }
+                                        
+                if (noteui != null) 
+                    {
+                    if (!notesui.isPositionVisible(when))
+                        {
+                        notesui.doScrollToPosition(when);
+                        }
+                    noteui.repaint();               // is this sufficient?
+                    }
+                }
+            });
+        }
     
     public boolean process()
         {
@@ -373,7 +373,7 @@ public class NotesClip extends Clip
                 if (event instanceof Notes.Note)
                     {
                     Notes.Note note = (Notes.Note)event;
-                    int velocity = getCorrectedValueInt(note.velocity, 126);		// 0 .. 126 representing 1...127 because we can't have 0 velocity, that is a note off
+                    int velocity = getCorrectedValueInt(note.velocity, 126);            // 0 .. 126 representing 1...127 because we can't have 0 velocity, that is a note off
                     int release = getCorrectedValueInt(note.release, 127);
                     // at present we're not doing pitch because we'd have to move the note
                     // at present we're also not doing the length for the same reason

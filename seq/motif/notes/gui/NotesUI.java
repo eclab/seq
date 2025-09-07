@@ -37,16 +37,16 @@ public class NotesUI extends MotifUI
     public static final String[] SNAP_OPTIONS = { "No Snap", "Snap to 64th", "Snap to 16th", "Snap to Triplet", "Snap to Beat", "Snap by 64th", "Snap by 16th", "Snap by Triplet", "Snap by Beat" };
     // Quantizations for the snap options
     public static final int[] SNAP_QUANTIZATIONS = 
-    		{ 
-    		1,
-    		Seq.PPQ / 16, 
-    		Seq.PPQ / 4, 
-    		Seq.PPQ / 3, 
-    		-Seq.PPQ / 16, 
-    		-Seq.PPQ / 4, 
-    		-Seq.PPQ / 3, 
-    		-Seq.PPQ
-    		};
+        { 
+        1,
+        Seq.PPQ / 16, 
+        Seq.PPQ / 4, 
+        Seq.PPQ / 3, 
+        -Seq.PPQ / 16, 
+        -Seq.PPQ / 4, 
+        -Seq.PPQ / 3, 
+        -Seq.PPQ
+        };
     // The default snap option index ("Snap to Beat")
     public static final int SNAP_DEFAULT_OPTION = 4;
     // Options for total grid length
@@ -409,15 +409,15 @@ public class NotesUI extends MotifUI
         
         
     public void doBringToFront()
-    	{
-		gridui.moveSelectedToTop();
-    	}
+        {
+        gridui.moveSelectedToTop();
+        }
     
     public void doSendToBack()
-    	{
-		gridui.moveSelectedToBottom();
-    	}
-    	
+        {
+        gridui.moveSelectedToBottom();
+        }
+        
     /** Increases the resolution of the GridUI */
     public void doZoomIn()
         {
@@ -456,26 +456,26 @@ public class NotesUI extends MotifUI
         Point p = new Point(0, 0);
         
         p.y = height - viewRect.height / 2;
-        if (p.y >= PitchUI.getPitchHeight() * 128 - viewRect.height)	// maximum
-        	p.y = PitchUI.getPitchHeight() * 128 - viewRect.height;
+        if (p.y >= PitchUI.getPitchHeight() * 128 - viewRect.height)    // maximum
+            p.y = PitchUI.getPitchHeight() * 128 - viewRect.height;
         if (p.y < 0) p.y = 0;
-        	
+                
         getPrimaryScroll().getViewport().setViewPosition(p);
         }
 
-	public boolean isPositionVisible(int time, int pitch)
-		{
-		return getPrimaryScroll().getViewport().getViewRect().contains(
-		    gridui.getPixels(time),
-		    PitchUI.getPitchHeight() * pitch);
-		}
+    public boolean isPositionVisible(int time, int pitch)
+        {
+        return getPrimaryScroll().getViewport().getViewRect().contains(
+            gridui.getPixels(time),
+            PitchUI.getPitchHeight() * pitch);
+        }
 
-	public boolean isPositionVisible(int time)
-		{
-		Rectangle rect = getPrimaryScroll().getViewport().getViewRect();
-		int pixels = gridui.getPixels(time);
-		return rect.getX() <= pixels && rect.getX() + rect.getWidth() >= pixels;
-		}
+    public boolean isPositionVisible(int time)
+        {
+        Rectangle rect = getPrimaryScroll().getViewport().getViewRect();
+        int pixels = gridui.getPixels(time);
+        return rect.getX() <= pixels && rect.getX() + rect.getWidth() >= pixels;
+        }
 
 
     public void doScrollToPosition(int time)
@@ -501,10 +501,10 @@ public class NotesUI extends MotifUI
 
         p.y = height; // 
         /*
-        height - viewRect.height / 2;
-        if (p.y >= PitchUI.getPitchHeight() * 128 - viewRect.height)	// maximum
-        	p.y = PitchUI.getPitchHeight() * 128 - viewRect.height;
-        if (p.y < 0) p.y = 0;
+          height - viewRect.height / 2;
+          if (p.y >= PitchUI.getPitchHeight() * 128 - viewRect.height)    // maximum
+          p.y = PitchUI.getPitchHeight() * 128 - viewRect.height;
+          if (p.y < 0) p.y = 0;
         */
         
         getPrimaryScroll().getViewport().setViewPosition(p);
@@ -662,7 +662,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            sequi.push();
+                sequi.push();
                 notes.quantize(events, divisor, _ends, _nonNotes, _bias);
                 }
             finally
@@ -746,7 +746,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            sequi.push();
+                sequi.push();
                 notes.randomizeTime(events, _variance, _lengths, _nonNotes, seq.getDeterministicRandom());
                 }
             finally
@@ -818,7 +818,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            sequi.push();
+                sequi.push();
                 notes.randomizeVelocity(events, _variance, _releases, seq.getDeterministicRandom());
                 }
             finally
@@ -886,7 +886,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            sequi.push();
+                sequi.push();
                 notes.setVelocity(events, _velocity);
                 }
             finally
@@ -970,7 +970,7 @@ public class NotesUI extends MotifUI
             boolean stopped;
             try
                 {
-            sequi.push();
+                sequi.push();
                 notes.filter(events, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removePC, _removeAftertouch);
                 }
             finally
@@ -998,7 +998,7 @@ public class NotesUI extends MotifUI
         lock.lock();
         try
             {
-        sequi.push();
+            sequi.push();
             notes.trim();
             }
         finally
@@ -1070,7 +1070,7 @@ public class NotesUI extends MotifUI
             lock.lock();
             try
                 {
-            sequi.push();
+                sequi.push();
                 if (all)
                     {
                     notes.shift(_by);
@@ -1147,8 +1147,8 @@ public class NotesUI extends MotifUI
             lock.lock();
             try
                 {
-             sequi.push();
-               notes.stretch(events, _from, _to);
+                sequi.push();
+                notes.stretch(events, _from, _to);
                 }
             finally
                 {
@@ -1253,7 +1253,7 @@ public class NotesUI extends MotifUI
                 lock.lock();
                 try
                     {
-            sequi.push();
+                    sequi.push();
                     notes.read(stream = new FileInputStream(fd.getDirectory() + fd.getFile()));
                     events = new ArrayList<Notes.Event>(notes.getEvents());         // copy?
                     }
@@ -1326,9 +1326,9 @@ public class NotesUI extends MotifUI
         
     /** Rebuilds the Keyboard to the proper height */
     public void rebuildKeyboard()
-    	{
+        {
         scroll.setRowHeaderView(gridui.buildKeyboard());
-    	}
+        }
 
     /** Builds the main view. */        
     public void buildPrimary(JScrollPane scroll)
@@ -1486,8 +1486,8 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-        		PitchUI.setPitchHeight(PITCH_HEIGHTS[pitchBox.getSelectedIndex()]);
-        		rebuild();
+                PitchUI.setPitchHeight(PITCH_HEIGHTS[pitchBox.getSelectedIndex()]);
+                rebuild();
                 }
             });
         pitchBox.setToolTipText(PITCH_COMBO_TOOLTIP);
@@ -1709,19 +1709,19 @@ public class NotesUI extends MotifUI
         lock.lock();
         try
             {
-        sequi.push();
+            sequi.push();
 
-        for(Notes.Event event : events)
-            {
-            eventsCopy.add(event.copy());
-            }
+            for(Notes.Event event : events)
+                {
+                eventsCopy.add(event.copy());
+                }
         
             notes.setPasteboard(eventsCopy);
             }
         finally 
-        	{ 
-        	lock.unlock(); 
-        	}
+            { 
+            lock.unlock(); 
+            }
         }
         
     public void doPasteEvents(boolean replaceSelected)
@@ -1774,7 +1774,7 @@ public class NotesUI extends MotifUI
                 
         // Remove previous notes
                 
-                sequi.push();
+        sequi.push();
         
         if (replaceSelected)
             {
@@ -1878,36 +1878,36 @@ public class NotesUI extends MotifUI
         eventsui.repaint();
         }
 
-	/** This assumes you hold the lock already */
+    /** This assumes you hold the lock already */
     public NoteUI addRecordedNoteUI(Notes.Note note)
-    	{
-		PitchUI pitchui = gridui.getPitchUIs().get(note.pitch);
-		NoteUI noteui = new NoteUI(pitchui, note, true);				// just for recording display
-		pitchui.addRecordedNoteUI(noteui);
-		return noteui;
-		}
+        {
+        PitchUI pitchui = gridui.getPitchUIs().get(note.pitch);
+        NoteUI noteui = new NoteUI(pitchui, note, true);                                // just for recording display
+        pitchui.addRecordedNoteUI(noteui);
+        return noteui;
+        }
 
     public void doReplicateEvents()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
 
-       // We have to copy it
+        // We have to copy it
         ArrayList<Notes.Event> eventsCopy = new ArrayList<Notes.Event>();
         
-            ReentrantLock lock = seq.getLock();
-            lock.lock();
-            try
-                {
-                sequi.push();
-        for(Notes.Event event : events)
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
             {
-            eventsCopy.add(event.copy());
-            }
-            }
-            finally
+            sequi.push();
+            for(Notes.Event event : events)
                 {
-                lock.unlock();
+                eventsCopy.add(event.copy());
                 }
+            }
+        finally
+            {
+            lock.unlock();
+            }
         
         // We can do the following outside of a lock because the notes is not hooked up yet
         Notes newNotes = new Notes(seq);
@@ -1917,32 +1917,32 @@ public class NotesUI extends MotifUI
         newNotesUI.doScrollToSelected();
         }
         
-	// Here we store the previous JViewport position so we can restore it in the new MotifUI
-	public void prePush() 
-		{
-            ReentrantLock lock = seq.getLock();
-            lock.lock();
-            try
-                {
-                notes.setViewPosition(getPrimaryScroll().getViewport().getViewPosition());
-                }
-            finally { lock.unlock(); }
-		}
+    // Here we store the previous JViewport position so we can restore it in the new MotifUI
+    public void prePush() 
+        {
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            notes.setViewPosition(getPrimaryScroll().getViewport().getViewPosition());
+            }
+        finally { lock.unlock(); }
+        }
 
-	// Here we restore the JViewport position from the old MotifUI
-	public void postUndoOrRedo(MotifUI oldMotifUI) 
-		{ 
-			Point vp = null;
-            ReentrantLock lock = seq.getLock();
-            lock.lock();
-            try
-                {
-                vp = notes.getViewPosition();
-                }
-            finally { lock.unlock(); }
+    // Here we restore the JViewport position from the old MotifUI
+    public void postUndoOrRedo(MotifUI oldMotifUI) 
+        { 
+        Point vp = null;
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            vp = notes.getViewPosition();
+            }
+        finally { lock.unlock(); }
 
-			getPrimaryScroll().getViewport().setViewPosition(vp); 
-		}
+        getPrimaryScroll().getViewport().setViewPosition(vp); 
+        }
 
                           
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Event</b><br>" +

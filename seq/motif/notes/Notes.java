@@ -294,7 +294,7 @@ public class Notes extends Motif
             }
         
         public String toString() { return NOTES[pitch % 12] + (pitch / 12) + ":" +  velocity + "[" + when + "-" + (when + length) + "]"; }       // We don't include Length because it would appear in the table
-	
+        
         public double getNormalizedValue() { return (velocity < 0 ? velocity : velocity / 127.0); }
         public void setNormalizedValue(double value) { velocity = (int)(value * 127.0); }
         public int getParameter() { return pitch; }
@@ -336,25 +336,25 @@ public class Notes extends Motif
         public String toString() { return "Bend:" + value + "[" + when + "]"; }
 
 
-		public static final double SQRT_8192 = Math.sqrt(8192.0);
-		public static final double SQRT_8191 = Math.sqrt(8191.0);
-		
+        public static final double SQRT_8192 = Math.sqrt(8192.0);
+        public static final double SQRT_8191 = Math.sqrt(8191.0);
+                
         /** Translates -8192 ... +8191 to 0.0 ... < 1.0 using sqrt so that small changes
             have much bigger impact.  This is useful for displaying */
         double toWarpedNormalized(double value) 
             { 
             if (value == 0) 
-            	{
-            	return 0.5;
-            	}
+                {
+                return 0.5;
+                }
             else if (value > 0)
-            	{
-            	return (Math.sqrt(value) / SQRT_8191) / 2.0 + 0.5;
-            	}
-            else //	if (value < 0)
-            	{
-            	return 0.5 - ((Math.sqrt(0 - value) / SQRT_8192) / 2.0);
-            	}
+                {
+                return (Math.sqrt(value) / SQRT_8191) / 2.0 + 0.5;
+                }
+            else //     if (value < 0)
+                {
+                return 0.5 - ((Math.sqrt(0 - value) / SQRT_8192) / 2.0);
+                }
             }
                         
         /** Translates  0.0 ... 1.0 to -8192 ... +8191 using sqrt so that small changes
@@ -362,19 +362,19 @@ public class Notes extends Motif
         double fromWarpedNormalized(double value)
             {
             if (value == 0.5)
-            	{
-            	return 0;
-            	}
+                {
+                return 0;
+                }
             else if (value > 0.5)
-            	{
-            	double v = (value - 0.5) * 2.0 * SQRT_8191;
-            	return v * v;
-            	}
-            else	// if (value < 0.5)
-            	{
-            	double v = (0.5 - value) * 2.0 * SQRT_8192;
-            	return 0 - v * v;
-            	}
+                {
+                double v = (value - 0.5) * 2.0 * SQRT_8191;
+                return v * v;
+                }
+            else        // if (value < 0.5)
+                {
+                double v = (0.5 - value) * 2.0 * SQRT_8192;
+                return 0 - v * v;
+                }
             }
 
         public double getWarpedNormalizedValue() 
@@ -627,8 +627,8 @@ public class Notes extends Motif
             return obj;
             }
         public String toString() { return "AT" + 
-                    (pitch == Out.CHANNEL_AFTERTOUCH ? ":" : ":" + (NOTES[pitch % 12] + (pitch / 12)) + "->")
-                      + value + "[" + when + "]"; }
+                (pitch == Out.CHANNEL_AFTERTOUCH ? ":" : ":" + (NOTES[pitch % 12] + (pitch / 12)) + "->")
+                + value + "[" + when + "]"; }
 
         public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
@@ -848,11 +848,11 @@ public class Notes extends Motif
     int recordIntegration = INTEGRATE_REPLACE;
 
 
-	/** Returns the current view position undo cache */
-	public Point getViewPosition() { return viewPosition; }
-	/** Sets the current view position undo cache */
-	public void setViewPosition(Point val) { viewPosition = val; }
-	
+    /** Returns the current view position undo cache */
+    public Point getViewPosition() { return viewPosition; }
+    /** Sets the current view position undo cache */
+    public void setViewPosition(Point val) { viewPosition = val; }
+        
     /** Returns the recorded note integration method. */
     public int getRecordIntegration() { return recordIntegration; }
     /** Sets the recorded note integration method. */
@@ -1009,12 +1009,12 @@ public class Notes extends Motif
         defaultVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultVelocity", 64);         
         defaultReleaseVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultReleaseVelocity", 64); 
 
-		for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
-			{
-        	eventParameterType[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventType" + i, 0);
-        	eventParameterMSB[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventMSB" + i, 0);
-        	eventParameterLSB[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventLSB" + i, 0);
-        	}
+        for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+            {
+            eventParameterType[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventType" + i, 0);
+            eventParameterMSB[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventMSB" + i, 0);
+            eventParameterLSB[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventLSB" + i, 0);
+            }
         }
 
     /** Returns all events */
@@ -1542,7 +1542,7 @@ public class Notes extends Motif
             }
         // Need to sort
         if (sort) sortEvents(events);
-		computeMaxTime(); 
+        computeMaxTime(); 
         }
         
     /** Transposes the given events by the provided semitones. */
@@ -1583,22 +1583,22 @@ public class Notes extends Motif
         Event startEvent = null;
         for(Event event : events)
             {
-			if (startTime == -1 || event.when < startTime)
-				{
-				startTime = event.when;
-				startEvent = event;
-				}
+            if (startTime == -1 || event.when < startTime)
+                {
+                startTime = event.when;
+                startEvent = event;
+                }
             }
 
-		// Shift to start time 0
+        // Shift to start time 0
         for(Event event : events)
             {
-			event.when -= startTime;
+            event.when -= startTime;
             }
 
-		// Multiply
+        // Multiply
         for(Event event : events)
-			{
+            {
             event.when = (int)Math.round((event.when * stretchTo) / (double)stretchFrom);
             if (event instanceof Note)
                 {
@@ -1611,7 +1611,7 @@ public class Notes extends Motif
         int newStartTime = startEvent.when;
         for(Event event : events)
             {
-			event.when = event.when - newStartTime + startTime;
+            event.when = event.when - newStartTime + startTime;
             }
 
         sortEvents(events);

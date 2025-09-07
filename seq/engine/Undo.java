@@ -25,15 +25,15 @@ public class Undo<T>
         }
           
     public T onUndo()
-    	{
-    	return undoStack.get(undoStack.size() - 1);
-    	}
+        {
+        return undoStack.get(undoStack.size() - 1);
+        }
 
     public T onRedo()
-    	{
-    	return redoStack.get(redoStack.size() - 1);
-    	}
-    	      
+        {
+        return redoStack.get(redoStack.size() - 1);
+        }
+              
     public T undo(T current)
         {
         if (canUndo())

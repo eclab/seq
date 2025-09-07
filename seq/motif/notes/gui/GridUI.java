@@ -166,7 +166,7 @@ public class GridUI extends JComponent
                         notes.getEvents().add(note);
                                 
                         // now comes the costly part
-        				recomputeMaxTime();		// so they're in the same lock
+                        recomputeMaxTime();             // so they're in the same lock
                         notes.sortEvents();
                         }
                     finally
@@ -408,17 +408,17 @@ public class GridUI extends JComponent
                 {
                 JLabel label = null;
                 if (pitchHeight <= PitchUI.DEFAULT_PITCH_HEIGHT / 2)
-                	{
-	                 label = new JLabel("<html><font size=1>&nbsp;C" + i/12 + "</font></html>");
-                	}
+                    {
+                    label = new JLabel("<html><font size=1>&nbsp;C" + i/12 + "</font></html>");
+                    }
                 else if (pitchHeight < PitchUI.DEFAULT_PITCH_HEIGHT)
-                	{
-	                 label = new JLabel("<html><font size=2>&nbsp;C" + i/12 + "</font></html>");
-                	}
+                    {
+                    label = new JLabel("<html><font size=2>&nbsp;C" + i/12 + "</font></html>");
+                    }
                 else
-                	{
-	                 label = new JLabel("<html>&nbsp;C" + i/12 + "</html>");
-                	}
+                    {
+                    label = new JLabel("<html>&nbsp;C" + i/12 + "</html>");
+                    }
                 // pushing up makes the small notes a little clearer
                 label.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, COLOR_CLEAR));
                 panel.setLayout(new BorderLayout());
@@ -518,19 +518,19 @@ public class GridUI extends JComponent
         return (((int)((evt.getX() - origin.getX()) * scale)) / snap) * snap;
         }
 
-	void recomputeMaxTime()
-		{
+    void recomputeMaxTime()
+        {
         ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try
-			{
-			notesui.getNotes().computeMaxTime();
-			}
-		finally
-			{
-			lock.unlock();
-			}
-		}
+        lock.lock();
+        try
+            {
+            notesui.getNotes().computeMaxTime();
+            }
+        finally
+            {
+            lock.unlock();
+            }
+        }
 
     /** Resizes the selected notes to a length indicated by the difference from the old origin
         to the new event, quantized. */
@@ -646,10 +646,10 @@ public class GridUI extends JComponent
                     ((NoteUI)eventui).setOriginalPitch(((Notes.Note)event).pitch);
                     }
                 else if (event instanceof Notes.Bend && getNotesUI().getNotes().getWarped())
-                	{
-                	double val = ((Notes.Bend)event).getWarpedNormalizedValue();
+                    {
+                    double val = ((Notes.Bend)event).getWarpedNormalizedValue();
                     eventui.setOriginalValue(val < 0 ? 0.5 : val);
-                	}
+                    }
                 else
                     {
                     double val = event.getNormalizedValue();
@@ -664,8 +664,8 @@ public class GridUI extends JComponent
         }
     
        
-        // NONE:        Adjust Pitch AND Time
-        // META:       	Adjust Pitch and NOT Time
+    // NONE:        Adjust Pitch AND Time
+    // META:        Adjust Pitch and NOT Time
         
     /** Moves the selected NOTES, not EVENTS to a new location in pitch and time indicated by the difference from the old origin
         to the new event, quantized. */
@@ -679,19 +679,19 @@ public class GridUI extends JComponent
         else
             {
             if (snap == 1)
-            	{
-				timeDiff = getTimeDiff(origin, evt);
-				int w = dragEventUI.getOriginalWhen() + timeDiff;
-				w = getQuantizedTime(w);
-				timeDiff = w - dragEventUI.getOriginalWhen();
-            	}
+                {
+                timeDiff = getTimeDiff(origin, evt);
+                int w = dragEventUI.getOriginalWhen() + timeDiff;
+                w = getQuantizedTime(w);
+                timeDiff = w - dragEventUI.getOriginalWhen();
+                }
             else
-            	{
-				timeDiff = getQuantizedTime(evt) - dragEventUI.getOriginalWhen();
-				}
+                {
+                timeDiff = getQuantizedTime(evt) - dragEventUI.getOriginalWhen();
+                }
             }
 
-		boolean dontChangeTime = (MotifUI.optionOrMiddleMouseButton(evt));
+        boolean dontChangeTime = (MotifUI.optionOrMiddleMouseButton(evt));
 
         int pitchDiff = getPitchDiff(origin, evt);
 
@@ -713,10 +713,10 @@ public class GridUI extends JComponent
                 oldWhen = note.when;
                 note.when = eventui.getOriginalWhen() + timeDiff;
 
-				if (dontChangeTime)
-					{
-					note.when = oldWhen;
-					}
+                if (dontChangeTime)
+                    {
+                    note.when = oldWhen;
+                    }
             
                 /// FIXME: should there be a maximum?
                 if (note.when < 0) note.when = 0;
@@ -724,7 +724,7 @@ public class GridUI extends JComponent
                                 
                 length = note.length;
 
-              if (note.when != oldWhen)
+                if (note.when != oldWhen)
                     {
                     pitchesToRepaint[note.pitch] = true;    // slide the note
                     }
@@ -751,10 +751,10 @@ public class GridUI extends JComponent
         
         // re-sort -- this is going to be EXPENSIVE
         lock.lock();
-		if (!MotifUI.optionOrMiddleMouseButton(evt))
-			{
-			recomputeMaxTime();		// so they're in the same lock
-			}
+        if (!MotifUI.optionOrMiddleMouseButton(evt))
+            {
+            recomputeMaxTime();             // so they're in the same lock
+            }
         try
             {
             getNotesUI().getNotes().sortEvents();
@@ -852,7 +852,7 @@ public class GridUI extends JComponent
                 events.add(newNote);
                 newNotes.add(newNote);
                 }
-        	recomputeMaxTime();		// so they're in the same lock
+            recomputeMaxTime();             // so they're in the same lock
             notesui.getNotes().sortEvents();                // costly
             }
         finally
@@ -958,60 +958,60 @@ public class GridUI extends JComponent
         }
        
        
-  /** Makes the selected notes appear on top of other notes. */
-   public void moveSelectedToTop()
-    	{
-    	// Can't believe I have to do this
-    	HashSet<NoteUI> notes = new HashSet<>();
-    	for(EventUI event : getSelected())
-    		{
-    		if (event instanceof NoteUI)
-    			{
-	    		notes.add((NoteUI)event);
-	    		}
-    		}
-    	moveToTop(notes);
-    	}
+    /** Makes the selected notes appear on top of other notes. */
+    public void moveSelectedToTop()
+        {
+        // Can't believe I have to do this
+        HashSet<NoteUI> notes = new HashSet<>();
+        for(EventUI event : getSelected())
+            {
+            if (event instanceof NoteUI)
+                {
+                notes.add((NoteUI)event);
+                }
+            }
+        moveToTop(notes);
+        }
 
-  /** Makes the selected notes appear on top of other notes. */
-   public void moveSelectedToBottom()
-    	{
-    	// Can't believe I have to do this
-    	HashSet<NoteUI> notes = new HashSet<>();
-    	for(EventUI event : getSelected())
-    		{
-    		if (event instanceof NoteUI)
-    			{
-	    		notes.add((NoteUI)event);
-	    		}
-    		}
-    	moveToBottom(notes);
-    	}
+    /** Makes the selected notes appear on top of other notes. */
+    public void moveSelectedToBottom()
+        {
+        // Can't believe I have to do this
+        HashSet<NoteUI> notes = new HashSet<>();
+        for(EventUI event : getSelected())
+            {
+            if (event instanceof NoteUI)
+                {
+                notes.add((NoteUI)event);
+                }
+            }
+        moveToBottom(notes);
+        }
        
     /** Makes the given notes appear on top of other notes. */
     public void moveToTop(HashSet<NoteUI> move)
-    	{
-    	if (move.size() > 0)
-    		{
-	    	for(PitchUI pitchui : pitchuis)
-    			{
-    			pitchui.moveToPosition(move, true);
-    			}
-    		}
-    	}
-    	
+        {
+        if (move.size() > 0)
+            {
+            for(PitchUI pitchui : pitchuis)
+                {
+                pitchui.moveToPosition(move, true);
+                }
+            }
+        }
+        
     /** Makes the given notes appear beneath other notes. */
     public void moveToBottom(HashSet<NoteUI> move)
-    	{
-    	if (move.size() > 0)
-    		{
-	    	for(PitchUI pitchui : pitchuis)
-    			{
-    			pitchui.moveToPosition(move, false);
-    			}
-    		}
-    	}
-    	
+        {
+        if (move.size() > 0)
+            {
+            for(PitchUI pitchui : pitchuis)
+                {
+                pitchui.moveToPosition(move, false);
+                }
+            }
+        }
+        
     /** Finds the NoteUIs for the given note, then adds them to selected and selects them. */
     public void addNotesToSelected(HashSet<Notes.Event> notes)
         {
@@ -1028,7 +1028,7 @@ public class GridUI extends JComponent
                     }
                 }
             }
-        moveToTop(move);		// I think this is SLIGHTLY more efficent than moveSelectedToTop?
+        moveToTop(move);                // I think this is SLIGHTLY more efficent than moveSelectedToTop?
         }
 
     /** Finds the EventUIs for the given event, then adds them to selected and selects them. */
