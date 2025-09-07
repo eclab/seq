@@ -52,7 +52,7 @@ public class AutomatonNodeInspector extends WidgetList
     JCheckBox loop;
     SmallDial join;
     StringField name;
-    JComboBox quantization;
+    JComboBox  quantization;
     JButton launch;
     SmallDial gate;
     SmallDial velocity;

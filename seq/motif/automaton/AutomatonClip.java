@@ -455,7 +455,7 @@ public class AutomatonClip extends Clip
                             }
                         else
                             {
-                            ids[i] = NO_NOTE_ID;
+                            ids[i] =  NO_NOTE_ID;
                             }
                         pitches[i] = pitch;
                         }
