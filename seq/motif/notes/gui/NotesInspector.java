@@ -36,7 +36,7 @@ public class NotesInspector extends WidgetList
     JCheckBox recordAftertouch;
     JCheckBox recordPC;
     JCheckBox convertNRPNRPN;
-    JCheckBox logBend;
+    JCheckBox warpedBend;
     JComboBox parameterHeight;
     JCheckBox quantize;
     JCheckBox quantizeNoteEnds;
@@ -632,16 +632,16 @@ public class NotesInspector extends WidgetList
                 eventParameterType[i].setSelectedIndex(notes.getEventParameterType(i));
                 }
 
-            logBend = new JCheckBox();
-            logBend.setSelected(notes.getLog());
-            logBend.addActionListener(new ActionListener()
+            warpedBend = new JCheckBox();
+            warpedBend.setSelected(notes.getWarped());
+            warpedBend.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
                     {
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { notes.setLog(logBend.isSelected()); }
+                    try { notes.setWarped(warpedBend.isSelected()); }
                     finally { lock.unlock(); }  
                     notesui.getEventsUI().reload();                                     // gotta redraw the bends!                            
                     notesui.getEventsUI().repaint();                                    // gotta redraw the bends!                            
@@ -691,7 +691,7 @@ public class NotesInspector extends WidgetList
 			eventParameterLSB[i].setToolTipText(LSB_TOOLTIP);
 			eventParameterMSB[i].setToolTipText(MSB_TOOLTIP);
         	}
-		logBend.setToolTipText(LOGARITHMIC_PITCH_BEND_TOOLTIP);
+		warpedBend.setToolTipText(WARPED_PITCH_BEND_TOOLTIP);
 		parameterHeight.setToolTipText(DISPLAY_HEIGHT_TOOLTIP);
 
         build(new String[] { "Name", "Out", "In", "Start", "End", "Armed", "Echo"}, 
@@ -724,7 +724,7 @@ public class NotesInspector extends WidgetList
             new JComponent[] { eventParameterPanel[0], eventParameterPanel[1], eventParameterPanel[2], eventParameterPanel[3] });
 
         WidgetList widgetList1 = new WidgetList();
-        widgetList1.build(new String[] { "Logarithmic Pitch Bend", "Display Height" }, new JComponent[] { logBend, parameterHeight });
+        widgetList1.build(new String[] { "Warped Pitch Bend", "Display Height" }, new JComponent[] { warpedBend, parameterHeight });
                 
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new BorderLayout());
@@ -745,16 +745,6 @@ public class NotesInspector extends WidgetList
         parameterDisclosure.setParentComponent(notesui);
         }
     
-    boolean validType(EventsUI eventsui, int pos)
-        {
-        if (eventsui.types[pos] == 0) return false;
-        for(int i = 0; i < pos; i++)
-            {
-            if (eventsui.types[i] == eventsui.types[pos]) return false;
-            }
-        return true;
-        }
-        
     public void reviseEventParameters()
         {
         // what is being displayed in the inspector?  Should I get rid of it?
@@ -774,7 +764,7 @@ public class NotesInspector extends WidgetList
         for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
             {
             eventsui.types[i] = getParameterType(i);
-            if (validType(eventsui, i))
+            if (eventsui.validType(i))
                 {
                 count++;
                 }
@@ -785,13 +775,40 @@ public class NotesInspector extends WidgetList
         
         for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
             {
-            if (validType(eventsui, i))
+            if (eventsui.validType(i))
                 {
                 ParameterUI parameterui = new ParameterUI(eventsui, eventsui.types[i]);
                 eventsui.parameterBox.add(parameterui);
                 eventsui.parameteruis.add(parameterui);
                 parameterui.repaint();
+                
+                // Set the preferences so these types/msb/lsb show up next time
+				int type;
+				int eventParamMSB;
+				int eventParamLSB;
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try 
+					{ 
+					 type = eventParameterType[i].getSelectedIndex();
+					 eventParamMSB = (int)(eventParameterMSB[i].getValue() * 127.0);
+					 eventParamLSB = (int)(eventParameterLSB[i].getValue() * 127.0);
+					 }
+				finally	
+					{
+					lock.unlock();
+					}
+                
+				Prefs.setLastInt("seq.motif.notes.Notes.eventType" + i, type);
+				Prefs.setLastInt("seq.motif.notes.Notes.eventMSB" + i, eventParamMSB);
+				Prefs.setLastInt("seq.motif.notes.Notes.eventLSB" + i, eventParamLSB);
                 }
+			else
+				{
+				Prefs.setLastInt("seq.motif.notes.Notes.eventType" + i, 0);
+				Prefs.setLastInt("seq.motif.notes.Notes.eventMSB" + i, 0);
+				Prefs.setLastInt("seq.motif.notes.Notes.eventLSB" + i, 0);
+				}
             }
         eventsui.parameterBox.revalidate();
         eventsui.parameterBox.repaint();
@@ -935,7 +952,7 @@ public class NotesInspector extends WidgetList
             quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
             quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
             convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
-            logBend.setSelected(notes.getLog());
+            warpedBend.setSelected(notes.getWarped());
             
             quantizeTo.setSelectedIndex(notes.getQuantizeTo());
             for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
@@ -1042,10 +1059,10 @@ public class NotesInspector extends WidgetList
         "Selects the Least Significant Byte of the Parameter.<br><br>" +
         "If LSB and MSB are both present, then the Parameter is equal to MSB * 128 + LSB.</html>";
 
-    static final String LOGARITHMIC_PITCH_BEND_TOOLTIP = "<html><b>Logarithmic Pitch Bend</b><br>" +
-        "Selects whether Pitch Bend is displayed Logarithmically (as opposed to Linearly).<br><br>" +
-        "It's often useful to display Logarithmically because Pitch Bend values are often<br>" +
-        "more important close to zero.</html>";
+    static final String WARPED_PITCH_BEND_TOOLTIP = "<html><b>Warped Pitch Bend</b><br>" +
+        "Selects whether Pitch Bend is displayed warped (as opposed to Linearly).<br><br>" +
+        "It's often useful to display warped (stretching the values close to 0 larger)<br>" +
+        "because Pitch Bend values are often more important, or more sensitive, close to zero.</html>";
 
     static final String DISPLAY_HEIGHT_TOOLTIP = "<html><b>Display Height</b><br>" +
         "Selects the height of non-note event displays.</html>";

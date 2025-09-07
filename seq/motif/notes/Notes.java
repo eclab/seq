@@ -218,10 +218,10 @@ public class Notes extends Motif
         /** Copies the event. */
         public abstract Event copy();
         
-        /** Converts and sets the event's parameter value (or velocity in the case of Notes) from a value [0.0, 1.0). */
-        public abstract double getNormalizedValue(boolean log);
-        /** Returns the event's parameter value (or velocity in the case of Notes) as a value [0.0, 1.0). */
-        public abstract void setNormalizedValue(double value, boolean log);
+        /** Converts and sets the event's parameter value (or velocity in the case of Notes) from a value [0.0, 1.0]. */
+        public abstract double getNormalizedValue();
+        /** Returns the event's parameter value (or velocity in the case of Notes) as a value [0.0, 1.0]. */
+        public abstract void setNormalizedValue(double value);
         /** Returns the event's parameter value. */
         public abstract int getParameter();
         /** Returns the event's type (see NOTE TYPES above) */
@@ -295,8 +295,8 @@ public class Notes extends Motif
         
         public String toString() { return NOTES[pitch % 12] + (pitch / 12) + ":" +  velocity + "[" + when + "-" + (when + length) + "]"; }       // We don't include Length because it would appear in the table
 	
-        public double getNormalizedValue(boolean log) { return (velocity < 0 ? velocity : velocity / 128.0); }
-        public void setNormalizedValue(double value, boolean log) { velocity = (int)(value * 128); }
+        public double getNormalizedValue() { return (velocity < 0 ? velocity : velocity / 127.0); }
+        public void setNormalizedValue(double value) { velocity = (int)(value * 127.0); }
         public int getParameter() { return pitch; }
         public int getType() { return TYPE_NOTE + pitch; }
         public int getLength() { return length; }
@@ -304,7 +304,7 @@ public class Notes extends Motif
         
     public static class Bend extends Event
         {
-        // Bend value from -8192 to +8191
+        // Bend value from 0 to 16383
         public int value;
         
         public Bend(int value, int when)
@@ -335,43 +335,62 @@ public class Notes extends Motif
             }
         public String toString() { return "Bend:" + value + "[" + when + "]"; }
 
-        /** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
+
+		public static final double SQRT_8192 = Math.sqrt(8192.0);
+		public static final double SQRT_8191 = Math.sqrt(8191.0);
+		
+        /** Translates -8192 ... +8191 to 0.0 ... < 1.0 using sqrt so that small changes
             have much bigger impact.  This is useful for displaying */
-        public static double toNormalizedLog(double value) 
+        double toWarpedNormalized(double value) 
             { 
-            if (value == 0) return 0.5;
-            else if (value > 0) return Math.min(1.0, Math.log(value + 1) / Math.log(2.0) / 13.0) / 2.0 + 0.5;
-            else return (Math.max(-1.0, 0 - Math.log((0 - value) + 1) / Math.log(2.0) / 13.0) / 2.0) + 0.5;
+            if (value == 0) 
+            	{
+            	return 0.5;
+            	}
+            else if (value > 0)
+            	{
+            	return (Math.sqrt(value) / SQRT_8191) / 2.0 + 0.5;
+            	}
+            else //	if (value < 0)
+            	{
+            	return 0.5 - ((Math.sqrt(0 - value) / SQRT_8192) / 2.0);
+            	}
             }
                         
-        /** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
+        /** Translates  0.0 ... 1.0 to -8192 ... +8191 using sqrt so that small changes
             have much bigger impact.  This is useful for displaying */
-        public double fromNormalizedLog(double value)
+        double fromWarpedNormalized(double value)
             {
-            double v = 0.0;
-            value = value - 0.5;
-            if (value == 0) v = 0.0;
-            else if (value > 0) v = Math.pow(2.0, value * 2.0 * 13.0) - 1;
-            else v = 0 - (Math.pow(2.0, (0.0 - value) * 2.0 * 13.0) - 1);
-            return v;
+            if (value == 0.5)
+            	{
+            	return 0;
+            	}
+            else if (value > 0.5)
+            	{
+            	double v = (value - 0.5) * 2.0 * SQRT_8191;
+            	return v * v;
+            	}
+            else	// if (value < 0.5)
+            	{
+            	double v = (0.5 - value) * 2.0 * SQRT_8192;
+            	return 0 - v * v;
+            	}
             }
 
-        /** Translates -8192 ... +8191 to 0.0 ... 1.0 using logs so that small changes
-            have much bigger impact.  This is useful for displaying */
-        public double getNormalizedLogValue() 
+        public double getWarpedNormalizedValue() 
             { 
-            return toNormalizedLog(value);
+            if (value < 0) return value;
+            else return toWarpedNormalized(value - 8192.0);
             }
                         
-        /** Translates  0.0 ... 1.0 to -8192 ... +8191 using logs so that small changes
-            have much bigger impact.  This is useful for displaying */
-        public void setNormalizedLogValue(double value)
+        public void setWarpedNormalizedValue(double value)
             {
-            this.value = (int)fromNormalizedLog(value);
+            if (value < 0) this.value = (int)value;
+            else this.value = (int)(fromWarpedNormalized(value) + 8192.0);
             }
                         
-        public double getNormalizedValue(boolean log) { if (value < -8192) return (value + 8192); else if (log) return getNormalizedLogValue(); else return (value + 8192) / 16384.0; }
-        public void setNormalizedValue(double value, boolean log) { if (value < 0) this.value = ((int)value) - 8192; else if (log) setNormalizedLogValue(value); else this.value = ((int)(value * 16384) - 8192); }
+        public double getNormalizedValue() { return value / 16383.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 16383.0); }
         public int getParameter() { return 0; }
         public int getType() { return TYPE_PITCH_BEND; }
         }
@@ -423,8 +442,8 @@ public class Notes extends Motif
             }
         public String toString() { return "NRPN:" + parameter + "->" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 16384.0; }
-        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
+        public double getNormalizedValue() { return value < 0 ? value : value / 16384.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 16384); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_NRPN + parameter; }
         }
@@ -476,8 +495,8 @@ public class Notes extends Motif
             }
         public String toString() { return "RPN:" + parameter + "->" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 16384.0; }
-        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 16384); }
+        public double getNormalizedValue() { return value < 0 ? value : value / 16383.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 16383.0); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_RPN + parameter; }
         }
@@ -519,8 +538,8 @@ public class Notes extends Motif
             }
         public String toString() { return "CC:" + parameter + "->" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 128.0; }
-        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
+        public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_CC + parameter; }
         }
@@ -558,8 +577,8 @@ public class Notes extends Motif
             }
         public String toString() { return "PC:" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 128.0; }
-        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
+        public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
         public int getParameter() { return 0; }
         public int getType() { return TYPE_PC; }
         }
@@ -611,8 +630,8 @@ public class Notes extends Motif
                     (pitch == Out.CHANNEL_AFTERTOUCH ? ":" : ":" + (NOTES[pitch % 12] + (pitch / 12)) + "->")
                       + value + "[" + when + "]"; }
 
-        public double getNormalizedValue(boolean log) { return value < 0 ? value : value / 128.0; }
-        public void setNormalizedValue(double value, boolean log) { this.value = (int)(value * 128); }
+        public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
         public int getParameter() { return pitch; }
         public int getType() { return (pitch == Out.CHANNEL_AFTERTOUCH ? 384 : TYPE_POLYPHONIC_AFTERTOUCH + pitch); }
         }
@@ -808,8 +827,8 @@ public class Notes extends Motif
     int maxNoteOffPosition = 0;
     // Do I play out notes as I am recording them?
     boolean echo = true;
-    // Do I display bend as a log or linearly?
-    boolean log = true;
+    // Do I display bend Warped or linearly?
+    boolean warped = true;
     // The start marker for the Notes
     int start = 0;
     // The end marker for the Notes
@@ -839,10 +858,10 @@ public class Notes extends Motif
     /** Sets the recorded note integration method. */
     public void setRecordIntegration(int val) { recordIntegration = val; Prefs.setLastInt("seq.motif.notes.Notes.recordintegration", val); }
         
-    /** Returns whether pitch bend is displayed logarithmicaly */
-    public boolean getLog() { return log; }
-    /** Sets whether pitch bend is displayed logarithmicaly */
-    public void setLog(boolean val) { log = val; }
+    /** Returns whether pitch bend is displayed warped */
+    public boolean getWarped() { return warped; }
+    /** Sets whether pitch bend is displayed Warped */
+    public void setWarped(boolean val) { warped = val; }
         
     /** Returns the given event parameter type. */
     public int getEventParameterType(int param) { return eventParameterType[param]; }
@@ -989,6 +1008,13 @@ public class Notes extends Motif
         recordIntegration = Prefs.getLastInt("seq.motif.notes.Notes.recordintegration", INTEGRATE_REPLACE); 
         defaultVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultVelocity", 64);         
         defaultReleaseVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultReleaseVelocity", 64); 
+
+		for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
+			{
+        	eventParameterType[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventType" + i, 0);
+        	eventParameterMSB[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventMSB" + i, 0);
+        	eventParameterLSB[i] = Prefs.getLastInt("seq.motif.notes.Notes.eventLSB" + i, 0);
+        	}
         }
 
     /** Returns all events */
@@ -1545,7 +1571,7 @@ public class Notes extends Motif
               
 
     /** Stretches the onset and length of the provided events so that the previous time interval STRETCHFROM
-        is stretched to fill the time interval STRETCHTO.  The stretched events
+        is Warped to fill the time interval STRETCHTO.  The Warped events
         are shifted in time afterwards so that the first event's onset is the same as it originally was. */
     public void stretch(ArrayList<Event> events, int stretchFrom, int stretchTo)
         {
@@ -1916,7 +1942,7 @@ public class Notes extends Motif
         setEcho(obj.optBoolean("echo", false));
         setOut(obj.optInt("out", 0));
         setIn(obj.optInt("in", 0));
-        setLog(obj.optBoolean("log", true));
+        setWarped(obj.optBoolean("stretch", true));
         
         JSONArray etypeArray = obj.optJSONArray("eparam");
         if (etypeArray != null)
@@ -1955,7 +1981,7 @@ public class Notes extends Motif
         obj.put("echo", getEcho());
         obj.put("out", getOut());
         obj.put("in", getIn());
-        obj.put("log", getLog());
+        obj.put("stretch", getWarped());
         
         // Event Display Parameters
         JSONArray etypeArray = new JSONArray();
