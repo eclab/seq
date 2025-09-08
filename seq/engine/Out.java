@@ -108,7 +108,6 @@ public class Out
                 
     ///// SENDING MIDI
         
-        
     public boolean sendMIDI(MidiMessage message)
         {
         Receiver receiver = null;
@@ -228,6 +227,12 @@ public class Out
 */
         }
 
+    public int getChannel()
+    	{
+        Midi.Tuple tuple = seq.tuple;
+    	return tuple.outChannel[index];
+    	}
+        
     // Send a two-byte message
     boolean send(int command, int data)
         {
@@ -278,10 +283,17 @@ public class Out
     /** Sends a note on.  Note that velocity is expressed as a double,
         but is still a value 0...127 and will be clamped as such.  The note and velocity
         will be modified according to the transpose and gain before emitting the note on
-        message. Returns true if the message was successfully sent.  */
-    public boolean noteOn(int note, double vel) { return send(ShortMessage.NOTE_ON, transpose(note), gain(vel)); }
+        message. Returns true if the message was successfully sent.  
+        NOTE: It is impossible to send a noteOn of velocity 0 (that's defined in MIDI as a Note Off).
+        So we will bump it to 1.  */
+    public boolean noteOn(int note, double vel) 
+    	{ 
+    	int gain = gain(vel);
+    	if (gain == 0) gain = 1;
+    	return send(ShortMessage.NOTE_ON, transpose(note), gain); 
+    	}
 
-    /** Sends a note off.  Note that velocity is expressed as a double,
+    /** Sends a note off .  Note that velocity is expressed as a double,
         but is still a value 0...127 and will be clamped as such.  The note and velocity
         will be modified according to the transpose and gain before emitting the note off
         message. If the velocity ultimately winds up being 64, a noteOn(note, 0) will be sent instead. 
@@ -299,29 +311,25 @@ public class Out
         message.  Returns true if the message was successfully sent.  */
     public boolean noteOff(int note) { return send(ShortMessage.NOTE_ON, transpose(note), 0); }
 
-    /** Sends a note on to a fixed channel regardless of the Out's channel.  Note that velocity is expressed as a double,
-        but is still a value 0...127 and will be clamped as such.  The note and velocity
-        will be modified according to the transpose and gain before emitting the note on
-        message. Returns true if the message was successfully sent.  */
-    public boolean noteOn(int note, double vel, int channel) { return sendToChannel(ShortMessage.NOTE_ON, transpose(note), gain(vel), channel); }
+    /** Sends a note on to a fixed channel regardless of the Out's channel.  The velocity
+    	and transpose are not modified. */
+    public boolean noteOn(int note, int vel, int channel) 
+    	{ 
+    	return sendToChannel(ShortMessage.NOTE_ON, note, vel, channel); 
+    	}
 
-    /** Sends a note off to a fixed channel regardless of the Out's channel.  Note that velocity is expressed as a double,
-        but is still a value 0...127 and will be clamped as such.  The note and velocity
-        will be modified according to the transpose and gain before emitting the note off
-        message. If the velocity ultimately winds up being 64, a noteOn(note, 0) will be sent instead. 
-        Returns true if the message was successfully sent.  */
-    public boolean noteOff(int note, double vel, int channel) 
+    /** Sends a note on to a fixed channel regardless of the Out's channel.  The velocity
+    	and transpose are not modified.  */
+    public boolean noteOff(int note, int vel, int channel) 
         {
-        int tr = transpose(note);
-        int ga = gain(vel);
-        if (ga == 64) return sendToChannel(ShortMessage.NOTE_ON, tr, 0, channel);
-        else return sendToChannel(ShortMessage.NOTE_OFF, tr, ga, channel); 
+        if (vel == 64) return sendToChannel(ShortMessage.NOTE_ON, note, 0, channel);
+        else return sendToChannel(ShortMessage.NOTE_OFF, note, vel, channel); 
         }
 
     /** Sends a note off with default velocity to a fixed channel regardless of the Out's channel.  The note (but not velocity)
         will be modified according to the transpose before emitting the note off
         message.  Returns true if the message was successfully sent.  */
-    public boolean noteOff(int note, int channel) { return sendToChannel(ShortMessage.NOTE_ON, transpose(note), 0, channel); }
+    // public boolean noteOff(int note, int channel) { return sendToChannel(ShortMessage.NOTE_ON, transpose(note), 0, channel); }
 
     /** Sends a bend.   Bend goes -8192...8191.  Returns true if the message was successfully sent.  */
     public boolean bend(int val) { val = val + 8192; return send(ShortMessage.PITCH_BEND, val & 127, (val >>> 7) & 127);}

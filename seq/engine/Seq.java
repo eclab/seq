@@ -1286,10 +1286,8 @@ public class Seq
         This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
-    int lastTime = 0;
     public boolean noteOn(int out, int note, double vel) 
         {
-        lastTime = getTime();
         if (isPlaying()) return outs[out].noteOn(note, vel);
         else return false;
         }
@@ -1312,60 +1310,30 @@ public class Seq
         else return false;
         }
 
-    /** Sends a note on to the given Out regardless of whether Seq is playing.  
-        Note that velocity is expressed as a double.
-        This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
-        gains, and then returned to reasonable values.  Ultimately it will be floored 
-        to an int.  Returns true if the message was successfully sent.  */
-    public boolean forceNoteOn(int out, int note, double vel) 
+    /** Sends a note on to the given Out regardless of whether Seq is playing. */
+    public boolean forceNoteOn(int out, int note, int vel) 
         {
-        return outs[out].noteOn(note, vel);
+        return outs[out].noteOn(note, vel, outs[out].getChannel());
         }
         
-    /** Sends a note off to the given Out regardles of whether Seq is playing.  
-        Note that velocity is expressed as a double.
-        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
-        gains, and then returned to reasonable values.  Ultimately it will be floored 
-        to an int.  Returns true if the message was successfully sent.  */
-    public boolean forceNoteOff(int out, int note, double vel) 
-        {
-        return outs[out].noteOff(note, vel);
-        }
-        
-    /** Sends a note off to the given Out with default velocity regardless of whether Seq is playing. 
-        Returns true if the message was successfully sent.  */
-    public boolean forceNoteOff(int out, int note) 
-        {
-        return outs[out].noteOff(note);
-        }
-
-    /** Sends a note on to the given Out on the given channel regardless of whether Seq is playing.  
-        Note that velocity is expressed as a double.
-        This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
-        gains, and then returned to reasonable values.  Ultimately it will be floored 
-        to an int.  Returns true if the message was successfully sent.  */
-    public boolean forceNoteOn(int out, int note, double vel, int channel) 
+    /** Sends a note on to the given Out on the given channel regardless of whether Seq is playing. */
+    public boolean forceNoteOn(int out, int note, int vel, int channel) 
         {
         return outs[out].noteOn(note, vel, channel);
         }
         
-    /** Sends a note off to the given Out on the given channel regardless of whether Seq is playing.  
-        Note that velocity is expressed as a double.
-        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
-        gains, and then returned to reasonable values.  Ultimately it will be floored 
-        to an int.  Returns true if the message was successfully sent.  */
-    public boolean forceNoteOff(int out, int note, double vel, int channel) 
+    /** Sends a note off to the given Out on the given channel regardless of whether Seq is playing.  */
+    public boolean forceNoteOff(int out, int note, int vel, int channel) 
         {
         return outs[out].noteOff(note, vel, channel);
         }
         
-    /** Sends a note off to the given Out on the given channel with default velocity regardless of whether Seq is playing. 
-        Returns true if the message was successfully sent.  */
-    public boolean forceNoteOff(int out, int note, int channel) 
+    /** Sends a note off to the given Out regardles of whether Seq is playing. */
+    public boolean forceNoteOff(int out, int note, int vel) 
         {
-        return outs[out].noteOff(note, channel);
+        return outs[out].noteOff(note, vel, outs[out].getChannel());
         }
-
+        
     /** Sends a bend to the given Out.   Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
     public boolean bend(int out, int val) 
