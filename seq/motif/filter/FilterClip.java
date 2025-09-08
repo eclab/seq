@@ -161,17 +161,44 @@ public class FilterClip extends Clip
     public class ChangeNote extends Node
         {
         HashMap<Integer, Integer> map = new HashMap<>();                // Maps IDs to revised pitches
+        HashMap<Integer, Integer> outs = new HashMap<>();                // Maps IDs to outs
         HashMap<Integer, Integer> mapScheduled = new HashMap<>();       // Maps IDs to revised pitches
         
         public void release(int index)
             {
+            // We ought to send a NoteOff to everyone in the map, since we never cleared them.  This SHOULD NOT HAPPEN.
+            if (map.size() > 0)
+            	{
+            	System.err.println("FilterClip.ChangeNote.release(): non-released notes.");
+            	for(Integer id : map.keySet())
+            		{
+            		Integer note = map.get(id);
+            		Integer out = outs.get(id);
+					super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);		// should we send it this way or bypass and go straight to parent?
+					}
+            	}
+            	
             map.clear();
+            outs.clear();
             mapScheduled.clear();
             }
         
         public void cut(int index)
             {
+            // We ought to send a NoteOff to everyone in the map, since we never cleared them.  This SHOULD NOT HAPPEN.
+            if (map.size() > 0)
+            	{
+            	System.err.println("FilterClip.ChangeNote.cut(): non-released notes.");
+            	for(Integer id : map.keySet())
+            		{
+            		Integer note = map.get(id);
+            		Integer out = outs.get(id);
+					super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);		// should we send it this way or bypass and go straight to parent?
+					}
+            	}
+            	
             map.clear();
+            outs.clear();
             mapScheduled.clear();
             }
         
@@ -272,6 +299,7 @@ public class FilterClip extends Clip
             else
                 {
                 map.put(id, note);
+                outs.put(id, out);
                 }
             }
             
@@ -292,10 +320,11 @@ public class FilterClip extends Clip
                 }
             
             Integer newNote = map.remove(id);
+            outs.remove(id);
             if (newNote != null)                            			// revise note pitch?
                 {
                 note = newNote.intValue();
-	            super.noteOff(out, note, vel, id, index);               // hope for the best
+	            super.noteOff(out, note, vel, id, index);
                 }
             else
             	{
@@ -317,6 +346,7 @@ public class FilterClip extends Clip
             vel *= releaseGain;
             
             Integer newNote = map.remove(id);
+            outs.remove(id);
             if (newNote != null)                            // revise note pitch?
                 {
                 note = newNote.intValue();
@@ -327,7 +357,7 @@ public class FilterClip extends Clip
              	Integer scheduledNote = mapScheduled.remove(id);
             	if (scheduledNote == null) 			// not scheduled already
             		{
-            		super.scheduleNoteOff(out, note, vel, time, id, index);
+            		super.scheduleNoteOff(out, note, vel, time, id, index); // hope for the best
             		}
            		}
             }
