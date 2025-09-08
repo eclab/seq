@@ -157,13 +157,14 @@ public class Filter extends Motif
         public static final int NO_OUT_CHANGE = -1;
         
         int out = NO_OUT_CHANGE;
-        int transpose = MAX_TRANSPOSE;          // this would center it at 0
+        int transpose = MAX_TRANSPOSE;          // transpose goes 0... MAX_TRANSPOSE * 2, so this is centered
         double transposeVariance;
         double gain = 1.0;
         double gainVariance;
         double releaseGain = 1.0;                       // if length is changes, the base release will be changed to 0x64
         double releaseGainVariance;
-        int length;                                                             // length = 0 means we don't change the length
+        int length;                                     // length = 0 means as fast as possible, but it will be length 1 because Seq.java processes note-offs BEFORE the next step 
+        boolean changeLength = false;
         boolean allOut = true;
                 
         public boolean isAllOut() { return allOut; }
@@ -184,6 +185,8 @@ public class Filter extends Motif
         public void setReleaseGain(double val) { releaseGain = val; }
         public double getReleaseGainVariance() { return releaseGainVariance; }
         public void setReleaseGainVariance(double val) { releaseGainVariance = val; }
+        public boolean getChangeLength() { return changeLength; }
+        public void setChangeLength(boolean val) { changeLength = val; }
 
         public ChangeNote() { }
         public String getType() { return CHANGE_NOTE; }
@@ -197,6 +200,7 @@ public class Filter extends Motif
             releaseGain = obj.optDouble("r", 1.0);
             releaseGainVariance = obj.optDouble("rv", 0);
             length = obj.optInt("l", 0);
+            changeLength = obj.optBoolean("c", false);
             }
         public JSONObject save() throws JSONException
             {
@@ -209,6 +213,7 @@ public class Filter extends Motif
             obj.put("r", releaseGain);
             obj.put("rv", releaseGainVariance);
             obj.put("l", length);
+            obj.put("c", changeLength);
             return obj;
             }
         }

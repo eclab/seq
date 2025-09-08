@@ -161,15 +161,18 @@ public class FilterClip extends Clip
     public class ChangeNote extends Node
         {
         HashMap<Integer, Integer> map = new HashMap<>();                // Maps IDs to revised pitches
+        HashMap<Integer, Integer> mapScheduled = new HashMap<>();       // Maps IDs to revised pitches
         
         public void release(int index)
             {
             map.clear();
+            mapScheduled.clear();
             }
         
         public void cut(int index)
             {
             map.clear();
+            mapScheduled.clear();
             }
         
         public void bend(int out, int val, int index)
@@ -245,6 +248,7 @@ public class FilterClip extends Clip
             double gain = func.getGain();
             double gainV = func.getGainVariance();
             int length = func.getLength();
+            boolean changeLength = func.getChangeLength();
                         
             if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
             note += (transpose - Filter.MAX_TRANSPOSE);         // this centers it
@@ -260,22 +264,21 @@ public class FilterClip extends Clip
                 }
             super.noteOn(out, note, vel, id, index);
                         
-            if (length > 0)
+            if (changeLength)
                 {
-                super.scheduleNoteOff(out, note, 0x64, length, id, index);
+                super.scheduleNoteOff(out, note, (double)0x64, length, id, index);
+                mapScheduled.put(id, note);					// WARNING this could create a memory leak, better that than stuck notes?
                 }
             else
                 {
                 map.put(id, note);
                 }
             }
+            
         public void noteOff(int out, int note, double vel, int id, int index)
             {
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
-                        
-            int length = func.getLength();
-            if (length > 0) return;         // we block it
                         
             double releaseGain = func.getReleaseGain();
             double releaseGainV = func.getReleaseGainVariance();
@@ -287,23 +290,28 @@ public class FilterClip extends Clip
                 if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
                 vel *= val;
                 }
-                
+            
+            System.err.println(id);
             Integer newNote = map.remove(id);
-            if (newNote != null)                            // revise note pitch?
+            if (newNote != null)                            			// revise note pitch?
                 {
                 note = newNote.intValue();
+	            super.noteOff(out, note, vel, id, index);               // hope for the best
                 }
-                        
-            super.noteOff(out, note, vel, id, index);               // hope for the best
+            else
+            	{
+            	Integer scheduledNote = mapScheduled.remove(id);
+            	if (scheduledNote == null) 			// not scheduled already
+            		{
+					super.noteOff(out, note, vel, id, index);              // hope for the best
+            		}
+            	}
             }
             
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
             {
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
-                        
-            int length = func.getLength();
-            if (length > 0) return;         // we block it
                         
             double releaseGain = func.getReleaseGain();
             double releaseGainV = func.getReleaseGainVariance();
@@ -313,10 +321,16 @@ public class FilterClip extends Clip
             if (newNote != null)                            // revise note pitch?
                 {
                 note = newNote.intValue();
+            	super.scheduleNoteOff(out, note, vel, time, id, index);
                 }
-                        
-            // FIXME: we can't screw with time in a meaningfuly way due to how Seq is set up for note generation.  :-(
-            super.scheduleNoteOff(out, note, vel, time, id, index);
+            else
+            	{
+             	Integer scheduledNote = mapScheduled.remove(id);
+            	if (scheduledNote == null) 			// not scheduled already
+            		{
+            		super.scheduleNoteOff(out, note, vel, time, id, index);
+            		}
+           		}
             }
         }
                

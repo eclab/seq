@@ -100,6 +100,7 @@ public class FunctionInspector extends JPanel
         SmallDial releaseGain;
         SmallDial releaseGainVariance;
         TimeDisplay length;
+        JCheckBox changeLength;
                 
         public ChangeNoteInspector()
             {
@@ -143,14 +144,14 @@ public class FunctionInspector extends JPanel
                     }
                 });
 
-            transpose = new SmallDial((func.getTranspose() + Filter.MAX_TRANSPOSE) / Filter.MAX_TRANSPOSE  / 2.0)
+            transpose = new SmallDial(func.getTranspose() / (Filter.MAX_TRANSPOSE * 2.0))
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 2 * Filter.MAX_TRANSPOSE) - Filter.MAX_TRANSPOSE); }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { return (func.getTranspose() + Filter.MAX_TRANSPOSE) / Filter.MAX_TRANSPOSE  / 2.0; }
+                    try { return func.getTranspose() / (Filter.MAX_TRANSPOSE * 2.0); }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -158,7 +159,7 @@ public class FunctionInspector extends JPanel
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { func.setTranspose((int)(val * 2 * Filter.MAX_TRANSPOSE) - Filter.MAX_TRANSPOSE); }
+                    try { func.setTranspose((int)(val * 2 * Filter.MAX_TRANSPOSE)); }
                     finally { lock.unlock(); }
                     }
                 };
@@ -263,6 +264,20 @@ public class FunctionInspector extends JPanel
                     }
                 };
 
+            changeLength = new JCheckBox();
+            changeLength.setSelected(func.getChangeLength());
+            changeLength.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setChangeLength(changeLength.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
             length = new TimeDisplay(Seq.PPQ, seq)
                 {
                 public int getTime()
@@ -276,6 +291,7 @@ public class FunctionInspector extends JPanel
                     }
                 };
             length.setDisplaysTime(false);
+
             
             out.setToolTipText(NOTE_OUT_TOOLTIP);
             allOut.setToolTipText(NOTE_ALL_OUT_TOOLTIP);
@@ -286,8 +302,9 @@ public class FunctionInspector extends JPanel
             releaseGain.setToolTipText(NOTE_RELEASE_TOOLTIP);
             releaseGainVariance.setToolTipText(NOTE_RELEASE_VARIANCE_TOOLTIP);
             length.setToolTipText(NOTE_LENGTH_TOOLTIP);
+            changeLength.setToolTipText(NOTE_CHANGE_LENGTH_TOOLTIP);
                                                                         
-            build(new String[] { "", "Out", "Non-Note Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Length"}, 
+            build(new String[] { "", "Out", "Non-Note Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Change Length", "Length"}, 
                 new JComponent[] 
                     {
                     null,
@@ -299,6 +316,7 @@ public class FunctionInspector extends JPanel
                     gainVariance.getLabelledDial("0.0000"),
                     releaseGain.getLabelledDial("0.0000"),
                     releaseGainVariance.getLabelledDial("0.0000"),
+                    changeLength,
                     length
                     });
 
@@ -796,7 +814,12 @@ public class FunctionInspector extends JPanel
         "the incoming MIDI notes.</html>";
 
     static final String NOTE_LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
-        "Sets the length of all incoming MIDI notes.</html>";
+        "Sets the length of all incoming MIDI notes, if <br>Change Length<b> is checked.<br><br>" +
+        "Note that MIDI notes cannot realistically have zero length: it will be essentially<br>" +
+        "1 Part per Quarter Note.</html>";
+
+    static final String NOTE_CHANGE_LENGTH_TOOLTIP = "<html><b>Change Length</b><br>" +
+        "Sets the whether the length of notes will be changed by <b>Length</b>.</html>";
 
     static final String DELAY_ORIGINAL_TOOLTIP = "<html><b>Original</b><br>" +
         "When checked, the original MIDI note will be played (along with possible delayed versions).</html>";
