@@ -42,6 +42,7 @@ public class NotesUI extends MotifUI
         Seq.PPQ / 16, 
         Seq.PPQ / 4, 
         Seq.PPQ / 3, 
+        Seq.PPQ,
         -Seq.PPQ / 16, 
         -Seq.PPQ / 4, 
         -Seq.PPQ / 3, 
