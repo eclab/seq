@@ -291,7 +291,6 @@ public class FilterClip extends Clip
                 vel *= val;
                 }
             
-            System.err.println(id);
             Integer newNote = map.remove(id);
             if (newNote != null)                            			// revise note pitch?
                 {
@@ -1127,6 +1126,8 @@ public class FilterClip extends Clip
     public void cut() 
         {
         super.cut();
+        
+        // cut the kid first, so we get the remaining notes
         if (clip != null)
             {
             clip.cut();
@@ -1142,6 +1143,8 @@ public class FilterClip extends Clip
     public void release() 
         { 
         super.release();
+
+        // release the kid first, so we get the remaining notes
         if (clip != null)
             {
             clip.release();
