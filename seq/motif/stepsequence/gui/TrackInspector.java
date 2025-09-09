@@ -60,12 +60,37 @@ public class TrackInspector extends WidgetList
 
     public int getTrackNum() { return trackNum; }
         
+    String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
+
+    public void buildDefaults(Motif parent)
+        {
+        defaults[0] = "Rand";
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            String name = parent.getParameterName(i);
+            if (name == null || name.length() == 0)
+                {
+                defaults[1 + i] = "Param " + (i + 1);
+                }
+            else
+                {
+                defaults[1 + i] = "" + (i + 1) + ": " + name;
+                }
+            }
+        }
+        
+    void setupFirstDefault(SmallDial dial)
+    	{
+    	dial.setFirstDefault("<html><i>Default</i></html>", Motif.NUM_PARAMETERS + 1);
+    	}
+
     public TrackInspector(Seq seq, StepSequence ss, StepSequenceUI ssui, int trackNum)
         {
         this.seq = seq;
         this.ss = ss;
         this.trackNum = trackNum;
         this.ssui = ssui;
+        buildDefaults(ss);
 
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -110,6 +135,20 @@ public class TrackInspector extends WidgetList
                     try { ss.setTrackNote(trackNum, (int)(val * 127)); }
                     finally { lock.unlock(); }
                     }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) ss.setTrackNote(trackNum, -(val + 1)); }
+                            finally { lock.unlock(); }
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = ss.getTrackNote(trackNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                 };
             trackNote.setToolTipText(NOTE_TOOLTIP);
 
@@ -157,7 +196,7 @@ public class TrackInspector extends WidgetList
             setNumSteps.setToolTipText(SET_LENGTH_TOOLTIP);
 
 
-            trackGain = new SmallDial(-1)
+            trackGain = new SmallDial(-1, defaults)
                 {
                 public double getValue() 
                     { 
@@ -175,6 +214,20 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }
                     ssui.redraw(false);
                     }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) ss.setTrackGain(trackNum, -(val + 1)); }
+                            finally { lock.unlock(); }
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = ss.getTrackGain(trackNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                 };
             trackGain.setToolTipText(GAIN_TOOLTIP);
 
@@ -268,15 +321,17 @@ public class TrackInspector extends WidgetList
                 };
             setTrackWhen.setToolTipText(SET_WHEN_TOOLTIP);
 
-            trackSwing = new SmallDial(-1, 0)
+            trackSwing = new SmallDial(-1, defaults)		// 0)
                 {
                 protected String map(double val) 
                     { 
                     //if (getDefault()) return "<html><i>Default</i></html>"; else 
                     return super.map(val); 
                     }
+                /*
                 public int getDefault() { double val = ss.getTrackSwing(trackNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
                 public void setDefault(int val) { super.setDefault(val); if (val == DEFAULT) ss.setTrackSwing(trackNum, -1); }
+                */
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
@@ -292,18 +347,35 @@ public class TrackInspector extends WidgetList
                     try { ss.setTrackSwing(trackNum, val); }
                     finally { lock.unlock(); }
                     }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) ss.setTrackSwing(trackNum, -(val + 1)); }
+                            finally { lock.unlock(); }
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = ss.getTrackSwing(trackNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                 };
+            setupFirstDefault(trackSwing);
             trackSwing.setToolTipText(SWING_TOOLTIP);
 
 
-            trackVelocity = new SmallDial(-1, 0)
+            trackVelocity = new SmallDial(-1, defaults)		//  0)
                 {
                 protected String map(double val) 
                     { 
                     return String.valueOf((int)(val * 127)); 
                     }
+                /*
                 public int getDefault() { int val = ss.getTrackVelocity(trackNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
                 public void setDefault(int val) { super.setDefault(val); if (val == DEFAULT) ss.setTrackVelocity(trackNum, -1); }
+                */
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
@@ -320,7 +392,23 @@ public class TrackInspector extends WidgetList
                     finally { lock.unlock(); }
                     ssui.redraw(false);
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) ss.setTrackVelocity(trackNum, -(val + 1)); }
+					finally { lock.unlock(); }
+		            ssui.redraw(false);
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = ss.getTrackVelocity(trackNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
+            setupFirstDefault(trackVelocity);
             trackVelocity.setToolTipText(VELOCITY_TOOLTIP);
                 
             setTrackVelocity = new PushButton("Set All")
@@ -468,7 +556,7 @@ public class TrackInspector extends WidgetList
 
         JPanel velocityPanel = new JPanel();
         velocityPanel.setLayout(new BorderLayout());
-        velocityPanel.add(trackVelocity.getLabelledDial("<html><i>Default</i></html>"), BorderLayout.WEST);
+        velocityPanel.add(trackVelocity.getLabelledDial("Param 8"), BorderLayout.WEST);
         velocityPanel.add(setTrackVelocity, BorderLayout.EAST);
         velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
 
@@ -517,9 +605,7 @@ public class TrackInspector extends WidgetList
         Seq old = seq;
         seq = null;
         ReentrantLock lock = old.getLock();
-        //System.err.println("TrackInspector Acquiring Lock");
         lock.lock();
-        //System.err.println("TrackInspector Locking Lock");
         try 
             { 
             trackChoke.setSelectedIndex(ss.getTrackChoke(trackNum)); 
@@ -530,7 +616,6 @@ public class TrackInspector extends WidgetList
             trackName.setValue(ss.getTrackName(trackNum));
             }
         finally { lock.unlock(); }                              
-        //System.err.println("TrackInspector Releasing Lock");
         seq = old;
         trackGain.redraw();
         trackNote.redraw();

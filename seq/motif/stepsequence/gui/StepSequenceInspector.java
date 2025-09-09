@@ -30,12 +30,32 @@ public class StepSequenceInspector extends WidgetList
     double nt;
     JComboBox defaultOut;
     JComboBox in;
+
+    String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
+
+    public void buildDefaults(Motif parent)
+        {
+        defaults[0] = "Rand";
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            String name = parent.getParameterName(i);
+            if (name == null || name.length() == 0)
+                {
+                defaults[1 + i] = "Param " + (i + 1);
+                }
+            else
+                {
+                defaults[1 + i] = "" + (i + 1) + ": " + name;
+                }
+            }
+        }
         
     public StepSequenceInspector(Seq seq, StepSequence ss, StepSequenceUI ssui)
         {
         this.seq = seq;
         this.ss = ss;
         this.ssui = ssui;
+        buildDefaults(ss);
                 
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -65,7 +85,7 @@ public class StepSequenceInspector extends WidgetList
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
             name.setToolTipText(NAME_TOOLTIP);
                         
-            numBeats = new SmallDial(-1)
+            numBeats = new SmallDial(StepSequence.DEFAULT)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127) + 1);  }
                 public double getValue() 
@@ -87,7 +107,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             numBeats.setToolTipText(DURATION_TOOLTIP);
 
-            initialNumSteps = new SmallDial(-1)
+            initialNumSteps = new SmallDial(StepSequence.DEFAULT)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127) + 1); }
                 public double getValue() 
@@ -133,7 +153,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             setNumSteps.setToolTipText(SET_TRACK_LENGTH_TOOLTIP);
 
-            defaultSwing = new SmallDial(-1)
+            defaultSwing = new SmallDial(StepSequence.DEFAULT, defaults)
                 {
                 public double getValue() 
                     { 
@@ -150,6 +170,20 @@ public class StepSequenceInspector extends WidgetList
                     try { ss.setDefaultSwing(val); }
                     finally { lock.unlock(); }
                     }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) ss.setDefaultSwing(-(val + 1)); }
+                            finally { lock.unlock(); }
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = ss.getDefaultSwing(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                 };
             defaultSwing.setToolTipText(SWING_TOOLTIP);
 
@@ -171,7 +205,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             setDefaultSwing.setToolTipText(SET_SWING_TOOLTIP);
 
-            defaultVelocity = new SmallDial(-1)
+            defaultVelocity = new SmallDial(StepSequence.DEFAULT, defaults)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127)); }
                 public double getValue() 
@@ -190,6 +224,21 @@ public class StepSequenceInspector extends WidgetList
                     finally { lock.unlock(); }
                     ssui.redraw(false);
                     }
+                        public void setDefault(int val) 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { if (val != SmallDial.NO_DEFAULT) ss.setDefaultVelocity(-(val + 1)); }
+                            finally { lock.unlock(); }
+                    		ssui.redraw(false);
+                            }
+                        public int getDefault()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { double val = ss.getDefaultVelocity(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                            finally { lock.unlock(); }
+                            }
                 };
             defaultVelocity.setToolTipText(VELOCITY_TOOLTIP);
                         
@@ -275,13 +324,13 @@ public class StepSequenceInspector extends WidgetList
                 
         JPanel swingPanel = new JPanel();
         swingPanel.setLayout(new BorderLayout());
-        swingPanel.add(defaultSwing.getLabelledDial("0.0000"), BorderLayout.WEST);
+        swingPanel.add(defaultSwing.getLabelledDial("Param 8"), BorderLayout.WEST);
         swingPanel.add(setDefaultSwing, BorderLayout.EAST);
         swingPanel.setToolTipText(SWING_TOOLTIP);
 
         JPanel velocityPanel = new JPanel();
         velocityPanel.setLayout(new BorderLayout());
-        velocityPanel.add(defaultVelocity.getLabelledDial("127"), BorderLayout.WEST);
+        velocityPanel.add(defaultVelocity.getLabelledDial("Param 8"), BorderLayout.WEST);
         velocityPanel.add(setDefaultVelocity, BorderLayout.EAST);
         velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
 

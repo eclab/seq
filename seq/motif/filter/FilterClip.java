@@ -270,10 +270,10 @@ public class FilterClip extends Clip
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
             int _out = func.getOut();
-            int transpose = func.getTranspose();
-            double transposeV = func.getTransposeVariance();
-            double gain = func.getGain();
-            double gainV = func.getGainVariance();
+            int transpose = getCorrectedValueInt(func.getTranspose(), Filter.MAX_TRANSPOSE * 2);
+            double transposeV = getCorrectedValueDouble(func.getTransposeVariance(), 1.0);
+            double gain = getCorrectedValueDouble(func.getGain(), Filter.MAX_GAIN);
+            double gainV = getCorrectedValueDouble(func.getGainVariance(), 1.0);
             int length = func.getLength();
             boolean changeLength = func.getChangeLength();
                         
@@ -285,7 +285,7 @@ public class FilterClip extends Clip
             vel *= gain;
             if (gainV != 0) 
                 {
-                double val = seq.getDeterministicRandom().nextDouble() * gainV * Filter.MAX_TRANSPOSE_GAIN + 1.0;
+                double val = seq.getDeterministicRandom().nextDouble() * gainV * Filter.MAX_GAIN + 1.0;
                 if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
                 vel *= val;
                 }
@@ -308,13 +308,13 @@ public class FilterClip extends Clip
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
                         
-            double releaseGain = func.getReleaseGain();
-            double releaseGainV = func.getReleaseGainVariance();
+            double releaseGain = getCorrectedValueDouble(func.getReleaseGain(), Filter.MAX_GAIN);
+            double releaseGainV = getCorrectedValueDouble(func.getReleaseGainVariance(), 1.0);
 
             vel *= releaseGain;
             if (releaseGainV != 0) 
                 {
-                double val = seq.getDeterministicRandom().nextDouble() * releaseGainV * Filter.MAX_TRANSPOSE_GAIN + 1.0;
+                double val = seq.getDeterministicRandom().nextDouble() * releaseGainV * Filter.MAX_GAIN + 1.0;
                 if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
                 vel *= val;
                 }
@@ -341,8 +341,8 @@ public class FilterClip extends Clip
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
                         
-            double releaseGain = func.getReleaseGain();
-            double releaseGainV = func.getReleaseGainVariance();
+            double releaseGain = getCorrectedValueDouble(func.getReleaseGain(), Filter.MAX_GAIN);
+            double releaseGainV = getCorrectedValueDouble(func.getReleaseGainVariance(), 1.0);
             vel *= releaseGain;
             
             Integer newNote = map.remove(id);
@@ -376,7 +376,8 @@ public class FilterClip extends Clip
             Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
             int pos = getPosition();
             
-            if (func.getCut() || seq.getDeterministicRandom().nextDouble() < func.getProbability())
+            double probability = getCorrectedValueDouble(func.getProbability(), 1.0);
+            if (func.getCut() || seq.getDeterministicRandom().nextDouble() < probability)
                 {
                 // drop
                 dropped.add(id);
@@ -640,9 +641,9 @@ public class FilterClip extends Clip
                         
             //int initialDelay = func.getInitialDelay();
             boolean original = func.getOriginal();
-            double cut = func.getCut();
-            int numTimes = func.getNumTimes();
-            int laterDelay = func.getLaterDelay();
+            double cut = getCorrectedValueDouble(func.getCut(), 1.0);
+            int numTimes = getCorrectedValueInt(func.getNumTimes(), Filter.MAX_DELAY_NUM_TIMES);
+            int delayInterval = func.getDelayInterval();
             int pos = getPosition();
                         
             if (original)
@@ -658,9 +659,9 @@ public class FilterClip extends Clip
                     {
                     vel = vel * cut;
                     notes[i] = new DelayNote(out, note, vel, pos);
-                    notes[i].delay = (i + 1) * laterDelay;
+                    notes[i].delay = (i + 1) * delayInterval;
                     delay.add(notes[i], Integer.valueOf(notes[i].delay));
-                    if (laterDelay == 0) // have to do it NOW
+                    if (delayInterval == 0) // have to do it NOW
                         {
                         super.noteOn(out, note, vel, id, index);
                         }
@@ -674,7 +675,7 @@ public class FilterClip extends Clip
             Filter filter = (Filter)getMotif();
             Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
                         
-            int laterDelay = func.getLaterDelay();
+            int delayInterval = func.getDelayInterval();
 
             // Add releases to the notes in hash
             DelayNote[] notes = delayedNotes.remove(id);
@@ -684,7 +685,7 @@ public class FilterClip extends Clip
                     {
                     notes[i].releaseVel = vel;
                     notes[i].releasePos = notes[i].pos + notes[i].delay;
-                    if (laterDelay == 0) // have to do it NOW
+                    if (delayInterval == 0) // have to do it NOW
                         {
                         super.noteOff(out, notes[i].note, vel, id, index);
                         }
@@ -703,7 +704,7 @@ public class FilterClip extends Clip
             Filter filter = (Filter)getMotif();
             Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
                         
-            int laterDelay = func.getLaterDelay();
+            int delayInterval = func.getDelayInterval();
 
             // Add releases to the notes in hash
             DelayNote[] notes = delayedNotes.remove(id);
@@ -747,6 +748,12 @@ public class FilterClip extends Clip
             lastTime = 0;
             }
                 
+        public double generateRandomNoise(Filter.Noise func, Random rand)
+            {
+            double distVar = getCorrectedValueDouble(func.getDistVar(), 1.0);
+            return rand.nextDouble() * (distVar * 2) - distVar;
+            }
+
         void emit(int index)     
             {
             if (lastValue >= 0)
@@ -771,7 +778,7 @@ public class FilterClip extends Clip
                         {
                         for(int i = 0; i < NUM_TRIES; i++)
                             {
-                            int rnd = (int)(func.generateRandomNoise(rand) * 8192);
+                            int rnd = (int)(generateRandomNoise(func, rand) * 8192);
                             if (rnd + newVal >= -8192 && rnd + newVal <= 8191)
                                 {
                                 lastRandom = rnd;
@@ -789,7 +796,7 @@ public class FilterClip extends Clip
                     if (updateRandom)
                         for(int i = 0; i < NUM_TRIES; i++)
                             {
-                            int rnd = (int)(func.generateRandomNoise(rand) * 128);
+                            int rnd = (int)(generateRandomNoise(func, rand) * 128);
                             if (rnd + newVal >= 0 && rnd + newVal <= 127)
                                 {
                                 lastRandom = rnd;
@@ -806,7 +813,7 @@ public class FilterClip extends Clip
                     if (updateRandom)
                         for(int i = 0; i < NUM_TRIES; i++)
                             {
-                            int rnd = (int)(func.generateRandomNoise(rand) * 16384);
+                            int rnd = (int)(generateRandomNoise(func, rand) * 16384);
                             if (rnd + newVal >= 0 && rnd + newVal <= 16383)
                                 {
                                 lastRandom = rnd;
@@ -823,7 +830,7 @@ public class FilterClip extends Clip
                     if (updateRandom)
                         for(int i = 0; i < NUM_TRIES; i++)
                             {
-                            int rnd = (int)(func.generateRandomNoise(rand) * 16384);
+                            int rnd = (int)(generateRandomNoise(func, rand) * 16384);
                             if (rnd + newVal >= 0 && rnd + newVal <= 16383)
                                 {
                                 lastRandom = rnd;
@@ -840,7 +847,7 @@ public class FilterClip extends Clip
                     if (updateRandom)
                         for(int i = 0; i < NUM_TRIES; i++)
                             {
-                            int rnd = (int)(func.generateRandomNoise(rand) * 128);
+                            int rnd = (int)(generateRandomNoise(func, rand) * 128);
                             if (rnd + newVal >= 0 && rnd + newVal <= 127)
                                 {
                                 lastRandom = rnd;

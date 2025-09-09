@@ -14,8 +14,7 @@ public class StepSequenceClip extends Clip
     {
     private static final long serialVersionUID = 1;
 
-    public static final int DEFAULT = StepSequence.DEFAULT;
-    public static final int OFF = DEFAULT;
+    public static final int OFF = -1;
     StepSequence dSeq;
 
     // For each track, does the track currently have an outstanding NOTE_ON?  -1 if NO
@@ -52,23 +51,23 @@ public class StepSequenceClip extends Clip
         // The number of tracks may have changed or rearranged
         int numTracks = dSeq.getNumTracks();
         trackNoteOn = new int[numTracks];   // default is -1
-        Arrays.fill(trackNoteOn, DEFAULT);
+        Arrays.fill(trackNoteOn, OFF);
         trackNoteID = new int[numTracks];
         Arrays.fill(trackNoteOn, NO_NOTE_ID);
         trackPlaying = new boolean[numTracks];  // default is FALSE
         playingStep = new int[numTracks];
         currentStep = new int[numTracks];
         currentPos = new double[numTracks];
-        clear();                                                                // clears the track notes and sets to DEFAULT, sets playingStep to DEFAULT
+        clear();                                                                // clears the track notes and sets to OFF, sets playingStep to DEFAULT
         version = getMotif().getVersion();
         }
 
     void clearTrackNote(int track)
         {
-        if (trackNoteOn[track] != DEFAULT) 
+        if (trackNoteOn[track] != OFF) 
             {
             noteOff(dSeq.getFinalOut(track), trackNoteOn[track], trackNoteID[track]);
-            trackNoteOn[track] = DEFAULT;
+            trackNoteOn[track] = OFF;
             trackNoteID[track] = NO_NOTE_ID;
             }
         }
@@ -80,14 +79,14 @@ public class StepSequenceClip extends Clip
         for(int track = 0; track < numTracks; track++)
             {
             clearTrackNote(track);
-            playingStep[track] = DEFAULT;
+            playingStep[track] = OFF;
             trackPlaying[track] = false;
             }
         }
 
     void releaseTrackNote(int track)
         {
-        if (trackNoteOn[track] != DEFAULT) 
+        if (trackNoteOn[track] != OFF) 
             {
             // When do we release it?
             int pos = getPosition();
@@ -105,12 +104,15 @@ public class StepSequenceClip extends Clip
                 int s = i + step + 1;
                 while (s >= numStepsInTrack) s -= numStepsInTrack;      // it's possible to do it twice
                 
+                /*
                 if (dSeq.getFinalNote(track, s) != StepSequence.TIE) break;
-                else releaseTime += stepLen;
+                else 
+                */
+                releaseTime += stepLen;
                 }
             
             scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], releaseTime, trackNoteID[track]);
-            trackNoteOn[track] = DEFAULT;                                                                       // not sure if we should do this...
+            trackNoteOn[track] = OFF;                                                                       // not sure if we should do this...
             trackNoteID[track] = NO_NOTE_ID;
             }
         }
@@ -122,7 +124,7 @@ public class StepSequenceClip extends Clip
         for(int track = 0; track < numTracks; track++)
             {
             releaseTrackNote(track);
-            playingStep[track] = DEFAULT;
+            playingStep[track] = OFF;
             }
         }
 
@@ -204,6 +206,8 @@ public class StepSequenceClip extends Clip
                     }
                 }
             }
+        
+        /*
         // At this point we had nothing to change.  But are we tied?
         if (trackNoteRecording != OFF)          // looks like we're tied
             {
@@ -211,6 +215,7 @@ public class StepSequenceClip extends Clip
             dSeq.setNote(track, trackNoteRecording, StepSequence.TIE);
             dSeq.setVelocity(track, trackVelocityRecording, 0);
             }
+        */
         }
         
     // called if we're doing learning for the track
@@ -307,11 +312,13 @@ public class StepSequenceClip extends Clip
             // I'm not sure what to do if steps are coming so fast that we skipped a step.
             // We will assume that doesn't happen for now.
 
+            /*
             if (dSeq.getNote(track, step) == StepSequence.TIE) continue;              // we're tied, do nothing, keep playing  FIXME: will this work if the musician changes ties mid-play?
-
+			*/
+			
             // compute remainder and subtract swing portion
-            int remainder = (int) (pos - step * stepLen) - (step % 2 == 0 ? 0 : (int)(stepLen * dSeq.getFinalSwing(track)));
-            if (remainder < 0) { playingStep[track] = DEFAULT; continue; }               // we have swing, we're not ready yet
+            int remainder = (int) (pos - step * stepLen) - (step % 2 == 0 ? 0 : (int)(stepLen * getCorrectedValueDouble(dSeq.getFinalSwing(track), 1.0)));
+            if (remainder < 0) { playingStep[track] = OFF; continue; }               // we have swing, we're not ready yet
             
                 
             // First issue a choke if we're at the start of a step
@@ -338,7 +345,8 @@ public class StepSequenceClip extends Clip
                 }
                         
             // Next: what is our velocity?  If 0 we don't play at all
-            int velocity = dSeq.getPlayVelocity(track, step);
+            int velocity = getCorrectedValueInt(dSeq.getFinalVelocity(track, step), 127);
+            velocity = (int)(velocity * getCorrectedValueDouble(dSeq.getTrackGain(track), 1.0));
 
             if (dSeq.isOn(track, step) && velocity > 0 && (numExclusiveTracks == 0 || !dSeq.isTrackExclusive(track) || track == exclusiveTrack))
                 {
@@ -373,7 +381,7 @@ public class StepSequenceClip extends Clip
                     // play if I'm flam 0 (no flam) or if I'm flam > 0 and the track is playing
                     if (flam == 0 || trackPlaying[track])
                         {
-                        int note = dSeq.getFinalNote(track, step);
+                        int note = getCorrectedValueInt(dSeq.getFinalNote(track, step), 127);
                         int id = noteOn(dSeq.getFinalOut(track), note, velocity);
                         trackNoteOn[track] = note;
                         trackNoteID[track] = id;
@@ -383,6 +391,40 @@ public class StepSequenceClip extends Clip
             }
         return (pos >= len - 1);
         }
+
+
+
+	/// Modified versions of getCorrectedValue.... to include DEFAULT as an option
+
+    public double getCorrectedValueDouble(double basicVal)
+        {
+        if (basicVal == StepSequence.DEFAULT)
+        	{
+        	return basicVal;
+        	}
+        else return super.getCorrectedValueDouble(basicVal);
+        }
+    
+    public double getCorrectedValueDouble(double basicVal, double maxVal)
+        {
+        if (basicVal == StepSequence.DEFAULT)
+        	{
+        	return basicVal;
+        	}
+        else return super.getCorrectedValueDouble(basicVal, maxVal);
+        }
+    
+    public int getCorrectedValueInt(int basicVal, int maxVal)
+        {
+        if (basicVal == StepSequence.DEFAULT)
+        	{
+        	return basicVal;
+        	}
+        else return super.getCorrectedValueInt(basicVal, maxVal);
+        }
+
+
+
 
     // TESTING
     public static void main(String[] args) throws Exception

@@ -32,7 +32,7 @@ public class Filter extends Motif
 
     public static final int NUM_TRANSFORMERS = 4;
     public static final int MAX_TRANSPOSE_NOISE = 24;       // 12 notes
-    public static final double MAX_TRANSPOSE_GAIN = 4.0;    // 4x, since we add 1
+    public static final double MAX_GAIN = 4.0;    // 4x, since we add 1
     public static final int MAX_TRANSPOSE = 24;
     public static final int MAX_DELAY_NUM_TIMES = 16;
         
@@ -223,7 +223,7 @@ public class Filter extends Motif
         boolean original;
         //int initialDelay;
         int numTimes;                   // min is 0, max is MAX_DELAY_TIMES
-        int laterDelay = Seq.PPQ / 4;                   // sixteenth note
+        int delayInterval = Seq.PPQ / 4;                   // sixteenth note
         double cut;
         
         public boolean getOriginal() { return original; }
@@ -236,8 +236,8 @@ public class Filter extends Motif
         public void setCut(double val) { cut = val; }
         public int getNumTimes() { return numTimes; }
         public void setNumTimes(int val) { numTimes = val; }
-        public int getLaterDelay() { return laterDelay; }
-        public void setLaterDelay(int val) { laterDelay = val; }
+        public int getDelayInterval() { return delayInterval; }
+        public void setDelayInterval(int val) { delayInterval = val; }
 
         public Delay() { }
         public String getType() { return DELAY; }
@@ -247,7 +247,7 @@ public class Filter extends Motif
             original = obj.optBoolean("o", true);
             //initialDelay = obj.optInt("i", 0);
             numTimes = obj.optInt("n", 0);
-            laterDelay = obj.optInt("d", 0);
+            delayInterval = obj.optInt("d", 0);
             cut = obj.optDouble("c", 0);
             }
         public JSONObject save() throws JSONException
@@ -256,7 +256,7 @@ public class Filter extends Motif
             obj.put("o", original);
             //obj.put("i", initialDelay);
             obj.put("n", numTimes);
-            obj.put("d", laterDelay);
+            obj.put("d", delayInterval);
             obj.put("c", cut);
             System.err.println("Save Delay " + obj);
             return obj;
@@ -311,11 +311,6 @@ public class Filter extends Motif
         public int getRate() { return rate; }
         public void setRate(int val) { rate = val; }
                 
-        public double generateRandomNoise(Random rand)
-            {
-            return rand.nextDouble() * (distVar * 2) - distVar;
-            }
-
         public Noise() { }
         public String getType() { return NOISE; }
         public Noise(JSONObject obj)

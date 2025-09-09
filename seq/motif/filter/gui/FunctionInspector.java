@@ -25,6 +25,24 @@ public class FunctionInspector extends JPanel
     SubInspector subinspector;
     
     
+    String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
+    public void buildDefaults(Motif parent)
+        {
+        defaults[0] = "Rand";
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            String name = parent.getParameterName(i);
+            if (name == null || name.length() == 0)
+                {
+                defaults[1 + i] = "Param " + (i + 1);
+                }
+            else
+                {
+                defaults[1 + i] = "" + (i + 1) + ": " + name;
+                }
+            }
+        }
+
     
     public FunctionInspector(Seq seq, Filter filter, int index)
         {
@@ -32,6 +50,8 @@ public class FunctionInspector extends JPanel
         this.filter = filter;
         this.index = index;        
         
+        buildDefaults(filter);
+
         ReentrantLock lock = seq.getLock();
         String type = null;
         int typeIndex = 0;
@@ -144,7 +164,7 @@ public class FunctionInspector extends JPanel
                     }
                 });
 
-            transpose = new SmallDial(func.getTranspose() / (Filter.MAX_TRANSPOSE * 2.0))
+            transpose = new SmallDial(func.getTranspose() / (Filter.MAX_TRANSPOSE * 2.0), defaults)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 2 * Filter.MAX_TRANSPOSE) - Filter.MAX_TRANSPOSE); }
                 public double getValue() 
@@ -162,9 +182,23 @@ public class FunctionInspector extends JPanel
                     try { func.setTranspose((int)(val * 2 * Filter.MAX_TRANSPOSE)); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setTranspose(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
-            transposeVariance = new SmallDial(func.getTransposeVariance())
+            transposeVariance = new SmallDial(func.getTransposeVariance(), defaults)
                 {
                 protected String map(double val) { return String.format("%.4f", val * Filter.MAX_TRANSPOSE); }
                 public double getValue() 
@@ -182,16 +216,30 @@ public class FunctionInspector extends JPanel
                     try { func.setTransposeVariance(val); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setTransposeVariance(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getTransposeVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
-            gain = new SmallDial(func.getGain() / Filter.MAX_TRANSPOSE_GAIN)
+            gain = new SmallDial(func.getGain() / Filter.MAX_GAIN, defaults)
                 {
-                protected String map(double val) { return String.format("%.4f", val * Filter.MAX_TRANSPOSE_GAIN); }
+                protected String map(double val) { return String.format("%.4f", val * Filter.MAX_GAIN); }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { return func.getGain() / Filter.MAX_TRANSPOSE_GAIN; }
+                    try { return func.getGain() / Filter.MAX_GAIN; }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -199,14 +247,28 @@ public class FunctionInspector extends JPanel
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { func.setGain(val * Filter.MAX_TRANSPOSE_GAIN); }
+                    try { func.setGain(val * Filter.MAX_GAIN); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setGain(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
-            gainVariance = new SmallDial(func.getGainVariance())
+            gainVariance = new SmallDial(func.getGainVariance(), defaults)
                 {
-                protected String map(double val) { return String.format("%.4f", val * Filter.MAX_TRANSPOSE_GAIN); }
+                protected String map(double val) { return String.format("%.4f", val * Filter.MAX_GAIN); }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
@@ -222,16 +284,30 @@ public class FunctionInspector extends JPanel
                     try { func.setGainVariance(val); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setGainVariance(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getGainVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
-            releaseGain = new SmallDial(func.getReleaseGain() / Filter.MAX_TRANSPOSE_GAIN)
+            releaseGain = new SmallDial(func.getReleaseGain() / Filter.MAX_GAIN, defaults)
                 {
-                protected String map(double val) { return String.format("%.4f", val * Filter.MAX_TRANSPOSE_GAIN); }
+                protected String map(double val) { return String.format("%.4f", val * Filter.MAX_GAIN); }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { return func.getReleaseGain() / Filter.MAX_TRANSPOSE_GAIN; }
+                    try { return func.getReleaseGain() / Filter.MAX_GAIN; }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -239,12 +315,26 @@ public class FunctionInspector extends JPanel
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { func.setReleaseGain(val * Filter.MAX_TRANSPOSE_GAIN); }
+                    try { func.setReleaseGain(val * Filter.MAX_GAIN); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setReleaseGain(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getReleaseGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
-            releaseGainVariance = new SmallDial(func.getReleaseGainVariance())
+            releaseGainVariance = new SmallDial(func.getReleaseGainVariance(), defaults)
                 {
                 protected String map(double val) { return String.format("%.4f", val); }
                 public double getValue() 
@@ -262,6 +352,20 @@ public class FunctionInspector extends JPanel
                     try { func.setReleaseGainVariance(val); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setReleaseGainVariance(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getReleaseGainVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
             changeLength = new JCheckBox();
@@ -353,8 +457,7 @@ public class FunctionInspector extends JPanel
     public class DelayInspector extends SubInspector
         {
         JCheckBox original;
-        //TimeDisplay initialDelay;
-        TimeDisplay laterDelay;
+        TimeDisplay delayInterval;
         SmallDial numTimes;
         SmallDial cut;
                 
@@ -375,37 +478,21 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }                              
                     }
                 });
-            /*
-              initialDelay = new TimeDisplay(Seq.PPQ / 4, seq)
-              {
-              public int getTime()
-              {
-              return func.getInitialDelay();
-              }
-                        
-              public void setTime(int time)
-              {
-              func.setInitialDelay(time);
-              }
-              };
-              initialDelay.setDisplaysTime(false);
-            */
-                                                                        
-            laterDelay = new TimeDisplay(func.getLaterDelay(), seq)
+            delayInterval = new TimeDisplay(func.getDelayInterval(), seq)
                 {
                 public int getTime()
                     {
-                    return func.getLaterDelay();
+                    return func.getDelayInterval();
                     }
                         
                 public void setTime(int time)
                     {
-                    func.setLaterDelay(time);
+                    func.setDelayInterval(time);
                     }
                 };
-            laterDelay.setDisplaysTime(false);
+            delayInterval.setDisplaysTime(false);
 
-            cut = new SmallDial(func.getCut())
+            cut = new SmallDial(func.getCut(), defaults)
                 {
                 protected String map(double val) { return String.format("%.4f", val); }
                 public double getValue() 
@@ -423,8 +510,22 @@ public class FunctionInspector extends JPanel
                     try { func.setCut(val); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setCut(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getCut(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
-            numTimes = new SmallDial(func.getNumTimes() / (double)Filter.MAX_DELAY_NUM_TIMES)
+            numTimes = new SmallDial(func.getNumTimes() / (double)Filter.MAX_DELAY_NUM_TIMES, defaults)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * Filter.MAX_DELAY_NUM_TIMES)); }
                 public double getValue() 
@@ -442,10 +543,24 @@ public class FunctionInspector extends JPanel
                     try { func.setNumTimes((int)(val * Filter.MAX_DELAY_NUM_TIMES)); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setNumTimes(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getNumTimes(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
             original.setToolTipText(DELAY_ORIGINAL_TOOLTIP);
-            laterDelay.setToolTipText(DELAY_INTERVAL_TOOLTIP);
+            delayInterval.setToolTipText(DELAY_INTERVAL_TOOLTIP);
             cut.setToolTipText(DELAY_CUT_TOOLTIP);
             numTimes.setToolTipText(DELAY_NUM_DELAYS_TOOLTIP);
                                                                         
@@ -455,7 +570,7 @@ public class FunctionInspector extends JPanel
                     null,
                     original,
                     //initialDelay,
-                    laterDelay,
+                    delayInterval,
                     cut.getLabelledDial("0.0000"),
                     numTimes.getLabelledDial("16")
                     });
@@ -476,7 +591,7 @@ public class FunctionInspector extends JPanel
             finally { lock.unlock(); }                              
             seq = old;
             //if (initialDelay != null) initialDelay.revise();
-            if (laterDelay != null) laterDelay.revise();
+            if (delayInterval != null) delayInterval.revise();
             if (numTimes != null) numTimes.redraw();
             if (cut != null) cut.redraw();
             }               
@@ -506,7 +621,7 @@ public class FunctionInspector extends JPanel
                     }
                 });
 
-            probability = new SmallDial(func.getProbability())
+            probability = new SmallDial(func.getProbability(), defaults)
                 {
                 protected String map(double val) { return String.format("%.4f", val); }
                 public double getValue() 
@@ -524,6 +639,20 @@ public class FunctionInspector extends JPanel
                     try { func.setProbability(val); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setProbability(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
             cut.setToolTipText(DROP_CUT_TOOLTIP);
@@ -534,7 +663,7 @@ public class FunctionInspector extends JPanel
                     {
                     null,
                     cut,
-                    probability.getLabelledDial("0.0000"),
+                    probability.getLabelledDial("Param 8"), 	//"0.0000"),
                     });
             }
                         
@@ -570,7 +699,7 @@ public class FunctionInspector extends JPanel
             {
             Filter.Noise func = (Filter.Noise)(filter.getFunction(index));
                         
-            distVar = new SmallDial(func.getDistVar())
+            distVar = new SmallDial(func.getDistVar(), defaults)
                 {
                 protected String map(double val) { return String.valueOf(val); }
                 public double getValue() 
@@ -588,6 +717,20 @@ public class FunctionInspector extends JPanel
                     try { func.setDistVar(val); }
                     finally { lock.unlock(); }
                     }
+				public void setDefault(int val) 
+					{ 
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { if (val != SmallDial.NO_DEFAULT) func.setDistVar(-(val + 1)); }
+					finally { lock.unlock(); }
+					}
+				public int getDefault()
+					{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { double val = func.getDistVar(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+					finally { lock.unlock(); }
+					}
                 };
 
             parameterLSB = new SmallDial((func.getParameter() % 128) / 127.0)

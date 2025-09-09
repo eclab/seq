@@ -21,9 +21,9 @@ public class StepSequence extends Motif
     public static final int DEFAULT_NUM_STEPS = 16;
     public static final int DEFAULT_NUM_TRACKS = 16;
     public static final int DEFAULT_LENGTH_IN_STEPS = DEFAULT_NUM_STEPS;
-    public static final int DEFAULT = -1;
-    public static final int NO_TRACK = -1;
-    public static final int TIE = -2;
+    public static final int COMBO_DEFAULT = -1;
+    public static final int DEFAULT = 0 - (Motif.NUM_PARAMETERS + 2);		// low enough to avoid the corrected parameter stuff
+    // public static final int TIE = 128;
     public static final int DEFAULT_TRACK_NOTE = 60;            // Middle C
     public static final int[] FLAMS = { 48, 24, 16, 12, 8, 6, 4, 3, 2, 1 };
     public static final int MAX_NUM_TRACKS = 32;
@@ -301,11 +301,11 @@ public class StepSequence extends Motif
             velocities[i] = new int[lengths[i]];
             Arrays.fill(velocities[i], DEFAULT);
             flams[i] = new int[lengths[i]];
-            Arrays.fill(flams[i], DEFAULT);
+            Arrays.fill(flams[i], COMBO_DEFAULT);
             notes[i] = new int[lengths[i]];
             Arrays.fill(notes[i], DEFAULT);
             when[i] = new int[lengths[i]];
-            Arrays.fill(when[i], DEFAULT);
+            Arrays.fill(when[i], COMBO_DEFAULT);
             }
                         
         trackSwings = new double[numTracks];
@@ -326,7 +326,7 @@ public class StepSequence extends Motif
         trackLearning = new boolean[numTracks];    // default is FALSE
         trackSoloed = new boolean[numTracks];   // default is FALSE
         trackOuts = new int[numTracks];
-        Arrays.fill(trackOuts, DEFAULT); // Prefs.getLastOutDevice(1, "seq.motif.stepsequence.StepSequence", DEFAULT));
+        Arrays.fill(trackOuts, COMBO_DEFAULT); // Prefs.getLastOutDevice(1, "seq.motif.stepsequence.StepSequence", COMBO_DEFAULT));
         trackNames = new String[numTracks];
         Arrays.fill(trackNames, "");
         trackWhen = new int[numTracks];
@@ -391,11 +391,11 @@ public class StepSequence extends Motif
             _velocities[i] = new int[velocities[i].length];
             Arrays.fill(_velocities[i], DEFAULT);
             _flams[i] = new int[flams[i].length];
-            Arrays.fill(_flams[i], DEFAULT);
+            Arrays.fill(_flams[i], COMBO_DEFAULT);
             _notes[i] = new int[notes[i].length];
             Arrays.fill(_notes[i], DEFAULT);
             _when[i] = new int[when[i].length];
-            Arrays.fill(_when[i], DEFAULT);
+            Arrays.fill(_when[i], COMBO_DEFAULT);
             }
         for(int i = oldNumTracks; i < numTracks; i++)           //if increasing tracks, create empty ones
             {
@@ -407,7 +407,7 @@ public class StepSequence extends Motif
             _notes[i] = new int[initialNumSteps];
             Arrays.fill(_notes[i], DEFAULT);
             _when[i] = new int[initialNumSteps];
-            Arrays.fill(_when[i], DEFAULT);
+            Arrays.fill(_when[i], COMBO_DEFAULT);
             }
                         
         double[] _trackSwings = new double[numTracks];
@@ -424,7 +424,7 @@ public class StepSequence extends Motif
         boolean[] _trackLearning = new boolean[numTracks];    // default is FALSE
         boolean[] _trackSoloed = new boolean[numTracks];   // default is FALSE
         int[] _trackOuts = new int[numTracks];
-        Arrays.fill(_trackOuts, DEFAULT);
+        Arrays.fill(_trackOuts, COMBO_DEFAULT);
         String[] _trackNames = new String[numTracks];
         Arrays.fill(_trackNames, "");
         int[] _trackWhen = new int[numTracks];
@@ -490,7 +490,7 @@ public class StepSequence extends Motif
         System.arraycopy(flams[track], 0, newFlams, 0, Math.min(flams[track].length, newFlams.length)); 
         flams[track] = newFlams;
         int[] newWhen = new int[len];
-        Arrays.fill(newWhen, DEFAULT);
+        Arrays.fill(newWhen, COMBO_DEFAULT);
         System.arraycopy(when[track], 0, newWhen, 0, Math.min(when[track].length, newWhen.length)); 
         when[track] = newWhen;
         int[] newNotes = new int[len];
@@ -537,7 +537,7 @@ public class StepSequence extends Motif
         }
     public int getTrackOut(int track) { return trackOuts[track]; }
     public void setTrackOut(int track, int val) { trackOuts[track] = val; /* Prefs.setLastOutDevice(1, val, "seq.motif.stepsequence.StepSequence"); */ }
-    public int getFinalOut(int track) { int out = trackOuts[track]; if (out == DEFAULT) return defaultOut; else return out; }
+    public int getFinalOut(int track) { int out = trackOuts[track]; if (out == COMBO_DEFAULT) return defaultOut; else return out; }
     public int getTrackFlam(int track) { return trackFlams[track]; }
     public void setTrackFlam(int track, int val) { trackFlams[track] = val; }
     public int getTrackNote(int track) { return trackNotes[track]; }
@@ -578,16 +578,16 @@ public class StepSequence extends Motif
     public void setVelocity(int track, int step, int val) { velocities[track][step] = val; }
     public void setVelocity(int track, int step, int val, boolean on) { setVelocity(track, step, val); setOn(track, step, on); }
     public int getFinalVelocity(int track, int step) { int velocity = velocities[track][step]; return (velocity == DEFAULT) ? getFinalVelocity(track) : velocity; }
-    public int getPlayVelocity(int track, int step) { return (int)((getFinalVelocity(track,step) * trackGains[track])); }
+    //public int getPlayVelocity(int track, int step) { return (int)((getFinalVelocity(track,step) * trackGains[track])); }
     public int getFlam(int track, int step) { return flams[track][step]; }
     public void setFlam(int track, int step, int val) { flams[track][step] = val; }
-    public int getFinalFlam(int track, int step) { int flam = flams[track][step]; return (flam == DEFAULT) ? trackFlams[track] : flam; }
+    public int getFinalFlam(int track, int step) { int flam = flams[track][step]; return (flam == COMBO_DEFAULT) ? trackFlams[track] : flam; }
     public int getWhen(int track, int step) { return when[track][step]; }
     public void setWhen(int track, int step, int val) { when[track][step] = val; }
     public int getNote(int track, int step) { return notes[track][step]; }
     public void setNote(int track, int step, int val) { notes[track][step] = val; }
     public int getFinalNote(int track, int step) { int note = notes[track][step]; return (note == DEFAULT) ? trackNotes[track] : note; }
-    public int getFinalWhen(int track, int step) { int w = when[track][step]; return (w == DEFAULT) ? trackWhen[track] : w; }
+    public int getFinalWhen(int track, int step) { int w = when[track][step]; return (w == COMBO_DEFAULT) ? trackWhen[track] : w; }
       
     public boolean playNow(double invNumTracks, int track, int step, int iteration)
         {
