@@ -204,10 +204,13 @@ public class PitchUI extends JLayeredPane
     /** Recaches note information in all the underlying NoteUIs */
     public void reload()
         {
-        for(NoteUI noteui : noteuis)
+        // We need to copy the noteuis since they could wind up in a new PitchUI and that changes noteuis so it breaks the iterator
+        ArrayList<NoteUI> noteuisCopy = new ArrayList<>(noteuis);
+        for(NoteUI noteui : noteuisCopy)
             {
             noteui.reload();
             }
+		// This will never happen for the recorded uis however, so we don't need to botehr.
         for(NoteUI recordedui : recordeduis)
             {
             recordedui.reload();
@@ -217,7 +220,10 @@ public class PitchUI extends JLayeredPane
     /** Recaches note information in all the underlying NoteUIs */
     public void reload(HashSet<Notes.Event> events)
         {
-        for(NoteUI noteui : noteuis)
+        // We need to copy the noteuis since they could wind up in a new PitchUI and that changes noteuis so it breaks the iterator
+        ArrayList<NoteUI> noteuisCopy = new ArrayList<>(noteuis);
+
+        for(NoteUI noteui : noteuisCopy)
             {
             if (events.contains(noteui.event))
                 {

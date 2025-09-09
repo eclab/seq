@@ -442,8 +442,8 @@ public class Notes extends Motif
             }
         public String toString() { return "NRPN:" + parameter + "->" + value + "[" + when + "]"; }
 
-        public double getNormalizedValue() { return value < 0 ? value : value / 16384.0; }
-        public void setNormalizedValue(double value) { this.value = (int)(value * 16384); }
+        public double getNormalizedValue() { return value < 0 ? value : value / 16383.0; }
+        public void setNormalizedValue(double value) { this.value = (int)(value * 16383); }
         public int getParameter() { return parameter; }
         public int getType() { return TYPE_NRPN + parameter; }
         }

@@ -340,6 +340,53 @@ public class NotesUI extends MotifUI
 
         menu.addSeparator();
 
+        JMenu move = new JMenu("Move");
+        menu.add(move);
+
+        JMenuItem up = new JMenuItem("Up");
+        up.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doUp();
+                }
+            });
+        move.add(up);
+        up.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+        JMenuItem down = new JMenuItem("Down");
+        down.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doDown();
+                }
+            });
+        move.add(down);
+        down.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+        JMenuItem left = new JMenuItem("Left");
+        left.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doLeft();
+                }
+            });
+        move.add(left);
+        left.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+        JMenuItem right = new JMenuItem("Right");
+        right.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRight();
+                }
+            });
+        move.add(right);
+        right.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
         JMenuItem bringToFront = new JMenuItem("Bring to Front");
         bringToFront.addActionListener(new ActionListener()
             {
@@ -409,6 +456,155 @@ public class NotesUI extends MotifUI
     public GridUI getGridUI() { return gridui; }
         
         
+    public static final double EVENT_COARSE_VALUE = 1.0 / 16.0;
+    public void doUp()
+    	{
+    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			for(Notes.Event event : selected)
+				{
+				if (event instanceof Notes.Note)
+					{
+					Notes.Note note = (Notes.Note)event;
+					note.pitch++;
+					if (note.pitch > 127) note.pitch = 127;
+					}
+				else
+					{
+					double val = event.getNormalizedValue();
+					val += EVENT_COARSE_VALUE;
+					if (val >= 1.0) val = 1.0;
+						event.setNormalizedValue(val);
+					}
+				}
+			}
+		finally	
+			{
+			lock.unlock();
+			}
+			
+		gridui.reload();
+        eventsui.reload();
+        gridui.repaint();
+        eventsui.repaint();
+    	}
+    	
+    public void doDown()
+    	{
+    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			for(Notes.Event event : selected)
+				{
+				if (event instanceof Notes.Note)
+					{
+					Notes.Note note = (Notes.Note)event;
+					note.pitch--;
+					if (note.pitch < 0) note.pitch = 0;
+					}
+				else
+					{
+					double val = event.getNormalizedValue();
+					val -= EVENT_COARSE_VALUE;
+					if (val < 0) val = 0;
+					event.setNormalizedValue(val);
+					}
+				}
+			}
+		finally	
+			{
+			lock.unlock();
+			}
+		gridui.reload();
+        eventsui.reload();
+        gridui.repaint();
+        eventsui.repaint();
+    	}
+    	
+    public void doLeft()
+    	{
+    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+		int snap = gridui.getSnap();
+		boolean snapBy = gridui.getSnapBy();
+		
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			for(Notes.Event event : selected)
+				{
+				int newTime = 0;
+				if (snapBy)
+					{
+					newTime = event.when - snap;
+					}
+				else
+					{
+					newTime = (event.when / snap) * snap;
+					if (event.when - newTime == 0) // we're right on a boundary
+						{
+						newTime = ((event.when / snap) - 1) * snap;
+						}
+					}
+				event.when = newTime;
+				if (event.when < 0) event.when = 0;
+				}
+			}
+		finally	
+			{
+			lock.unlock();
+			}
+		gridui.reload();
+        eventsui.reload();
+        gridui.repaint();
+        eventsui.repaint();
+    	}
+    	
+    public void doRight()
+    	{
+    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+		int snap = gridui.getSnap();
+		boolean snapBy = gridui.getSnapBy();
+		
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try
+			{
+			for(Notes.Event event : selected)
+				{
+				int newTime = 0;
+				if (snapBy)
+					{
+					newTime = event.when + snap;
+					}
+				else
+					{
+					newTime = ((event.when / snap) + 1) * snap;
+					}
+				event.when = newTime;
+				if (event.when > Seq.MIN_MAX_TIME) 		// FIXME: should we allow it to go further?
+					{
+					event.when = Seq.MIN_MAX_TIME;
+					}
+				}
+			}
+		finally	
+			{
+			lock.unlock();
+			}
+		gridui.reload();
+        eventsui.reload();
+        gridui.repaint();
+        eventsui.repaint();
+    	}
+    	
     public void doBringToFront()
         {
         gridui.moveSelectedToTop();
@@ -1733,10 +1929,10 @@ public class NotesUI extends MotifUI
 
         // Where should they go?
         
-        int timeDiff = 0;
+        int newTime = 0;
         if (ruler.getHasRange())
             {       
-            timeDiff = notes.getMinimumTime(pasteboard) - ruler.getRangeLow();              // I own the pasteboard copy, and getMinimumTime changes no state, so this doesn't need to be locked
+            newTime = notes.getMinimumTime(pasteboard) - ruler.getRangeLow();              // I own the pasteboard copy, and getMinimumTime changes no state, so this doesn't need to be locked
             }
         else
             {
@@ -1744,21 +1940,21 @@ public class NotesUI extends MotifUI
                 {
                 if (replaceSelected)
                     {
-                    timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMinimumSelectedTime();
+                    newTime = notes.getMinimumTime(pasteboard) - gridui.getMinimumSelectedTime();
                     }
                 else if (gridui.getFirstSelected() instanceof NoteUI)
                     {
-                    timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime();
+                    newTime = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime();
                     }
                 else
                     {
-                    timeDiff = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime() - DEFAULT_NOTE_LENGTH;
+                    newTime = notes.getMinimumTime(pasteboard) - gridui.getMaximumSelectedTime() - DEFAULT_NOTE_LENGTH;
                     }
                 }
             else
                 {
                 // we assume we put them DEFAULT_NOTE_LENGTH ahead
-                timeDiff = 0; //  - DEFAULT_NOTE_LENGTH;
+                newTime = 0; //  - DEFAULT_NOTE_LENGTH;
                 }
             }
                                     
@@ -1766,7 +1962,7 @@ public class NotesUI extends MotifUI
         
         for(Notes.Event event : pasteboard)
             {
-            event.when -= timeDiff;
+            event.when -= newTime;
             if (event.when < 0)     // uh....
                 {
                 event.when = 0;
