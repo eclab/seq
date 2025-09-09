@@ -66,7 +66,6 @@ public class EventInspector extends WidgetList
             }
         }
 
-
     public Notes.Event getEvent() { return event; }
 
     void updateTable()
