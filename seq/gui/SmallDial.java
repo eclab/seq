@@ -82,10 +82,19 @@ public abstract class SmallDial extends JPanel
     JLabel title = null;
     // The Dial's displayed value.   This is null until a LabelledDial is generated.
     JLabel data = null;
+    // Do we have a special default at the beginning?
+    String firstDefault = null;
+    int firstDefaultValue = 0;
     
     double scale = 256.0;
     public double getScale() { return scale; }
     public void setScale(double val) { scale = val; }
+    
+    public void setFirstDefault(String firstDefault, int firstDefaultValue)
+    	{
+    	this.firstDefault = firstDefault; 
+    	this.firstDefaultValue = firstDefaultValue;
+    	}
 
     /** Returns the color of the thick portion of the dial when not being changed. */
     public Color getStaticColor() { return staticColor; }
@@ -300,14 +309,19 @@ public abstract class SmallDial extends JPanel
     public void setValue(double value) { }
     
     String mapDefault(double value)
-        { 
-        if (getDefault() == NO_DEFAULT) 
+        {
+        int _default = getDefault();
+        if (_default == NO_DEFAULT) 
             {
             return map(value);
             }
+        else if (firstDefault != null && _default == firstDefaultValue)
+        	{
+        	return firstDefault;
+        	}
         else
             {
-            return (getDefaultsList()[getDefault()]);
+            return (getDefaultsList()[_default]);
             }
         }
     
@@ -433,6 +447,20 @@ public abstract class SmallDial extends JPanel
                     else
                         {
                         JPopupMenu pop = new JPopupMenu();
+                        if (firstDefault != null)
+                        	{
+                            JMenuItem item = new JMenuItem(firstDefault);
+                            item.addActionListener(new ActionListener()
+                                {
+                                public void actionPerformed(ActionEvent e)      
+                                    {
+                                    setDefault(firstDefaultValue);
+                                    redraw();
+                                    }       
+                                });     
+                            pop.add(item);
+                            pop.addSeparator();
+                        	}
                         for(int i = 0; i < defaultsList.length; i++)
                             {
                             final int _i = i;
