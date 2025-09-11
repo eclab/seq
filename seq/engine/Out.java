@@ -318,8 +318,13 @@ public class Out
     	return sendToChannel(ShortMessage.NOTE_ON, note, vel, channel); 
     	}
 
-    /** Sends a note on to a fixed channel regardless of the Out's channel.  The velocity
-    	and transpose are not modified.  */
+    /** Sends a note on to a fixed channel regardless of the Out's channel. */
+    public boolean cc(int cc, int val, int channel) 
+        {
+        return sendToChannel(ShortMessage.CONTROL_CHANGE, cc, val, channel);
+        }
+
+    /** Sends a CC on to a fixed channel regardless of the Out's channel.  */
     public boolean noteOff(int note, int vel, int channel) 
         {
         if (vel == 64) return sendToChannel(ShortMessage.NOTE_ON, note, 0, channel);

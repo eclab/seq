@@ -377,10 +377,12 @@ public abstract class Motif implements Cloneable
     /// but only one will be stored here.
     volatile Clip playingClip = null;
     
-    /** Sets the current playing Clip, if any, or null.   This method is intended
-        only for the GUI and so you the GUI does not need a lock for it. */
+    /** Sets the current playing Clip, if any, or null.  */
     public boolean setPlayingClip(Clip clip) 
-        { 
+        {
+            playingClip = clip; 
+            return true;
+        /*
         if (playingClip == null || playingClip == clip) 
             { 
             playingClip = clip; 
@@ -391,9 +393,9 @@ public abstract class Motif implements Cloneable
             //System.err.println("Set FAILED\n\tMotif\t" + this + "\n\tHas\t" + playingClip + "\n\tNot\t" + clip);
             return false;
             }
+        */
         }
-    /** Removes the current playing clip if it matches the given clip.  This method is intended
-        only for the GUI and so you the GUI does not need a lock for it. */
+    /** Removes the current playing clip if it matches the given clip. */
     public boolean removePlayingClip(Clip clip) 
         { 
         if (playingClip == clip) 
@@ -407,8 +409,10 @@ public abstract class Motif implements Cloneable
             return false;
             }
         }
+        
     /** Removes the current playing Clip, setting it to null.  */ 
     public void removePlayingClip() { playingClip = null; }
+    
     /** Returns the current playing Clip, if any, or null.  
         Rebuilds the Clip if necessary.   */ 
     public Clip getPlayingClip() 

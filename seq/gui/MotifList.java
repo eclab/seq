@@ -161,9 +161,7 @@ public class MotifList extends JPanel
         { 
         if (seq != null) seq.stop();
         
-//        seq.getRoot().terminate();
         seq.setData(button.getMotifUI().getMotif());    // we're stopped, so data should get set now
-//        seq.getData().setPlayingClip(seq.getRoot());
         root = button;
         
         for(MotifUI ui : motifuis)
@@ -551,7 +549,7 @@ public class MotifList extends JPanel
     
     
     
-    /** This is called when we add a new MotifUI to the list when loading from the SeqUI.reset(Seq)
+    /** This is called when we add a new MotifUI to the list when loading from the 11.reset(Seq)
         function, which builds a new Seq from an old one and resets the UI to use it.  It adds
         a button to the list and sets it as the primary button for the motifui, and that's it.
         No selecting, no repainting.  The motif is not added to the Seq (we presume it's already
@@ -559,7 +557,6 @@ public class MotifList extends JPanel
     void doAddSimple(MotifUI motifui)
         {
         motifuis.add(motifui);
-
         MotifListButton button = new MotifListButton(sequi, motifui, null);
         button.setToolTipText(MOTIF_TOOLTIP);
         button.setDropTarget(new DropTarget(this, buildDropTargetListener()));

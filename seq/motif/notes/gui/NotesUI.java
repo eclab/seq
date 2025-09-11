@@ -567,7 +567,7 @@ public class NotesUI extends MotifUI
         eventsui.repaint();
     	}
     	
-    public void doRight()
+    public void doRight()		// always do right.  Never do wrong.
     	{
     	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
 		int snap = gridui.getSnap();

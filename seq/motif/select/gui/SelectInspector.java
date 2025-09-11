@@ -144,7 +144,7 @@ public class SelectInspector extends WidgetList
                 });
             in.setToolTipText(CONTROL_IN_TOOLTIP);
       
-            device = new JComboBox(Select.GRID_DEVICE_NAMES);
+            device = new JComboBox(Pad.DEVICE_NAMES);
             device.setSelectedIndex(select.getGridDevice());
             device.addActionListener(new ActionListener()
                 {

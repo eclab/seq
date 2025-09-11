@@ -334,7 +334,7 @@ public class ParallelUI extends MotifUI
         for(int i = 0; i < children.size(); i++)
             {
             Motif motif = children.get(i).getMotif();
-            MotifUI motifui = list.getMotifUIFor(motif);
+            MotifUI motifui = list.getOrAddMotifUIFor(motif);
         
             ParallelButton newButton = new ParallelButton(sequi, motifui, ParallelUI.this, i);
 

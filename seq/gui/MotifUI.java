@@ -202,6 +202,10 @@ public abstract class MotifUI extends JPanel
     
     public Clip getDisplayClip()
         {
+        // If I'm not being displayed right now, I do not have a display clip
+        if (sequi.getMotifUI() != this) return null;
+        
+        // Okay, I'm being displayed.  So which clip of mine is currently playing if any?
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 

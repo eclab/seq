@@ -143,7 +143,8 @@ public abstract class Clip
     /** Resets the clip position to 0 and informs it that it will starting anew. */
     public void reset() 
         {
-        position = 0;
+        getMotif().setPlayingClip(this);
+	    position = 0;
         resetTriggers();
         if (this == seq.root) loadRootRandomValue();       // this is done only at reset and loop
         }
@@ -151,6 +152,7 @@ public abstract class Clip
     /** Resets the clip position to 0 but doesn't reset the clip.  */
     public void loop() 
         {
+        getMotif().setPlayingClip(this);
         position = 0;
         if (this == seq.root) loadRootRandomValue();       // this is done only at reset and loop
         }
@@ -807,4 +809,4 @@ public abstract class Clip
         ShortMessage shortmessage = (ShortMessage) message;
         return (shortmessage.getCommand() == ShortMessage.POLY_PRESSURE);
         }
-    }
+     }

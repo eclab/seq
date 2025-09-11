@@ -270,6 +270,7 @@ public class ParallelChildInspector extends WidgetList
                     if (button != null) button.setDelay(time);
                     }
                 };
+            delay.setDisplaysTime(true);
             delay.setToolTipText(DELAY_TOOLTIP);
 
             quantization = new JComboBox(QUANTIZATIONS);
@@ -593,7 +594,7 @@ public class ParallelChildInspector extends WidgetList
         ratePanel.add(ratePresets, BorderLayout.EAST);       
         ratePanel.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
 
-        JPanel result = build(new String[] { "Nickname", "Delay", "Probability", "Repeat", "End Quantization", "Override", "MIDI Changes", "Rate", "Transpose", "Gain", "Out" }, 
+        JPanel result = build(new String[] { "Nickname", "Start", "Probability", "Repeat", "End Quantization", "Override", "MIDI Changes", "Rate", "Transpose", "Gain", "Out" }, 
             new JComponent[] 
                 {
                 name,

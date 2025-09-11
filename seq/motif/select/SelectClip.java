@@ -70,17 +70,19 @@ public class SelectClip extends Clip
     ArrayList<Integer> inputFromUI = null;
 
     //// NODE STATES
-    public static final int OFF = 0;                                    // Node is not playing
-    public static final int ON = 1;                                             // Node is playing
-    public static final int WAITING = 2;                                // Node is waiting to play on next startPos
-    public static final int STOPPING = 3;                               // Node is waiting to stop at the end of its latest iteration
-    public static final int UNUSED = 4;                                 // Node is not capable of playing
+    //// Note that these are exactly the same as the PAD STATES in Pad.java
+    
+    public static final int UNUSED = 0;                                 // Node is not capable of playing
+    public static final int OFF = 1;                                    // Node is not playing
+    public static final int ON = 2;                                     // Node is playing
+    public static final int WAITING = 3;                                // Node is waiting to play on next startPos
+    public static final int STOPPING = 4;                               // Node is waiting to stop at the end of its latest iteration
     
     public void terminate() 
         { 
+        clearCommands();
         super.terminate();
         terminateNodes((Select)getMotif());  
-        updatePads();       
         }
 
     /** Schedule a finish to be issued */
@@ -171,13 +173,16 @@ public class SelectClip extends Clip
     public void updatePads()
         {
         Select motif = (Select)getMotif();
+        if (motif.getPlayingClip() != this) return;
+        
         int out = motif.getOut();
         int numChildren = children.size();
+        int device = motif.getGridDevice();
         for(int i = 0; i < Select.MAX_CHILDREN; i++)
             {
             if (i >= numChildren)               // I don't think this ever happens any more
                 {
-                setPad(out, motif.getNoteForIndex(i), OFF);
+                Pad.setPad(seq, out, motif.gridDevice, i, OFF);
                 }
             else
                 {
@@ -185,11 +190,11 @@ public class SelectClip extends Clip
                 Node m = children.get(i);
                 if (m == null || m.clip.getMotif() instanceof Blank)
                     {
-                    setPad(out, motif.getNoteForIndex(i), UNUSED);
+                    Pad.setPad(seq, out, device, i, UNUSED);
                     }
                 else
                     {
-                    setPad(out, motif.getNoteForIndex(i), children.get(i).state);
+                    Pad.setPad(seq, out, device, i, children.get(i).state);
                     }
                 }
             }
@@ -199,88 +204,39 @@ public class SelectClip extends Clip
     public void clearPads()
         {
         Select motif = (Select)getMotif();
+        if (motif.getPlayingClip() != this) return;
+        
         int out = motif.getOut();
-        for(int i = 0; i < Select.MAX_CHILDREN; i++)
-            {
-            setPad(out, motif.getNoteForIndex(i), UNUSED);
-            }
+        Pad.clearPads(seq, out, motif.gridDevice);
         }
 
-    public static final int PAD_UNUSED_MKIII = 0;
-    public static final int PAD_OFF_MKIII = 1;
-    public static final int PAD_WAITING_MKIII = 45;
-    public static final int PAD_ON_MKIII = 5;
-    public static final int PAD_STOPPING_MKIII = 53;
-
-    public static final int PAD_UNUSED_MKI = 0;
-    public static final int PAD_OFF_MKI = 28;
-    public static final int PAD_WAITING_MKI = 62;
-    public static final int PAD_ON_MKI = 15;
-    public static final int PAD_STOPPING_MKI = 63;
-    
-    // Given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
-    void setPad(int out, int note, int state)
+    /// Clear Commands
+    public void clearCommands()
         {
-        int gridDevice = ((Select)getMotif()).getGridDevice();
-        if (gridDevice == Select.DEVICE_LAUNCHPAD_MKIII)
-            {
-            if (state == UNUSED)
-                {
-                seq.forceNoteOn(out, note, PAD_UNUSED_MKIII, 1);                          // Turn the Light Off
-                }
-            else if (state == ON)                                                   
-                {
-                seq.forceNoteOn(out, note, PAD_ON_MKIII, 1);              // RED
-                }
-            else if (state == OFF)
-                {
-                seq.forceNoteOn(out, note, PAD_OFF_MKIII, 1);                             // Gray
-                }
-            else if (state == WAITING)
-                {
-                seq.forceNoteOn(out, note, PAD_WAITING_MKIII, 1);                         // BLUE
-                }
-            else if (state == STOPPING)
-                {
-                seq.forceNoteOn(out, note, PAD_STOPPING_MKIII, 1);                                // MAGENTA
-                }
-            }
-        else if (gridDevice == Select.DEVICE_LAUNCHPAD_MKI)
-            {
-            if (state == UNUSED)
-                {
-                seq.forceNoteOn(out, note, PAD_UNUSED_MKI, 1);                          // Turn the Light Off
-                }
-            else if (state == ON)                                                   
-                {
-                seq.forceNoteOn(out, note, PAD_ON_MKI, 1);              // RED
-                }
-            else if (state == OFF)
-                {
-                seq.forceNoteOn(out, note, PAD_OFF_MKI, 1);                             // Green Low
-                }
-            else if (state == WAITING)
-                {
-                seq.forceNoteOn(out, note, PAD_WAITING_MKI, 1);                         // Yellow
-                }
-            else if (state == STOPPING)
-                {
-                seq.forceNoteOn(out, note, PAD_STOPPING_MKI, 1);                                // Amber
-                }
-            }
+        Select motif = (Select)getMotif();
+//        if (motif.getPlayingClip() != this) return;
+        int device = motif.gridDevice;
+        int out = motif.getOut();
+        for(int i = 0; i < Pad.PAD_INDICES.length - 2; i++)
+        	{
+            Pad.setPad(seq, out, device, Pad.PAD_INDICES[i], Pad.PAD_STATE_UNUSED);
+        	}
+		Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+		Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
         }
-
 
     // Extracts an OUT and NOTE from a given NODE, sets the node to the given state,
     // then given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
     void setPad(Node node, int state)
         {
+        Select motif = (Select)getMotif();
+        //if (motif.getPlayingClip() == this) return;				// FIXME: I can't call this from the MIDI poller, I'm never the playing clip?
         if (node == null) return;
         if (node.clip.getMotif() instanceof Blank) return;    
         if (node.state == state) return;                // Don't set it again 
         node.state = state;
         Select select = ((Select)getMotif());
-        setPad(select.getOut(), select.getNoteForIndex(node.index), state);
+        Pad.setPad(seq, select.getOut(), select.gridDevice, node.index, state);
         }
 
     // Terminates a node and cuts or releases it.
@@ -378,9 +334,12 @@ public class SelectClip extends Clip
         super.reset();
         
         Select select = (Select) getMotif();
-        // This magic string puts the Launchpad MK3 into "Programmer Mode" Layout, see "Selecting Layouts",
-        // Page 7 of "Launchpad Mini -- Programmers Reference Manual"
-        seq.sysex(select.getOut(), new byte[] { (byte)0xF0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x00, 0x7F, (byte)0xF7 });        
+        if (select.getPlayingClip() == this) 
+        	{
+        	Pad.initialize(seq, select.getOut());
+			updatePads();			// we call this prior to super.terminate() so we're still the display clip when we clear
+			clearCommands();
+        	}
 
         startPos = 0;
         terminateNodes((Select)getMotif());
@@ -469,22 +428,53 @@ public class SelectClip extends Clip
         {
         Select select = (Select) getMotif();
         if (select.getPlayingClip() != this) return;            // These messages are not for me
+        
         In in = seq.getIn(select.getIn());
         MidiMessage[] messages = in.getMessages();
+		int out = select.getOut();
+		int device = select.getGridDevice();
         for(int i = messages.length - 1; i >= 0; i--)
             {
             if (isCC(messages[i]))
                 {
                 int cc = ((ShortMessage)messages[i]).getData1();
-                int c = select.getIndexForCC(cc);
-                if (c == Select.DEFAULT_FINISH_OFFSET)
-                    {
-                    doFinish();
-                    }
-                else if (c == Select.DEFAULT_RELEASE_ALL_NOTES_OFFSET)
-                    {
-                    doRelease();
-                    }
+                int val = ((ShortMessage)messages[i]).getData2();
+                int c = Pad.getIndexForCC(select.gridDevice, cc);
+                
+                if (c == Pad.PAD_INDEX_C)  // Finish
+                	{
+       		 		if (val < 64)
+       		 			{
+       		 			Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+                    	}
+                    else
+                    	{
+       		 			Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_ON, 0);
+                    	doFinish();
+                    	
+/*                    	SwingUtilities.invokeLater(new Runnable()
+                    		{
+                    		public void run()
+                    			{
+		       		 			Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+		            		 	Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
+		            		 	}
+		            		 });
+*/
+               			}
+                	}
+                else if (c == Pad.PAD_INDEX_D)  // Release all notes
+                	{
+       		 		if (val < 64)
+       		 			{
+			        	Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
+                    	}
+                    else
+                    	{
+			        	Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_ON, 1);
+	                    doRelease();
+                    	}
+                	}
                 /*
                   else if (select.getIn() == select.getCCIn())
                   {
@@ -495,9 +485,10 @@ public class SelectClip extends Clip
             else if (isNoteOn(messages[i]))
                 {
                 int velocity = ((ShortMessage)messages[i]).getData2();
+                System.err.println("note on " + ((ShortMessage)messages[i]).getData1() + " velocity " + velocity);
                 if (velocity > 0)       // otherwise it's actually a NOTE OFF
                     {
-                    int c = select.getIndexForNote(((ShortMessage)messages[i]).getData1());
+                    int c = Pad.getIndexForNote(select.getGridDevice(), ((ShortMessage)messages[i]).getData1());
                     if (c >= 0 && c < select.getChildren().size()) // we have a child
                         {
                         Node child = getChild(c);

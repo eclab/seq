@@ -70,8 +70,7 @@ public class SelectUI extends MotifUI
         horizontalHeader.setLayout(new GridLayout(1, GRID_WIDTH));
         verticalHeader.setLayout(new GridLayout(GRID_WIDTH, 2));
         
-        
-        loadChildren(); // this must be AFTER build() because build() creates the grid in the first place
+        //loadChildren(); // this must be AFTER build() because build() creates the grid in the first place
         }
         
     protected void build()
@@ -102,7 +101,7 @@ public class SelectUI extends MotifUI
             Motif motif = children.get(i).getMotif();
             if (motif instanceof seq.motif.blank.Blank) continue;
 
-            MotifUI motifui = list.getMotifUIFor(motif);
+            MotifUI motifui = list.getOrAddMotifUIFor(motif);
         
             SelectButton newButton = new SelectButton(sequi, motifui, SelectUI.this, i);
 
@@ -627,7 +626,7 @@ public class SelectUI extends MotifUI
     public void uiWasUnset()
         {
         super.uiWasUnset();
-        updatePads();
+        clearPads();
         }
     
     //// DRAG AND DROP

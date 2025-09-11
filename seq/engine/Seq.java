@@ -1334,6 +1334,18 @@ public class Seq
         return outs[out].noteOff(note, vel, outs[out].getChannel());
         }
         
+    /** Sends a CC to the given Out on the given channel regardless of whether Seq is playing.  */
+    public boolean forceCC(int out, int cc, int val, int channel) 
+        {
+        return outs[out].cc(cc, val, channel);
+        }
+        
+    /** Sends a CC to the given Out regardles of whether Seq is playing. */
+    public boolean forceCC(int out, int cc, int val) 
+        {
+        return outs[out].cc(cc, val, outs[out].getChannel());
+        }
+        
     /** Sends a bend to the given Out.   Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
     public boolean bend(int out, int val) 
@@ -1342,13 +1354,6 @@ public class Seq
         else return false;
         }
         
-    /** Sends a CC to the given Out regardless of whether we're playing. 
-        Returns true if the message was successfully sent.  */
-    public boolean forceCC(int out, int cc, int val) 
-        {
-        return outs[out].cc(cc, val);
-        }
-
     /** Sends a CC to the given Out. 
         Returns true if the message was successfully sent.  */
     public boolean cc(int out, int cc, int val) 
