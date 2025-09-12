@@ -317,6 +317,17 @@ public class NotesUI extends MotifUI
                 
         menu.addSeparator();
 
+        JMenuItem interpolateEvents = new JMenuItem("Interpolate...");
+        interpolateEvents.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doInterpolateEvents();
+                }
+            });
+        menu.add(interpolateEvents);
+
+
         JMenuItem delete = new JMenuItem("Delete Selection");
         delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         delete.addActionListener(new ActionListener()
@@ -1360,7 +1371,80 @@ public class NotesUI extends MotifUI
         }
         
         
-    /** Removes the selected events */
+
+    public void doInterpolateEvents()
+        {
+        ArrayList<Notes.Event> events = gridui.getSelectedEvents();
+        boolean ruler = getRuler().getHasRange();
+
+        if (events.size() == 0)
+            {
+            sequi.showSimpleError("No Events Selected", "No events are selected, and so none were interpolated.");
+            return;
+            }
+            
+        if (events.get(0) instanceof Notes.Note)
+        	{
+            sequi.showSimpleError("Cannot Interpolate Notes", "Only non-note events can be interpolated.");
+            return;
+        	}
+                
+        String[] names = { "Max Rate in PPQ" };
+        SmallDial rate = new SmallDial(Prefs.getLastDouble("InterpolateRate", 0.25))	// once every sixteenth note
+            {
+            double value;
+            public double getValue() { return value; }
+            public void setValue(double val) { value = val; }
+            public String map(double val) 
+            	{ 
+            	int pos = (int)(val * 191 + 1);
+            	if (val == 12) return "64th Notes";
+            	else if (pos == 24) return "32nd Notes";
+            	else if (pos == 48) return "16th Notes";
+            	else if (pos == 64) return "Triplets";
+            	else if (pos == 96) return "8th Notes";
+            	else if (pos == 192) return "Quarter Notes";
+            	else return "" + (int)(val * 191 + 1); 
+            	}
+            };
+
+        JComponent[] components = new JComponent[] { rate.getLabelledDial("Quarter Notes") };
+        int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Interpolate", "Cancel" }, 0, "Interpolate", "Enter Interpolation Settings");
+        
+        boolean didInterpolate = false;
+        if (result == 0)
+            {
+            int _rate = (int)(rate.getValue() * 191 + 1);
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try
+                {
+                sequi.push();
+                ArrayList<Notes.Event> interpolation = notes.interpolate(events, _rate, events.get(0).getType());
+                if (interpolation.size() > 0)
+                	{
+                	didInterpolate = true;
+                	ArrayList<Notes.Event> allEvents = notes.getEvents();
+                	allEvents.addAll(interpolation);
+                	notes.sortEvents();
+                	}
+                }
+            finally
+                {
+                lock.unlock();
+                }
+        
+            Prefs.setLastDouble("InterpolateRate", rate.getValue());
+            
+            if (didInterpolate) 
+            	{
+				gridui.clearSelected();
+            	rebuild();
+            	}
+            }
+        }
+        
+            /** Removes the selected events */
     public void doRemove()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();

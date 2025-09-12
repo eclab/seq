@@ -218,6 +218,8 @@ public class Notes extends Motif
         /** Copies the event. */
         public abstract Event copy();
         
+        public abstract int getValue();
+        public abstract void setValue(int val);
         /** Converts and sets the event's parameter value (or velocity in the case of Notes) from a value [0.0, 1.0]. */
         public abstract double getNormalizedValue();
         /** Returns the event's parameter value (or velocity in the case of Notes) as a value [0.0, 1.0]. */
@@ -295,6 +297,8 @@ public class Notes extends Motif
         
         public String toString() { return NOTES[pitch % 12] + (pitch / 12) + ":" +  velocity + "[" + when + "-" + (when + length) + "]"; }       // We don't include Length because it would appear in the table
         
+        public int getValue() { return velocity; }
+        public void setValue(int val) { velocity = val; }
         public double getNormalizedValue() { return (velocity < 0 ? velocity : velocity / 127.0); }
         public void setNormalizedValue(double value) { velocity = (int)(value * 127.0); }
         public int getParameter() { return pitch; }
@@ -389,6 +393,8 @@ public class Notes extends Motif
             else this.value = (int)(fromWarpedNormalized(value) + 8192.0);
             }
                         
+        public int getValue() { return value; }
+        public void setValue(int val) { value = val; }
         public double getNormalizedValue() { return value / 16383.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 16383.0); }
         public int getParameter() { return 0; }
@@ -442,6 +448,8 @@ public class Notes extends Motif
             }
         public String toString() { return "NRPN:" + parameter + "->" + value + "[" + when + "]"; }
 
+        public int getValue() { return value; }
+        public void setValue(int val) { value = val; }
         public double getNormalizedValue() { return value < 0 ? value : value / 16383.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 16383); }
         public int getParameter() { return parameter; }
@@ -495,6 +503,8 @@ public class Notes extends Motif
             }
         public String toString() { return "RPN:" + parameter + "->" + value + "[" + when + "]"; }
 
+        public int getValue() { return value; }
+        public void setValue(int val) { value = val; }
         public double getNormalizedValue() { return value < 0 ? value : value / 16383.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 16383.0); }
         public int getParameter() { return parameter; }
@@ -538,6 +548,8 @@ public class Notes extends Motif
             }
         public String toString() { return "CC:" + parameter + "->" + value + "[" + when + "]"; }
 
+        public int getValue() { return value; }
+        public void setValue(int val) { value = val; }
         public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
         public int getParameter() { return parameter; }
@@ -577,6 +589,8 @@ public class Notes extends Motif
             }
         public String toString() { return "PC:" + value + "[" + when + "]"; }
 
+        public int getValue() { return value; }
+        public void setValue(int val) { value = val; }
         public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
         public int getParameter() { return 0; }
@@ -630,6 +644,8 @@ public class Notes extends Motif
                 (pitch == Out.CHANNEL_AFTERTOUCH ? ":" : ":" + (NOTES[pitch % 12] + (pitch / 12)) + "->")
                 + value + "[" + when + "]"; }
 
+        public int getValue() { return value; }
+        public void setValue(int val) { value = val; }
         public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
         public int getParameter() { return pitch; }
@@ -1544,7 +1560,69 @@ public class Notes extends Motif
         if (sort) sortEvents(events);
         computeMaxTime(); 
         }
-        
+    
+    /** Linearly interpolates among events of a given type, with a time step of at most rate.
+    	Returns the newly created interpolation events. */
+    public ArrayList<Event> interpolate(ArrayList<Event> events, int rate, int type)
+    	{
+    	if (type < TYPE_CC)	return new ArrayList<Event>(); // we don't interpolate notes
+    	
+    	// First collect the events by type
+    	ArrayList<Event> typedEvents = new ArrayList<>();
+    	for(Event event : events)
+    		{
+    		if (event.getType() == type)
+    			{
+    			typedEvents.add(event);
+    			}
+    		}
+
+    	if (typedEvents.size() < 2) return new ArrayList<Event>();	// not enough to interpolate
+
+    	sortEvents(typedEvents);
+    	
+    	ArrayList<Event> newEvents = new ArrayList<>();
+    	
+    	for(int i = 0; i < typedEvents.size() - 1; i++)
+    		{
+    		Event a = typedEvents.get(i);
+    		Event b = typedEvents.get(i + 1);
+    		if (a.when == b.when) continue;		// cannot be same time
+    		
+    		int aValue = a.getValue();
+    		int bValue = b.getValue();
+    		int maxTotal = Math.abs(aValue - bValue) - 1;
+    		if (maxTotal <= 0) continue;		// no interpolation values
+    		
+    		// we need to compute how many events are in the interpolation
+    		int time = b.when - a.when;
+    		int total = time / rate - 1;		// we subtract one because we're not including the enpoints
+    		if (total > maxTotal)
+    			{
+    			total = maxTotal;
+    			}
+
+			// revised rate
+			double newRate = time / (double)(total + 1);
+
+    		for(int j = 0; j < total; j++)
+    			{    			
+    			int pos = (int)Math.round(a.when + (j + 1) * newRate);
+
+				// Linear Interpolation of value
+    			int val = (int)Math.round((pos - a.when) * (bValue - aValue) / (double)(b.when - a.when) + aValue);
+
+    			Event newEvent = a.copy();
+    			newEvent.when = pos;
+    			newEvent.setValue(val);
+    			newEvents.add(newEvent);
+    			}
+    		}
+    		
+    	return newEvents;
+    	}
+    	
+    	
     /** Transposes the given events by the provided semitones. */
     public void transpose(ArrayList<Event> events, int by)
         {
