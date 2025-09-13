@@ -122,6 +122,19 @@ public class FilterUI extends MotifUI
             }
         }
     
+    // we tap into this to rebuild the filters as well, since they need new
+    // menus for changes to parameter names
+    public void rebuildInspectors(int count) 
+    	{ 
+    	super.rebuildInspectors(count);
+    	functionGrid.removeAll();
+        for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+            {
+            FunctionInspector functionInspector = new FunctionInspector(seq, filter, i);
+            functionGrid.add(functionInspector);
+            }
+    	repaint();
+    	}
 
     public void buildInspectors(JScrollPane scroll)
         {
@@ -168,7 +181,6 @@ public class FilterUI extends MotifUI
         filter = (Filter)getMotif();
         JPanel subpanels[] = new JPanel[Filter.NUM_TRANSFORMERS];
                                 
-        ReentrantLock lock = seq.getLock();
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
             {
             FunctionInspector functionInspector = new FunctionInspector(seq, filter, i);

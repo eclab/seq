@@ -290,13 +290,14 @@ sean@cs.gmu.edu}\\
 \paragraph{\color{red} Note} Seq is a research project and is a work in progress.  We built Seq to help answer questions we had about the feasibility of an approach such as Seq takes.  The jury is still out on that.  Seq is not entirely written, either\,---\,it's in a usable state but is not complete.  We will be gradually adding to and improving it.
 
 \paragraph{About Seq} 
-Seq was largely written from 2023--2025 by Sean Luke and Filippo Carnovalini.
-
 Seq is a sequencer quite different from most other sequencers.  Rather than lay out MIDI clips in a linear timeline, or play small iterations of patterns like a step sequencer, Seq groups clips into sequences, then groups sequences (and more clips) into even larger sequences, and so on, until it has formed a large sequence, essentially a program describing how the clips are to be played.  This Seq is creates a sequence in the form of a {\it hierarchy} of clips and subsequences.
 
 Seq goes further than this, however: different sequences can be built out of the same clips, or the same subsequences.  Thus clips and subsequences may be thought of as {\it modular}, and they are reused in different guises and in different scenarios.  
 
 Music made with Seq tends to be composed bottom-up: you start with some basic building blocks (step sequences, small MIDI clips), combine them in different ways, and then combine the combinations, and so on, building up larger pieces of compositions until you have your finished song.  Seq can also be useful for real-time performance, as you can modify the structure and parameters of a song in real-time.  Seq even has a dedicated object, called {\it Select}, which lets you launch MIDI subsequences just like a clip launcher in Ableton etc.  Seq sequences, or pieces of them, can also be broken out and easily shared in other compositions.  Finally, many Seq features can be {\it parameterized}, meaning that you can change them automatically or manually at a very abstract level.
+
+Seq was largely written from 2023--2025 by Sean Luke with help from Filippo Carnovalini.
+
 
 \paragraph{Hierarchical}
 By {\bf hierarchical} we mean that a Seq sequence is composed of a {\it hierarchy} of sequence objects, each of which are groupings of other sequence objects (which themselves can be groupings of sequence objects, and so on).  You start playing one object, and as it runs, it starts playing its child objects according to some rules.  They in turn start playing their children, and so on.
@@ -1334,6 +1335,16 @@ Woven in-between these steps are opportunities for the parent to set parameters 
 
 Note that looping back will change the random value to a new number.
 
+\paragraph{What Motifs are Parameterizable?}
+
+\begin{itemize}
+\item {\bf Notes} and {\bf Step Sequence} have dials that can be set to parameters, and you can name the parameters.
+\item {\bf Series, Parallel, Select, Filter,} and {\bf Automaton} have dials that can be set to parameters, and you can name the parameters.  Furthermore these motifs have children, and you can change each child's arguments.
+\item {\bf Filter} and {\bf Automaton} have dials that can be set to parameters, and you can name the parameters.  Furthermore these motifs have children, and you can change each child's arguments.
+\item The parameters of {\bf Silence} and {\bf MacroChild} don't do anything, because these motifs have no parameterizable dials.    You can't name the parameters for the same reason.
+\item {\bf Arpeggio} has no parameterizable dials.   Is parameters are simply set to pass data down to the parameters of its sole child.  You can't name them: their names will be the names of the parameters of its sole child.
+\item {\bf Macro} has no parameterizable dials.   Is parameters are simply set to pass data down to the parameters of the root motif of its internal sequence.  You can't name them: their names will be the names of the parameters of its root motif.
+\end{itemize}
 
 \subsection{Parameterized Control of MIDI Data}
 \label{mididata}
