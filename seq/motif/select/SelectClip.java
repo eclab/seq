@@ -175,7 +175,9 @@ public class SelectClip extends Clip
         Select motif = (Select)getMotif();
         if (motif.getPlayingClip() != this) return;
         
-        int out = motif.getOut();
+        int out = motif.getOut() - 1;
+        if (out < 0) return;
+
         int numChildren = children.size();
         int device = motif.getGridDevice();
         for(int i = 0; i < Select.MAX_CHILDREN; i++)
@@ -206,7 +208,9 @@ public class SelectClip extends Clip
         Select motif = (Select)getMotif();
         if (motif.getPlayingClip() != this) return;
         
-        int out = motif.getOut();
+        int out = motif.getOut() - 1;
+        if (out < 0) return;
+        
         Pad.clearPads(seq, out, motif.gridDevice);
         }
 
@@ -216,7 +220,9 @@ public class SelectClip extends Clip
         Select motif = (Select)getMotif();
 //        if (motif.getPlayingClip() != this) return;
         int device = motif.gridDevice;
-        int out = motif.getOut();
+        int out = motif.getOut() - 1;
+        if (out < 0) return;
+
         for(int i = 0; i < Pad.PAD_INDICES.length - 2; i++)
         	{
             Pad.setPad(seq, out, device, Pad.PAD_INDICES[i], Pad.PAD_STATE_UNUSED);
@@ -227,7 +233,7 @@ public class SelectClip extends Clip
 
     // Extracts an OUT and NOTE from a given NODE, sets the node to the given state,
     // then given a Novation Launchpad pad at the provided OUT, sets the pad NOTE to the given STATE
-    void setPad(Node node, int state)
+    void setGridState(Node node, int state)
         {
         Select motif = (Select)getMotif();
         //if (motif.getPlayingClip() == this) return;				// FIXME: I can't call this from the MIDI poller, I'm never the playing clip?
@@ -235,8 +241,12 @@ public class SelectClip extends Clip
         if (node.clip.getMotif() instanceof Blank) return;    
         if (node.state == state) return;                // Don't set it again 
         node.state = state;
+        
         Select select = ((Select)getMotif());
-        Pad.setPad(seq, select.getOut(), select.gridDevice, node.index, state);
+        int out = select.getOut() - 1;
+        if (out < 0) return;
+
+        Pad.setPad(seq, out, select.gridDevice, node.index, state);
         }
 
     // Terminates a node and cuts or releases it.
@@ -268,7 +278,7 @@ public class SelectClip extends Clip
         for(Node node : playing)
             {
             node.clip.cut();
-            setPad(node, OFF);
+            setGridState(node, OFF);
             }
         terminateNodes((Select)getMotif());
         playing.clear();
@@ -282,7 +292,7 @@ public class SelectClip extends Clip
         for(Node node : playing)
             {
             node.clip.release();
-            setPad(node, OFF);
+            setGridState(node, OFF);
             }
         terminateNodes((Select)getMotif());
         playing.clear();
@@ -429,9 +439,11 @@ public class SelectClip extends Clip
         Select select = (Select) getMotif();
         if (select.getPlayingClip() != this) return;            // These messages are not for me
         
-        In in = seq.getIn(select.getIn());
-        MidiMessage[] messages = in.getMessages();
-		int out = select.getOut();
+        int in = select.getIn() - 1;
+        if (in < 0) return;
+        
+        MidiMessage[] messages = seq.getIn(in).getMessages();
+		int out = select.getOut() - 1;
 		int device = select.getGridDevice();
         for(int i = messages.length - 1; i >= 0; i--)
             {
@@ -445,19 +457,19 @@ public class SelectClip extends Clip
                 	{
        		 		if (val < 64)
        		 			{
-       		 			Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+       		 			if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
                     	}
                     else
                     	{
-       		 			Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_ON, 0);
+       		 			if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_ON, 0);
                     	doFinish();
                     	
 /*                    	SwingUtilities.invokeLater(new Runnable()
                     		{
                     		public void run()
                     			{
-		       		 			Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
-		            		 	Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
+		       		 			if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+		            		 	if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
 		            		 	}
 		            		 });
 */
@@ -467,16 +479,16 @@ public class SelectClip extends Clip
                 	{
        		 		if (val < 64)
        		 			{
-			        	Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
+			        	if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
                     	}
                     else
                     	{
-			        	Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_ON, 1);
+			        	if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_ON, 1);
 	                    doRelease();
                     	}
                 	}
                 /*
-                  else if (select.getIn() == select.getCCIn())
+                  else if (select.getIn() == select.getCCIn())				// we assume CCIn is set up same way, 0...16 with a NONE
                   {
                   processCCIn((ShortMessage)messages[i], select);
                   }
@@ -567,7 +579,7 @@ void processCCIn()
 {
 Select select = (Select) getMotif();
 if (select.getPlayingClip() != this) return;            // These messages are not for me
-if (select.getIn() != select.getCCIn()) // not already processed in getChildrenFromMIDI
+if (select.getIn() != select.getCCIn()) // not already processed in getChildrenFromMIDI   				// we assume CCIn is set up same way, 0...16 with a NONE
 {
 In in = seq.getIn(select.getIn());
 MidiMessage[] messages = in.getMessages();
@@ -612,7 +624,7 @@ processCCIn((ShortMessage)messages[i], select);
                 {
                 // Terminate and clear the node
                 terminateNode(last, select);                        // also cuts/releases the node
-                setPad(last, OFF);
+                setGridState(last, OFF);
                 
                 remove.clear();
                 playing.remove(last);           // should this be playing.clear()?
@@ -623,7 +635,7 @@ processCCIn((ShortMessage)messages[i], select);
                 // Remove other scheduled-to-be-removed nodes
                 remove.clear();
                 remove.add(last);
-                setPad(last, STOPPING);
+                setGridState(last, STOPPING);
                 }
             }
 
@@ -640,13 +652,13 @@ processCCIn((ShortMessage)messages[i], select);
                 for(Node node : playing)
                     {
                     terminateNode(node, select);                        // also cuts/releases the node
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
                     }
 
                 for(Node node : remove)
                     {
                     terminateNode(node, select);                        // also cuts/releases the node
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
                     }
                                 
                 playing.clear();
@@ -655,21 +667,21 @@ processCCIn((ShortMessage)messages[i], select);
 
                 reset(last);
                 playing.add(last);
-                setPad(last, ON);
+                setGridState(last, ON);
                 startPos = getPosition();
                 }
             else
                 {
                 for(Node node : next)
                     {
-                    if (node != last) setPad(node, OFF);
+                    if (node != last) setGridState(node, OFF);
                     }
                     
                 next.clear();
                 if (!remove.contains(last)) 
                     {
                     next.add(last);
-                    setPad(last, WAITING);
+                    setGridState(last, WAITING);
                     setupStartPos();
                     }
                 }
@@ -700,7 +712,7 @@ processCCIn((ShortMessage)messages[i], select);
                     if (startPos != getPosition())          // gotta schedule for later
                         {
                         playing.remove(node);
-                        setPad(node, WAITING);
+                        setGridState(node, WAITING);
                         next.add(node);
                         setupStartPos();
                         }
@@ -714,7 +726,7 @@ processCCIn((ShortMessage)messages[i], select);
                     remove.remove(node);
                     playing.remove(node);
                     terminateNode(node, select);
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
                     }
                                 
                 // I was in remove, get rid of me and terminate me
@@ -723,7 +735,7 @@ processCCIn((ShortMessage)messages[i], select);
                     remove.remove(node);
                     playing.remove(node);
                     terminateNode(node, select);
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
                     }
                 }
             else
@@ -745,7 +757,7 @@ processCCIn((ShortMessage)messages[i], select);
                 reset(node);
 
                 playing.add(node);
-                setPad(node, ON);
+                setGridState(node, ON);
                 next.clear();
                 }
             }
@@ -775,7 +787,7 @@ processCCIn((ShortMessage)messages[i], select);
                 if (node.state == WAITING)
                     {
                     terminateNode(node, select);                        // also cuts/releases the node
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
 
                     // Remove the node if it's in next or currently playing
                     // Ugh, this is O(n^2)
@@ -800,7 +812,7 @@ processCCIn((ShortMessage)messages[i], select);
                 for(Node node : remove)
                     {
                     terminateNode(node, select);                        // also cuts/releases the node
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
 
                     // Remove the node if it's in next or currently playing
                     // Ugh, this is O(n^2)
@@ -814,7 +826,7 @@ processCCIn((ShortMessage)messages[i], select);
                 // Mark the node as waiting to be removed when it finishes
                 for(Node node : remove)
                     {
-                    setPad(node, STOPPING);
+                    setGridState(node, STOPPING);
                     }
                 }
             }
@@ -829,7 +841,7 @@ processCCIn((ShortMessage)messages[i], select);
                     {
                     // Reset and set the pad on
                     reset(node);            
-                    setPad(node, ON);
+                    setGridState(node, ON);
                     }
                 
                 // Load into playing
@@ -843,7 +855,7 @@ processCCIn((ShortMessage)messages[i], select);
                     {
                     if (!remove.contains(node))
                         {
-                        setPad(node, WAITING);
+                        setGridState(node, WAITING);
                         setupStartPos();
                         }
                     }
@@ -863,7 +875,7 @@ processCCIn((ShortMessage)messages[i], select);
                 if (!playing.remove(node))                       // Ugh O(n) FIXME
                     {
                     reset(node);            
-                    setPad(node, ON);
+                    setGridState(node, ON);
                     }
                 }
             playing.addAll(next);
@@ -892,7 +904,7 @@ processCCIn((ShortMessage)messages[i], select);
                         keep.add(node);                                     // Keep it to play next time
                     else
                         {
-                        setPad(node, WAITING);
+                        setGridState(node, WAITING);
                         next.add(node);                                 // Schedule to play in a bit
                         setupStartPos();
                         }
@@ -901,14 +913,14 @@ processCCIn((ShortMessage)messages[i], select);
                     {
                     remove.remove(node);
                     terminateNode(node, select);
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
                     }
                     
                 if (removeContains)                             // If the node was in remove
                     {
                     remove.remove(node);
                     terminateNode(node, select);
-                    setPad(node, OFF);
+                    setGridState(node, OFF);
                     }
                 }
             else                                                                        // The node is not finished yet

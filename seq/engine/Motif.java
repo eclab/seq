@@ -178,12 +178,6 @@ public abstract class Motif implements Cloneable
                 param.put(parameters[i]);
                 }
             to.put("param", param);
-            JSONArray pname = new JSONArray();
-            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-                {
-                pname.put(parent.getParameterName(i));
-                }
-            to.put("pname", pname);
             JSONObject d = new JSONObject();
             parent.saveData(data, motif, d);
             to.put("data", d);
@@ -208,20 +202,6 @@ public abstract class Motif implements Cloneable
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 parameters[i] = (param == null ? 0 : param.optDouble(i, 0));
-                }
-            JSONArray pname = from.optJSONArray("pname");
-            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-                {
-                // We can't call param.getString() directly because the underlying
-                // object could be null (or pname could be missing).  So we do this:
-                if (pname == null || pname.isNull(i))
-                    {
-                    parent.setParameterName(i, null);
-                    }
-                else
-                    {
-                    parent.setParameterName(i, pname.getString(i));
-                    }
                 }
             data = parent.loadData(motif, from.getJSONObject("data"));
             }
@@ -970,16 +950,28 @@ public abstract class Motif implements Cloneable
         // text
         obj.put("text", getText());
         
-        // params
-        /*
-          JSONArray paramArray = new JSONArray();
-          for(int i = 0; i < defaultValues.length; i++)
-          {
-          paramArray.put(defaultValues[i]);
-          }
-          obj.put("def", paramArray);
-        */
-
+        // param names -- only save if they've been touched
+		boolean pnameSet = false;
+		for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+			{
+			String p = getParameterName(i);
+			if (p != null && !(p.equals("")))
+				{
+				pnameSet = true;
+				break;
+				}
+			}
+			
+		if (pnameSet)
+			{
+			JSONArray pname = new JSONArray();
+			for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+				{
+				pname.put(getParameterName(i));
+				}
+			obj.put("pname", pname);
+			}
+        
         // store with id
         motifs.put(obj);
         savedMotifs.add(this);
@@ -1083,6 +1075,22 @@ public abstract class Motif implements Cloneable
         
         // text
         text = from.optString("text", "");
+
+		// parameter names
+		JSONArray pname = from.optJSONArray("pname");
+		for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+			{
+			// We can't call param.getString() directly because the underlying
+			// object could be null (or pname could be missing).  So we do this:
+			if (pname == null || pname.isNull(i))
+				{
+				setParameterName(i, null);
+				}
+			else
+				{
+				setParameterName(i, pname.getString(i));
+				}
+			}
 
         load(from);
         }

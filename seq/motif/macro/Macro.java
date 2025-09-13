@@ -113,6 +113,20 @@ public class Macro extends Motif
     /** Return all children. */
     public ArrayList<MacroChild> getMacroChildren() { return macroChildren; }
         
+    public String getParameterName(int param) 
+    	{ 
+    	if (macroRoot != null && !(macroRoot instanceof Blank))
+    		{
+    		System.err.println("Macro Root Exists " + macroRoot);
+    		System.err.println(macroRoot.getParameterName(param));
+    		return macroRoot.getParameterName(param);
+    		}
+    	else
+    		{
+    		return super.getParameterName(param);
+	    	}
+    	}
+
     static int document = 0;
     static int counter = 1;
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }

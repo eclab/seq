@@ -63,7 +63,6 @@ public class MacroInspector extends WidgetList
                 {
                 name,
                 });
-
         }
                 
     public void revise()

@@ -69,7 +69,7 @@ public class AutomatonInspector extends WidgetList
         remove(result);
         add(result, BorderLayout.CENTER);               // re-add it as center
 
-        add(new DefaultParameterList(seq, automatonui), BorderLayout.NORTH);
+        add(new DefaultParameterList(seq, automatonui), BorderLayout.SOUTH);
         }
                 
     public void revise()

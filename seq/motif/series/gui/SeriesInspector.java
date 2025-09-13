@@ -82,7 +82,7 @@ public class SeriesInspector extends WidgetList
                 mode,
                 });
         remove(result);
-        add(result, BorderLayout.CENTER);               // re-add it as center
+        add(result, BorderLayout.NORTH);               // re-add it as center
 
 
         final JComboBox[] types = new JComboBox[Series.NUM_PARAMETERS];
@@ -407,8 +407,8 @@ public class SeriesInspector extends WidgetList
         cc.makeBorder("MIDI Parameters");
         DisclosurePanel midiParameters = new DisclosurePanel("MIDI Parameters", cc);
         midiParameters.setParentComponent(seriesui);
-        add(midiParameters, BorderLayout.SOUTH);
-        add(new DefaultParameterList(seq, seriesui), BorderLayout.NORTH);
+        add(midiParameters, BorderLayout.CENTER);
+        add(new DefaultParameterList(seq, seriesui), BorderLayout.SOUTH);
         seriesui.revalidate();                            
         }
                 

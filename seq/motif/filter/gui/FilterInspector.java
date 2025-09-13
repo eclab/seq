@@ -114,6 +114,8 @@ public class FilterInspector extends WidgetList
                 activeFrom,
                 activeTo
                 });
+
+        add(new DefaultParameterList(seq, filterui), BorderLayout.SOUTH);
         }
                 
     public void revise()

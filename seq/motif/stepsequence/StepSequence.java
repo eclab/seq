@@ -116,12 +116,28 @@ public class StepSequence extends Motif
     boolean[] trackLearning;
     boolean armed;
     int in;
+    int controlIn;
+    int controlOut;
+    int controlDevice;
     
     public boolean isArmed() { return armed; }
     public void setArmed(boolean val) { armed = val; }
     
+
     public int getIn() { return in; }
     public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.stepsequence.StepSequence"); }
+
+	// These values go 0...16 corresponding to NONE and MIDI channels 1...16
+    public int getControlIn() { return controlIn; }
+    public void setControlIn(int val) { controlIn = val; Prefs.setLastGridIn(0, val, "seq.motif.stepsequence.StepSequence"); }
+
+	// These values go 0...16 corresponding to NONE and MIDI channels 1...16
+    public int getControlOut() { return controlOut; }
+    public void setControlOut(int val) { controlOut = val; Prefs.setLastGridOut(0, val, "seq.motif.stepsequence.StepSequence"); }
+            
+    public int getControlDevice() { return controlDevice; }
+    public void setControlDevice(int val) { controlDevice = val; Prefs.setLastGridDevice(0, val, "seq.motif.stepsequence.StepSequence"); }
+            
             
     /** WARNING: You must rebuild the playing clip after calling this at least once. */
     void swapTracks(int x, int y)
@@ -284,12 +300,14 @@ public class StepSequence extends Motif
     
     void setup(int[] lengths, int steps)
         {
-        setLengthInSteps(steps);
-
-        int numTracks = lengths.length;
-                
         defaultOut = Prefs.getLastOutDevice(0, "seq.motif.stepsequence.StepSequence");
         in = Prefs.getLastInDevice(0, "seq.motif.stepsequence.StepSequence");
+        controlIn = Prefs.getLastGridIn(0, "seq.motif.stepsequence.StepSequence");
+        controlOut = Prefs.getLastGridOut(0, "seq.motif.stepsequence.StepSequence");
+        controlDevice = Prefs.getLastGridDevice(0, "seq.motif.stepsequence.StepSequence");
+
+        setLengthInSteps(steps);
+        int numTracks = lengths.length;
         on = new boolean[numTracks][];
         velocities = new int[numTracks][];
         notes = new int[numTracks][];
@@ -798,6 +816,9 @@ public class StepSequence extends Motif
         setDefaultSwing(obj.optDouble("defaultswing", 0));
         setDefaultVelocity(obj.optInt("defaultvelocity", 128));
         setDefaultOut(obj.optInt("defaultout", 0));
+        setControlIn(obj.optInt("controlin", 0));
+        setControlOut(obj.optInt("controlout", 0));
+        setControlDevice(obj.optInt("controldevice", 0));
         aTrackSoloed = obj.getBoolean("atracksoloed");
         
         // Should these be made opt rather than get?
@@ -828,6 +849,9 @@ public class StepSequence extends Motif
         obj.put("defaultswing", getDefaultSwing());
         obj.put("defaultvelocity", getDefaultVelocity());
         obj.put("defaultout", getDefaultOut());
+        obj.put("controlin", getControlIn());
+        obj.put("controlout", getControlOut());
+        obj.put("controldevice", getControlDevice());
         obj.put("atracksoloed", isATrackSoloed());
         
         obj.put("notes", intToJSONArray2(notes));

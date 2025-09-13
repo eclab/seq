@@ -208,16 +208,20 @@ public class Select extends Motif
     /* Set the index in the Seq's In array for the In used to set parameters. */
     //public void setCCIn(int val) { ccIn = val; Prefs.setLastControlDevice(0, val, "seq.motif.select.Select"); }
 
-    /** Return the index in the Seq's In array for the In used to read MIDI notes for triggering. */
+    /** Return the index in the Seq's In array for the In used to read MIDI notes for triggering. 
+    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public int getIn() { return in; }
     
-    /** Set the index in the Seq's In array for the In used to read MIDI notes for triggering. */
+    /** Set the index in the Seq's In array for the In used to read MIDI notes for triggering.  
+    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.select.Select"); }
 
-    /** Return the index in the Seq's Out array for the Out used to light pads. */
+    /** Return the index in the Seq's Out array for the Out used to light pads.  
+    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public int getOut() { return out; }
     
-    /** Set the index in the Seq's Out array for the Out used to light pads. */
+    /** Set the index in the Seq's Out array for the Out used to light pads.  
+    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.select.Select"); }
 
     int gridDevice = Pad.DEVICE_LAUNCHPAD_MKIII;

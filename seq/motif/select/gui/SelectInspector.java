@@ -100,10 +100,11 @@ public class SelectInspector extends WidgetList
             quantization.setToolTipText(QUANTIZATION_TOOLTIP);
 
             Out[] seqOuts = seq.getOuts();
-            String[] outs = new String[seqOuts.length];
+            String[] outs = new String[seqOuts.length + 1];
+            outs[0] = "<html><i>None</i></html>";
             for(int i = 0; i < seqOuts.length; i++)
                 {
-                outs[i] = "" + (i + 1) + ": " + seqOuts[i].toString();
+                outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
                 }
 
             out = new JComboBox(outs);
@@ -123,10 +124,11 @@ public class SelectInspector extends WidgetList
             out.setToolTipText(CONTROL_OUT_TOOLTIP);
 
             In[] seqIns = seq.getIns();
-            String[] ins = new String[seqIns.length];
+            String[] ins = new String[seqIns.length + 1];
+            ins[0] = "<html><i>None</i></html>";
             for(int i = 0; i < seqIns.length; i++)
                 {
-                ins[i] = "" + (i + 1) + ": " + seqIns[i].toString();
+                ins[i + 1] = "" + (i + 1) + ": " + seqIns[i].toString();
                 }
                 
             in = new JComboBox(ins);
@@ -298,14 +300,14 @@ public class SelectInspector extends WidgetList
           new JComponent[] { dials[4].getLabelledDial("127"), dials[5].getLabelledDial("127"), dials[6].getLabelledDial("127"), dials[7].getLabelledDial("127"), }));
         */               
 
-        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Control In", "Control Out", "Control Device", "Quantization", "Auto-Play First", "Cut Notes", }, //  "Param CCs In", "Param CCs" }, 
+        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Grid Out", "Grid In", "Grid Device", "Quantization", "Auto-Play First", "Cut Notes", }, //  "Param CCs In", "Param CCs" }, 
             new JComponent[] 
                 {
                 panel,
                 name,
                 mode,
-                in,
                 out,
+                in,
                 device,
                 quantization,
                 playFirst,
@@ -318,7 +320,7 @@ public class SelectInspector extends WidgetList
         remove(result);
         add(result, BorderLayout.CENTER);               // re-add it as center
 
-        add(new DefaultParameterList(seq, selectui), BorderLayout.NORTH);
+        add(new DefaultParameterList(seq, selectui), BorderLayout.SOUTH);
         }
                 
     public void revise()

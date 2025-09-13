@@ -344,6 +344,54 @@ public class Prefs
         return _default;
         }
 
+    public static void setLastGridIn(int index, int device, String module)
+        {
+        setLastX("" + device, "LastGridIn" + index, module);
+        }
+
+    public static int getLastGridIn(int index, String module)
+        {
+        return getLastGridIn(index, module, 0);
+        }
+
+    public static int getLastGridIn(int index, String module, int _default)
+        {
+        String s = getLastX("LastGridIn" + index, module);
+        try
+            {
+            if (s != null)
+                return Integer.parseInt(s);
+            }
+        catch (NumberFormatException e)
+            {
+            }
+        return _default;
+        }
+
+    public static void setLastGridOut(int index, int device, String module)
+        {
+        setLastX("" + device, "LastGridOut" + index, module);
+        }
+
+    public static int getLastGridOut(int index, String module)
+        {
+        return getLastGridOut(index, module, 0);
+        }
+
+    public static int getLastGridOut(int index, String module, int _default)
+        {
+        String s = getLastX("LastGridOut" + index, module);
+        try
+            {
+            if (s != null)
+                return Integer.parseInt(s);
+            }
+        catch (NumberFormatException e)
+            {
+            }
+        return _default;
+        }
+
     public static void setLastGridDevice(int index, int device, String module)
         {
         setLastX("" + device, "LastGridDevice" + index, module);

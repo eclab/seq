@@ -518,11 +518,17 @@ Step Sequence is one of the most complex motifs, as it is a reasonably full-feat
 
 You select a Step by clicking on it.  This also selects the Step's Track.  You can also select a different Track (and its equivalent Step) by clicking on the Track Header (see below).  When you select a Step and Track, they will show their respective Inspectors at right below the primary Step Sequence Inspector.
 
+\paragraph{Defaults and Parameterization}
+
+Several of the dials the Step Sequence's Tracks and Steps can be set to a fixed value or to {\bf Default}.  In a Step, Default means that instead of being fixed to a value, the dial defers to the Track's setting.  In a Track, Default means that instead of being fixed to a value, the dial defers to the Step Sequence's overall setting.
+
+To set a dial to Default, double-click on it, and select {\it Default} from the resulting pop-up menu.  To set a Defaulted dial back to a fixed value, just change the dial.  You'll note that the pop-up menu has other values, such as Rand or Param 1 ... Param 8.  We'll discuss those in Section~\ref{parameters} ({\bf Parameterization}).  Don't set to those for now.  Furthermore, some menus don't have a Default, or no pop-up menu even appears: this means that the dial doesn't have a Default.  You can tell that a dial has a pop-up menu because it has a red or gray {\bf dot} in its center. 
+
 \paragraph{Steps}
 
 A Step is either {\bf off} (gray) or {\bf on}.  When on, the Step has a {\bf velocity} (volume), represented by a gradiated color between white and red.  Each Step can also have its own {\bf Note Pitch}, its own number of {\bf Flams} (ratchets), and a declaration of {\bf When} (or perhaps better called {\it whether}) the Step plays when its time is up.  The When setting can be {\it always}, or it can play with some {\it probability}, or it can play with some {\it pattern}.  An example pattern is \textsf{O O X}, which means to play the first two times the Step Sequence is iterated, and then not play the third time, and then repeat. 
 
-All four of these features (Note, Velocity, Flams, and When) also can be set to the special value {\bf Default}.   If set this way, the feature will defer to the feature value for its Track.
+All four of these features (Note, Velocity, Flams, and When) also can be set to the special value {\bf Default}.   
 
 Every fourth Step is bolded in the interface only for visual assistance.    The currently selected Step is outlined in blue.
 
@@ -1240,47 +1246,64 @@ The Child slots of a Macro are populated in the usual way: by dragging from the 
 \clearpage\section{Parameterization}
 \label{parameters}
 
-\paragraph{\color{red} Warning}  Parameterization is a work in progress.  It works, but there are a lot of wires sticking out, and its value at present is limited.  Only certain Motifs support Parameterization because we started on them and haven't gotten to the others yet.
+\paragraph{\color{red} Warning}  Parameterization is a work in progress.  It works, but there are a lot of wires sticking out, and its usefulness at present is limited.
 
 \vspace{1em}
 
+Many of the dials on Seq's motifs are {\bf Parameterizable}.  This means that instead of setting a dial to a value, you can arrange for it to be changed elsewhere in Seq by something else (another dial, a MIDI message, an automatic mechanism).  This makes possible many things.  For example, you could:
+
+\begin{itemize}
+\item Control a dial from a remote MIDI CC.
+\item Control multiple dials in a motif\,---\,for example, the velocity of four different notes\,---\,together from the same dial elsewhere.
+\item Control several dials in different motifs\,---\,for example, the swing of three different Step Sequencers\,---\,together from the same dial elsewhere.
+\item Set a dial to a random value before its motif begins playing.
+\item Control dials dynamically from an automatic mechanism such as an LFO or an envelope.
+\item Send a {\bf trigger} to a motif, such as a telling a Series to stop repeating one of its children.
+\end{itemize}
+
+To do this, each Motif has eight {\bf Parameters}.   These parameters can be changed by the Motif's parent.  Normally changing a parameter does nothing.  But many of the dials you see in a Motif can be {\bf bound} to one of those parameters, meaning that if that parameter is changed, the dial will also be changed.  Dials can also be bound to the {\bf random parameter}, which gets set to a random value each time the Motif starts playing the first time or when it loops back and plays again.  The Motif's parent can't set this random parameter, but they can set the minimum and maximum bounds from which the random parameter is chosen.
+
+A child motif's parent can set its child's parameters (and the min/max random bounds) to fixed values, or it can set them to one of the {\it parent motif's parameters}.  In fact this is the default: parameter 5 in a child is set by default to its parent's parameter 5, and so on all the way up to the root motif.  This chain of parameters allows you to change a parameter high up in your sequence and have it affect a wide variety of motifs down deep.
+
 \begin{wrapfigure}{r}{1.25in}
 \vspace{-1em}
-\includegraphics[width=1.25in]{params}
+\includegraphics[width=1.2in]{params}
 \vspace{-2em}
-\caption{Parameters as Special Variables}
+\caption{A Parameter Menu}
 \label{params}
+\vspace{-3em}
 \end{wrapfigure}
 
-When a Motif is played, you can also set up to eight numerical {\bf Parameters} to values to control it.  This ultimately will allow you to do things like change the Swing or the rate several Motifs together; or to automatically change the volume of a Mofif using an LFO, for example.  It's a lot like passing parameters into functions when you make function calls in a programming language.  Parameterization is complex and counterintuitive, but we'll do our best here.
+From the child motif's perspective, a parameter\,---\,the thing it may have connected its dials to\,---\,is unsurprisingly called a {\bf parameter}.  But from the parent's perspective, changing or setting one of its child's parameters is called changing an {\bf argument} in the child.  This terminology is borrowed from computer science, because to a computer programmer, motifs may be thought of as functions (or methods or procedures), and functions have arguments (set by the caller of the function) and parameters (read inside the function).
 
-A Motif has eight parameters, by default named {\bf Param 1 ... Param 8}.  You can change the names of these parameters in the {\bf Parameter Names} expandable section of the Motif's Inspector.  The Motif also has a special parameter called {\bf Rand} which provides a random number.
+\paragraph{Binding a Dial to a Parameter} You can tell that a dial can be bound to a parameter because it has a little red or blue {\bf dot} in the middle of it.  You bind the dial by double-clicking on it.  This brings up a pop-up menu as shown in Figure~\ref{params} at right.  Here you can bind the dial to any of its motif's parameters, here shown as {\bf Param~1 ... Param~8}, or to the motif's random parameter ({\bf rand}).
 
-Many Motifs have numerical features with {\bf special values} that allow them to be bound to the value of one of the Motif's Parameters.  For example, some feature (Swing?  Gain?) of the Step Sequence's Child Inspectors might have the special variables shown at right in Figure~\ref{params}.  What are these?  These allow the musician to not just set feature to a number, but to set them to {\it whatever the Step Sequence's Parameter 4 is currently set to} for example).  If the musician changes Parameter 4, then the feature will be changed as well.
+After you have bound a dial to a parameter, the dial's will go gray, the dot will go red, and the name of the parameter will be shown along side it. If you would like to break the binding and go back to setting the dial to a fixed value, just turn the knob. 
 
-Now, Parameters are real-valued numbers from 0.0 to 1.0, but perhaps the feature is not; it might be integers, say.  If you set Parameter 4 to 0.2314, how what value is that in the feature?  It's spread over the range of values for the feature.  But one thing that can help you is the grayed-out number on the bottom of the figure at right.  That's the numerical parameter value that would correspond to the current feature value.  
-
-\paragraph{Triggers} The Series and Automaton motifs have special options to repeat children forever until receiving a {\bf trigger} on Parameter 8.  What is a trigger?  It's just Parameter 8 going from a value less than 0.5 to a value greater to or equal to 0.5.  
+\paragraph{Changing the Parameter Name} Don't like the name {\bf Param 1}?  Want something more descriptive so you can remember what the heck that parameter is for?  Many motif inspectors have a {\bf Parameter Names} section where you can change the names of all eight of the motif's parameters.  You will have to click on the Parameter Names to open it up.
 
 \begin{wrapfigure}{r}{2.25in}
-\vspace{-1em}
 \includegraphics[width=2.25in]{arguments}
 %\vspace{-2em}
-\caption{Arguments with default settings.}
+\caption{Arguments List.}
 \label{arguments}
 \end{wrapfigure}
 
-\paragraph{Arguments}
+\paragraph{Changing a Child's Argument Values from the Parent} Many parent motifs can change the arguments of their children.  If you click on a child motif, its inspector may have a region called {\bf Arguments} (you will have to click on it to open it up).  You can see the Arguments list in Figure~\ref{arguments} at right.  Here you can set the values of the arguments sent to the child's parameters.  You can also set the minimum and maximum bounds of the child's random parameter.   
 
-In a Child Inspector, you can often set the {\bf arguments} of the Child.  These are the values which are passed into the Child's parameters by its parent when the Child is played.    You can set them to fixed values (like 0.2314), which will in turn change any of the Child's features that have been bound to those particular parameters.
+By default the arguments are called {\bf Arg 1 ... Arg 8}.  But if you provide names for the child's parameters, they will appear here instead.  
 
-But arguments can also {\it themselves be bound} to the parent's parameters.  For example, you could bind Argument 4 of a child of a Series to Parameter 5 of the Series itself.  This means that when the musician changes Parameter 5 of the Series, then Argument 4 of the Child is also changed, and thus the feature of the Child is changed as well!  Thus parameter values can be passed down from parent to child to grandchild etc.  In fact, that's the default settings of arguments: they're just bound to the parent arguments of the same number.
+Note that these dials are themselves parameterizable: this means you can bind the child's parameters to the parent's parameters (and so on up the chain).  In fact by default the arguments are bound to the parent's parameters already.  For example, {\bf Arg 1} is set to the parent's {\bf Param 1} and so on.
 
 \paragraph{A Warning about Child Arguments}
 
-Consider the Series motif. Each of its children can have (for example) Initial Repeats.  These can be bound to parameters.  But note that these features are not features of the Child: they are features of the Series, and thus they are bound to the Series's parameters, not to the Child parameters, and thus you don't set them with the Childs's arguments.
+Consider the Series motif. Each of its children can have (for example) Initial Repeats.  These can be bound to parameters.  But note that these features are {\it not features of the Child}: they are features of the {\it parent Series}, and thus they are bound to the Series's parameters, not to the Child parameters.  This can be a little confusing.  In short, if a feature appears anywhere in {\it any Inspector} associated with a Motif (the Motif Inspector, one of its Child inspectors, etc.), that feature {\it belongs to the Motif} when it comes to parameterization.  It doesn't belong to the Child.
 
-This can be a little confusing.  In short, if a feature appears anywhere in {\it any Inspector} associated with a Motif (the Motif Inspector, one of its Child inspectors, etc.), that feature {\it belongs to the Motif} when it comes to parameterization.  
+\paragraph{Triggers} The Series and Automaton motifs have special options to repeat children forever until receiving a {\bf trigger} on Parameter 8.  What is a trigger?  A trigger on Parameter 8 is, well, triggered, when Parameter 8 changes from a value \(< 0.5\) to a value \(\geq 0.5\). 
+
+
+A parameter is just a real-valued number between 0.0 and 1.0.  But of course many Seq dials don't go 0.0 to 1.0: they go 0...127 or 0...4 or whatnot.  These ranges are mapped  as appropriate.  This can make setting the parameter a pain, but you can tell what the appropriate mapping for a parameterizable dial is but double-clicking on it: at the bottom of the pop-up menu is a grayed-out value. That's the real-valued parameter value that would correspond to the current feature value.    
+
 
 \begin{wrapfigure}{r}{1.25in}
 \vspace{-1em}
@@ -1290,15 +1313,27 @@ This can be a little confusing.  In short, if a feature appears anywhere in {\it
 \label{rootarguments}
 \end{wrapfigure}
 
-\paragraph{The Root Arguments}  If the Root Motif has bound things to its parameters, where are those arguments set?  They're set in the Root Arguments, located below the Transport.
+\paragraph{The Root Arguments}  If the Root Motif has bound some dials to its parameters, where are those arguments set?  They're set in the Root Arguments, located below the Transport (the play and record buttons, etc.)  See Figure~\ref{rootarguments} at right.  This is also where you can change the {\bf Random Seed} of your sequence.  If you change the random seed, the random number generator will produce a different sequence of numbers next time.
 
-\paragraph{Parameter Updates}  Parameters are updated every single Tick (192 times per beat).
+\paragraph{How Parameterization Works}
+To understand how parameterization is updated, let's first make sure we understand how  parent motif instructs a child to play.  First, before any playing, the parent {\bf resets} its child to set its time position to 0 and to initialize it.  Then each timestep (192 times per beat), when the parent itself is being {\bf pulsed} by {\it its parent}, it in turn pulses the child to advance it.  At some point the child will tell its parent that it has {\bf finished}, or for some other reason the parent decides to stop playing the child.  At this point the parent will {\bf stop} the child\,---\,it will tell the child that the playing has ended.  Then the parent can either go about doing other things, or it can {\bf loop back} and replay the child as it sees fit.  If it replays the child, it once again resets it and starts the process again.  So in short, it does:
 
-\paragraph{The Random Parameter}  In addition to eight parameters, you can also bind a feature to the {\bf Random Parameter} (or {\bf Rand}).  This parameter is always set to a random value.  The value is not changed as often as other arguments: it is changed only each time the motif starts playing.
+Woven in-between these steps are opportunities for the parent to set parameters in the child.    Each motif has eight parameters that its parent can chance.  Additionally, the motif has a {\bf random value} which is selected (at random!) when the child starts playing: the parent does not set this directly, but it can change the minimum and maximum values from which the random value is chosen.  Adding the parameter-setting stages, we have: 
 
-The Random Parameter is set to a random value between the {\bf Random Min} and {\bf Random Max} inclusive.  You can set these as arguments in the parent (and yes, you can bind them).  
+\begin{enumerate}
+\item Before playing, reset the child.
+\item Before playing, the child generates its random value.
+\item Each time the parent is pulsed, as it sees fit:
+\begin{enumerate}
+\item Change the child's parameters as it sees fit.
+\item Pulse the child
+\end{enumerate}
+\item After all playing has finished, stop the child.
+\item Either continue doing something else, or loop back to step 1 as it sees fit. 
+\end{enumerate}
 
-\paragraph{The Point}  Parameterization is very powerful for automation and global control of many features at once, but we're not sure just how many features will benefit from parameterization and how useful it will be.    Time will tell.
+Note that looping back will change the random value to a new number.
+
 
 \subsection{Parameterized Control of MIDI Data}
 \label{mididata}

@@ -48,6 +48,7 @@ public class DefaultParameterList extends JPanel
                         lock.lock();
                         try { motif.setParameterName(_i, newValue.equals("") ? null : newValue); }
                         finally { lock.unlock(); }
+                        reopen = true;		// ugh, see below
                         sequi.incrementRebuildInspectorsCount();                // force inspectors to update
                         return newValue;
                         }
@@ -80,7 +81,17 @@ public class DefaultParameterList extends JPanel
         DisclosurePanel disclosure = new DisclosurePanel("Parameter Names", list);
         disclosure.setParentComponent(sequi);
         add(disclosure, BorderLayout.CENTER);
+        if (reopen)
+        	{
+        	disclosure.setDisclosed(true);
+        	}
+        reopen = false;
         }
+        
+    /// THIS UGLY HACK
+    /// Allows the NEXT DefaultParameterList to make itself open initially,
+    /// So DefaultParameterList doesn't constantly close itself when you change one name
+    static boolean reopen = false;
     
     /*
       public void revise()

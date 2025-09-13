@@ -1565,9 +1565,10 @@ public class NotesUI extends MotifUI
         // Build the notes child inspector holder
         childOuter = new JPanel();
         childOuter.setLayout(new BorderLayout());
-        childBorder = BorderFactory.createTitledBorder(null, "Child");
-        childOuter.setBorder(childBorder);
-        if (childInspector != null) setChildInspector(childInspector);
+        if (childInspector != null) 
+        	{
+        	setChildInspector(childInspector);
+        	}
                 
         // Build the notes inspector holder
         notesOuter = new JPanel();
@@ -1846,16 +1847,17 @@ public class NotesUI extends MotifUI
         if (inspector != null) 
             {
             childOuter.add(inspector, BorderLayout.NORTH);
+	        childBorder = BorderFactory.createTitledBorder(null, "");
             childBorder.setTitle(inspector.getName());
-            }
-        else
-            {
-            childBorder.setTitle(null);
-            }
 
-        childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-        childOuter.setBorder(childBorder);
-        if (inspector!=null) inspector.revise();
+	        childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+        	childOuter.setBorder(childBorder);
+			inspector.revise();
+            }
+		else
+			{
+	        childOuter.setBorder(null);
+        	}
         revalidate();
         }
 
@@ -1869,6 +1871,10 @@ public class NotesUI extends MotifUI
             childOuter.setBorder(childBorder);
             childInspector.revise();
             }
+        else
+        	{
+        	childBorder.setBorder(null);
+        	}
         }
         
     /** Updates the NotesUI and repaints it. */

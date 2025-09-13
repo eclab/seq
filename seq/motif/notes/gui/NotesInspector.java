@@ -738,7 +738,12 @@ public class NotesInspector extends WidgetList
         finalPanel.add(recordDisclosure, BorderLayout.NORTH);
         finalPanel.add(noteDisplayDisclosure, BorderLayout.CENTER);
         finalPanel.add(parameterDisclosure, BorderLayout.SOUTH);
-        add(finalPanel, BorderLayout.SOUTH);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(finalPanel, BorderLayout.NORTH);
+        panel.add(new DefaultParameterList(seq, notesui), BorderLayout.CENTER);
+        add(panel, BorderLayout.SOUTH);
 
         recordDisclosure.setParentComponent(notesui);
         noteDisplayDisclosure.setParentComponent(notesui);

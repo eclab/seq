@@ -90,7 +90,7 @@ public class EventUI extends JComponent
     public Notes.Note getNote() { return (Notes.Note)event; }
 
     /** Sets whether the event is selected, and repaints the event. 
-        The lock is provided to make this a tiny bit faster*/
+        The lock is provided to make this a tiny bit faster */
     public void setSelected(boolean val, ReentrantLock lock) 
         { 
         lock.lock();

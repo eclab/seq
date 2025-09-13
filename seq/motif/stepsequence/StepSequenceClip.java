@@ -166,6 +166,7 @@ public class StepSequenceClip extends Clip
     double invNumTracks = 1.0;
     
     
+/*
     //// FIXME: we should set this up to allow notes played at any time and rounded to the nearest step
     
     public void record(int track, int step)
@@ -207,16 +208,15 @@ public class StepSequenceClip extends Clip
                 }
             }
         
-        /*
         // At this point we had nothing to change.  But are we tied?
-        if (trackNoteRecording != OFF)          // looks like we're tied
-            {
-            // Need to add a tie
-            dSeq.setNote(track, trackNoteRecording, StepSequence.TIE);
-            dSeq.setVelocity(track, trackVelocityRecording, 0);
-            }
-        */
+//        if (trackNoteRecording != OFF)          // looks like we're tied
+//            {
+//            // Need to add a tie
+//            dSeq.setNote(track, trackNoteRecording, StepSequence.TIE);
+//            dSeq.setVelocity(track, trackVelocityRecording, 0);
+//            }
         }
+*/
         
     // called if we're doing learning for the track
     void doLearning(final int track)

@@ -30,6 +30,10 @@ public class StepSequenceInspector extends WidgetList
     double nt;
     JComboBox defaultOut;
     JComboBox in;
+    JComboBox controlIn;
+    JComboBox controlOut;
+    JComboBox controlDevice;
+    WidgetList midiList;
 
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
 
@@ -297,7 +301,7 @@ public class StepSequenceInspector extends WidgetList
                 ins[i] = "" + (i + 1) + ": " + seqIns[i].toString();
                 }
                 
-            in = new JComboBox(ins);
+             in = new JComboBox(ins);
             in.setSelectedIndex(ss.getIn());
             in.addActionListener(new ActionListener()
                 {
@@ -312,9 +316,73 @@ public class StepSequenceInspector extends WidgetList
                 });
             in.setToolTipText(IN_TOOLTIP);
 
+            ins = new String[seqIns.length + 1];
+            ins[0] = "<html><i>None</i></html>";
+            for(int i = 0; i < seqIns.length; i++)
+                {
+                ins[i + 1] = "" + (i + 1) + ": " + seqIns[i].toString();
+                }
+                
+           controlIn = new JComboBox(ins);
+            controlIn.setSelectedIndex(ss.getControlIn());
+            controlIn.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setControlIn(controlIn.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+//            controlIn.setToolTipText(CONTROL_IN_TOOLTIP);
 
+            outs = new String[seqOuts.length + 1];
+            outs[0] = "<html><i>None</i></html>";
+            for(int i = 0; i < seqOuts.length; i++)
+                {
+                outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
+                }
+
+            controlOut = new JComboBox(outs);
+            controlOut.setMaximumRowCount(outs.length);
+            controlOut.setSelectedIndex(ss.getControlOut());
+            controlOut.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setControlOut(controlOut.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+//            defaultOut.setToolTipText(OUT_TOOLTIP);
+
+            controlDevice = new JComboBox(Pad.DEVICE_NAMES);
+            controlDevice.setSelectedIndex(ss.getControlDevice());
+            controlDevice.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setControlDevice(controlDevice.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+//            device.setToolTipText(CONTROL_DEVICE_TOOLTIP);
             }
         finally { lock.unlock(); }
+
+		midiList = new WidgetList(
+			new String[] { "Out", "Learning In", "Grid Out", "Grid In", "Grid Device" },
+			new JComponent[] { defaultOut, in, controlOut, controlIn, controlDevice });
+        midiList.setBorder(BorderFactory.createTitledBorder("<html><i>MIDI</i></html>"));
+		DisclosurePanel midiPanel = new DisclosurePanel("MIDI", midiList);
 
         JPanel lengthPanel = new JPanel();
         lengthPanel.setLayout(new BorderLayout());
@@ -334,18 +402,23 @@ public class StepSequenceInspector extends WidgetList
         velocityPanel.add(setDefaultVelocity, BorderLayout.EAST);
         velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
 
-        build(new String[] { "Name", "Duration", "Swing", "   Velocity", "Out", "In", "Track Len", /* "Tracks" */ }, 
+        build(new String[] { "Name", "Duration", "Swing", "   Velocity", "Track Len", /* "Tracks" */ }, 
             new JComponent[] 
                 {
                 name,
                 numBeats.getLabelledDial("128"),
                 swingPanel, 
                 velocityPanel, 
-                defaultOut,
-                in,
                 lengthPanel, 
                 // numTracksPanel
                 });
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(midiPanel, BorderLayout.NORTH);
+        panel.add(new DefaultParameterList(seq, ssui), BorderLayout.CENTER);
+        add(panel, BorderLayout.SOUTH);
+        midiPanel.setParentComponent(ssui);
         }
                 
     public void revise()
@@ -357,7 +430,9 @@ public class StepSequenceInspector extends WidgetList
         try 
             { 
             defaultOut.setSelectedIndex(ss.getDefaultOut()); 
-            in.setSelectedIndex(ss.getIn()); 
+            controlIn.setSelectedIndex(ss.getControlIn()); 
+            controlOut.setSelectedIndex(ss.getControlOut()); 
+            controlDevice.setSelectedIndex(ss.getControlDevice()); 
             }
         finally { lock.unlock(); }                              
         seq = old;

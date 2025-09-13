@@ -269,6 +269,26 @@ public class Arpeggio extends Motif
         obj.put("pattern", array);
         }
 
+    public String getParameterName(int param) 
+    	{ 
+    	if (getChildren().size() > 0)
+    		{
+    		Motif motif = getChild(0).getMotif();
+    		if (motif instanceof Blank)
+    			{
+    			return super.getParameterName(param);
+    			}
+    		else
+    			{
+    			return motif.getParameterName(param);
+    			}
+    		}
+    	else
+    		{
+    		return super.getParameterName(param);
+	    	}
+    	}
+
     static int document = 0;
     static int counter = 1;
     public int getNextCounter() { if (document < Seq.getDocument()) { document = Seq.getDocument(); counter = 1; } return counter++; }

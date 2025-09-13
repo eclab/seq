@@ -168,7 +168,7 @@ public class ParallelInspector extends WidgetList
         remove(result);
         add(result, BorderLayout.CENTER);               // re-add it as center
 
-        add(new DefaultParameterList(seq, parallelui), BorderLayout.NORTH);
+        add(new DefaultParameterList(seq, parallelui), BorderLayout.SOUTH);
         }
                 
     public void revise()
