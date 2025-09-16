@@ -1562,67 +1562,67 @@ public class Notes extends Motif
         }
     
     /** Linearly interpolates among events of a given type, with a time step of at most rate.
-    	Returns the newly created interpolation events. */
+        Returns the newly created interpolation events. */
     public ArrayList<Event> interpolate(ArrayList<Event> events, int rate, int type)
-    	{
-    	if (type < TYPE_CC)	return new ArrayList<Event>(); // we don't interpolate notes
-    	
-    	// First collect the events by type
-    	ArrayList<Event> typedEvents = new ArrayList<>();
-    	for(Event event : events)
-    		{
-    		if (event.getType() == type)
-    			{
-    			typedEvents.add(event);
-    			}
-    		}
+        {
+        if (type < TYPE_CC)     return new ArrayList<Event>(); // we don't interpolate notes
+        
+        // First collect the events by type
+        ArrayList<Event> typedEvents = new ArrayList<>();
+        for(Event event : events)
+            {
+            if (event.getType() == type)
+                {
+                typedEvents.add(event);
+                }
+            }
 
-    	if (typedEvents.size() < 2) return new ArrayList<Event>();	// not enough to interpolate
+        if (typedEvents.size() < 2) return new ArrayList<Event>();      // not enough to interpolate
 
-    	sortEvents(typedEvents);
-    	
-    	ArrayList<Event> newEvents = new ArrayList<>();
-    	
-    	for(int i = 0; i < typedEvents.size() - 1; i++)
-    		{
-    		Event a = typedEvents.get(i);
-    		Event b = typedEvents.get(i + 1);
-    		if (a.when == b.when) continue;		// cannot be same time
-    		
-    		int aValue = a.getValue();
-    		int bValue = b.getValue();
-    		int maxTotal = Math.abs(aValue - bValue) - 1;
-    		if (maxTotal <= 0) continue;		// no interpolation values
-    		
-    		// we need to compute how many events are in the interpolation
-    		int time = b.when - a.when;
-    		int total = time / rate - 1;		// we subtract one because we're not including the enpoints
-    		if (total > maxTotal)
-    			{
-    			total = maxTotal;
-    			}
+        sortEvents(typedEvents);
+        
+        ArrayList<Event> newEvents = new ArrayList<>();
+        
+        for(int i = 0; i < typedEvents.size() - 1; i++)
+            {
+            Event a = typedEvents.get(i);
+            Event b = typedEvents.get(i + 1);
+            if (a.when == b.when) continue;         // cannot be same time
+                
+            int aValue = a.getValue();
+            int bValue = b.getValue();
+            int maxTotal = Math.abs(aValue - bValue) - 1;
+            if (maxTotal <= 0) continue;            // no interpolation values
+                
+            // we need to compute how many events are in the interpolation
+            int time = b.when - a.when;
+            int total = time / rate - 1;            // we subtract one because we're not including the enpoints
+            if (total > maxTotal)
+                {
+                total = maxTotal;
+                }
 
-			// revised rate
-			double newRate = time / (double)(total + 1);
+            // revised rate
+            double newRate = time / (double)(total + 1);
 
-    		for(int j = 0; j < total; j++)
-    			{    			
-    			int pos = (int)Math.round(a.when + (j + 1) * newRate);
+            for(int j = 0; j < total; j++)
+                {                       
+                int pos = (int)Math.round(a.when + (j + 1) * newRate);
 
-				// Linear Interpolation of value
-    			int val = (int)Math.round((pos - a.when) * (bValue - aValue) / (double)(b.when - a.when) + aValue);
+                // Linear Interpolation of value
+                int val = (int)Math.round((pos - a.when) * (bValue - aValue) / (double)(b.when - a.when) + aValue);
 
-    			Event newEvent = a.copy();
-    			newEvent.when = pos;
-    			newEvent.setValue(val);
-    			newEvents.add(newEvent);
-    			}
-    		}
-    		
-    	return newEvents;
-    	}
-    	
-    	
+                Event newEvent = a.copy();
+                newEvent.when = pos;
+                newEvent.setValue(val);
+                newEvents.add(newEvent);
+                }
+            }
+                
+        return newEvents;
+        }
+        
+        
     /** Transposes the given events by the provided semitones. */
     public void transpose(ArrayList<Event> events, int by)
         {

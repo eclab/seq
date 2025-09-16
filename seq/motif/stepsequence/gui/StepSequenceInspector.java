@@ -174,20 +174,20 @@ public class StepSequenceInspector extends WidgetList
                     try { ss.setDefaultSwing(val); }
                     finally { lock.unlock(); }
                     }
-                        public void setDefault(int val) 
-                            { 
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { if (val != SmallDial.NO_DEFAULT) ss.setDefaultSwing(-(val + 1)); }
-                            finally { lock.unlock(); }
-                            }
-                        public int getDefault()
-                            {
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { double val = ss.getDefaultSwing(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                            finally { lock.unlock(); }
-                            }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setDefaultSwing(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getDefaultSwing(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
             defaultSwing.setToolTipText(SWING_TOOLTIP);
 
@@ -228,21 +228,21 @@ public class StepSequenceInspector extends WidgetList
                     finally { lock.unlock(); }
                     ssui.redraw(false);
                     }
-                        public void setDefault(int val) 
-                            { 
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { if (val != SmallDial.NO_DEFAULT) ss.setDefaultVelocity(-(val + 1)); }
-                            finally { lock.unlock(); }
-                    		ssui.redraw(false);
-                            }
-                        public int getDefault()
-                            {
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { double val = ss.getDefaultVelocity(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                            finally { lock.unlock(); }
-                            }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setDefaultVelocity(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    ssui.redraw(false);
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getDefaultVelocity(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
             defaultVelocity.setToolTipText(VELOCITY_TOOLTIP);
                         
@@ -301,7 +301,7 @@ public class StepSequenceInspector extends WidgetList
                 ins[i] = "" + (i + 1) + ": " + seqIns[i].toString();
                 }
                 
-             in = new JComboBox(ins);
+            in = new JComboBox(ins);
             in.setSelectedIndex(ss.getIn());
             in.addActionListener(new ActionListener()
                 {
@@ -323,7 +323,7 @@ public class StepSequenceInspector extends WidgetList
                 ins[i + 1] = "" + (i + 1) + ": " + seqIns[i].toString();
                 }
                 
-           controlIn = new JComboBox(ins);
+            controlIn = new JComboBox(ins);
             controlIn.setSelectedIndex(ss.getControlIn());
             controlIn.addActionListener(new ActionListener()
                 {
@@ -378,11 +378,11 @@ public class StepSequenceInspector extends WidgetList
             }
         finally { lock.unlock(); }
 
-		midiList = new WidgetList(
-			new String[] { "Out", "Learning In", "Grid Out", "Grid In", "Grid Device" },
-			new JComponent[] { defaultOut, in, controlOut, controlIn, controlDevice });
+        midiList = new WidgetList(
+            new String[] { "Out", "Learning In", "Grid Out", "Grid In", "Grid Device" },
+            new JComponent[] { defaultOut, in, controlOut, controlIn, controlDevice });
         midiList.setBorder(BorderFactory.createTitledBorder("<html><i>MIDI</i></html>"));
-		DisclosurePanel midiPanel = new DisclosurePanel("MIDI", midiList);
+        DisclosurePanel midiPanel = new DisclosurePanel("MIDI", midiList);
 
         JPanel lengthPanel = new JPanel();
         lengthPanel.setLayout(new BorderLayout());

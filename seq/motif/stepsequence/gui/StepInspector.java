@@ -66,9 +66,9 @@ public class StepInspector extends WidgetList
         }
         
     void setupFirstDefault(SmallDial dial)
-    	{
-    	dial.setFirstDefault("<html><i>Default</i></html>", Motif.NUM_PARAMETERS + 1);
-    	}
+        {
+        dial.setFirstDefault("<html><i>Default</i></html>", Motif.NUM_PARAMETERS + 1);
+        }
 
     public StepInspector(Seq seq, StepSequence ss, StepSequenceUI ssui, int trackNum, int stepNum)
         {
@@ -83,7 +83,7 @@ public class StepInspector extends WidgetList
         lock.lock();
         try
             {
-            stepNote = new SmallDial(-1, defaults)		// 0)
+            stepNote = new SmallDial(-1, defaults)              // 0)
                 {
                 protected String map(double val) 
                     { 
@@ -92,8 +92,8 @@ public class StepInspector extends WidgetList
                     return NOTES[n % 12] + ((n / 12) - 2); 
                     }
                 /*
-                public int getDefault() { int val = ss.getNote(trackNum, stepNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
-                public void setDefault(int val) { if (val == DEFAULT) ss.setNote(trackNum, stepNum, -1); }
+                  public int getDefault() { int val = ss.getNote(trackNum, stepNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
+                  public void setDefault(int val) { if (val == DEFAULT) ss.setNote(trackNum, stepNum, -1); }
                 */
                 public double getValue() 
                     { 
@@ -110,20 +110,20 @@ public class StepInspector extends WidgetList
                     try { ss.setNote(trackNum, stepNum, (int)(val * 127)); }
                     finally { lock.unlock(); }
                     }
-                        public void setDefault(int val) 
-                            { 
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { if (val != SmallDial.NO_DEFAULT) ss.setNote(trackNum, stepNum, -(val + 1)); }
-                            finally { lock.unlock(); }
-                            }
-                        public int getDefault()
-                            {
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { double val = ss.getNote(trackNum, stepNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                            finally { lock.unlock(); }
-                            }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setNote(trackNum, stepNum, -(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getNote(trackNum, stepNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
             setupFirstDefault(stepNote);
             stepNote.setToolTipText(NOTE_TOOLTIP);
@@ -159,7 +159,7 @@ public class StepInspector extends WidgetList
                 });
             stepWhen.setToolTipText(WHEN_TOOLTIP);
 
-            stepVelocity = new SmallDial(-1, defaults)		// 0)
+            stepVelocity = new SmallDial(-1, defaults)          // 0)
                 {
                 protected String map(double val) 
                     { 
@@ -167,8 +167,8 @@ public class StepInspector extends WidgetList
                     return String.valueOf((int)(val * 127)); 
                     }
                 /*
-                public int getDefault() { int val = ss.getVelocity(trackNum, stepNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
-                public void setDefault(int val) { if (val == DEFAULT) ss.setVelocity(trackNum, stepNum, -1); }
+                  public int getDefault() { int val = ss.getVelocity(trackNum, stepNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
+                  public void setDefault(int val) { if (val == DEFAULT) ss.setVelocity(trackNum, stepNum, -1); }
                 */
                 public double getValue() 
                     { 
@@ -186,21 +186,21 @@ public class StepInspector extends WidgetList
                     finally { lock.unlock(); }
                     ssui.redraw(false);
                     }
-                        public void setDefault(int val) 
-                            { 
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { if (val != SmallDial.NO_DEFAULT) ss.setVelocity(trackNum, stepNum, -(val + 1)); }
-                            finally { lock.unlock(); }
-		                    ssui.redraw(false);
-                            }
-                        public int getDefault()
-                            {
-                            ReentrantLock lock = seq.getLock();
-                            lock.lock();
-                            try { double val = ss.getVelocity(trackNum, stepNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                            finally { lock.unlock(); }
-                            }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setVelocity(trackNum, stepNum, -(val + 1)); }
+                    finally { lock.unlock(); }
+                    ssui.redraw(false);
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getVelocity(trackNum, stepNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
             setupFirstDefault(stepVelocity);
             stepVelocity.setToolTipText(VELOCITY_TOOLTIP);

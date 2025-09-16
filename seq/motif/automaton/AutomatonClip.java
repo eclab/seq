@@ -444,11 +444,11 @@ public class AutomatonClip extends Clip
                 int d = achord.getLength();
                 if (delayCount == 0) // play the chord
                     {
-					int velocity = getCorrectedValueInt(achord.getVelocity(), 127); 		// cannot be 0
+                    int velocity = getCorrectedValueInt(achord.getVelocity(), 127);                 // cannot be 0
                     int out = achord.getMIDIOut();
                     for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                         {
-						int pitch = getCorrectedValueInt(achord.getNote(i), 127); 
+                        int pitch = getCorrectedValueInt(achord.getNote(i), 127); 
                         if (pitch != Automaton.Chord.NO_NOTE)
                             {
                             ids[i] = AutomatonClip.super.noteOn(out, pitch, velocity);
@@ -464,7 +464,7 @@ public class AutomatonClip extends Clip
                 double timeOn = getCorrectedValueDouble(achord.getTimeOn(), 1.0);
                 if (delayCount >= d * timeOn)        // stop playing the chord
                     {
-					int release = getCorrectedValueInt(achord.getRelease(), 127);
+                    int release = getCorrectedValueInt(achord.getRelease(), 127);
                     int out = achord.getMIDIOut();
                     for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                         {
@@ -517,7 +517,7 @@ public class AutomatonClip extends Clip
                 {
                 Automaton.Chord achord = (Automaton.Chord) node;
                 double timeOn = achord.getTimeOn();
-				int release = getCorrectedValueInt(achord.getRelease(), 127);
+                int release = getCorrectedValueInt(achord.getRelease(), 127);
                 int out = achord.getMIDIOut();
                 for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                     {
@@ -546,7 +546,7 @@ public class AutomatonClip extends Clip
                 {
                 Automaton.Chord achord = (Automaton.Chord) node;
                 int out = achord.getMIDIOut();
-				int release = getCorrectedValueInt(achord.getRelease(), 127);
+                int release = getCorrectedValueInt(achord.getRelease(), 127);
                 for(int i = 0; i < Automaton.Chord.MAX_NOTES; i++)
                     {
                     int pitch = pitches[i];

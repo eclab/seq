@@ -22,7 +22,7 @@ public class StepSequence extends Motif
     public static final int DEFAULT_NUM_TRACKS = 16;
     public static final int DEFAULT_LENGTH_IN_STEPS = DEFAULT_NUM_STEPS;
     public static final int COMBO_DEFAULT = -1;
-    public static final int DEFAULT = 0 - (Motif.NUM_PARAMETERS + 2);		// low enough to avoid the corrected parameter stuff
+    public static final int DEFAULT = 0 - (Motif.NUM_PARAMETERS + 2);           // low enough to avoid the corrected parameter stuff
     // public static final int TIE = 128;
     public static final int DEFAULT_TRACK_NOTE = 60;            // Middle C
     public static final int[] FLAMS = { 48, 24, 16, 12, 8, 6, 4, 3, 2, 1 };
@@ -127,11 +127,11 @@ public class StepSequence extends Motif
     public int getIn() { return in; }
     public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.stepsequence.StepSequence"); }
 
-	// These values go 0...16 corresponding to NONE and MIDI channels 1...16
+    // These values go 0...16 corresponding to NONE and MIDI channels 1...16
     public int getControlIn() { return controlIn; }
     public void setControlIn(int val) { controlIn = val; Prefs.setLastGridIn(0, val, "seq.motif.stepsequence.StepSequence"); }
 
-	// These values go 0...16 corresponding to NONE and MIDI channels 1...16
+    // These values go 0...16 corresponding to NONE and MIDI channels 1...16
     public int getControlOut() { return controlOut; }
     public void setControlOut(int val) { controlOut = val; Prefs.setLastGridOut(0, val, "seq.motif.stepsequence.StepSequence"); }
             

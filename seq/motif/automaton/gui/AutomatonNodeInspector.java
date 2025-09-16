@@ -561,21 +561,21 @@ public class AutomatonNodeInspector extends WidgetList
                                 try { nrandom.setAux(_i, val); }
                                 finally { lock.unlock(); }
                                 }
-							public void setDefault(int val) 
-								{ 
-								ReentrantLock lock = seq.getLock();
-								lock.lock();
-								try { if (val != SmallDial.NO_DEFAULT) nrandom.setAux(_i, -(val + 1)); }
-								finally { lock.unlock(); }
-								owner.updateText();                  // FIXME: is this needed?
-								}
-							public int getDefault()
-								{
-								ReentrantLock lock = seq.getLock();
-								lock.lock();
-								try { double val = nrandom.getAux(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-								finally { lock.unlock(); }
-								}
+                            public void setDefault(int val) 
+                                { 
+                                ReentrantLock lock = seq.getLock();
+                                lock.lock();
+                                try { if (val != SmallDial.NO_DEFAULT) nrandom.setAux(_i, -(val + 1)); }
+                                finally { lock.unlock(); }
+                                owner.updateText();                  // FIXME: is this needed?
+                                }
+                            public int getDefault()
+                                {
+                                ReentrantLock lock = seq.getLock();
+                                lock.lock();
+                                try { double val = nrandom.getAux(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                                finally { lock.unlock(); }
+                                }
                             };
                         }
                     aux[0].setToolTipText(RANDOM_WEIGHT_1_TOOLTIP);
@@ -618,21 +618,21 @@ public class AutomatonNodeInspector extends WidgetList
                                 try { niterate.setAux(_i, 1 + (int)(val * (Automaton.Iterate.MAX_REPEATS - 1)));  }
                                 finally { lock.unlock(); }
                                 }
-							public void setDefault(int val) 
-								{ 
-								ReentrantLock lock = seq.getLock();
-								lock.lock();
-								try { if (val != SmallDial.NO_DEFAULT) niterate.setAux(_i, -(val + 1)); }
-								finally { lock.unlock(); }
-								owner.updateText();                  // FIXME: is this needed?
-								}
-							public int getDefault()
-								{
-								ReentrantLock lock = seq.getLock();
-								lock.lock();
-								try { double val = niterate.getAux(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-								finally { lock.unlock(); }
-								}
+                            public void setDefault(int val) 
+                                { 
+                                ReentrantLock lock = seq.getLock();
+                                lock.lock();
+                                try { if (val != SmallDial.NO_DEFAULT) niterate.setAux(_i, -(val + 1)); }
+                                finally { lock.unlock(); }
+                                owner.updateText();                  // FIXME: is this needed?
+                                }
+                            public int getDefault()
+                                {
+                                ReentrantLock lock = seq.getLock();
+                                lock.lock();
+                                try { double val = niterate.getAux(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                                finally { lock.unlock(); }
+                                }
                             };
                         }
                     aux[0].setToolTipText(ITERATE_ITERATIONS_1_TOOLTIP);

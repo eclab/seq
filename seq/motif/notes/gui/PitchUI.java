@@ -210,7 +210,7 @@ public class PitchUI extends JLayeredPane
             {
             noteui.reload();
             }
-		// This will never happen for the recorded uis however, so we don't need to botehr.
+        // This will never happen for the recorded uis however, so we don't need to botehr.
         for(NoteUI recordedui : recordeduis)
             {
             recordedui.reload();

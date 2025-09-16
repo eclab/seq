@@ -1110,7 +1110,7 @@ public class GridUI extends JComponent
         {
         if (notesui.getRuler().getHasRange())
             {
-        	ArrayList<Notes.Event> events = new ArrayList<>();
+            ArrayList<Notes.Event> events = new ArrayList<>();
             int min = notesui.getRuler().getRangeLow();
             int max = notesui.getRuler().getRangeHigh();
             ReentrantLock lock = seq.getLock();
@@ -1141,10 +1141,10 @@ public class GridUI extends JComponent
     public ArrayList<Notes.Event> getSelectedEvents()                            // FIXME should we include overlaps?
         {
         ArrayList<Notes.Event> events = new ArrayList<>();
-		for(EventUI eventui : getSelected())
-			{
-			events.add(eventui.event);
-			}
+        for(EventUI eventui : getSelected())
+            {
+            events.add(eventui.event);
+            }
         return events;
         }
         

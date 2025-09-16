@@ -91,10 +91,10 @@ public abstract class SmallDial extends JPanel
     public void setScale(double val) { scale = val; }
     
     public void setFirstDefault(String firstDefault, int firstDefaultValue)
-    	{
-    	this.firstDefault = firstDefault; 
-    	this.firstDefaultValue = firstDefaultValue;
-    	}
+        {
+        this.firstDefault = firstDefault; 
+        this.firstDefaultValue = firstDefaultValue;
+        }
 
     /** Returns the color of the thick portion of the dial when not being changed. */
     public Color getStaticColor() { return staticColor; }
@@ -316,9 +316,9 @@ public abstract class SmallDial extends JPanel
             return map(value);
             }
         else if (firstDefault != null && _default == firstDefaultValue)
-        	{
-        	return firstDefault;
-        	}
+            {
+            return firstDefault;
+            }
         else
             {
             return (getDefaultsList()[_default]);
@@ -448,7 +448,7 @@ public abstract class SmallDial extends JPanel
                         {
                         JPopupMenu pop = new JPopupMenu();
                         if (firstDefault != null)
-                        	{
+                            {
                             JMenuItem item = new JMenuItem(firstDefault);
                             item.addActionListener(new ActionListener()
                                 {
@@ -460,7 +460,7 @@ public abstract class SmallDial extends JPanel
                                 });     
                             pop.add(item);
                             pop.addSeparator();
-                        	}
+                            }
                         for(int i = 0; i < defaultsList.length; i++)
                             {
                             final int _i = i;

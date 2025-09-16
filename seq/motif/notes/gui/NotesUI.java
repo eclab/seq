@@ -469,153 +469,153 @@ public class NotesUI extends MotifUI
         
     public static final double EVENT_COARSE_VALUE = 1.0 / 16.0;
     public void doUp()
-    	{
-    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+        {
+        ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
 
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try
-			{
-			for(Notes.Event event : selected)
-				{
-				if (event instanceof Notes.Note)
-					{
-					Notes.Note note = (Notes.Note)event;
-					note.pitch++;
-					if (note.pitch > 127) note.pitch = 127;
-					}
-				else
-					{
-					double val = event.getNormalizedValue();
-					val += EVENT_COARSE_VALUE;
-					if (val >= 1.0) val = 1.0;
-						event.setNormalizedValue(val);
-					}
-				}
-			}
-		finally	
-			{
-			lock.unlock();
-			}
-			
-		gridui.reload();
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            for(Notes.Event event : selected)
+                {
+                if (event instanceof Notes.Note)
+                    {
+                    Notes.Note note = (Notes.Note)event;
+                    note.pitch++;
+                    if (note.pitch > 127) note.pitch = 127;
+                    }
+                else
+                    {
+                    double val = event.getNormalizedValue();
+                    val += EVENT_COARSE_VALUE;
+                    if (val >= 1.0) val = 1.0;
+                    event.setNormalizedValue(val);
+                    }
+                }
+            }
+        finally 
+            {
+            lock.unlock();
+            }
+                        
+        gridui.reload();
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-    	}
-    	
+        }
+        
     public void doDown()
-    	{
-    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+        {
+        ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
 
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try
-			{
-			for(Notes.Event event : selected)
-				{
-				if (event instanceof Notes.Note)
-					{
-					Notes.Note note = (Notes.Note)event;
-					note.pitch--;
-					if (note.pitch < 0) note.pitch = 0;
-					}
-				else
-					{
-					double val = event.getNormalizedValue();
-					val -= EVENT_COARSE_VALUE;
-					if (val < 0) val = 0;
-					event.setNormalizedValue(val);
-					}
-				}
-			}
-		finally	
-			{
-			lock.unlock();
-			}
-		gridui.reload();
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            for(Notes.Event event : selected)
+                {
+                if (event instanceof Notes.Note)
+                    {
+                    Notes.Note note = (Notes.Note)event;
+                    note.pitch--;
+                    if (note.pitch < 0) note.pitch = 0;
+                    }
+                else
+                    {
+                    double val = event.getNormalizedValue();
+                    val -= EVENT_COARSE_VALUE;
+                    if (val < 0) val = 0;
+                    event.setNormalizedValue(val);
+                    }
+                }
+            }
+        finally 
+            {
+            lock.unlock();
+            }
+        gridui.reload();
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-    	}
-    	
+        }
+        
     public void doLeft()
-    	{
-    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
-		int snap = gridui.getSnap();
-		boolean snapBy = gridui.getSnapBy();
-		
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try
-			{
-			for(Notes.Event event : selected)
-				{
-				int newTime = 0;
-				if (snapBy)
-					{
-					newTime = event.when - snap;
-					}
-				else
-					{
-					newTime = (event.when / snap) * snap;
-					if (event.when - newTime == 0) // we're right on a boundary
-						{
-						newTime = ((event.when / snap) - 1) * snap;
-						}
-					}
-				event.when = newTime;
-				if (event.when < 0) event.when = 0;
-				}
-			}
-		finally	
-			{
-			lock.unlock();
-			}
-		gridui.reload();
+        {
+        ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+        int snap = gridui.getSnap();
+        boolean snapBy = gridui.getSnapBy();
+                
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            for(Notes.Event event : selected)
+                {
+                int newTime = 0;
+                if (snapBy)
+                    {
+                    newTime = event.when - snap;
+                    }
+                else
+                    {
+                    newTime = (event.when / snap) * snap;
+                    if (event.when - newTime == 0) // we're right on a boundary
+                        {
+                        newTime = ((event.when / snap) - 1) * snap;
+                        }
+                    }
+                event.when = newTime;
+                if (event.when < 0) event.when = 0;
+                }
+            }
+        finally 
+            {
+            lock.unlock();
+            }
+        gridui.reload();
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-    	}
-    	
-    public void doRight()		// always do right.  Never do wrong.
-    	{
-    	ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
-		int snap = gridui.getSnap();
-		boolean snapBy = gridui.getSnapBy();
-		
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try
-			{
-			for(Notes.Event event : selected)
-				{
-				int newTime = 0;
-				if (snapBy)
-					{
-					newTime = event.when + snap;
-					}
-				else
-					{
-					newTime = ((event.when / snap) + 1) * snap;
-					}
-				event.when = newTime;
-				if (event.when > Seq.MIN_MAX_TIME) 		// FIXME: should we allow it to go further?
-					{
-					event.when = Seq.MIN_MAX_TIME;
-					}
-				}
-			}
-		finally	
-			{
-			lock.unlock();
-			}
-		gridui.reload();
+        }
+        
+    public void doRight()               // always do right.  Never do wrong.
+        {
+        ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+        int snap = gridui.getSnap();
+        boolean snapBy = gridui.getSnapBy();
+                
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            for(Notes.Event event : selected)
+                {
+                int newTime = 0;
+                if (snapBy)
+                    {
+                    newTime = event.when + snap;
+                    }
+                else
+                    {
+                    newTime = ((event.when / snap) + 1) * snap;
+                    }
+                event.when = newTime;
+                if (event.when > Seq.MIN_MAX_TIME)              // FIXME: should we allow it to go further?
+                    {
+                    event.when = Seq.MIN_MAX_TIME;
+                    }
+                }
+            }
+        finally 
+            {
+            lock.unlock();
+            }
+        gridui.reload();
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-    	}
-    	
+        }
+        
     public void doBringToFront()
         {
         gridui.moveSelectedToTop();
@@ -1384,28 +1384,28 @@ public class NotesUI extends MotifUI
             }
             
         if (events.get(0) instanceof Notes.Note)
-        	{
+            {
             sequi.showSimpleError("Cannot Interpolate Notes", "Only non-note events can be interpolated.");
             return;
-        	}
+            }
                 
         String[] names = { "Max Rate in PPQ" };
-        SmallDial rate = new SmallDial(Prefs.getLastDouble("InterpolateRate", 0.25))	// once every sixteenth note
+        SmallDial rate = new SmallDial(Prefs.getLastDouble("InterpolateRate", 0.25))    // once every sixteenth note
             {
             double value;
             public double getValue() { return value; }
             public void setValue(double val) { value = val; }
             public String map(double val) 
-            	{ 
-            	int pos = (int)(val * 191 + 1);
-            	if (val == 12) return "64th Notes";
-            	else if (pos == 24) return "32nd Notes";
-            	else if (pos == 48) return "16th Notes";
-            	else if (pos == 64) return "Triplets";
-            	else if (pos == 96) return "8th Notes";
-            	else if (pos == 192) return "Quarter Notes";
-            	else return "" + (int)(val * 191 + 1); 
-            	}
+                { 
+                int pos = (int)(val * 191 + 1);
+                if (val == 12) return "64th Notes";
+                else if (pos == 24) return "32nd Notes";
+                else if (pos == 48) return "16th Notes";
+                else if (pos == 64) return "Triplets";
+                else if (pos == 96) return "8th Notes";
+                else if (pos == 192) return "Quarter Notes";
+                else return "" + (int)(val * 191 + 1); 
+                }
             };
 
         JComponent[] components = new JComponent[] { rate.getLabelledDial("Quarter Notes") };
@@ -1422,12 +1422,12 @@ public class NotesUI extends MotifUI
                 sequi.push();
                 ArrayList<Notes.Event> interpolation = notes.interpolate(events, _rate, events.get(0).getType());
                 if (interpolation.size() > 0)
-                	{
-                	didInterpolate = true;
-                	ArrayList<Notes.Event> allEvents = notes.getEvents();
-                	allEvents.addAll(interpolation);
-                	notes.sortEvents();
-                	}
+                    {
+                    didInterpolate = true;
+                    ArrayList<Notes.Event> allEvents = notes.getEvents();
+                    allEvents.addAll(interpolation);
+                    notes.sortEvents();
+                    }
                 }
             finally
                 {
@@ -1437,14 +1437,14 @@ public class NotesUI extends MotifUI
             Prefs.setLastDouble("InterpolateRate", rate.getValue());
             
             if (didInterpolate) 
-            	{
-				gridui.clearSelected();
-            	rebuild();
-            	}
+                {
+                gridui.clearSelected();
+                rebuild();
+                }
             }
         }
         
-            /** Removes the selected events */
+    /** Removes the selected events */
     public void doRemove()
         {
         ArrayList<Notes.Event> events = gridui.getSelectedOrRangeEvents();
@@ -1566,9 +1566,9 @@ public class NotesUI extends MotifUI
         childOuter = new JPanel();
         childOuter.setLayout(new BorderLayout());
         if (childInspector != null) 
-        	{
-        	setChildInspector(childInspector);
-        	}
+            {
+            setChildInspector(childInspector);
+            }
                 
         // Build the notes inspector holder
         notesOuter = new JPanel();
@@ -1847,17 +1847,17 @@ public class NotesUI extends MotifUI
         if (inspector != null) 
             {
             childOuter.add(inspector, BorderLayout.NORTH);
-	        childBorder = BorderFactory.createTitledBorder(null, "");
+            childBorder = BorderFactory.createTitledBorder(null, "");
             childBorder.setTitle(inspector.getName());
 
-	        childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-        	childOuter.setBorder(childBorder);
-			inspector.revise();
+            childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+            childOuter.setBorder(childBorder);
+            inspector.revise();
             }
-		else
-			{
-	        childOuter.setBorder(null);
-        	}
+        else
+            {
+            childOuter.setBorder(null);
+            }
         revalidate();
         }
 
@@ -1872,9 +1872,9 @@ public class NotesUI extends MotifUI
             childInspector.revise();
             }
         else
-        	{
-        	childBorder.setBorder(null);
-        	}
+            {
+            childBorder.setBorder(null);
+            }
         }
         
     /** Updates the NotesUI and repaints it. */

@@ -360,19 +360,19 @@ public abstract class Motif implements Cloneable
     /** Sets the current playing Clip, if any, or null.  */
     public boolean setPlayingClip(Clip clip) 
         {
-            playingClip = clip; 
-            return true;
+        playingClip = clip; 
+        return true;
         /*
-        if (playingClip == null || playingClip == clip) 
-            { 
-            playingClip = clip; 
-            return true;
-            }
-        else 
-            {
-            //System.err.println("Set FAILED\n\tMotif\t" + this + "\n\tHas\t" + playingClip + "\n\tNot\t" + clip);
-            return false;
-            }
+          if (playingClip == null || playingClip == clip) 
+          { 
+          playingClip = clip; 
+          return true;
+          }
+          else 
+          {
+          //System.err.println("Set FAILED\n\tMotif\t" + this + "\n\tHas\t" + playingClip + "\n\tNot\t" + clip);
+          return false;
+          }
         */
         }
     /** Removes the current playing clip if it matches the given clip. */
@@ -951,26 +951,26 @@ public abstract class Motif implements Cloneable
         obj.put("text", getText());
         
         // param names -- only save if they've been touched
-		boolean pnameSet = false;
-		for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-			{
-			String p = getParameterName(i);
-			if (p != null && !(p.equals("")))
-				{
-				pnameSet = true;
-				break;
-				}
-			}
-			
-		if (pnameSet)
-			{
-			JSONArray pname = new JSONArray();
-			for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-				{
-				pname.put(getParameterName(i));
-				}
-			obj.put("pname", pname);
-			}
+        boolean pnameSet = false;
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            String p = getParameterName(i);
+            if (p != null && !(p.equals("")))
+                {
+                pnameSet = true;
+                break;
+                }
+            }
+                        
+        if (pnameSet)
+            {
+            JSONArray pname = new JSONArray();
+            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+                {
+                pname.put(getParameterName(i));
+                }
+            obj.put("pname", pname);
+            }
         
         // store with id
         motifs.put(obj);
@@ -1076,21 +1076,21 @@ public abstract class Motif implements Cloneable
         // text
         text = from.optString("text", "");
 
-		// parameter names
-		JSONArray pname = from.optJSONArray("pname");
-		for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
-			{
-			// We can't call param.getString() directly because the underlying
-			// object could be null (or pname could be missing).  So we do this:
-			if (pname == null || pname.isNull(i))
-				{
-				setParameterName(i, null);
-				}
-			else
-				{
-				setParameterName(i, pname.getString(i));
-				}
-			}
+        // parameter names
+        JSONArray pname = from.optJSONArray("pname");
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            // We can't call param.getString() directly because the underlying
+            // object could be null (or pname could be missing).  So we do this:
+            if (pname == null || pname.isNull(i))
+                {
+                setParameterName(i, null);
+                }
+            else
+                {
+                setParameterName(i, pname.getString(i));
+                }
+            }
 
         load(from);
         }

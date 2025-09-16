@@ -168,16 +168,16 @@ public class FilterClip extends Clip
             {
             // We ought to send a NoteOff to everyone in the map, since we never cleared them.  This SHOULD NOT HAPPEN.
             if (map.size() > 0)
-            	{
-            	System.err.println("FilterClip.ChangeNote.release(): non-released notes.");
-            	for(Integer id : map.keySet())
-            		{
-            		Integer note = map.get(id);
-            		Integer out = outs.get(id);
-					super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);		// should we send it this way or bypass and go straight to parent?
-					}
-            	}
-            	
+                {
+                System.err.println("FilterClip.ChangeNote.release(): non-released notes.");
+                for(Integer id : map.keySet())
+                    {
+                    Integer note = map.get(id);
+                    Integer out = outs.get(id);
+                    super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
+                    }
+                }
+                
             map.clear();
             outs.clear();
             mapScheduled.clear();
@@ -187,16 +187,16 @@ public class FilterClip extends Clip
             {
             // We ought to send a NoteOff to everyone in the map, since we never cleared them.  This SHOULD NOT HAPPEN.
             if (map.size() > 0)
-            	{
-            	System.err.println("FilterClip.ChangeNote.cut(): non-released notes.");
-            	for(Integer id : map.keySet())
-            		{
-            		Integer note = map.get(id);
-            		Integer out = outs.get(id);
-					super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);		// should we send it this way or bypass and go straight to parent?
-					}
-            	}
-            	
+                {
+                System.err.println("FilterClip.ChangeNote.cut(): non-released notes.");
+                for(Integer id : map.keySet())
+                    {
+                    Integer note = map.get(id);
+                    Integer out = outs.get(id);
+                    super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
+                    }
+                }
+                
             map.clear();
             outs.clear();
             mapScheduled.clear();
@@ -294,7 +294,7 @@ public class FilterClip extends Clip
             if (changeLength)
                 {
                 super.scheduleNoteOff(out, note, (double)0x64, length, id, index);
-                mapScheduled.put(id, note);					// WARNING this could create a memory leak, better that than stuck notes?
+                mapScheduled.put(id, note);                                     // WARNING this could create a memory leak, better that than stuck notes?
                 }
             else
                 {
@@ -321,19 +321,19 @@ public class FilterClip extends Clip
             
             Integer newNote = map.remove(id);
             outs.remove(id);
-            if (newNote != null)                            			// revise note pitch?
+            if (newNote != null)                                                // revise note pitch?
                 {
                 note = newNote.intValue();
-	            super.noteOff(out, note, vel, id, index);
+                super.noteOff(out, note, vel, id, index);
                 }
             else
-            	{
-            	Integer scheduledNote = mapScheduled.remove(id);
-            	if (scheduledNote == null) 			// not scheduled already
-            		{
-					super.noteOff(out, note, vel, id, index);              // hope for the best
-            		}
-            	}
+                {
+                Integer scheduledNote = mapScheduled.remove(id);
+                if (scheduledNote == null)                      // not scheduled already
+                    {
+                    super.noteOff(out, note, vel, id, index);              // hope for the best
+                    }
+                }
             }
             
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
@@ -350,16 +350,16 @@ public class FilterClip extends Clip
             if (newNote != null)                            // revise note pitch?
                 {
                 note = newNote.intValue();
-            	super.scheduleNoteOff(out, note, vel, time, id, index);
+                super.scheduleNoteOff(out, note, vel, time, id, index);
                 }
             else
-            	{
-             	Integer scheduledNote = mapScheduled.remove(id);
-            	if (scheduledNote == null) 			// not scheduled already
-            		{
-            		super.scheduleNoteOff(out, note, vel, time, id, index); // hope for the best
-            		}
-           		}
+                {
+                Integer scheduledNote = mapScheduled.remove(id);
+                if (scheduledNote == null)                      // not scheduled already
+                    {
+                    super.scheduleNoteOff(out, note, vel, time, id, index); // hope for the best
+                    }
+                }
             }
         }
                
@@ -726,6 +726,7 @@ public class FilterClip extends Clip
             }
         }
 
+
     /// Noise Node
     public class Noise extends Node
         {
@@ -936,6 +937,137 @@ public class FilterClip extends Clip
             emit(index);
             }
         }
+           
+                
+
+    /// Map Node
+    public class Map extends Node
+        {
+        public void bend(int out, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+            if (func.getParameterType() == Filter.Map.TYPE_BEND)
+                {
+                boolean negative = (val < 0);
+                if (negative) val = 0 - val;
+                int min = (int)(func.getMin() * 8192);
+                int max = (int)(func.getMax() * 8192);
+                if (min > max) { int swap = min; min = max; max = swap; }
+                if (val < min) val = min;
+                if (val > max) val = max;
+                if (max != min)
+                    {
+                    double _val = (val - min) / (double) (max - min);
+                    _val = func.map(_val, getCorrectedValueDouble(func.getVariable(), 1.0));
+                    val = min + (int)(_val * (max - min));
+                    if (negative) val = 0 - val;
+                    if (val >= 8192) val = 8191;
+                    }
+                }
+            super.bend(out, val, index);
+            }
+        public void cc(int out, int cc, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+            if (func.getParameterType() == Filter.Map.TYPE_CC)
+                {
+                int min = (int)(func.getMin() * 127);
+                int max = (int)(func.getMax() * 127);
+                if (min > max) { int swap = min; min = max; max = swap; }
+                if (val < min) val = min;
+                if (val > max) val = max;
+                if (max != min)
+                    {
+                    double _val = (val - min) / (double) (max - min);
+                    _val = func.map(_val, getCorrectedValueDouble(func.getVariable(), 1.0));
+                    val = min + (int)(_val * (max - min));
+                    }
+                }
+            super.cc(out, cc, val, index);
+            }
+        public void aftertouch(int out, int note, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+            if (func.getParameterType() == Filter.Map.TYPE_AFTERTOUCH)
+                {
+                int min = (int)(func.getMin() * 127);
+                int max = (int)(func.getMax() * 127);
+                if (min > max) { int swap = min; min = max; max = swap; }
+                if (val < min) val = min;
+                if (val > max) val = max;
+                if (max != min)
+                    {
+                    double _val = (val - min) / (double) (max - min);
+                    _val = func.map(_val, getCorrectedValueDouble(func.getVariable(), 1.0));
+                    val = min + (int)(_val * (max - min));
+                    }
+                }
+            super.aftertouch(out, note, val, index);
+            }
+        public void nrpn(int out, int nrpn, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+            if (func.getParameterType() == Filter.Map.TYPE_NRPN)
+                {
+                int min = (int)(func.getMin() * 16383);
+                int max = (int)(func.getMax() * 16383);
+                if (min > max) { int swap = min; min = max; max = swap; }
+                if (val < min) val = min;
+                if (val > max) val = max;
+                if (max != min)
+                    {
+                    double _val = (val - min) / (double) (max - min);
+                    _val = func.map(_val, getCorrectedValueDouble(func.getVariable(), 1.0));
+                    val = min + (int)(_val * (max - min));
+                    }
+                }
+            super.nrpn(out, nrpn, val, index);
+            }
+        public void nrpnCoarse(int out, int nrpn, int msb, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+            if (func.getParameterType() == Filter.Map.TYPE_NRPN)
+                {
+                int min = (int)(func.getMin() * 127);
+                int max = (int)(func.getMax() * 127);
+                if (min > max) { int swap = min; min = max; max = swap; }
+                if (msb < min) msb = min;
+                if (msb > max) msb = max;
+                if (max != min)
+                    {
+                    double _val = (msb - min) / (double) (max - min);
+                    _val = func.map(_val, getCorrectedValueDouble(func.getVariable(), 1.0));
+                    msb = min + (int)(_val * (max - min));
+                    }
+                }
+            super.nrpnCoarse(out, nrpn, msb, index);
+            }
+        public void rpn(int out, int rpn, int val, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+            if (func.getParameterType() == Filter.Map.TYPE_RPN)
+                {
+                int min = (int)(func.getMin() * 16383);
+                int max = (int)(func.getMax() * 16383);
+                if (min > max) { int swap = min; min = max; max = swap; }
+                if (val < min) val = min;
+                if (val > max) val = max;
+                if (max != min)
+                    {
+                    double _val = (val - min) / (double) (max - min);
+                    _val = func.map(_val, getCorrectedValueDouble(func.getVariable(), 1.0));
+                    val = min + (int)(_val * (max - min));
+                    }
+                }
+            super.rpn(out, rpn, val, index);
+            }
+        }
 
 
     /// SENT MESSAGES
@@ -1049,8 +1181,6 @@ public class FilterClip extends Clip
         }
                         
                         
-
-
 
     public FilterClip(Seq seq, Filter filter, Clip parent)
         {

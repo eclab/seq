@@ -125,16 +125,16 @@ public class FilterUI extends MotifUI
     // we tap into this to rebuild the filters as well, since they need new
     // menus for changes to parameter names
     public void rebuildInspectors(int count) 
-    	{ 
-    	super.rebuildInspectors(count);
-    	functionGrid.removeAll();
+        { 
+        super.rebuildInspectors(count);
+        functionGrid.removeAll();
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
             {
             FunctionInspector functionInspector = new FunctionInspector(seq, filter, i);
             functionGrid.add(functionInspector);
             }
-    	repaint();
-    	}
+        repaint();
+        }
 
     public void buildInspectors(JScrollPane scroll)
         {

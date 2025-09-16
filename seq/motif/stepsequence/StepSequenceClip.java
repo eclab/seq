@@ -105,8 +105,8 @@ public class StepSequenceClip extends Clip
                 while (s >= numStepsInTrack) s -= numStepsInTrack;      // it's possible to do it twice
                 
                 /*
-                if (dSeq.getFinalNote(track, s) != StepSequence.TIE) break;
-                else 
+                  if (dSeq.getFinalNote(track, s) != StepSequence.TIE) break;
+                  else 
                 */
                 releaseTime += stepLen;
                 }
@@ -167,55 +167,55 @@ public class StepSequenceClip extends Clip
     
     
 /*
-    //// FIXME: we should set this up to allow notes played at any time and rounded to the nearest step
+//// FIXME: we should set this up to allow notes played at any time and rounded to the nearest step
     
-    public void record(int track, int step)
-        {
-        In in = seq.getIn(((StepSequence)getMotif()).getIn());
-        if (in == null) return;
-        int channel = in.getChannel();
+public void record(int track, int step)
+{
+In in = seq.getIn(((StepSequence)getMotif()).getIn());
+if (in == null) return;
+int channel = in.getChannel();
         
-        MidiMessage[] messages = in.getMessages();
-        // Find last NOTE ON or NOTE OFF of the right channel
-        for(int i = messages.length - 1; i >= 0; i--)
-            {
-            MidiMessage message = messages[i];
-            if (message instanceof ShortMessage)
-                {
-                ShortMessage shortmessage = (ShortMessage)message;
-                if (shortmessage.getCommand() == ShortMessage.NOTE_ON && shortmessage.getData2() > 0 && 
-                    (channel == Midi.OMNI || channel == shortmessage.getChannel() + 1))
-                    {
-                    // we might be doing a new note or changing the pitch, either way
-                    // we can't be tied any more
-                    trackNoteRecording = shortmessage.getData1();
-                    trackVelocityRecording = shortmessage.getData2();
-                    dSeq.setNote(track, step, trackNoteRecording);
-                    dSeq.setVelocity(track, step, trackVelocityRecording);
-                    return;
-                    }
-                else if (shortmessage.getCommand() == ShortMessage.NOTE_OFF ||
-                        (shortmessage.getCommand() == ShortMessage.NOTE_ON && shortmessage.getData2() == 0 && 
-                        (channel == Midi.OMNI || channel == shortmessage.getChannel() + 1)))
-                    {
-                    // Need to turn everything off
-                    trackNoteRecording = OFF;
-                    trackVelocityRecording = OFF;
-                    dSeq.setNote(track, step, trackNoteRecording);
-                    dSeq.setVelocity(track, step, trackVelocityRecording);
-                    return;
-                    }
-                }
-            }
+MidiMessage[] messages = in.getMessages();
+// Find last NOTE ON or NOTE OFF of the right channel
+for(int i = messages.length - 1; i >= 0; i--)
+{
+MidiMessage message = messages[i];
+if (message instanceof ShortMessage)
+{
+ShortMessage shortmessage = (ShortMessage)message;
+if (shortmessage.getCommand() == ShortMessage.NOTE_ON && shortmessage.getData2() > 0 && 
+(channel == Midi.OMNI || channel == shortmessage.getChannel() + 1))
+{
+// we might be doing a new note or changing the pitch, either way
+// we can't be tied any more
+trackNoteRecording = shortmessage.getData1();
+trackVelocityRecording = shortmessage.getData2();
+dSeq.setNote(track, step, trackNoteRecording);
+dSeq.setVelocity(track, step, trackVelocityRecording);
+return;
+}
+else if (shortmessage.getCommand() == ShortMessage.NOTE_OFF ||
+(shortmessage.getCommand() == ShortMessage.NOTE_ON && shortmessage.getData2() == 0 && 
+(channel == Midi.OMNI || channel == shortmessage.getChannel() + 1)))
+{
+// Need to turn everything off
+trackNoteRecording = OFF;
+trackVelocityRecording = OFF;
+dSeq.setNote(track, step, trackNoteRecording);
+dSeq.setVelocity(track, step, trackVelocityRecording);
+return;
+}
+}
+}
         
-        // At this point we had nothing to change.  But are we tied?
+// At this point we had nothing to change.  But are we tied?
 //        if (trackNoteRecording != OFF)          // looks like we're tied
 //            {
 //            // Need to add a tie
 //            dSeq.setNote(track, trackNoteRecording, StepSequence.TIE);
 //            dSeq.setVelocity(track, trackVelocityRecording, 0);
 //            }
-        }
+}
 */
         
     // called if we're doing learning for the track
@@ -313,9 +313,9 @@ public class StepSequenceClip extends Clip
             // We will assume that doesn't happen for now.
 
             /*
-            if (dSeq.getNote(track, step) == StepSequence.TIE) continue;              // we're tied, do nothing, keep playing  FIXME: will this work if the musician changes ties mid-play?
-			*/
-			
+              if (dSeq.getNote(track, step) == StepSequence.TIE) continue;              // we're tied, do nothing, keep playing  FIXME: will this work if the musician changes ties mid-play?
+            */
+                        
             // compute remainder and subtract swing portion
             int remainder = (int) (pos - step * stepLen) - (step % 2 == 0 ? 0 : (int)(stepLen * getCorrectedValueDouble(dSeq.getFinalSwing(track), 1.0)));
             if (remainder < 0) { playingStep[track] = OFF; continue; }               // we have swing, we're not ready yet
@@ -394,32 +394,32 @@ public class StepSequenceClip extends Clip
 
 
 
-	/// Modified versions of getCorrectedValue.... to include DEFAULT as an option
+    /// Modified versions of getCorrectedValue.... to include DEFAULT as an option
 
     public double getCorrectedValueDouble(double basicVal)
         {
         if (basicVal == StepSequence.DEFAULT)
-        	{
-        	return basicVal;
-        	}
+            {
+            return basicVal;
+            }
         else return super.getCorrectedValueDouble(basicVal);
         }
     
     public double getCorrectedValueDouble(double basicVal, double maxVal)
         {
         if (basicVal == StepSequence.DEFAULT)
-        	{
-        	return basicVal;
-        	}
+            {
+            return basicVal;
+            }
         else return super.getCorrectedValueDouble(basicVal, maxVal);
         }
     
     public int getCorrectedValueInt(int basicVal, int maxVal)
         {
         if (basicVal == StepSequence.DEFAULT)
-        	{
-        	return basicVal;
-        	}
+            {
+            return basicVal;
+            }
         else return super.getCorrectedValueInt(basicVal, maxVal);
         }
 

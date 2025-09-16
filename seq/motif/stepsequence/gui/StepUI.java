@@ -177,8 +177,8 @@ public class StepUI extends JComponent
         boolean beat = (selected || stepNum % 4 == 0);
 
         g.setPaint(on ? 
-        	(finalVelocity < 0 ? DEFAULT_COLOR : ssui.getStepVelocityMap().getColor(finalVelocity))
-        	 : OFF_COLOR);
+            (finalVelocity < 0 ? DEFAULT_COLOR : ssui.getStepVelocityMap().getColor(finalVelocity))
+            : OFF_COLOR);
         
         int inset = (beat ? 1 : 0);
         Rectangle2D.Double rect = new Rectangle2D.Double(2 + inset, 2 + inset, getBounds().width - 4 - (inset * 2), getBounds().height - 4 - (inset * 2));

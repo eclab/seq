@@ -48,7 +48,7 @@ public class DefaultParameterList extends JPanel
                         lock.lock();
                         try { motif.setParameterName(_i, newValue.equals("") ? null : newValue); }
                         finally { lock.unlock(); }
-                        reopen = true;		// ugh, see below
+                        reopen = true;          // ugh, see below
                         sequi.incrementRebuildInspectorsCount();                // force inspectors to update
                         return newValue;
                         }
@@ -82,9 +82,9 @@ public class DefaultParameterList extends JPanel
         disclosure.setParentComponent(sequi);
         add(disclosure, BorderLayout.CENTER);
         if (reopen)
-        	{
-        	disclosure.setDisclosed(true);
-        	}
+            {
+            disclosure.setDisclosed(true);
+            }
         reopen = false;
         }
         

@@ -144,7 +144,7 @@ public abstract class Clip
     public void reset() 
         {
         getMotif().setPlayingClip(this);
-	    position = 0;
+        position = 0;
         resetTriggers();
         if (this == seq.root) loadRootRandomValue();       // this is done only at reset and loop
         }
@@ -809,4 +809,4 @@ public abstract class Clip
         ShortMessage shortmessage = (ShortMessage) message;
         return (shortmessage.getCommand() == ShortMessage.POLY_PRESSURE);
         }
-     }
+    }

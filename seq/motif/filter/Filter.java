@@ -22,6 +22,7 @@ public class Filter extends Motif
     public static final String DELAY = "Delay";
     public static final String DROP = "Drop";
     public static final String NOISE = "Noise";
+    public static final String MAP = "Map";
 
 /*
   public static final int QUANTIZE = 0;               // quantize to scales and chords
@@ -60,6 +61,10 @@ public class Filter extends Motif
             {
             return 4;
             }
+        else if (MAP.equals(type))
+            {
+            return 5;
+            }
         else
             {
             System.err.println("Filter.typeIndex: could not find type " + type);
@@ -90,6 +95,10 @@ public class Filter extends Motif
             {
             return new Noise();
             }
+        else if (index == 5)
+            {
+            return new Map();
+            }
         else
             {
             System.err.println("Filter.loadFunction: could not create function " + index);
@@ -119,6 +128,10 @@ public class Filter extends Motif
         else if (NOISE.equals(type))
             {
             return new Noise(obj);
+            }
+        else if (MAP.equals(type))
+            {
+            return new Map(obj);
             }
         else
             {
@@ -331,6 +344,125 @@ public class Filter extends Motif
             }
         }
                 
+    public class Map extends Function
+        {
+        public static final int TYPE_BEND = 0;
+        public static final int TYPE_CC = 1;
+        public static final int TYPE_NRPN = 2;
+        public static final int TYPE_RPN = 3;                   // why would you need this?
+        public static final int TYPE_AFTERTOUCH = 4;
+            
+
+        /*
+          X + A;
+          A - X;
+          X - A;
+          X * A;
+          Discretize[x,A]:   Round[x*a]/a
+          1-Discretize[x,A]
+          X ^ 2;
+          X ^ 4;
+          1-(1-X) ^ 2;
+          1-(1-X) ^ 4;
+        */
+            
+        public static final int MAP_NONE = 0;
+        public static final int MAP_INV = 1;
+        public static final int MAP_ADD = 2;
+        public static final int MAP_SUBTRACT = 3;
+        public static final int MAP_MULTIPLY = 4;
+        public static final int MAP_DISCRETIZE = 5;
+        public static final int MAP_INV_DISCRETIZE = 6;
+        public static final int MAP_SQUARE = 7;
+        public static final int MAP_SQUARE_SQUARE = 8;
+        public static final int MAP_INV_SQUARE = 9;
+        public static final int MAP_INV_SQUARE_SQUARE = 10;
+        
+        public static final int MAX_DISCRETIZATION = 16;
+
+        int parameterType;
+        int parameter;
+        double variable;
+        int map;
+        double min;
+        double max;
+                
+        public double getMin() { return min; }
+        public void setMin(double val) { min = val; }
+        public double getMax() { return max; }
+        public void setMax(double val) { max = val; }
+        public int getMap() { return map; }
+        public void setMap(int val) { map = val; }
+        public int getParameterType() { return parameterType; }
+        public void setParameterType(int val) { parameterType = val; }
+        public int getParameter() { return parameter; }
+        public void setParameter(int val) { parameter = val; }
+        public double getVariable() { return variable; }
+        public void setVariable(double val) { variable = val; }
+                
+                
+        public double map(double val, double variable)
+            {
+            switch(map)
+                {
+                case MAP_NONE:
+                    return val;
+                case MAP_INV:
+                    return Math.max(0.0, variable - val);
+                case MAP_ADD:
+                    return Math.min(1.0, val + variable);
+                case MAP_SUBTRACT:
+                    return Math.max(0.0, val + variable);
+                case MAP_MULTIPLY:
+                    return val * variable;
+                case MAP_DISCRETIZE:
+                {
+                double v = (int)(variable * MAX_DISCRETIZATION) + 1;            // note double and int
+                if (v > 16) v = 16;             // When variable == 1.0
+                return Math.round(val * v) / v;
+                }
+                case MAP_INV_DISCRETIZE:
+                    double v = (int)(variable * MAX_DISCRETIZATION) + 1;            // note double and int
+                    if (v > 16) v = 16;             // When variable == 1.0
+                    return 1.0 - Math.round(val * v) / v;
+                case MAP_SQUARE:
+                    return val * val;
+                case MAP_SQUARE_SQUARE:
+                    return val * val * val * val;
+                case MAP_INV_SQUARE:
+                    return 1 - (1 - val) * (1 - val);
+                case MAP_INV_SQUARE_SQUARE:
+                    return 1 - (1 - val) * (1 - val) * (1 - val) * (1 - val);
+                }
+            System.err.println("Filter.map(), unreachable position");
+            return val;             // uhm...
+            }
+                
+        public Map() { }
+        public String getType() { return MAP; }
+        public Map(JSONObject obj)
+            {
+            min = obj.optDouble("min", 0.0);
+            max = obj.optDouble("max", 1.0);
+            map = obj.optInt("map", 1);
+            parameterType = obj.optInt("pt", TYPE_BEND);
+            parameter = obj.optInt("p", 0);
+            variable = obj.optDouble("v", 1.0);
+            }
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            obj.put("map", map);
+            obj.put("min", min);
+            obj.put("max", max);
+            obj.put("pt", parameterType);
+            obj.put("p", parameter);
+            obj.put("v", variable);
+            return obj;
+            }
+        }
+                
+
     public void add(Motif motif)
         {
         addChild(motif);
@@ -431,24 +563,24 @@ public class Filter extends Motif
         }
 
     public String getParameterName(int param) 
-    	{ 
-    	if (getChildren().size() > 0)
-    		{
-    		Motif motif = getChild(0).getMotif();
-    		if (motif instanceof Blank)
-    			{
-    			return super.getParameterName(param);
-    			}
-    		else
-    			{
-    			return motif.getParameterName(param);
-    			}
-    		}
-    	else
-    		{
-    		return super.getParameterName(param);
-	    	}
-    	}
+        { 
+        if (getChildren().size() > 0)
+            {
+            Motif motif = getChild(0).getMotif();
+            if (motif instanceof Blank)
+                {
+                return super.getParameterName(param);
+                }
+            else
+                {
+                return motif.getParameterName(param);
+                }
+            }
+        else
+            {
+            return super.getParameterName(param);
+            }
+        }
 
     static int document = 0;
     static int counter = 1;

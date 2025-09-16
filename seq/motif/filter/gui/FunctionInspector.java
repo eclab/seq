@@ -15,8 +15,9 @@ import java.util.concurrent.locks.*;
 
 public class FunctionInspector extends JPanel
     {
-    public static final String[] INSPECTOR_NAMES = { "None", "Note", "Delay", "Drop", "Parameter" };
+    public static final String[] INSPECTOR_NAMES = { "None", "Note", "Delay", "Drop", "Noise", "Map"  };
     public static final String[] PARAMETER_TYPES = { "Bend", "CC", "NRPN", "RPN", "Aftertouch" };
+    public static final String[] MAP_TYPES = { "None", "BY - X", "X + BY", "X - BY", "X * BY", "Discretize[X, BY]", "1-Discretize[X,BY]", "X^2", "X^4", "1-(1-X)^2", "1-(1-x)^4" };
     // public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
     Seq seq;
@@ -182,20 +183,20 @@ public class FunctionInspector extends JPanel
                     try { func.setTranspose((int)(val * 2 * Filter.MAX_TRANSPOSE)); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setTranspose(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setTranspose(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             transposeVariance = new SmallDial(func.getTransposeVariance(), defaults)
@@ -216,20 +217,20 @@ public class FunctionInspector extends JPanel
                     try { func.setTransposeVariance(val); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setTransposeVariance(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getTransposeVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setTransposeVariance(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getTransposeVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             gain = new SmallDial(func.getGain() / Filter.MAX_GAIN, defaults)
@@ -250,20 +251,20 @@ public class FunctionInspector extends JPanel
                     try { func.setGain(val * Filter.MAX_GAIN); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setGain(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setGain(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             gainVariance = new SmallDial(func.getGainVariance(), defaults)
@@ -284,20 +285,20 @@ public class FunctionInspector extends JPanel
                     try { func.setGainVariance(val); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setGainVariance(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getGainVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setGainVariance(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getGainVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             releaseGain = new SmallDial(func.getReleaseGain() / Filter.MAX_GAIN, defaults)
@@ -318,20 +319,20 @@ public class FunctionInspector extends JPanel
                     try { func.setReleaseGain(val * Filter.MAX_GAIN); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setReleaseGain(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getReleaseGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setReleaseGain(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getReleaseGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             releaseGainVariance = new SmallDial(func.getReleaseGainVariance(), defaults)
@@ -352,20 +353,20 @@ public class FunctionInspector extends JPanel
                     try { func.setReleaseGainVariance(val); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setReleaseGainVariance(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getReleaseGainVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setReleaseGainVariance(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getReleaseGainVariance(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             changeLength = new JCheckBox();
@@ -510,20 +511,20 @@ public class FunctionInspector extends JPanel
                     try { func.setCut(val); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setCut(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getCut(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setCut(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getCut(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
             numTimes = new SmallDial(func.getNumTimes() / (double)Filter.MAX_DELAY_NUM_TIMES, defaults)
                 {
@@ -543,20 +544,20 @@ public class FunctionInspector extends JPanel
                     try { func.setNumTimes((int)(val * Filter.MAX_DELAY_NUM_TIMES)); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setNumTimes(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getNumTimes(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setNumTimes(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getNumTimes(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             original.setToolTipText(DELAY_ORIGINAL_TOOLTIP);
@@ -639,20 +640,20 @@ public class FunctionInspector extends JPanel
                     try { func.setProbability(val); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setProbability(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setProbability(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             cut.setToolTipText(DROP_CUT_TOOLTIP);
@@ -663,7 +664,7 @@ public class FunctionInspector extends JPanel
                     {
                     null,
                     cut,
-                    probability.getLabelledDial("Param 8"), 	//"0.0000"),
+                    probability.getLabelledDial("Param 8"),     //"0.0000"),
                     });
             }
                         
@@ -717,20 +718,20 @@ public class FunctionInspector extends JPanel
                     try { func.setDistVar(val); }
                     finally { lock.unlock(); }
                     }
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) func.setDistVar(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = func.getDistVar(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setDistVar(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getDistVar(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
                 };
 
             parameterLSB = new SmallDial((func.getParameter() % 128) / 127.0)
@@ -879,6 +880,299 @@ public class FunctionInspector extends JPanel
         public String getName() { return "Parameter"; }
         }
 
+
+
+    public class MapInspector extends SubInspector
+        {
+        JComboBox parameterType;
+        SmallDial parameterMSB;
+        SmallDial parameterLSB;
+        SmallDial variable;
+        JComboBox mapType;
+        SmallDial min;
+        SmallDial max;
+        TimeDisplay rate;
+                               
+        public String mapVal(double val)
+            {
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+
+            int type = 0;
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try { type = func.getParameterType(); }
+            finally { lock.unlock(); }
+                        
+            double mult = 127;
+            if (type == Filter.Map.TYPE_BEND) mult = 8191;
+            else if (type == Filter.Map.TYPE_NRPN) mult = 16383;
+            else if (type == Filter.Map.TYPE_RPN) mult = 16383;
+            return String.valueOf((int)(val * mult));
+            }
+                                
+        public MapInspector()
+            {
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+                        
+            variable = new SmallDial(func.getVariable(), defaults)
+                {
+                public String map(double val) { return mapVal(val); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return func.getVariable(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setVariable(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setVariable(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getVariable(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+            min = new SmallDial(func.getMin(), defaults)
+                {
+                public String map(double val) { return mapVal(val); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return func.getMin(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setMin(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setMin(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getMin(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+            max = new SmallDial(func.getMax(), defaults)
+                {
+                public String map(double val) { return mapVal(val); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return func.getMax(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setMax(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setMax(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getMax(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+            parameterLSB = new SmallDial((func.getParameter() % 128) / 127.0)
+                {
+                protected String map(double val) { return String.valueOf((int)(val * 127)); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return (func.getParameter() % 128) / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setParameter((int)((func.getParameter() / 128) * 128 + val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+            parameterMSB = new SmallDial((func.getParameter() / 128) / 127.0)
+                {
+                protected String map(double val) 
+                    { 
+                    int v = (int)(val * 127);
+                    return String.valueOf(v) ; // + " / " +  NOTES[v % 12] + (v / 12);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return (func.getParameter() / 128) / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setParameter((int)((func.getParameter() % 128) + val * 127 * 128)); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+            mapType = new JComboBox(MAP_TYPES);
+            mapType.setSelectedIndex(func.getMap());
+            mapType.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    int result = mapType.getSelectedIndex();
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setMap(result); }
+                    finally { lock.unlock(); } 
+                    }
+                });
+            updateParams(func.getMap());
+
+            parameterType = new JComboBox(PARAMETER_TYPES);
+            parameterType.setSelectedIndex(func.getParameterType());
+            parameterType.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    int result = parameterType.getSelectedIndex();
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setParameterType(result); }
+                    finally { lock.unlock(); } 
+                    updateParams(result);
+                    min.redraw();
+                    max.redraw();
+                    variable.redraw();
+                    }
+                });
+            updateParams(func.getParameterType());
+
+            parameterType.setToolTipText(PARAMETER_TYPE_TOOLTIP);
+            parameterMSB.setToolTipText(PARAMETER_PARAM_MSB_TOOLTIP);
+            parameterLSB.setToolTipText(PARAMETER_PARAM_LSB_TOOLTIP);
+            mapType.setToolTipText(MAP_MAP_TOOLTIP);
+            variable.setToolTipText(MAP_VARIABLE_TOOLTIP);
+            min.setToolTipText(MAP_MIN_TOOLTIP);
+            max.setToolTipText(MAP_MAX_TOOLTIP);
+
+            build(new String[] { "", "Type", "Param/MSB", "LSB", "Map", "Min", "Max", "By"}, 
+                new JComponent[] 
+                    {
+                    null,
+                    parameterType,
+                    parameterMSB.getLabelledDial("128"),
+                    parameterLSB.getLabelledDial("128"),
+                    mapType,
+                    min.getLabelledDial("16383"),
+                    max.getLabelledDial("16383"),
+                    variable.getLabelledDial("16383")
+                    });
+            }
+    
+        void updateParams(int result)
+            {
+            if (result == 0)                // Bend
+                {
+                parameterMSB.setEnabled(false);
+                parameterLSB.setEnabled(false);
+                }
+            else if (result == 1)           // CC
+                {
+                parameterMSB.setEnabled(true);
+                parameterLSB.setEnabled(false);
+                }
+            else if (result == 2)           // NRPN
+                {
+                parameterMSB.setEnabled(true);
+                parameterLSB.setEnabled(true);
+                }
+            else if (result == 3)           // RPN
+                {
+                parameterMSB.setEnabled(true);
+                parameterLSB.setEnabled(true);
+                }
+            else if (result == 4)           // Aftertouch
+                {
+                parameterMSB.setEnabled(false);
+                parameterLSB.setEnabled(false);
+                }
+            }
+                
+        public void revise() 
+            {
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+
+            Seq old = seq;
+            seq = null;
+            ReentrantLock lock = old.getLock();
+            lock.lock();
+            try 
+                { 
+                parameterType.setSelectedIndex(func.getParameterType()); 
+                mapType.setSelectedIndex(func.getMap()); 
+                }
+            finally { lock.unlock(); }                              
+            seq = old;
+            if (parameterMSB != null) parameterMSB.redraw();
+            if (parameterLSB != null) parameterLSB.redraw();
+            if (variable != null) variable.redraw();
+            if (min != null) min.redraw();
+            if (max != null) max.redraw();
+            }
+
+        public String getName() { return "Parameter"; }
+        }
+        
+        
     public SubInspector buildSubinspector(String type)
         {
         if (type.equals(Filter.IDENTITY))
@@ -900,6 +1194,10 @@ public class FunctionInspector extends JPanel
         else if (type.equals(Filter.NOISE))
             {
             return new NoiseInspector();
+            }
+        else if (type.equals(Filter.MAP))
+            {
+            return new MapInspector();
             }
         else // uh...
             {
@@ -1003,12 +1301,31 @@ public class FunctionInspector extends JPanel
         "Sets the Least Significant Byte (LSB) of the parameter number to be modified. This is only<br>" +
         "relevant for <b>Non-Registered Parameter Numbers (NRPN)</b> and <b>Registered Parameter Numbers (RPN)</b></html>";
         
+    static final String PARAMETER_RATE_TOOLTIP = "<html><b>Rate</b><br>" +
+        "Sets how often a new random value is chosen to be added to the parameter value for incoming events.<br><br>" + 
+        "Though random noise is added to all values, it only changes every once in a while, according to the <b>Rate</b>.</html>";
+
     static final String PARAMETER_VARIANCE_TOOLTIP = "<html><b>Variance</b><br>" +
         "Sets the variance of random noise to be added to the parameter value for incoming events.<br><br>" + 
         "Though random noise is added to all values, it only changes every once in a while, according to the <b>Rate</b>.</html>";
         
-    static final String PARAMETER_RATE_TOOLTIP = "<html><b>Rate</b><br>" +
-        "Sets how often a new random value is chosen to be added to the parameter value for incoming events.<br><br>" + 
-        "Though random noise is added to all values, it only changes every once in a while, according to the <b>Rate</b>.</html>";
+    static final String MAP_MAP_TOOLTIP = "<html><b>Map</b><br>" +
+        "Specifies the mapping function to use to modify the parameter value.</html>";
+
+    static final String MAP_VARIABLE_TOOLTIP = "<html><b>Variable</b><br>" +
+        "Sets the variable associated with some of the mapping functions, which changes how the<br>" +
+        "mapping function modifies the parameter value.</html>";
+
+    static final String MAP_MIN_TOOLTIP = "<html><b>Min</b><br>" +
+        "Specifies the minimum legal parameter value.<br><br>" +
+        "This will both bound the parameter value before it goes into the mapping function,<br>" +
+        "then scale the result after it comes out so that it's still between min and max.</html>";
+
+    static final String MAP_MAX_TOOLTIP = "<html><b>Max</b><br>" +
+        "Specifies the maximum legal parameter value.<br><br>" +
+        "This will both bound the parameter value before it goes into the mapping function,<br>" +
+        "then scale the result after it comes out so that it's still between min and max.</html>";
+
+
 
     }

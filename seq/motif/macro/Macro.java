@@ -117,8 +117,6 @@ public class Macro extends Motif
     	{ 
     	if (macroRoot != null && !(macroRoot instanceof Blank))
     		{
-    		System.err.println("Macro Root Exists " + macroRoot);
-    		System.err.println(macroRoot.getParameterName(param));
     		return macroRoot.getParameterName(param);
     		}
     	else

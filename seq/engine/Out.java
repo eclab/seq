@@ -228,10 +228,10 @@ public class Out
         }
 
     public int getChannel()
-    	{
+        {
         Midi.Tuple tuple = seq.tuple;
-    	return tuple.outChannel[index];
-    	}
+        return tuple.outChannel[index];
+        }
         
     // Send a two-byte message
     boolean send(int command, int data)
@@ -287,11 +287,11 @@ public class Out
         NOTE: It is impossible to send a noteOn of velocity 0 (that's defined in MIDI as a Note Off).
         So we will bump it to 1.  */
     public boolean noteOn(int note, double vel) 
-    	{ 
-    	int gain = gain(vel);
-    	if (gain == 0) gain = 1;
-    	return send(ShortMessage.NOTE_ON, transpose(note), gain); 
-    	}
+        { 
+        int gain = gain(vel);
+        if (gain == 0) gain = 1;
+        return send(ShortMessage.NOTE_ON, transpose(note), gain); 
+        }
 
     /** Sends a note off .  Note that velocity is expressed as a double,
         but is still a value 0...127 and will be clamped as such.  The note and velocity
@@ -312,11 +312,11 @@ public class Out
     public boolean noteOff(int note) { return send(ShortMessage.NOTE_ON, transpose(note), 0); }
 
     /** Sends a note on to a fixed channel regardless of the Out's channel.  The velocity
-    	and transpose are not modified. */
+        and transpose are not modified. */
     public boolean noteOn(int note, int vel, int channel) 
-    	{ 
-    	return sendToChannel(ShortMessage.NOTE_ON, note, vel, channel); 
-    	}
+        { 
+        return sendToChannel(ShortMessage.NOTE_ON, note, vel, channel); 
+        }
 
     /** Sends a note on to a fixed channel regardless of the Out's channel. */
     public boolean cc(int cc, int val, int channel) 
