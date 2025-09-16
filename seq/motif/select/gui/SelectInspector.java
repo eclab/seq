@@ -32,8 +32,10 @@ public class SelectInspector extends WidgetList
     JCheckBox cut;
     //JButton release;
     JButton finish;
-    //SmallDial[] dials = new SmallDial[Motif.NUM_PARAMETERS];
-    //JComboBox dialIn;
+    SmallDial[] dials = new SmallDial[Motif.NUM_PARAMETERS];
+    JCheckBox[] uses = new JCheckBox[Motif.NUM_PARAMETERS];
+    JPanel[] ccUse = new JPanel[Motif.NUM_PARAMETERS];
+    JComboBox dialIn;
     
     public SelectInspector(Seq seq, Select select, SelectUI selectui)
         {
@@ -146,6 +148,20 @@ public class SelectInspector extends WidgetList
                 });
             in.setToolTipText(CONTROL_IN_TOOLTIP);
       
+            dialIn = new JComboBox(ins);
+            dialIn.setSelectedIndex(select.getCCIn());
+            dialIn.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { select.setCCIn(dialIn.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+
             device = new JComboBox(Pad.DEVICE_NAMES);
             device.setSelectedIndex(select.getGridDevice());
             device.addActionListener(new ActionListener()
@@ -192,51 +208,58 @@ public class SelectInspector extends WidgetList
                 });
             cut.setToolTipText(CUT_NOTES_TOOLTIP);
 
-/*
-  for(int i = 0; i < 8; i++)
-  {
-  final int _i = i;
-  dials[i] = new SmallDial(select.getCC(i))
-  {
-  protected String map(double val) 
-  {
-  return String.valueOf((int)(val * 127));
-  }
-  public double getValue() 
-  { 
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try { return select.getCC(_i) / 127.0; }
-  finally { lock.unlock(); }
-  }
-  public void setValue(double val) 
-  { 
-  if (seq == null) return;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try { select.setCC(_i, (int)(val * 127)); }
-  finally { lock.unlock(); }
-  }
-  };
-  }
-*/
-
-/*
-  dialIn = new JComboBox(ins);
-  dialIn.setSelectedIndex(select.getCCIn());
-  dialIn.addActionListener(new ActionListener()
-  {
-  public void actionPerformed(ActionEvent e)
-  {
-  if (seq == null) return;
-  ReentrantLock lock = seq.getLock();
-  lock.lock();
-  try { select.setCCIn(dialIn.getSelectedIndex()); }              // -1 is DEFAULT
-  finally { lock.unlock(); }                              
-  }
-  });
-*/
-                        
+            for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+                {
+                final int _i = i;
+                dials[i] = new SmallDial(select.getCC(i))
+                    {
+                    protected String map(double val) 
+                        {
+                        if (val == 1.0) return "None";
+                        return String.valueOf((int)(val * 128));              // include Select.CC_NONE
+                        }
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return select.getCC(_i) / 128.0; }              // include Select.CC_NONE
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { select.setCC(_i, (int)(val * 128.0)); }         // include Select.CC_NONE
+                        finally { lock.unlock(); }
+                        }
+                    };
+                                
+                uses[i] = new JCheckBox();
+                uses[i].setSelected(select.getOverrideParameters(i));
+                uses[i].addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { select.setOverrideParameters(_i, uses[_i].isSelected()); }
+                        finally { lock.unlock(); }
+                        selectui.getDial(_i).setEnabled(uses[_i].isSelected());
+                        selectui.updateDials();
+                        }
+                    });
+                                        
+                ccUse[i] = new JPanel();
+                ccUse[i].setLayout(new BorderLayout());
+                ccUse[i].add(uses[i], BorderLayout.WEST);
+                JPanel pan = new JPanel();
+                pan.setLayout(new BorderLayout());
+                pan.add(new JLabel("    CC  "), BorderLayout.WEST);
+                pan.add(dials[i].getLabelledDial("None"), BorderLayout.CENTER);
+                ccUse[i].add(pan, BorderLayout.CENTER);
+                }
             }
         finally { lock.unlock(); }
 
@@ -262,6 +285,14 @@ public class SelectInspector extends WidgetList
   });
 */
    
+        WidgetList dialList = new WidgetList(
+            new String[] { "CC In", "Dial 1", "Dial 2", "Dial 3", "Dial 4", "Dial 5", "Dial 6", "Dial 7", "Dial 8" },
+            new JComponent[] { dialIn, ccUse[0], ccUse[1], ccUse[2], ccUse[3], ccUse[4], ccUse[5], ccUse[6], ccUse[7] });
+        dialList.setBorder(BorderFactory.createTitledBorder("<html><i>Dial Parameters</i></html>"));
+        DisclosurePanel dialDisclosure = new DisclosurePanel("Dial Parameters", dialList);
+        dialDisclosure.setParentComponent(selectui);
+
+
         finish = new JButton("Finish");
         finish.addActionListener(new ActionListener()
             {
@@ -300,7 +331,7 @@ public class SelectInspector extends WidgetList
           new JComponent[] { dials[4].getLabelledDial("127"), dials[5].getLabelledDial("127"), dials[6].getLabelledDial("127"), dials[7].getLabelledDial("127"), }));
         */               
 
-        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Grid Out", "Grid In", "Grid Device", "Quantization", "Auto-Play First", "Cut Notes", }, //  "Param CCs In", "Param CCs" }, 
+        JPanel result = build(new String[] { "Actions", "Name", "Mode", "Grid Out", "Grid In", "Grid Device", "Quantization", "Auto-Play First", "Cut Notes" }, 
             new JComponent[] 
                 {
                 panel,
@@ -313,13 +344,12 @@ public class SelectInspector extends WidgetList
                 playFirst,
                 //immediate,
                 cut,
-                //dialIn,
-                //dialBox,
                 });
 
-        remove(result);
-        add(result, BorderLayout.CENTER);               // re-add it as center
-
+        //remove(result);
+        //add(result, BorderLayout.CENTER);               // re-add it as center
+        add(dialDisclosure, BorderLayout.CENTER);
+                
         add(new DefaultParameterList(seq, selectui), BorderLayout.SOUTH);
         }
                 

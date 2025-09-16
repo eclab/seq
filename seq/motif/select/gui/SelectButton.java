@@ -207,11 +207,20 @@ public class SelectButton extends MotifButton
             String text = null;    
             if (subname == null || subname.equals(""))
                 {
-                text = "<html><center>" + StringUtility.sanitize(name) + "</center></html>";
+                subname = StringUtility.sanitize(name);
+                }
+            
+            
+            String sanitized = StringUtility.sanitize(subname);
+            if (sanitized.length() > 7)
+                {
+                text = sanitized;
+                //text = "<html><center><font size=1>" + sanitized + "</font></center></html>";
                 }
             else
                 {
-                text = "<html><center>" + subname + "</center></html>";
+                text = sanitized;
+                //text = "<html><center>" + sanitized + "</center></html>";
                 }
 
             if (!text.equals(lastText))

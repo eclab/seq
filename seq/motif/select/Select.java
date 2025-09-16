@@ -153,14 +153,20 @@ public class Select extends Motif
     public static final int MODE_MULTI_ONE_SHOT = 2;
     public static final int MODE_MULTI_REPEATING = 3;
 
-    /*
-      int[] cc = new int[NUM_PARAMETERS];
-      public int getCC(int index) { return cc[index]; }
-      public void setCC(int index, int val) { cc[index] = val; }
-    */
+    public static final int CC_NONE = 128;
+
+    // just during playback
+    double[] playingParameters = new double[NUM_PARAMETERS];
+
+    boolean[] overrideParameters = new boolean[NUM_PARAMETERS];
+    int[] cc = new int[NUM_PARAMETERS];
+    public boolean getOverrideParameters(int index) { return overrideParameters[index]; }
+    public void setOverrideParameters(int index, boolean val) { overrideParameters[index] = val; }
+    public int getCC(int index) { return cc[index]; }
+    public void setCC(int index, int val) { cc[index] = val; }
         
     int in = 0;
-    //int ccIn = 0;
+    int ccIn = 0;
     int out = 0;
     int startNote = DEFAULT_START_NOTE;
     
@@ -174,7 +180,10 @@ public class Select extends Motif
     int quantization = QUANTIZATION_SIXTEENTH;
     // Should we cut or release the previous child?
     boolean cut = false;
-        
+
+    public double getPlayingParameter(int param) { return playingParameters[param]; }
+    public void setPlayingParameter(int param, double value) { playingParameters[param] = value; }
+
     /** Return Select's mode, one of MODE_SINGLE_ONE_SHOT, MODE_SINGLE_REPEATING, 
         MODE_MULTI_ONE_SHOT, or MODE_MULTI_REPEATING.  */
     public int getMode() { return mode; }
@@ -203,25 +212,25 @@ public class Select extends Motif
     public void setQuantization(int val) { quantization = val; }
     
     /* Return the index in the Seq's In array for the In used to set parameters. */
-    //public int getCCIn() { return ccIn; }
+    public int getCCIn() { return ccIn; }
     
     /* Set the index in the Seq's In array for the In used to set parameters. */
-    //public void setCCIn(int val) { ccIn = val; Prefs.setLastControlDevice(0, val, "seq.motif.select.Select"); }
+    public void setCCIn(int val) { ccIn = val; Prefs.setLastControlDevice(0, val, "seq.motif.select.Select"); }
 
     /** Return the index in the Seq's In array for the In used to read MIDI notes for triggering. 
-    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
+        Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public int getIn() { return in; }
     
     /** Set the index in the Seq's In array for the In used to read MIDI notes for triggering.  
-    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
+        Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.select.Select"); }
 
     /** Return the index in the Seq's Out array for the Out used to light pads.  
-    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
+        Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public int getOut() { return out; }
     
     /** Set the index in the Seq's Out array for the Out used to light pads.  
-    	Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
+        Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.select.Select"); }
 
     int gridDevice = Pad.DEVICE_LAUNCHPAD_MKIII;
@@ -243,7 +252,11 @@ public class Select extends Motif
         out = (Prefs.getLastOutDevice(0, "seq.motif.select.Select"));
         in = (Prefs.getLastInDevice(0, "seq.motif.select.Select"));
         gridDevice = (Prefs.getLastGridDevice(0, "seq.motif.select.Select"));
-        //ccIn = (Prefs.getLastControlDevice(0, "seq.motif.select.Select"));
+        ccIn = (Prefs.getLastControlDevice(0, "seq.motif.select.Select"));
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            setCC(i, CC_NONE);
+            }
         }
                 
     public Clip buildClip(Clip parent)
@@ -261,13 +274,16 @@ public class Select extends Motif
         setIn(from.optInt("in", 0));
         setOut(from.optInt("out", 0));
         setGridDevice(from.optInt("grid", 0));
-        /*
-          JSONArray param = from.getJSONArray("cc");
-          for(int i = 0; i < NUM_PARAMETERS; i++)
-          {
-          setCC(i, param.getInt(i));
-          }
-        */
+        JSONArray param = from.getJSONArray("cc");
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            setCC(i, param.getInt(i));
+            }
+        param = from.getJSONArray("useparam");
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            setOverrideParameters(i, param.getBoolean(i));
+            }
         }
         
     public void save(JSONObject to) throws JSONException
@@ -280,14 +296,20 @@ public class Select extends Motif
         to.put("in", getIn());
         to.put("out", getOut());
         to.put("grid", getGridDevice());
-        /*
-          JSONArray cc = new JSONArray();
-          for(int i = 0; i < NUM_PARAMETERS; i++)
-          {
-          cc.put(getCC(i));
-          }
-          to.put("cc", cc);
-        */
+        
+        JSONArray param = new JSONArray();
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            param.put(getCC(i));
+            }
+        to.put("cc", param);
+          
+        param = new JSONArray();
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            param.put(getOverrideParameters(i));
+            }
+        to.put("useparam", param );
         }
 
     static int document = 0;

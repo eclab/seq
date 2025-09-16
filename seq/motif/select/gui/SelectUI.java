@@ -37,6 +37,9 @@ public class SelectUI extends MotifUI
     JPanel selectOuter;
     TitledBorder selectBorder;
     SelectInspector selectInspector;
+    JScrollPane scrollPane;
+    
+    Dial[] dials = new Dial[Motif.NUM_PARAMETERS];              // also 8
     
     public static final int GRID_WIDTH = 8;
     public static final int GRID_SIZE = GRID_WIDTH * GRID_WIDTH;
@@ -50,6 +53,10 @@ public class SelectUI extends MotifUI
     public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/select.png")); }        // don't ask
     public ImageIcon getIcon() { return getStaticIcon(); }
     public static String getType() { return "Select"; }
+    
+    public Dial getDial(int index) { return dials[index]; }
+    public void updateDials() { sequi.setMotifUI(this); }
+    
     public static MotifUI create(Seq seq, SeqUI ui)
         {
         return new SelectUI(seq, ui, new Select(seq));
@@ -155,6 +162,7 @@ public class SelectUI extends MotifUI
     boolean loadingChildren = false;
     public void buildPrimary(JScrollPane scroll)
         {
+        scrollPane = scroll;
         JPanel outer = new JPanel();
         outer.setLayout(new BorderLayout());
         outer.add(selectGrid, BorderLayout.NORTH);
@@ -225,17 +233,53 @@ public class SelectUI extends MotifUI
             p.setBorder(BorderFactory.createMatteBorder(0,0,0,1,HEADER_LINE_COLOR));
             verticalHeader.add(p);
             
-            /*
-              Box box = new Box(BoxLayout.X_AXIS);
-              box.add(box.createHorizontalStrut(4));
-              box.add(new Dial(0.5)
-              {
-              public double getValue() { return 0.5; }
-              });
-              box.add(p);
-              verticalHeader.add(box);
-            */
+            Box box = new Box(BoxLayout.X_AXIS);
+            box.add(box.createHorizontalStrut(4));
+                                
+            double init = 0.5;
+            seq.getLock().lock();
+            try
+                {
+                if (select.getOverrideParameters(i))
+                    {
+                    init = select.getPlayingParameter(i);
+                    } 
+                }
+            finally
+                {
+                seq.getLock().unlock();
+                }
+
+            final int _i = i;
+            dials[i] = new Dial(init)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return (select.getOverrideParameters(_i) ? select.getPlayingParameter(_i) : 0.5); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val)
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (select.getOverrideParameters(_i)) { select.setPlayingParameter(_i, val); } }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+            boolean enabled = false;
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            try { enabled = select.getOverrideParameters(i); }
+            finally { lock.unlock(); }
+            dials[i].setEnabled(enabled);
+            box.add(dials[i]);
+            box.add(p);
+            verticalHeader.add(box);
             }
+        //updateDials();
         }
                 
     public JPanel buildConsole()

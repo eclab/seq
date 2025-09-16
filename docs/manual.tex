@@ -1022,8 +1022,6 @@ At present Select has two action buttons, {\bf All Off} and {\bf Finish}.  Press
 
 Select also can {\bf Cut Notes}.  This means that when a Child is terminated early, its notes are immediately stopped, instead of allowing the currently playing notes to finish on their own.
 
-Select has various {\bf Param CC} options: {\color{red} these do not at present work.}  Similarly ignore the large dials to the left of the grid.
-
 \paragraph{MIDI Modification}
 
 As a Child of the Select emits MIDI, that MIDI is handed to the Select, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
@@ -1033,8 +1031,10 @@ Finally, {\bf Rate} changes the speed at which the child is played, faster or sl
 
 \paragraph{Parameters and Arguments}
 
-The Parallel Inspector has an expandable region called {\bf Parameter Names}, and each Child Inspector has an expandable region called {\bf Arguments}. Furthermore, many dials have Special Values called ``Rand'', ``Param 1'', etc.  These are explained in Section~\ref{parameters}.
+The Select Inspector has an expandable region called {\bf Parameter Names}, and each Child Inspector has an expandable region called {\bf Arguments}. Furthermore, many dials have Special Values called ``Rand'', ``Param 1'', etc.  These are explained in Section~\ref{parameters}.
 
+\paragraph{Overriding Parameters}
+Select allows you to override parameters sent to certain children so you can control them by turning a big Dial or via a MIDI CC from a remote controller.  This is discussed later in Section~\ref{selectparameters}.
 
 \paragraph{Using the Novation LaunchPad}
 
@@ -1147,14 +1147,15 @@ Filter's MIDI Effects are only active for a certain range of time.  Outside that
 
 \paragraph{MIDI Effects}
 
-At present, Filter has five MIDI Effects available:
+At present, Filter has six MIDI Effects available:
 
 \begin{itemize}
 \item {\bf None}\qquad Doesn't change the MIDI at all.
 \item {\bf Note}\qquad Changes note pitch, velocity, release velocity, and length.
 \item {\bf Delay}\qquad Delays the onset of a note, or repeats it multiple times with a delay in-between, or repeats it multiple times simultaneously (as in unison).
 \item {\bf Drop}\qquad With some probability, drops a note (don't let it pass through), or drops events within an interval of time.
-\item {\bf Parameter}\qquad Changes the value of a non-note parameter such as pitch bend, CC, or aftertouch.
+\item {\bf Noise}\qquad Adds noise to the value of a non-note parameter such as pitch bend, CC, or aftertouch.
+\item {\bf Map}\qquad Maps a non-note parameter value through a function to transform it to a different value.
 \end{itemize}
 
 We'll describe these next in detail.  More MIDI effects are planned for the future.
@@ -1192,7 +1193,7 @@ This effect randomly deletes notes, and also deletes all notes and non-note even
 \item {\bf Note Probability}\qquad If {\bf Cut} is unchecked, then the probability that a note should be deleted at random.
 \end{itemize}
 
-\paragraph{The Parameter Effect}
+\paragraph{The Noise Effect}
 
 This effect adds noise to the values of non-note parameters.  Every so often this effect chooses a new random value, then consistently adds that value to all the parameters that arrive of the given type.
 
@@ -1203,6 +1204,31 @@ This effect adds noise to the values of non-note parameters.  Every so often thi
 \item {\bf LSB}\qquad The {\it Least Significant Byte} of the parameter to add noise to.  This is only used by NRPN and RPN, and complements the MSB.
 \item {\bf Variance}\qquad The noise variance, from 0.0 to 1.0.  The highest noise variance adds extreme noise to the parameter.
 \item {\bf Rate}\qquad How often the parameter noise value is updated.
+\end{itemize}
+
+\paragraph{The Map Effect}
+
+This effect maps the values of a non-note parameter to different parameters.  It does this as follows:\footnote{Note that if the parameter is pitch bend, and the value is negative, it is first made positive before any of this; then the result is made negative again at the end.}
+
+\begin{enumerate}
+\item It takes the value and bounds it between a min and a max.
+\item It maps the range min...max to 0...1, so the value is now between 0 and 1.
+\item It pushes the value through a function, for example, squaring the value.  The input and output are always between 0 and 1.
+\item It then maps from 0...1 back to min...max, so the value is now back in its normal range.
+\item It emits the final mapped value.
+\end{enumerate}
+
+This allows you to change parameter values in many ways. You could invert them, add an amount to them, square them or invert-square them (kind of like a square root), etc.
+
+\begin{itemize}
+\item {\bf Type}\qquad The parameter type in question to add noise to.  The options are {\it Pitch Bend}, {\it Control Change} (CC), {\it Non-Registered Parameter Numbers} (NRPN), {\it Registered Parameter Numbers} (RPN), and {\it Aftertouch}.
+\item {\bf Param/MSB}\qquad The parameter to add noise to.  Pitch Bend doesn't have a parameter.  Aftertouch also doesn't have a parameter (note is disregarded\,---\,all aftertouch messages are treated the same).
+  For NRPN and RPN, this serves as the {\it Most Significant Byte} (MSB) of the parameter to add noise to.
+\item {\bf LSB}\qquad The {\it Least Significant Byte} of the parameter to add noise to.  This is only used by NRPN and RPN, and complements the MSB.
+\item {\bf Map}\qquad The mapping function used.
+\item {\bf Min}\qquad The minimum of the bounding range.
+\item {\bf Max}\qquad The maximum of the bounding range.
+\item {\bf By}\qquad A variable used by some mapping functions to determine how strong their effect is.
 \end{itemize}
 
 \paragraph{Parameterization}
@@ -1368,6 +1394,30 @@ The following MIDI output types are available for each Parameter.
 \item {\bf Channel Aftertouch}\quad Incoming parameters will be mapped to Channel Aftertouch values (0--127).
 \end{itemize}
 
+\section{Select's Overriding of Parameters}
+
+Select has an option where it can override its parameters, setting them to values chosen by Select and not by its parent.  Why would you want to do this?  Because the parameters of various children of Select can be bound to those parameters.  This allows you to change the parameters of children in real-time via a Big Dial or via CC from a remote controller.
+
+\paragraph{Overriding a Parameter}
+
+In the {\bf Dial Parameters} region of Select's Inspector, check the box of the parameter you'd like to override (Dial 1 through Dial 8, corresponding to Parameters 1 through 8).  When you do so, note that the grid will change to reveal the Big Dial for that parameter.
+
+Next, select a child, and in the Child Inspector, go to the Arguments section.  In there, change the corresponding Argument to be the Parameter.  For example, if you overrode Dial 3, and you want this to modify the Child's Argument 2, you'd set Arg 2 to Param 3.  
+
+Now, when the Select is playing, you can change the value of this parameter of Dial 3 (for example), and it will update the Child's Parameter 2 to reflect this value in real-time.
+
+You can set up multiple children this way to respond to Dial 3.
+
+\paragraph{Attaching a Controller}
+Instead of turning these Dials on the screen, you can turn them with a knob on your controller.  
+
+First, override the parameter in question as described above.
+
+Second, in the {\bf Dial Parameters} region of Select's Inspector, change the CC In device to the device corresponding to your controller.
+
+Third, for each Dial you'd like controlled by the Controller, in the Dial Parameters region of Select's Inspector set the CC value of that Dial to the value you'll be sending from the Controller.
+
+And you're done!  Changing knobs on the controller will change the Dial, which in turn will update the parameters of the Children you bound to it.
 
 \section{Developing for Seq}
 

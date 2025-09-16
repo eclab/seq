@@ -70,6 +70,8 @@ public abstract class Dial extends JPanel
     JLabel title = null;
     // The Dial's displayed value.   This is null until a LabelledDial is generated.
     JLabel data = null;
+    
+    boolean enabled = true;
 
     /** Returns the color of the thick portion of the dial when not being changed. */
     public Color getStaticColor() { return staticColor; }
@@ -79,12 +81,14 @@ public abstract class Dial extends JPanel
     public void setStaticColor(Color color) { if (color == null) staticColor = DEFAULT_STATIC_COLOR; else staticColor = color; }
     
     /** Returns the preferred size of the Dial */
-    public Dimension getPreferredSize() { return new Dimension(DIAL_WIDTH, DIAL_WIDTH); }
+    public Dimension getPreferredSize() { if (!enabled) return new Dimension(0,0); else return new Dimension(DIAL_WIDTH, DIAL_WIDTH); }
     
     /** Sets the preferred size of the Dial */
-    public Dimension getMinimumSize() { return new Dimension(DIAL_WIDTH, DIAL_WIDTH); }
+    public Dimension getMinimumSize() { if (!enabled) return new Dimension(0,0); else return new Dimension(DIAL_WIDTH, DIAL_WIDTH); }
         
     double currentVal;
+    
+    public void setEnabled(boolean val) { enabled = val; }
     
     /** Updates the dial to a new value */
     public void update(double val, boolean changing) 
@@ -139,7 +143,8 @@ public abstract class Dial extends JPanel
     // Fixes a bad bug where released isn't sent to the proper widget.  See below.
     AWTEventListener releaseListener = null;
     void mouseReleased(MouseEvent e)
-        {          
+        {
+        if (!enabled) return;  
         if (mouseDown)
             {
             mouseDown = false;
@@ -275,6 +280,7 @@ public abstract class Dial extends JPanel
             {                        
             public void mousePressed(MouseEvent e)
                 {                        
+                if (!enabled) return;  
                 if (usesDefaults() && getDefault() > NO_DEFAULT)
                     {
                     setDefault(NO_DEFAULT);
@@ -312,6 +318,7 @@ public abstract class Dial extends JPanel
             MouseEvent lastRelease;
             public void mouseReleased(MouseEvent e)
                 {
+                if (!enabled) return;  
                 if (e == lastRelease) // we just had this event because we're in the AWT Event Listener.  So we ignore it
                     return;
                     
@@ -324,6 +331,7 @@ public abstract class Dial extends JPanel
 
             public void mouseClicked(MouseEvent e)
                 {
+                if (!enabled) return;  
                 if (e.getClickCount() == 2 && usesDefaults())
                     { 
                     if (defaultsList.length == 1)
@@ -363,6 +371,7 @@ public abstract class Dial extends JPanel
             {
             public void mouseDragged(MouseEvent e)
                 {
+                if (!enabled) return;  
                 // Propose a value based on Y
                 
                 int py = e.getY();                                
@@ -396,6 +405,8 @@ public abstract class Dial extends JPanel
     /** Returns the actual square within which the Dial's circle is drawn. */
     public void paintComponent(Graphics g)
         {
+        if (!enabled) return;
+        
         Graphics2D graphics = (Graphics2D) g;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);

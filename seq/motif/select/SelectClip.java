@@ -62,6 +62,8 @@ public class SelectClip extends Clip
     boolean shouldFinish = false;
     // Has the user asked me to release all current note offs?
     boolean shouldRelease = false;
+    // Which node is currently selected?
+    int selected = -1;
     
     // The node that was just advanced, so we can tell who's who when it sends us MIDI information
     int current = -1;
@@ -85,6 +87,9 @@ public class SelectClip extends Clip
         terminateNodes((Select)getMotif());  
         }
 
+    public void setSelected(int button) { selected = button; }
+    public int getSelected() { return selected; }
+        
     /** Schedule a finish to be issued */
     public void doFinish() { shouldFinish = true; }
 
@@ -224,11 +229,11 @@ public class SelectClip extends Clip
         if (out < 0) return;
 
         for(int i = 0; i < Pad.PAD_INDICES.length - 2; i++)
-        	{
+            {
             Pad.setPad(seq, out, device, Pad.PAD_INDICES[i], Pad.PAD_STATE_UNUSED);
-        	}
-		Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
-		Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
+            }
+        Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+        Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
         }
 
     // Extracts an OUT and NOTE from a given NODE, sets the node to the given state,
@@ -236,7 +241,7 @@ public class SelectClip extends Clip
     void setGridState(Node node, int state)
         {
         Select motif = (Select)getMotif();
-        //if (motif.getPlayingClip() == this) return;				// FIXME: I can't call this from the MIDI poller, I'm never the playing clip?
+        //if (motif.getPlayingClip() == this) return;                           // FIXME: I can't call this from the MIDI poller, I'm never the playing clip?
         if (node == null) return;
         if (node.clip.getMotif() instanceof Blank) return;    
         if (node.state == state) return;                // Don't set it again 
@@ -345,11 +350,11 @@ public class SelectClip extends Clip
         
         Select select = (Select) getMotif();
         if (select.getPlayingClip() == this) 
-        	{
-        	Pad.initialize(seq, select.getOut());
-			updatePads();			// we call this prior to super.terminate() so we're still the display clip when we clear
-			clearCommands();
-        	}
+            {
+            Pad.initialize(seq, select.getOut());
+            updatePads();                   // we call this prior to super.terminate() so we're still the display clip when we clear
+            clearCommands();
+            }
 
         startPos = 0;
         terminateNodes((Select)getMotif());
@@ -443,8 +448,8 @@ public class SelectClip extends Clip
         if (in < 0) return;
         
         MidiMessage[] messages = seq.getIn(in).getMessages();
-		int out = select.getOut() - 1;
-		int device = select.getGridDevice();
+        int out = select.getOut() - 1;
+        int device = select.getGridDevice();
         for(int i = messages.length - 1; i >= 0; i--)
             {
             if (isCC(messages[i]))
@@ -454,45 +459,39 @@ public class SelectClip extends Clip
                 int c = Pad.getIndexForCC(select.gridDevice, cc);
                 
                 if (c == Pad.PAD_INDEX_C)  // Finish
-                	{
-       		 		if (val < 64)
-       		 			{
-       		 			if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
-                    	}
+                    {
+                    if (val < 64)
+                        {
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+                        }
                     else
-                    	{
-       		 			if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_ON, 0);
-                    	doFinish();
-                    	
-/*                    	SwingUtilities.invokeLater(new Runnable()
-                    		{
-                    		public void run()
-                    			{
-		       		 			if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
-		            		 	if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
-		            		 	}
-		            		 });
+                        {
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_ON, 0);
+                        doFinish();
+                        
+/*                      SwingUtilities.invokeLater(new Runnable()
+                        {
+                        public void run()
+                        {
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_OFF, 0);
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
+                        }
+                        });
 */
-               			}
-                	}
+                        }
+                    }
                 else if (c == Pad.PAD_INDEX_D)  // Release all notes
-                	{
-       		 		if (val < 64)
-       		 			{
-			        	if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
-                    	}
+                    {
+                    if (val < 64)
+                        {
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_OFF, 1);
+                        }
                     else
-                    	{
-			        	if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_ON, 1);
-	                    doRelease();
-                    	}
-                	}
-                /*
-                  else if (select.getIn() == select.getCCIn())				// we assume CCIn is set up same way, 0...16 with a NONE
-                  {
-                  processCCIn((ShortMessage)messages[i], select);
-                  }
-                */
+                        {
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_ON, 1);
+                        doRelease();
+                        }
+                    }
                 }
             else if (isNoteOn(messages[i]))
                 {
@@ -531,69 +530,29 @@ public class SelectClip extends Clip
                 }
                                 
             }
+
+        in = select.getCCIn() - 1;
+        if (in < 0) return;
+        
+        messages = seq.getIn(in).getMessages();
+        for(int i = messages.length - 1; i >= 0; i--)
+            {
+            if (isCC(messages[i]))
+                {
+                int cc = ((ShortMessage)messages[i]).getData1();
+                int val = ((ShortMessage)messages[i]).getData2();
+                for(int j = 0; j < Motif.NUM_PARAMETERS; j++)
+                    {
+                    if (select.getCC(j) == cc)
+                        {
+                        select.setPlayingParameter(j, cc / 127.0);
+                        }
+                    }
+                }
+            }
         }
         
 
-
-/*
-
-// The last CC parameter received
-int lastCC = -1;
-// The motif parameter corresponding to the last CC parameter
-int lastParam = -1;
-        
-// Processes the given CC message
-void processCCIn(ShortMessage ccMessage, Select select)
-{
-int cc = ccMessage.getData1();
-// First a little caching
-if (lastCC == cc)
-{
-double data = ccMessage.getData2() / 127.0;
-for (SelectClip.Node node : playing)
-{
-node.clip.setParameterValue(lastParam, data);
-}
-}
-else
-{
-// This is probably faster than hashing as there's only 8 parameters
-for(int j = 0; j < Motif.NUM_PARAMETERS; j++)
-{
-if (select.getCC(j) == cc) // got it
-{
-lastCC = cc;
-lastParam = j;
-double data = ccMessage.getData2() / 127.0;
-for (SelectClip.Node node : playing)
-{
-node.clip.setParameterValue(lastParam, data);
-}
-}
-}
-}
-}
-        
-// Processes all CC messages
-void processCCIn()
-{
-Select select = (Select) getMotif();
-if (select.getPlayingClip() != this) return;            // These messages are not for me
-if (select.getIn() != select.getCCIn()) // not already processed in getChildrenFromMIDI   				// we assume CCIn is set up same way, 0...16 with a NONE
-{
-In in = seq.getIn(select.getIn());
-MidiMessage[] messages = in.getMessages();
-for(int i = messages.length - 1; i >= 0; i--)
-{
-if (isCC(messages[i]))
-{
-processCCIn((ShortMessage)messages[i], select);
-}
-}
-}
-}
-*/
-    
     
     //// PROCESSING DIFFERENT MODES
     
@@ -940,6 +899,16 @@ processCCIn((ShortMessage)messages[i], select);
     public boolean process()
         {
         Select select = (Select) getMotif();
+        
+        // First override playing parameters if need be
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            if (select.getOverrideParameters(i))
+                {
+                setParameterValue(i, select.getPlayingParameter(i));
+                }
+            }
+        
         switch(select.getMode())
             {
             case Select.MODE_SINGLE_ONE_SHOT:
