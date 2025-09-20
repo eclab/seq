@@ -519,6 +519,8 @@ Step Sequence is one of the most complex motifs, as it is a reasonably full-feat
 
 You select a Step by clicking on it.  This also selects the Step's Track.  You can also select a different Track (and its equivalent Step) by clicking on the Track Header (see below).  When you select a Step and Track, they will show their respective Inspectors at right below the primary Step Sequence Inspector.
 
+If you triple-click on a Step, you will deselect all the Steps in its Track.
+
 \paragraph{Defaults and Parameterization}
 
 Several of the dials the Step Sequence's Tracks and Steps can be set to a fixed value or to {\bf Default}.  In a Step, Default means that instead of being fixed to a value, the dial defers to the Track's setting.  In a Track, Default means that instead of being fixed to a value, the dial defers to the Step Sequence's overall setting.
@@ -1407,6 +1409,8 @@ Next, select a child, and in the Child Inspector, go to the Arguments section.  
 Now, when the Select is playing, you can change the value of this parameter of Dial 3 (for example), and it will update the Child's Parameter 2 to reflect this value in real-time.
 
 You can set up multiple children this way to respond to Dial 3.
+
+In fact, by default all children's parameters are just set to Select's parameters.  This means that if you turn on and change Dial 3, it will affect parameter 3 of every child.  So in most cases if you want to set a parameter, you're probably already set unless you want to change which parameter it is bound to.  In fact in most cases you might only want to {\it disconnect} a parameter from some child.
 
 \paragraph{Attaching a Controller}
 Instead of turning these Dials on the screen, you can turn them with a knob on your controller.  
