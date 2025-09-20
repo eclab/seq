@@ -211,7 +211,7 @@ public class SelectInspector extends WidgetList
             for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
                 {
                 final int _i = i;
-                dials[i] = new SmallDial(select.getCC(i))
+                dials[i] = new SmallDial(select.getCC(i) / 128.0)
                     {
                     protected String map(double val) 
                         {

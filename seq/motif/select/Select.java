@@ -154,6 +154,7 @@ public class Select extends Motif
     public static final int MODE_MULTI_REPEATING = 3;
 
     public static final int CC_NONE = 128;
+    public static final int[] CC_DEFAULTS = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38 };  	// These are the defaults for the APC.  The APC has nine faders, so there are nine values here. 
 
     // just during playback
     double[] playingParameters = new double[NUM_PARAMETERS];
@@ -161,9 +162,9 @@ public class Select extends Motif
     boolean[] overrideParameters = new boolean[NUM_PARAMETERS];
     int[] cc = new int[NUM_PARAMETERS];
     public boolean getOverrideParameters(int index) { return overrideParameters[index]; }
-    public void setOverrideParameters(int index, boolean val) { overrideParameters[index] = val; }
+    public void setOverrideParameters(int index, boolean val) { overrideParameters[index] = val; Prefs.setLastBoolean("seq.motif.select.Select" + "Override" + index, val); }
     public int getCC(int index) { return cc[index]; }
-    public void setCC(int index, int val) { cc[index] = val; }
+    public void setCC(int index, int val) { cc[index] = val; Prefs.setLastInt("seq.motif.select.Select" + "CC" + index, val); }
         
     int in = 0;
     int ccIn = 0;
@@ -239,7 +240,7 @@ public class Select extends Motif
     public int getGridDevice() { return gridDevice; }
         
     /** Returns the grid device type. */
-    public void setGridDevice(int val) { gridDevice = val; Prefs.setLastOutDevice(0, val, "seq.motif.select.Select"); }
+    public void setGridDevice(int val) { gridDevice = val; Prefs.setLastGridDevice(0, val, "seq.motif.select.Select"); }
 
     public Select(Seq seq)
         {
@@ -255,7 +256,13 @@ public class Select extends Motif
         ccIn = (Prefs.getLastControlDevice(0, "seq.motif.select.Select"));
         for(int i = 0; i < NUM_PARAMETERS; i++)
             {
-            setCC(i, CC_NONE);
+            int _cc = Prefs.getLastInt("seq.motif.select.Select" + "CC" + i, CC_DEFAULTS[i]);
+            cc[i] = _cc;
+            }
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            boolean override = Prefs.getLastBoolean("seq.motif.select.Select" + "Override" + i, false);
+            overrideParameters[i] = override;
             }
         }
                 
@@ -271,19 +278,22 @@ public class Select extends Motif
         setQuantization(from.optInt("quant", QUANTIZATION_SIXTEENTH));
         setCut(from.optBoolean("cut", false));
 //        setStartNote(from.optInt("startnote", DEFAULT_START_NOTE));
-        setIn(from.optInt("in", 0));
-        setOut(from.optInt("out", 0));
-        setGridDevice(from.optInt("grid", 0));
+
+/*
+        in = (from.optInt("in", 0));
+        out = (from.optInt("out", 0));
+        gridDevice = (from.optInt("grid", 0));
         JSONArray param = from.getJSONArray("cc");
         for(int i = 0; i < NUM_PARAMETERS; i++)
             {
-            setCC(i, param.getInt(i));
+            cc[i] = param.getInt(i);
             }
         param = from.getJSONArray("useparam");
         for(int i = 0; i < NUM_PARAMETERS; i++)
             {
-            setOverrideParameters(i, param.getBoolean(i));
+            overrideParameters[i] = param.getBoolean(i);
             }
+*/
         }
         
     public void save(JSONObject to) throws JSONException
@@ -293,6 +303,7 @@ public class Select extends Motif
         to.put("quant", getQuantization());
         to.put("cut", getCut());
 //        to.put("startnote", getStartNote());
+/*
         to.put("in", getIn());
         to.put("out", getOut());
         to.put("grid", getGridDevice());
@@ -310,6 +321,7 @@ public class Select extends Motif
             param.put(getOverrideParameters(i));
             }
         to.put("useparam", param );
+ */
         }
 
     static int document = 0;

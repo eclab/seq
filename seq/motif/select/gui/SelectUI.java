@@ -253,6 +253,10 @@ public class SelectUI extends MotifUI
             final int _i = i;
             dials[i] = new Dial(init)
                 {
+                public String map(double val)
+                	{
+                	return "<html><font size=1>" + super.map(val) + "</font></html>";
+                	}
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
@@ -268,14 +272,14 @@ public class SelectUI extends MotifUI
                     finally { lock.unlock(); }
                     }
                 };
-
+                
             boolean enabled = false;
             ReentrantLock lock = seq.getLock();
             lock.lock();
             try { enabled = select.getOverrideParameters(i); }
             finally { lock.unlock(); }
             dials[i].setEnabled(enabled);
-            box.add(dials[i]);
+            box.add(dials[i].getLabelledDial("0.8888"));
             box.add(p);
             verticalHeader.add(box);
             }
@@ -406,6 +410,24 @@ public class SelectUI extends MotifUI
     public void redraw(boolean inResponseToStep) 
         {
         updateText();
+        ReentrantLock lock = seq.getLock();
+        for(int i = 0; i < Select.NUM_PARAMETERS; i++)
+        	{
+        	boolean override = false;
+        	lock.lock();
+			try
+				{
+				override = select.getOverrideParameters(i);
+				}
+			finally
+				{
+				seq.getLock().unlock();
+				}
+			if (override)
+				{
+				dials[i].redraw();
+				}
+        	}
         super.redraw(inResponseToStep);
         }
     
