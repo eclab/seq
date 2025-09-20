@@ -125,6 +125,8 @@ public class TrackHeader extends JPanel implements Transferable
                     }
                 });
 
+
+
             trackName = new JLabel(getName(), SwingConstants.RIGHT)
                 {
                 public Dimension getMaximumSize()

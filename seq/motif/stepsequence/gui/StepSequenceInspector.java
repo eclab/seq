@@ -89,7 +89,7 @@ public class StepSequenceInspector extends WidgetList
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
             name.setToolTipText(NAME_TOOLTIP);
                         
-            numBeats = new SmallDial(StepSequence.DEFAULT)
+            numBeats = new SmallDial((StepSequence.DEFAULT_NUM_STEPS - 1) / 127.0)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127) + 1);  }
                 public double getValue() 
@@ -111,7 +111,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             numBeats.setToolTipText(DURATION_TOOLTIP);
 
-            initialNumSteps = new SmallDial(StepSequence.DEFAULT)
+            initialNumSteps = new SmallDial((StepSequence.DEFAULT_LENGTH_IN_STEPS - 1) / 127.0)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127) + 1); }
                 public double getValue() 
@@ -157,7 +157,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             setNumSteps.setToolTipText(SET_TRACK_LENGTH_TOOLTIP);
 
-            defaultSwing = new SmallDial(StepSequence.DEFAULT, defaults)
+            defaultSwing = new SmallDial(StepSequence.DEFAULT_SWING, defaults)
                 {
                 public double getValue() 
                     { 
@@ -209,7 +209,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             setDefaultSwing.setToolTipText(SET_SWING_TOOLTIP);
 
-            defaultVelocity = new SmallDial(StepSequence.DEFAULT, defaults)
+            defaultVelocity = new SmallDial(StepSequence.DEFAULT_VELOCITY / 127.0, defaults)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127)); }
                 public double getValue() 
@@ -379,7 +379,7 @@ public class StepSequenceInspector extends WidgetList
         finally { lock.unlock(); }
 
         midiList = new WidgetList(
-            new String[] { "Out", "Learning In", "Grid Out", "Grid In", "Grid Device" },
+            new String[] { "Out", "Learn In", "Grid Out", "Grid In", "Grid Device" },
             new JComponent[] { defaultOut, in, controlOut, controlIn, controlDevice });
         midiList.setBorder(BorderFactory.createTitledBorder("<html><i>MIDI</i></html>"));
         DisclosurePanel midiPanel = new DisclosurePanel("MIDI", midiList);

@@ -78,7 +78,19 @@ public class StepUI extends JComponent
                 {
                 ssui.mouseDown = false;
                 }
-                                
+                          
+            public void mouseClicked(MouseEvent e)
+            	{
+            	if (e.getClickCount() == 3)
+            		{
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.clearTrack(trackNum); }
+                    finally { lock.unlock(); }    
+                    track.repaint();                          
+            		}
+            	}
+            	      
             public void mousePressed(MouseEvent e)
                 {
                 ssui.mouseDown = true;
