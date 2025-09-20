@@ -694,7 +694,7 @@ public class NotesInspector extends WidgetList
         warpedBend.setToolTipText(WARPED_PITCH_BEND_TOOLTIP);
         parameterHeight.setToolTipText(DISPLAY_HEIGHT_TOOLTIP);
 
-        build(new String[] { "Name", "Out", "Learn In", "Start", "End", "Armed", "Echo"}, 
+        build(new String[] { "Name", "Out", "In", "Start", "End", "Armed", "Echo"}, 
             new JComponent[] 
                 {
                 name,
