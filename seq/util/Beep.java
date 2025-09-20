@@ -23,7 +23,7 @@ public class Beep
     double amplitude = 0.0;
     double ramp = 0;
         
-    /** Sets the Beep Frequency or turns it off.  Default Frequency is 440.
+    /** Sets the Beep Frequency.  Default Frequency is 440.
         Frequency must be a value > 0 and &lt;= SAMPLING_RATE / 2.0, else it will be set to the Default Frequency.
         You might want to call setFrequencyAndAmplitude(...) instead, which sets both
         frequency and amplitude in one atomic call. */
@@ -51,8 +51,7 @@ public class Beep
 
     /** Sets the Beep Frequency and Amplitude or turns it off.  Default Frequency is 440.
         Frequency must be a value > 0 and &lt;= SAMPLING_RATE / 2.0, else it will be set to the Default Frequency.
-        Amplitude will be bounded to be between 0.0 and 1.0 inclusive.
-        If you set frequency or amplitude to <= 0, then the Beep will turn off. */
+        Amplitude will be bounded to be between 0.0 and 1.0 inclusive. */
     public void setFrequencyAndAmplitude(double frequency, double amplitude)
         {
         if (frequency <= 0 || frequency > SAMPLING_RATE / 2.0) 
@@ -69,7 +68,7 @@ public class Beep
             }
         }
         
-    /** Sets the Beep Amplitude or turns it off.  Default Amplitude is 1.0.
+    /** Sets the Beep Amplitude.  Default Amplitude is 1.0.
         Amplitude will be bounded to be between 0.0 and 1.0 inclusive.
         You might want to call setFrequencyAndAmplitude(...) instead, which sets both
         frequency and amplitude in one atomic call. */

@@ -29,7 +29,6 @@ public class SelectUI extends MotifUI
     Select select;
         
     SelectChildInspector childInspector;
-        
     JPanel childOuter;
     TitledBorder childBorder;
     JPanel inspectorPane;
@@ -37,6 +36,7 @@ public class SelectUI extends MotifUI
     JPanel selectOuter;
     TitledBorder selectBorder;
     SelectInspector selectInspector;
+    
     JScrollPane scrollPane;
     
     Dial[] dials = new Dial[Motif.NUM_PARAMETERS];              // also 8
