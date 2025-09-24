@@ -28,9 +28,11 @@ public class StepSequence extends Motif
     public static final int DEFAULT_TRACK_NOTE = 60;            // Middle C
     public static final int[] FLAMS = { 48, 24, 16, 12, 8, 6, 4, 3, 2, 1 };
     public static final int MAX_NUM_TRACKS = 32;
-	
-	// This value signifies that the default should be used rather than a numerical value
+        
+    // This value signifies that the default should be used rather than a numerical value
     public static final int DEFAULT = 0 - (Motif.NUM_PARAMETERS + 2);           // low enough to avoid the corrected parameter stuff
+    public static final int DEFAULT_FLAM = -1;
+    public static final int DEFAULT_WHEN = -1;
 
     public static final boolean[][] WHEN = { 
         { true, false }, { false, true },
@@ -595,12 +597,12 @@ public class StepSequence extends Motif
         }
         
     public void clearTrack(int track)
-    	{
-    	for(int i = 0; i < on[track].length; i++)
-    		{
-    		on[track][i] = false;
-    		}
-    	}
+        {
+        for(int i = 0; i < on[track].length; i++)
+            {
+            on[track][i] = false;
+            }
+        }
 
     // Per-note Setters
     public boolean isOn(int track, int step) { return on[track][step]; }

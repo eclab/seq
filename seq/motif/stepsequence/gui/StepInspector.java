@@ -229,8 +229,7 @@ public class StepInspector extends WidgetList
             stepFlam.setSelectedIndex(ss.getFlam(trackNum, stepNum) + 1); 
             stepWhen.setSelectedIndex(ss.getWhen(trackNum, stepNum) + 1); 
             }
-        finally { lock.unlock(); }                              
-        seq = old;
+        finally { lock.unlock(); seq = old; }                              
         stepNote.redraw();
         stepVelocity.redraw();
         }

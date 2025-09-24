@@ -258,7 +258,7 @@ public class TrackInspector extends WidgetList
                     try 
                         {
                         int len = ss.getNumSteps(trackNum);
-                        for(int i = 0; i < len; i++) { ss.setFlam(trackNum, i, StepSequence.DEFAULT); }
+                        for(int i = 0; i < len; i++) { ss.setFlam(trackNum, i, StepSequence.DEFAULT_FLAM); }
                         }
                     finally { lock.unlock(); }
                     ssui.getStepInspector().revise();
@@ -313,7 +313,7 @@ public class TrackInspector extends WidgetList
                     try 
                         {
                         int len = ss.getNumSteps(trackNum);
-                        for(int i = 0; i < len; i++) { ss.setWhen(trackNum, i, StepSequence.DEFAULT); }
+                        for(int i = 0; i < len; i++) { ss.setWhen(trackNum, i, StepSequence.DEFAULT_WHEN); }
                         }
                     finally { lock.unlock(); }
                     ssui.getStepInspector().revise();

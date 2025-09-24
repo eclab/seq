@@ -154,7 +154,7 @@ public class Select extends Motif
     public static final int MODE_MULTI_REPEATING = 3;
 
     public static final int CC_NONE = 128;
-    public static final int[] CC_DEFAULTS = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38 };  	// These are the defaults for the APC.  The APC has nine faders, so there are nine values here. 
+    public static final int[] CC_DEFAULTS = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38 };   // These are the defaults for the APC.  The APC has nine faders, so there are nine values here. 
 
     // just during playback
     double[] playingParameters = new double[NUM_PARAMETERS];
@@ -280,19 +280,19 @@ public class Select extends Motif
 //        setStartNote(from.optInt("startnote", DEFAULT_START_NOTE));
 
 /*
-        in = (from.optInt("in", 0));
-        out = (from.optInt("out", 0));
-        gridDevice = (from.optInt("grid", 0));
-        JSONArray param = from.getJSONArray("cc");
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            cc[i] = param.getInt(i);
-            }
-        param = from.getJSONArray("useparam");
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            overrideParameters[i] = param.getBoolean(i);
-            }
+  in = (from.optInt("in", 0));
+  out = (from.optInt("out", 0));
+  gridDevice = (from.optInt("grid", 0));
+  JSONArray param = from.getJSONArray("cc");
+  for(int i = 0; i < NUM_PARAMETERS; i++)
+  {
+  cc[i] = param.getInt(i);
+  }
+  param = from.getJSONArray("useparam");
+  for(int i = 0; i < NUM_PARAMETERS; i++)
+  {
+  overrideParameters[i] = param.getBoolean(i);
+  }
 */
         }
         
@@ -304,24 +304,24 @@ public class Select extends Motif
         to.put("cut", getCut());
 //        to.put("startnote", getStartNote());
 /*
-        to.put("in", getIn());
-        to.put("out", getOut());
-        to.put("grid", getGridDevice());
+  to.put("in", getIn());
+  to.put("out", getOut());
+  to.put("grid", getGridDevice());
         
-        JSONArray param = new JSONArray();
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            param.put(getCC(i));
-            }
-        to.put("cc", param);
+  JSONArray param = new JSONArray();
+  for(int i = 0; i < NUM_PARAMETERS; i++)
+  {
+  param.put(getCC(i));
+  }
+  to.put("cc", param);
           
-        param = new JSONArray();
-        for(int i = 0; i < NUM_PARAMETERS; i++)
-            {
-            param.put(getOverrideParameters(i));
-            }
-        to.put("useparam", param );
- */
+  param = new JSONArray();
+  for(int i = 0; i < NUM_PARAMETERS; i++)
+  {
+  param.put(getOverrideParameters(i));
+  }
+  to.put("useparam", param );
+*/
         }
 
     static int document = 0;

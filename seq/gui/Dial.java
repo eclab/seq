@@ -99,8 +99,8 @@ public abstract class Dial extends JPanel
         setValue(val, changing);
 
         if (data != null)
-        	{
-            	data.setText(mapDefault(getValue()));
+            {
+            data.setText(mapDefault(getValue()));
             }
         repaint();
         }
@@ -108,8 +108,8 @@ public abstract class Dial extends JPanel
     public void redraw()
         {
         if (data != null)
-        	{
-            	data.setText(mapDefault(getValue()));
+            {
+            data.setText(mapDefault(getValue()));
             }
         repaint();
         }
@@ -401,8 +401,8 @@ public abstract class Dial extends JPanel
         else            // just update the default
             {
             if (data != null)
-            	{
-					data.setText(mapDefault(getValue()));
+                {
+                data.setText(mapDefault(getValue()));
                 }
             repaint();
             }

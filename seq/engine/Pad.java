@@ -27,12 +27,12 @@ public class Pad
     /// INDICES
     /// Each pad has an index.  The main grid is 0...7 on the top row, then 8...15 on the next row, etc.
     /// Additionally the very top row buttons have the indices
-	/// 	PAD_INDEX_UP, PAD_INDEX_DOWN, PAD_INDEX_RIGHT, PAD_INDEX_LEFT, PAD_INDEX_A, PAD_INDEX_B, PAD_INDEX_C, PAD_INDEX_D
-	/// And the very right column buttons have the indices
-	///		PAD_INDEX_1, PAD_INDEX_2, PAD_INDEX_3, PAD_INDEX_4, PAD_INDEX_5, PAD_INDEX_6, PAD_INDEX_7, PAD_INDEX_8
-	/// Each index is associted with a NOTE or a CC message both incoming to outgoing.  But the APC
-	/// uses pure notes, while the MK1 and MK3 use a combination of notes and CC stupidly.
-	
+    ///     PAD_INDEX_UP, PAD_INDEX_DOWN, PAD_INDEX_RIGHT, PAD_INDEX_LEFT, PAD_INDEX_A, PAD_INDEX_B, PAD_INDEX_C, PAD_INDEX_D
+    /// And the very right column buttons have the indices
+    ///             PAD_INDEX_1, PAD_INDEX_2, PAD_INDEX_3, PAD_INDEX_4, PAD_INDEX_5, PAD_INDEX_6, PAD_INDEX_7, PAD_INDEX_8
+    /// Each index is associted with a NOTE or a CC message both incoming to outgoing.  But the APC
+    /// uses pure notes, while the MK1 and MK3 use a combination of notes and CC stupidly.
+        
     
     // DEVICES
         
@@ -80,7 +80,7 @@ public class Pad
 
     public static final int PAD_UNUSED_MKI = 0;
     public static final int PAD_UNUSED_MKIII = 0;
-	public static final int PAD_UNUSED_APC = 0;
+    public static final int PAD_UNUSED_APC = 0;
 
     public static final int PAD_WAITING_MKIII = 45;
     public static final int PAD_STOPPING_MKIII = 53;
@@ -144,7 +144,7 @@ public class Pad
     public static final int PAD_INDEX_8 = -16;
 
     public static final int[] PAD_INDICES = { PAD_INDEX_UP, PAD_INDEX_DOWN, PAD_INDEX_LEFT, PAD_INDEX_RIGHT, PAD_INDEX_A, PAD_INDEX_B, PAD_INDEX_C, PAD_INDEX_D,
-    	PAD_INDEX_1, PAD_INDEX_2, PAD_INDEX_3, PAD_INDEX_4, PAD_INDEX_5, PAD_INDEX_6, PAD_INDEX_7, PAD_INDEX_8,  };
+        PAD_INDEX_1, PAD_INDEX_2, PAD_INDEX_3, PAD_INDEX_4, PAD_INDEX_5, PAD_INDEX_6, PAD_INDEX_7, PAD_INDEX_8,  };
     
     public static final int[] PAD_COMMAND_UP = new int[]
     {
@@ -244,25 +244,25 @@ public class Pad
             return row * 8 + col;
             }
         else if (device == DEVICE_AKAI_APC)
-        	{
-        	if (note >= 0x64 && note <= 0x6B)
-        		{
-        		return PAD_INDICES[note - 0x64];
-        		}
-        	else if (note >= 0x70 && note <= 0x77)
-        		{
-        		return PAD_INDICES[note - 0x70 + 8];
-        		}
-        	else
-        		{
-				// Akai APC Series
-				int row = 7 - (note / 8);              // flip vertically
-				int col = (note % 8);
-				if (row < 0 || row > 8) return INVALID_INDEX;
-				if (col < 0 || col > 8) return INVALID_INDEX;
-				return row * 8 + col;
-        		}
-        	}
+            {
+            if (note >= 0x64 && note <= 0x6B)
+                {
+                return PAD_INDICES[note - 0x64];
+                }
+            else if (note >= 0x70 && note <= 0x77)
+                {
+                return PAD_INDICES[note - 0x70 + 8];
+                }
+            else
+                {
+                // Akai APC Series
+                int row = 7 - (note / 8);              // flip vertically
+                int col = (note % 8);
+                if (row < 0 || row > 8) return INVALID_INDEX;
+                if (col < 0 || col > 8) return INVALID_INDEX;
+                return row * 8 + col;
+                }
+            }
         else return INVALID_INDEX;            
         }
     
@@ -271,54 +271,54 @@ public class Pad
         {
         if (device == DEVICE_LAUNCHPAD_MKIII)
             {
-        	if (index <= PAD_INDEX_1)
-        		{
-        		int col = 9;
-        		int row = 8 - (index - PAD_INDEX_1);
-				return (8 - row) * 10 + col + 1;
-        		}
-        	else if (index >= 0 && index < 64)
-        		{
-				// Launchpad Mini Mk 3
-				int row = index / 8;
-				int col = index % 8;
-				return (8 - row) * 10 + col + 1;
-				}
+            if (index <= PAD_INDEX_1)
+                {
+                int col = 9;
+                int row = 8 - (index - PAD_INDEX_1);
+                return (8 - row) * 10 + col + 1;
+                }
+            else if (index >= 0 && index < 64)
+                {
+                // Launchpad Mini Mk 3
+                int row = index / 8;
+                int col = index % 8;
+                return (8 - row) * 10 + col + 1;
+                }
             }
         else if (device == DEVICE_LAUNCHPAD_MKI)
             {
-        	if (index <= PAD_INDEX_1)
-        		{
-        		int col = 9;
-        		int row = 0 - (index - PAD_INDEX_1);
-				return row * 16 + col;
-        		}
-        	else if (index >= 0 && index < 64)
-        		{
-				// The origin of the MK I is in the top left corner starting at Pitch 0
-				// and rows are 16 long
-				int row = index / 8;
-				int col = index % 8;
-				return row * 16 + col;
-				}
+            if (index <= PAD_INDEX_1)
+                {
+                int col = 9;
+                int row = 0 - (index - PAD_INDEX_1);
+                return row * 16 + col;
+                }
+            else if (index >= 0 && index < 64)
+                {
+                // The origin of the MK I is in the top left corner starting at Pitch 0
+                // and rows are 16 long
+                int row = index / 8;
+                int col = index % 8;
+                return row * 16 + col;
+                }
             }
         else if (device == DEVICE_AKAI_APC)
-        	{
-        	if (index <= PAD_INDEX_1)
-        		{
-        		return 0x70 - (index - PAD_INDEX_1);
-        		}
-        	else if (index <= PAD_INDEX_UP)
-        		{
-        		return 0x64 - (index - PAD_INDEX_UP);
-        		}
-        	else
-        		{
-				int row = index / 8;
-				int col = index % 8;
-				return (7 - row) * 8 + col;
-        		}
-        	}
+            {
+            if (index <= PAD_INDEX_1)
+                {
+                return 0x70 - (index - PAD_INDEX_1);
+                }
+            else if (index <= PAD_INDEX_UP)
+                {
+                return 0x64 - (index - PAD_INDEX_UP);
+                }
+            else
+                {
+                int row = index / 8;
+                int col = index % 8;
+                return (7 - row) * 8 + col;
+                }
+            }
         return INVALID_NOTE;            
         }
     
@@ -351,29 +351,29 @@ public class Pad
         {
         if (index < 0 && index >= PAD_INDEX_D && device != DEVICE_AKAI_APC)
             {
-			int cc = COMMANDS[(0 - index) - 1][device];
-			
-			switch(state)
-				{
-				case PAD_STATE_UNUSED:
-					seq.forceCC(out, cc, PAD_STATES_UNUSED[device], 1); 
-					break;
-				case PAD_STATE_OFF:
-					seq.forceCC(out, cc, PAD_STATES_OFF[device][variation], 1); 
-					break;
-				case PAD_STATE_ON:
-					seq.forceCC(out, cc, PAD_STATES_ON[device][variation], 1); 
-					break;
-				case PAD_STATE_WAITING:
-					seq.forceCC(out, cc, PAD_STATES_WAITING[device], 1); 
-					break;
-				case PAD_STATE_STOPPING:
-					seq.forceCC(out, cc, PAD_STATES_STOPPING[device], 1); 
-					break;
-				default:
-					seq.forceCC(out, cc, PAD_STATES_UNUSED[device], 1);                     // FIXME is this wise?          
-					break;
-				}
+            int cc = COMMANDS[(0 - index) - 1][device];
+                        
+            switch(state)
+                {
+                case PAD_STATE_UNUSED:
+                    seq.forceCC(out, cc, PAD_STATES_UNUSED[device], 1); 
+                    break;
+                case PAD_STATE_OFF:
+                    seq.forceCC(out, cc, PAD_STATES_OFF[device][variation], 1); 
+                    break;
+                case PAD_STATE_ON:
+                    seq.forceCC(out, cc, PAD_STATES_ON[device][variation], 1); 
+                    break;
+                case PAD_STATE_WAITING:
+                    seq.forceCC(out, cc, PAD_STATES_WAITING[device], 1); 
+                    break;
+                case PAD_STATE_STOPPING:
+                    seq.forceCC(out, cc, PAD_STATES_STOPPING[device], 1); 
+                    break;
+                default:
+                    seq.forceCC(out, cc, PAD_STATES_UNUSED[device], 1);                     // FIXME is this wise?          
+                    break;
+                }
             }
         else
             {

@@ -144,6 +144,7 @@ public abstract class MotifUI extends JPanel
 
     /** Make your own version of this static method.  Here is an example: 
         public static String getType() { return "Series"; }
+        This is used to build the Motif list menus.
     */
     public static String getType() { return "Put Your Name Here, like Series or Step Sequence"; }
 

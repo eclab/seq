@@ -62,7 +62,7 @@ public class Out
         Midi.Tuple tuple = seq.tuple;
         if (tuple == null) return "Tuple not set up?";
         Midi.MidiDeviceWrapper wrapper = getWrapper();
-        if (wrapper == null) return "None";
+        if (wrapper == null) return Midi.NONE;
         if (getName() != null && getName().trim().length() > 0)
             {
             return (getName().trim());  // "Ch " + tuple.outChannel[index] + " " + getName().trim());

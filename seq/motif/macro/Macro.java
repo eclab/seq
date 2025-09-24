@@ -114,16 +114,16 @@ public class Macro extends Motif
     public ArrayList<MacroChild> getMacroChildren() { return macroChildren; }
         
     public String getParameterName(int param) 
-    	{ 
-    	if (macroRoot != null && !(macroRoot instanceof Blank))
-    		{
-    		return macroRoot.getParameterName(param);
-    		}
-    	else
-    		{
-    		return super.getParameterName(param);
-	    	}
-    	}
+        { 
+        if (macroRoot != null && !(macroRoot instanceof Blank))
+            {
+            return macroRoot.getParameterName(param);
+            }
+        else
+            {
+            return super.getParameterName(param);
+            }
+        }
 
     static int document = 0;
     static int counter = 1;

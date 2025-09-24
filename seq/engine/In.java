@@ -92,10 +92,10 @@ public class In implements Receiver
                 }
             latestMessages = ((MidiMessage[])(messages.toArray(EMPTY)));
 /*
-            if (latestMessages.length > 0) 
-                {
-                seq.getOut(0).sendMIDI(latestMessages[0]);
-                }
+  if (latestMessages.length > 0) 
+  {
+  seq.getOut(0).sendMIDI(latestMessages[0]);
+  }
 */
             messages.clear();
             }
@@ -103,7 +103,7 @@ public class In implements Receiver
     
     public String toString()
         {
-        if (wrapper == null) return "None";
+        if (wrapper == null) return Midi.NONE;
         if (getName() != null && getName().trim().length() > 0)
             {
             return (getName().trim());  // channel == 0 ? "O" : ("Ch " + channel)) + " " + getName().trim();

@@ -353,7 +353,7 @@ public class SelectClip extends Clip
         Select select = (Select) getMotif();
         if (select.getPlayingClip() == this) 
             {
-            Pad.initialize(seq, select.getOut());
+            Pad.initialize(seq, select.getOut() - 1);
             updatePads();                   // we call this prior to super.terminate() so we're still the display clip when we clear
             clearCommands();
             }
@@ -452,7 +452,7 @@ public class SelectClip extends Clip
         MidiMessage[] messages = seq.getIn(in).getMessages();
         int out = select.getOut() - 1;
         int device = select.getGridDevice();
-        for(int i = messages.length - 1; i >= 0; i--)
+        for(int i = 0; i < messages.length; i++)                // int i = messages.length - 1; i >= 0; i--)
             {
             if (isCC(messages[i]))
                 {
@@ -516,61 +516,61 @@ public class SelectClip extends Clip
                             {
                             // System.err.println("SelectClip.getChildrenFromMIDI: Child " + c + " is null");
                             }
-                        //updatePads();		// stupid Akai
+                        //updatePads();         // stupid Akai
                         }
-					else if (c == Pad.PAD_INDEX_C)  // Finish
-						{
-							if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_ON, 0);
-							doFinish();
-						}
-					else if (c == Pad.PAD_INDEX_D)  // Release all notes
-						{
-							if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_ON, 1);
-							doRelease();
-						}
-					/*
-					else
-						{
-						System.err.println("Set Pad ON " + device + " " + c + " " + Pad.PAD_STATE_UNUSED);
-						if (out >= 0) Pad.setPad(seq, out, device, c, Pad.PAD_STATE_UNUSED, 0);		// force off, stupid Akai
-						}
-					*/
+                    else if (c == Pad.PAD_INDEX_C)  // Finish
+                        {
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_C, Pad.PAD_STATE_ON, 0);
+                        doFinish();
+                        }
+                    else if (c == Pad.PAD_INDEX_D)  // Release all notes
+                        {
+                        if (out >= 0) Pad.setPad(seq, out, device, Pad.PAD_INDEX_D, Pad.PAD_STATE_ON, 1);
+                        doRelease();
+                        }
+                    /*
+                      else
+                      {
+                      System.err.println("Set Pad ON " + device + " " + c + " " + Pad.PAD_STATE_UNUSED);
+                      if (out >= 0) Pad.setPad(seq, out, device, c, Pad.PAD_STATE_UNUSED, 0);         // force off, stupid Akai
+                      }
+                    */
                     }
                 }
 /*
-            else if (isNoteOff(messages[i]))
-                {
-                int velocity = ((ShortMessage)messages[i]).getData2();
-				int c = Pad.getIndexForNote(select.getGridDevice(), ((ShortMessage)messages[i]).getData1());
-				if (c < 0 && c != Pad.PAD_INDEX_C && c != Pad.PAD_INDEX_D)
-					{
-					System.err.println("Set Pad OFF " + device + " " + c + " " + Pad.PAD_STATE_UNUSED);
-					if (out >= 0) Pad.setPad(seq, out, device, c, Pad.PAD_STATE_UNUSED, 0);		// force off, stupid Akai
-					}
-                }
+  else if (isNoteOff(messages[i]))
+  {
+  int velocity = ((ShortMessage)messages[i]).getData2();
+  int c = Pad.getIndexForNote(select.getGridDevice(), ((ShortMessage)messages[i]).getData1());
+  if (c < 0 && c != Pad.PAD_INDEX_C && c != Pad.PAD_INDEX_D)
+  {
+  System.err.println("Set Pad OFF " + device + " " + c + " " + Pad.PAD_STATE_UNUSED);
+  if (out >= 0) Pad.setPad(seq, out, device, c, Pad.PAD_STATE_UNUSED, 0);         // force off, stupid Akai
+  }
+  }
 */
             }
 
         in = select.getCCIn() - 1;
         if (in >= 0)
-        	{
-			messages = seq.getIn(in).getMessages();
-			for(int i = messages.length - 1; i >= 0; i--)
-				{
-				if (isCC(messages[i]))
-					{
-					int cc = ((ShortMessage)messages[i]).getData1();
-					int val = ((ShortMessage)messages[i]).getData2();
-					for(int j = 0; j < Motif.NUM_PARAMETERS; j++)
-						{
-						if (select.getCC(j) == cc)
-							{
-							select.setPlayingParameter(j, val / 127.0);
-							}
-						}
-					}
-				}
-			}
+            {
+            messages = seq.getIn(in).getMessages();
+            for(int i = messages.length - 1; i >= 0; i--)
+                {
+                if (isCC(messages[i]))
+                    {
+                    int cc = ((ShortMessage)messages[i]).getData1();
+                    int val = ((ShortMessage)messages[i]).getData2();
+                    for(int j = 0; j < Motif.NUM_PARAMETERS; j++)
+                        {
+                        if (select.getCC(j) == cc)
+                            {
+                            select.setPlayingParameter(j, val / 127.0);
+                            }
+                        }
+                    }
+                }
+            }
         }
         
 
