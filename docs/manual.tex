@@ -422,7 +422,11 @@ The Edit Menu largely concerns itself with {\bf Undo} and {\bf Redo}.  However U
 
 \subsection{The Transport\quad (and the MIDI Menu)}
 
-The Transport is how you play the sequence or start recording incoming MIDI.  The transport has a Record, Play, Pause, and Stop Button, as well as a Loop Toggle.  Buttons are highlighted in colors to indicate the current playing state.  Press the {\bf Play} button to start playing, and press {\bf Stop} to stop playing.  Press the {\bf Pause} button to pause or resume playing, or (if stopped) to start playing but in a paused state.  Press the {\bf Record} button to start recording.  The {\bf Loop Toggle} loops when playing: when the sequence has ended, it will start playing again.
+The Transport is how you play the sequence or start recording incoming MIDI.  The transport has a Record, Play, Pause, and Stop Button, as well as a Loop Toggle.  Buttons are highlighted in colors to indicate the current playing state.  Press the {\bf Play} button to start playing, and press {\bf Stop} to stop playing.  Press the {\bf Record} button to start recording.  The {\bf Loop Toggle} loops when playing: when the sequence has ended, it will start playing again.
+
+The {\bf Fast Forward} button allows you to jump forward in time.  When you press it, Seq will ask you what time to fast forward to, and then will play the entire sequence at high speed (not outputting any MIDI) until Seq reaches the desired timestamp.\footnote{In a normal sequencer, you can just jump to a spot in the sequence because they are just a list of notes: but Seq's sequences can involve randomness and external external MIDI control which changes what notes are output, so it can't do that.}  At that point Seq will {\it pause} the sequence and the Fast Forward button will turn into a {\bf Pause} toggle button.  When you press the Pause button to resume playing the sequence, Seq will continue playing normally. 
+
+The {\bf Pause} button also is available to pause or resume the sequence during normal playing or recording.
 
 \begin{wrapfigure}{r}{1.5in}
 \includegraphics[width=1.5in]{clock}
@@ -963,11 +967,13 @@ You can also set the {\bf Gate Percentage}.  This is the percentage of the Lengt
 
 If there are no more endpoints, and {\bf Loop} has been selected, then Iterations will loop back and start again with the first connected endpoint.  Otherwise it will terminate and not pass control any more.
 
+Iterate normally updates its position in the loop regardless of which Thread is passing through the Iterate at the moment.  However you can change this behavior by checking {\bf Local}.   Now each Thread will have its own separate Iterate position, rather than updating a common one.  This may produce behaviors you didn't expect if you're not keeping track of which Thread is which, so you may not want to check this.
+
 \item{\bf Random}\quad This Decision Point is used to make random decisions.  Random has four endpoints.  When it starts playing, it terminates immediately in zero time and control continues out one of its four endpoints. The endpoint selected is done so at random using the {\bf Weights} as probabilities.  If the selected endpoint is connected, the connected Node starts playing.  Otherwise, Random terminates and does not pass control. 
 
 \item{\bf Fork}\quad This Decision Point passes control to {\it all its endpoints at the same time}, thus allowing playing of multiple Nodes in parallel.  It does this in zero time.  New Threads are created as necessary.  If Fork cannot create enough Threads (the active thread limit of 8 would be exceeded) Threads are only created up to the maximum for the earlier endpoints, and later endpoints are ignored.
 
-\item{\bf Join}\quad This Decision Point waits until some number \(N\) of Threads have reached its start point, and then it terminates of them, and creates a single Thread which passes control to its endpoint.  You can set \(N\) to any value from 2 to 8 (2 is the default).  Join is used to enable playing Threads to synchronize and wait for one another before terminating.  
+\item{\bf Join}\quad This Decision Point waits until some number \(N\) of Threads have reached its start point, and then it terminates all of them, and creates a single Thread which passes control to its endpoint.  You can set \(N\) to any value from 2 to 8 (2 is the default).  Join is used to enable playing Threads to synchronize and wait for one another before terminating.  
 
 \end{itemize}
 
@@ -989,7 +995,7 @@ Finally, {\bf Rate} changes the speed at which the child is played, faster or sl
 
 \subsection{Select}
 
-Select is different from Series, Parallel, and Automaton: it has Children, but you as a user get to select which ones you want to play in real-time.  This can be done either via the user interface, or by connecting a Novation Launchpad MK I or MK III.
+Select is different from Series, Parallel, and Automaton: it has Children, but you as a user get to select which ones you want to play in real-time.  This can be done either via the user interface, or by connecting a Novation Launchpad MK I or MK III, or an Akai MPK Mini.
 
 Select defines a grid where you can place Children by dragging them in from the Motif List.  The location of the Children does not matter; you can lay them out however you like.  However if {\bf Auto-Play First} is selected in the Select inspector, then the first child (most top-left) will be automatically played when Select is first played.
 
@@ -1020,9 +1026,9 @@ Similarly, if we have terminated a Child, Quantization determines when it will s
 
 \paragraph{Other Features}
 
-At present Select has two action buttons, {\bf All Off} and {\bf Finish}.  Pressing All Off will cause Select to send an All Notes Off message to all MIDI Outs.  Pressing Finish will cause Select to tell its parent that it has Finished.  This is a rare need.
+Select has an action button, {\bf Finish}.  Pressing Finish will cause Select to tell its parent that it has Finished.  This is a rare need.
 
-Select also can {\bf Cut Notes}.  This means that when a Child is terminated early, its notes are immediately stopped, instead of allowing the currently playing notes to finish on their own.
+%Select also can {\bf Cut Notes}.  This means that when a Child is terminated early, its notes are immediately stopped, instead of allowing the currently playing notes to finish on their own.
 
 \paragraph{MIDI Modification}
 
@@ -1038,22 +1044,23 @@ The Select Inspector has an expandable region called {\bf Parameter Names}, and 
 \paragraph{Overriding Parameters}
 Select allows you to override parameters sent to certain children so you can control them by turning a big Dial or via a MIDI CC from a remote controller.  This is discussed later in Section~\ref{selectparameters}.
 
-\paragraph{Using the Novation LaunchPad}
+\paragraph{Using a Grid Controller}
 
-To use a Novation LaunchPad to select Children, you specify it in the {\bf Control In} and {\bf Control Out}.  Specify the device type in {\bf Device}.  When the Select starts playing, it will reset the Launch Pad to display the same grid as your current user interface layout.  You can then choose Children by pressing buttons on the LaunchPad.
+To use a Grid Controller to select Children, you specify it in the {\bf Control In} and {\bf Control Out}.  Specify the device type in {\bf Device}.  When the Select starts playing, it will reset the Launch Pad to display the same grid as your current user interface layout.  You can then choose Children by pressing buttons on the Grid Controller.
 
-\paragraph{LaunchPad Devices}
+\paragraph{Available Grid Controller Devices}
 
 \begin{itemize}
-\item {\bf MK I}\qquad LaunchPad, LaunchPad S, LaunchPad Pro (untested).   
-\item {\bf MK III}\qquad Launchpad Mini, Launchpad X, LaunchPad Pro [MK3].  When using a MK3 device, you should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  
+\item {\bf Novation LaunchPad MK I Series}\qquad LaunchPad, LaunchPad S, LaunchPad Pro (untested).   
+\item {\bf Novation LaunchPad MK III Series}\qquad Launchpad Mini, Launchpad X, LaunchPad Pro [MK3].  When using a MK3 device, you should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  
+\item {\bf Akai APK Mini MK2}\qquad Mini MK2.   
 
 \end{itemize}
 
 \paragraph{Troubleshooting}
 
 \paragraph{\it When I go to my Select, it plays a note on my synthesizer even when stopped.}~\\
-\noindent You have the Control Out set to your synthesizer device.  Instead, set it to your LaunchPad.
+\noindent You have the Control Out set to your synthesizer device.  Instead, set it to your Grid Controller.
 
 \clearpage
 
@@ -1343,6 +1350,8 @@ A parameter is just a real-valued number between 0.0 and 1.0.  But of course man
 \end{wrapfigure}
 
 \paragraph{The Root Arguments}  If the Root Motif has bound some dials to its parameters, where are those arguments set?  They're set in the Root Arguments, located below the Transport (the play and record buttons, etc.)  See Figure~\ref{rootarguments} at right.  This is also where you can change the {\bf Random Seed} of your sequence.  If you change the random seed, the random number generator will produce a different sequence of numbers next time.
+
+For each root argument, you can also set a {\bf Control Change} or {\bf CC} parameter to allow an external controller to change the argument in real-time as you see fit.  To do this, you'll need to specify the {\bf CC In} device from which these CC messages will come.  When you start playing a sequence, the root arguments will be set to the fixed values you specified: but if you afterwards send CC messages, they will be changed.  If you don't want to use this feature, set  {\bf CC In} to {\it None}: it's a bit more efficient.
 
 \paragraph{How Parameterization Works}
 To understand how parameterization is updated, let's first make sure we understand how  parent motif instructs a child to play.  First, before any playing, the parent {\bf resets} its child to set its time position to 0 and to initialize it.  Then each timestep (192 times per beat), when the parent itself is being {\bf pulsed} by {\it its parent}, it in turn pulses the child to advance it.  At some point the child will tell its parent that it has {\bf finished}, or for some other reason the parent decides to stop playing the child.  At this point the parent will {\bf stop} the child\,---\,it will tell the child that the playing has ended.  Then the parent can either go about doing other things, or it can {\bf loop back} and replay the child as it sees fit.  If it replays the child, it once again resets it and starts the process again.  So in short, it does:
