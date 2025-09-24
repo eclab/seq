@@ -1605,11 +1605,20 @@ public class NotesUI extends MotifUI
             }
         return size;
         }
-        
+    
     /** Rebuilds the Keyboard to the proper height */
     public void rebuildKeyboard()
         {
         scroll.setRowHeaderView(gridui.buildKeyboard());
+
+        // There is a bug in Java -- if you set the header view, it's not scrolled to match
+        // the viewport until you scroll the viewport.  So here we scroll away and then back,
+        // which sets the keyboard properly.
+                
+        Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
+        Point p = new Point(viewRect.x, viewRect.y);
+        doScrollToStart();
+        getPrimaryScroll().getViewport().setViewPosition(p);
         }
 
     /** Builds the main view. */        
@@ -1947,9 +1956,9 @@ public class NotesUI extends MotifUI
         {
         if (gridui != null) 
             {
+            rebuildKeyboard();
             gridui.rebuild();
             gridui.repaint();
-            rebuildKeyboard();
             }
         if (eventsui != null)
             {
