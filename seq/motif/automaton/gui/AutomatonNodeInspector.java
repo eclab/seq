@@ -50,6 +50,7 @@ public class AutomatonNodeInspector extends WidgetList
     JPanel repeatPanel;
     SmallDial repeatProbability;
     JCheckBox loop;
+    JCheckBox local;
     SmallDial join;
     StringField name;
     JComboBox  quantization;
@@ -660,18 +661,40 @@ public class AutomatonNodeInspector extends WidgetList
                         });
                     loop.setToolTipText(ITERATE_LOOP_TOOLTIP);
 
-                    strs = new String[3 + aux.length];
-                    comps = new JComponent[3 + aux.length];
+                    local = new JCheckBox("");
+                    local.setSelected(niterate.getLocal());
+                    local.addActionListener(new ActionListener()
+                        {
+                        public void actionPerformed(ActionEvent e)
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try
+                                {
+                                niterate.setLocal(local.isSelected());
+                                }
+                            finally
+                                {
+                                lock.unlock();
+                                }
+                            }
+                        });
+                    local.setToolTipText(ITERATE_LOCAL_TOOLTIP);
+
+                    strs = new String[4 + aux.length];
+                    comps = new JComponent[4 + aux.length];
                     strs[0] = "Type";
                     strs[1] = "Nickname";
                     strs[2] = "Loop";
+                    strs[3] = "Local";
                     comps[0] = new JLabel("Iterate");
                     comps[1] = name;
                     comps[2] = loop;
+                    comps[3] = local;
                     for(int i = 0; i < aux.length; i++)
                         {
-                        strs[i + 3] = "Iterations " + (i + 1);
-                        comps[i + 3] = aux[i].getLabelledDial("88");
+                        strs[i + 4] = "Iterations " + (i + 1);
+                        comps[i + 4] = aux[i].getLabelledDial("88");
                         } 
                     }
                 else if (node instanceof Automaton.Join)
@@ -1219,6 +1242,11 @@ public class AutomatonNodeInspector extends WidgetList
         "<b>Iterations</b> total times. Thereafter we continue to the next output that is connected to us.<br>" +
         "<li>When we have finished with all our connected outputs, if <b>Loop</b> is checked, then we<br>" +
         "loop back and continue again with our first connectd output. Else we stop transitioning entirely.</html>";
+
+    static final String ITERATE_LOCAL_TOOLTIP = "<html><b>Local</b><br>" +
+        "Normally Iterate increases its iterate count no matter what thread is passing through it.<br>" +
+        "If you check <b>local</b>, then instead each thread will maintain its on separate iterate count<br>" +
+        "independent of the other threads.</html>";
 
     static final String ITERATE_ITERATIONS_1_TOOLTIP = "<html><b>Iterations 1</b><br>" +
         "Sets how many transitions occur for output 1 before continuing on to output 2 and beyond.<br>" +

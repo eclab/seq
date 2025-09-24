@@ -490,14 +490,17 @@ public class Automaton extends Motif
         {
     	public static final int MAX_REPEATS = 64;
 		boolean loop;
+		boolean local;
         
         public int maxOut() { return MAX_OUT; }
         public Node copy() { Iterate copy = new Iterate(); copy.copyFrom(this); copy.loop = loop; return copy; } 
         public String getBaseName() { return "Iterate"; }
-        public void save(JSONObject to, Automaton automaton) throws JSONException { to.put("type", "iterate"); to.put("loop", loop); super.save(to, automaton); }
-        public void loadFinal(JSONObject from, Automaton automaton) throws JSONException { loop = from.optBoolean("loop", false); super.loadFinal(from, automaton); }
+        public void save(JSONObject to, Automaton automaton) throws JSONException { to.put("type", "iterate"); to.put("loop", loop); to.put("local", local); super.save(to, automaton); }
+        public void loadFinal(JSONObject from, Automaton automaton) throws JSONException { loop = from.optBoolean("loop", false); local = from.optBoolean("local", false); super.loadFinal(from, automaton); }
         public void setLoop(boolean loop) { this.loop = loop; }
         public boolean getLoop() { return loop; }
+        public void setLocal(boolean local) { this.local = local; }
+        public boolean getLocal() { return local; }
         public Iterate(boolean loop) { setLoop(loop); for(int i = 0; i < aux.length; i++) aux[i] = 1; }
         public Iterate() { this(false); }
         
@@ -515,7 +518,7 @@ public class Automaton extends Motif
                     total += correctedAux[i];
                     }
                 }
-                
+            
             if (total == 0) return new Node[0];
                 
             if (counter >= total)
@@ -526,7 +529,7 @@ public class Automaton extends Motif
                     counter = counter % total;              // ugh division
                     }
                 }
-                
+
             Node last = null;
             total = 0;
             for(int i = 0; i < out.length; i++)

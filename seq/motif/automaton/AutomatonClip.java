@@ -188,6 +188,7 @@ public class AutomatonClip extends Clip
         { 
         super.terminate();
         terminateClips();
+        globalIterates = null;
         }
 
 
@@ -219,6 +220,9 @@ public class AutomatonClip extends Clip
                 
     // Set temporarily so the MIDI methods know what node is sending MIDI right now
     Automaton.MotifNode currentNode = null; 
+    
+    HashMap<Automaton.Iterate, Iterate> globalIterates = null;
+
         
     /// This is NOT static, and I think that's okay?  FIXME
     public class AutomatonThread
@@ -254,14 +258,28 @@ public class AutomatonClip extends Clip
         
         Iterate getIterateFor(Automaton.Iterate aiterate)
             {
-            if (iterates == null) iterates = new HashMap<>();
-            Iterate iterate = iterates.get(aiterate);
-            if (iterate == null)
+            if (aiterate.getLocal())
                 {
-                iterate = new Iterate();
-                iterates.put(aiterate, iterate);
+                if (iterates == null) iterates = new HashMap<>();
+                Iterate iterate = iterates.get(aiterate);
+                if (iterate == null)
+                    {
+                    iterate = new Iterate();
+                    iterates.put(aiterate, iterate);
+                    }
+                return iterate;
                 }
-            return iterate;
+            else
+                {
+                if (globalIterates == null) globalIterates = new HashMap<>();
+                Iterate iterate = globalIterates.get(aiterate);
+                if (iterate == null)
+                    {
+                    iterate = new Iterate();
+                    globalIterates.put(aiterate, iterate);
+                    }
+                return iterate;
+                }
             }
             
         // Rates
