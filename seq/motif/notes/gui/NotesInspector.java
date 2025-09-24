@@ -664,6 +664,13 @@ public class NotesInspector extends WidgetList
 
         int height = notesui.getEventsUI().getParameterHeight();
         parameterHeight.setSelectedIndex(height == 32 ? 0 : (height == 64 ? 1 : 2));
+        
+        // We need to make the inspector wider so it doesn't constantly change in width when
+        // we add a new new note due to the Note Inspector below it.
+        JPanel startPanel = new JPanel();
+        startPanel.setLayout(new BorderLayout());
+        startPanel.add(start, BorderLayout.CENTER);
+        startPanel.add(new JLabel("     "), BorderLayout.EAST);
 
         name.setToolTipText(NAME_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
@@ -700,7 +707,7 @@ public class NotesInspector extends WidgetList
                 name,
                 out,
                 in,
-                start,
+                startPanel,
                 end,
                 armed,
                 echo,
