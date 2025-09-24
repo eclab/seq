@@ -48,7 +48,7 @@ public class MacroUI extends MotifUI
     
     public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/macro.png")); }        // don't ask
     public ImageIcon getIcon() { return getStaticIcon(); }
-    public static String getType() { return "Macro"; }
+    public static String getType() { return "Load Macro..."; }
     public static MotifUI create(Seq seq, SeqUI ui)
         {
         return new MacroUI(seq, ui, new Macro(seq));
