@@ -48,6 +48,8 @@ public class Transport extends JPanel implements SeqListener
                 
     static ImageIcon playing = buildIcon("icons/playing2.png");
     static ImageIcon notPlaying = buildIcon("icons/notplaying2.png");
+    static ImageIcon fastForward = buildIcon("icons/ffon.png");                         // we don't use this
+    static ImageIcon notFastForward = buildIcon("icons/ffoff.png");
     static ImageIcon stopped = buildIcon("icons/stopped2.png");
     static ImageIcon notStopped = buildIcon("icons/notstopped2.png");
     static ImageIcon paused = buildIcon("icons/paused2.png");
@@ -107,7 +109,24 @@ public class Transport extends JPanel implements SeqListener
         stopButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
         pauseButton = new JButton(notPaused); 
         pauseButton.setSelectedIcon(paused);
-        pauseButton.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { doPause(); } });
+        pauseButton.addActionListener(new ActionListener() 
+            { 
+            public void actionPerformed(ActionEvent e) 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                boolean _paused = false;
+                boolean _playing = false;
+                try
+                    {
+                    _playing = seq.isPlaying();
+                    _paused = seq.isPaused();
+                    }
+                finally { lock.unlock(); }
+                if (_paused || _playing) doPause(); 
+                else doFastForward(); 
+                } 
+            });
         pauseButton.setMargin(new Insets(INSET_SIZE, INSET_SIZE, INSET_SIZE, INSET_SIZE));
         recordButton = new JButton(notRecording); 
         recordButton.setSelectedIcon(recording);
@@ -378,7 +397,7 @@ public class Transport extends JPanel implements SeqListener
         recordButton.setIcon(_recording ? recording : notRecording);
         stopButton.setIcon(_releasing ? releasing : (_stopped ? stopped : notStopped));
         playButton.setIcon(_playing ? playing : notPlaying);
-        pauseButton.setIcon(_paused ? paused : notPaused);
+        pauseButton.setIcon(_paused ? paused : (_playing ? notPaused : notFastForward));
         loopButton.setEnabled(_stopped || !_recording);
         recordButton.setEnabled(!_paused && ((_playing && _recording) || _stopped));
         }
@@ -461,6 +480,41 @@ public class Transport extends JPanel implements SeqListener
         pauseButton.setIcon(notPaused);
         stopButton.setIcon(notStopped);
         }
+        
+    public void doFastForward()
+        {
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            if (sequi.getAutoReseed())
+                {
+                seq.seedDeterministicRandom();
+                }
+            }
+        finally
+            {
+            lock.unlock();
+            }
+        sequi.fastForward();
+        }
+                
+    public void finishFastForward(boolean success)
+        {
+        if (success)
+            {
+            recordButton.setEnabled(false);
+            recordButton.setText(null);
+            playButton.setIcon(notPlaying);
+            pauseButton.setIcon(paused);
+            stopButton.setIcon(notStopped);
+            }
+        else
+            {
+            doStop();
+            }
+        }
+        
 
     public void doStop()
         {
@@ -478,7 +532,7 @@ public class Transport extends JPanel implements SeqListener
             lock.unlock();
             }
         playButton.setIcon(notPlaying);
-        pauseButton.setIcon(notPaused);
+        pauseButton.setIcon(notFastForward);
         pauseButton.setEnabled(true);
         stopButton.setIcon(stopped);
         recordButton.setIcon(notRecording);
