@@ -98,6 +98,8 @@ public class Seq
     boolean playing;    
     // Is the sequencer set up to do recording while playing?  [To record, playing must also be true]
     boolean recording;
+    // Is the sequencer currently fast-forwarding?
+    boolean fastForwarding;
     // If, when playing, will the sequencer do an infinite loop as opposed to play once and then terminate?
     boolean looping;
     // Am I done playing but waiting for the next measure boundary before I loop again?
@@ -485,6 +487,11 @@ public class Seq
         timer = new java.util.Timer("Seq Sequencer Thread", true);
         //startTimerTask(TIMER_WARM_UP);
         undo = new Undo<UndoStuff>();
+        parameterCCIn = Prefs.getLastControlDevice(0, "seq.Seq.parameterccin", 0); 
+        for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
+            {
+            parameterCCs[i] = Prefs.getLastInt("seq.Seq.parametercc" + i, CC_NONE); 
+            }
         }
         
     // doesn't kill the old timer task, you'll need to do that manually
@@ -600,6 +607,8 @@ public class Seq
     public boolean isReleasing() { return releasing; }
     /** Returns whether the sequencer has finished the sequence is waiting for the next measure boundary before it reloops. */
     public boolean isEndOfLoop() { return endOfLoop; }
+    /** Returns whether the sequencer is currently fast-forwarding. */
+    public boolean isFastForwarding() { return fastForwarding; }
     /** Returns whether the sequencer is currently paused.  The sequencer is paused when it is NOT playing but NOT stopped. */
     public boolean isPaused() { return !stopped && !playing; }
     /** Returns whether the sequencer is resuming from a pause. */
@@ -818,7 +827,8 @@ public class Seq
         try
             {
             uniqueOuts = gatherUniqueOuts();            // Load so we can use them in step() and stop()
-
+            resetParameterValues();
+                        
             // This should be first so we can send MIDI during reset()
             playing = true;
 
@@ -1053,7 +1063,6 @@ public class Seq
     
     boolean releasing = false;
     
-    
     Out[] gatherUniqueOuts()
         {
         HashMap<Midi.MidiDeviceWrapper, Out> unique = new HashMap<>();
@@ -1063,6 +1072,56 @@ public class Seq
             }
         return (Out[])(unique.values().toArray(new Out[0]));
         }
+        
+    void checkParameterCCs()            // Ugh, O(n)
+        {
+        if (parameterCCIn > 0)  // not NONE
+            {
+            MidiMessage[] messages = getIn(parameterCCIn - 1).getMessages();
+            for(int i = 0; i < messages.length; i++)
+                {
+                if (Clip.isCC(messages[i]))
+                    {
+                    int cc = ((ShortMessage)messages[i]).getData1();
+                    int val = ((ShortMessage)messages[i]).getData2();
+                    for(int j = 0; j < Motif.NUM_PARAMETERS; j++)
+                        {
+                        if (parameterCCs[j] == cc)              // If parameterCCs[j] is 128, it's None
+                            {
+                            setParameterValue(j, val / 127.0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+    public void startFastForward()
+        {
+        fastForwarding = true;
+        play();
+        currentCountIn = 0;
+        pause();                // turn playing off so we don't emit MIDI and we don't use the timer
+        }
+        
+    public boolean fastForward(int by)
+        {
+        for(int i = 0; i < by; i++)
+            {
+            if (root.advance()) return true;
+            processNoteOffs(false);
+            time++;
+            }
+        return false;
+        }
+        
+    public void endFastForward()
+        {
+        cut();
+        fastForwarding = false;
+        updateGUI(false);
+        }
+        
     
     int ccount = 0;
     long lastCCTime = 0;
@@ -1156,6 +1215,7 @@ public class Seq
                         doBeep(time, getBeepBarFrequency(), getBeepBarFrequency() * 2);
                         }
                         
+                    checkParameterCCs();
                     processNoteOffs(false);
 
                     boolean atEnd = (time == NUM_BARS_PER_PART * NUM_PARTS * bar - 1);
@@ -1481,6 +1541,10 @@ public class Seq
     /// PARAMETERS
 
     double[] parameterValues = new double[Motif.NUM_PARAMETERS];
+    double[] originalParameterValues = new double[Motif.NUM_PARAMETERS];
+    int[] parameterCCs = new int[Motif.NUM_PARAMETERS];
+    int parameterCCIn;
+    public static final int CC_NONE = 128;
     double randomMin = 0.0;
     double randomMax = 1.0;
                 
@@ -1488,9 +1552,15 @@ public class Seq
     public double getRandomMin() { return randomMin; }
     public void setRandomMax(double val){ randomMax = val; }
     public double getRandomMax() { return randomMax; }
-    public void setParameterValue(int index, double val) { parameterValues[index] = val; }
+    public void setParameterValue(int index, double val) { parameterValues[index] = val; originalParameterValues[index] = val; }
     public double getParameterValue(int index) { return parameterValues[index]; }
     public double[] getParameterValues() { return parameterValues; }
+    public void resetParameterValues() { System.arraycopy(originalParameterValues, 0, parameterValues, 0, parameterValues.length); }
+    public int getParameterCCIn() { return parameterCCIn; }
+    public void setParameterCCIn(int val) { parameterCCIn = val; Prefs.setLastControlDevice(0, val, "seq.Seq.parameterccin"); }
+    public int[] getParameterCCs() { return parameterCCs; }
+    public int getParameterCC(int index) { return parameterCCs[index]; }
+    public void setParameterCC(int index, int val) { parameterCCs[index] = val; Prefs.setLastInt("seq.Seq.parametercc" + index, val); }
 
     /////// JSON SERIALIZATION
     

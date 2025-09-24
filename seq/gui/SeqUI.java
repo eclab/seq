@@ -930,6 +930,11 @@ public class SeqUI extends JPanel
                         {
                         SeqUI.this.motifui.rebuildInspectors(rebuildInspectorsCount);
                         }
+                    
+                    if (rootParameterList != null)
+                        {
+                        rootParameterList.rebuildCCIn(seq);
+                        }
                     }
                 }
             });
@@ -1572,6 +1577,163 @@ public class SeqUI extends JPanel
         frame.setVisible(true);
         }
         
+        
+        
+    static final int FAST_FORWARD_CHUNK = Seq.PPQ * 256;
+    boolean cancelProgressMonitor = false;
+    
+    public void fastForward()
+        {
+        cancelProgressMonitor = false;
+        final int[] _time = { 0 };
+        
+        // Query user
+        TimeDisplay timeDisplay = new TimeDisplay(Prefs.getLastInt("FastForwardTime", 0), seq)  
+            {
+            protected int getTime() { return _time[0]; }
+            protected void setTime(int time) { _time[0] = time; }
+            };
+        timeDisplay.setDisplaysTime(true);
+        String[] names = new String[] { "Time" };
+        JComponent[] components = new JComponent[] { timeDisplay };
+        int result = Dialogs.showMultiOption(this, names, components, new String[] {  "Fast Forward", "Cancel" }, 0, "Fast Forward", "Fast Forward to what time?");
+        
+        
+        if (result == 0)
+            {
+            // Disable the window 
+            JPanel panel = new JPanel();
+            panel.addMouseListener(new MouseAdapter() { });  // intercept all mouse events
+            panel.addMouseMotionListener(new MouseAdapter() { });  // intercept all mouse events
+            panel.setOpaque(false);
+            SeqUI.this.getFrame().setGlassPane(panel);
+            panel.setVisible(true);
+            disableMenuBar();
+            
+            // Build the ProgressMonitor
+            final ProgressMonitor pm = new ProgressMonitor(SeqUI.this, "Fast Forwarding", "", 0, _time[0]);
+            Prefs.setLastInt("FastForwardTime", _time[0]);
+
+            // Build worker thread
+            Thread thread = new Thread(new Runnable()
+                {
+                public void run()
+                    {
+                    boolean stop = false;           // we should call doStop() at the end
+                    boolean end = false;            // we reached the end prematurely and should warn the user
+                    ReentrantLock lock = seq.getLock();
+
+                    if (_time[0] == 0)      // Corner case: user selected 0 time, ugh
+                        {
+                        lock.lock();
+                        try
+                            {
+                            seq.startFastForward();
+                            seq.endFastForward();
+                            }
+                        finally
+                            {
+                            lock.unlock();
+                            }
+
+                        transport.doStop();
+
+                        // early cleanup
+                        pm.close();
+                        panel.setVisible(false);
+                        enableMenuBar();
+
+                        return;
+                        } 
+                        
+                    // Start fast fowarding
+                    lock.lock();
+                    try
+                        {
+                        seq.startFastForward();
+                        }
+                    finally
+                        {
+                        lock.unlock();
+                        }
+
+                    // Step fast fowarding
+                    for(int i = 0; i < _time[0]; i += FAST_FORWARD_CHUNK)   
+                        {
+                        final int _i = i;
+                        SwingUtilities.invokeLater(new Runnable()
+                            {
+                            public void run()
+                                {
+                                if (pm.isCanceled())            // We have to check the progress monitor in the swing thread and warn the fast forward thread
+                                    {
+                                    cancelProgressMonitor = true;
+                                    }
+                                pm.setProgress(_i);
+                                }
+                            });
+                                                
+                        if (cancelProgressMonitor)
+                            {
+                            stop = true;
+                            break;
+                            }
+
+                        int by = Math.min(FAST_FORWARD_CHUNK, _time[0] - i);
+                                
+                        lock.lock();
+                        try
+                            {
+                            if (seq.fastForward(by)) 
+                                {
+                                stop = true; 
+                                end = true;
+                                break;
+                                }
+                            }
+                        finally
+                            {
+                            lock.unlock();
+                            }
+                        }
+                
+                    // Finish fast fowarding
+                    lock.lock();
+                    try
+                        {
+                        seq.endFastForward();
+                        }
+                    finally
+                        {
+                        lock.unlock();
+                        }
+                                        
+
+                    // Clean up
+                    final boolean _end = end;
+                    final boolean _stop = stop;
+                    SwingUtilities.invokeLater(new Runnable()
+                        {
+                        public void run()
+                            {
+                            pm.close();
+                            panel.setVisible(false);
+                            enableMenuBar();
+
+                            if (_end)
+                                {
+                                SeqUI.this.showSimpleError(SeqUI.this, "End of Sequence Reached", "The end of the sequence was reached before the fast-forward time.");
+                                }
+                                
+                            transport.finishFastForward(!_stop);
+                            }
+                        });
+                    }
+                });
+            thread.start();
+            }
+        }
+        
     
     public static MotifUI setupInitialMotif(Motif[] motif, Seq seq, SeqUI ui)
         {
@@ -1607,6 +1769,7 @@ public class SeqUI extends JPanel
                 
         return mui;
         }
+    
 
     static JFrame buildFrame(SeqUI sequi)
         {
