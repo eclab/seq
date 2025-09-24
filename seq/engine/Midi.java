@@ -33,6 +33,7 @@ public class Midi
     {
     private static final long serialVersionUID = 1;
 
+    public static final String NONE = "Unused";
     public static int numOutDevices = 1;                // don't like these being static
     public static int numInDevices = 1;                         // don't like these being static
     public static final int OMNI = 0;                   // for input channels
@@ -314,7 +315,7 @@ public class Midi
     /**
      * Returns all incoming MIDI Devices
      */
-    public ArrayList getInDevices()             // can also include "None"
+    public ArrayList getInDevices()             // can also include NONE
         {
         updateDevices();
         return inDevices;
@@ -323,14 +324,14 @@ public class Midi
     /**
      * Returns all incoming MIDI Devices
      */
-    public ArrayList getOutDevices()            // can also include "None"
+    public ArrayList getOutDevices()            // can also include NONE
         {
         updateDevices();
         return outDevices;
         }
 
     // Returns all MIDI Devices period, incoming or outgoing */
-    ArrayList getAllDevices()                   // can also include "None"
+    ArrayList getAllDevices()                   // can also include NONE
         {
         updateDevices();
         return allDevices;
@@ -422,7 +423,7 @@ public class Midi
         Midi.allDevices = allDevices;
 
         inDevices = new ArrayList();
-        inDevices.add("None");
+        inDevices.add(NONE);
         for(int i = 0; i < allDevices.size(); i++)
             {
             try
@@ -437,7 +438,7 @@ public class Midi
             }
 
         outDevices = new ArrayList();
-        outDevices.add("None");
+        outDevices.add(NONE);
         for(int i = 0; i < allDevices.size(); i++)
             {
             try
@@ -469,7 +470,7 @@ public class Midi
                 if (o1 == null) return -1;
                 if (o2 == null) return 1;
                         
-                // Deal with "None".  It should appear first.
+                // Deal with NONE.  It should appear first.
                 if (o1 instanceof String && o2 instanceof String) // uh...
                     return ((String)o1).compareTo((String)o2);
                 if (o1 instanceof String) return -1;
@@ -583,7 +584,7 @@ public class Midi
             {
             JSONObject jsonobj = outDevs.getJSONObject(i);
             
-            Object obj = findDevice(jsonobj.optString("dev", "None"), outDevices);
+            Object obj = findDevice(jsonobj.optString("dev", NONE), outDevices);
             int channel = jsonobj.optInt("ch", 0);
             String name = jsonobj.optString("name", "");
             if (channel > 0 && obj != null && (obj instanceof MidiDeviceWrapper))
@@ -604,7 +605,7 @@ public class Midi
             {
             JSONObject jsonobj = inDevs.getJSONObject(i);
 
-            Object obj = findDevice(jsonobj.optString("dev", "None"), inDevices);
+            Object obj = findDevice(jsonobj.optString("dev", NONE), inDevices);
             int channel = jsonobj.optInt("ch", 0);
             String name = jsonobj.optString("name", "");
             if (channel > -1 && obj != null && (obj instanceof MidiDeviceWrapper))
@@ -636,7 +637,7 @@ public class Midi
             JSONObject obj = new JSONObject();
             outDevs.put(obj);
             if (tuple.outWrap == null || tuple.outWrap[i] == null)
-                obj.put("dev", "None");
+                obj.put("dev", NONE);
             else
                 obj.put("dev", tuple.outWrap[i].toString());
             obj.put("ch", tuple.outChannel[i]);
@@ -648,7 +649,7 @@ public class Midi
             JSONObject obj = new JSONObject();
             inDevs.put(obj);
             if (tuple.inWrap == null || tuple.inWrap[i] == null)
-                obj.put("dev", "None");
+                obj.put("dev", NONE);
             else
                 obj.put("dev", tuple.inWrap[i].toString());
             obj.put("ch", tuple.inChannel[i]);
@@ -777,7 +778,7 @@ public class Midi
                 inCombo[i] = new JComboBox(inDevices.toArray());
                 inCombo[i].getAccessibleContext().setAccessibleName("Input Device " + i);
                 inCombo[i].setMaximumRowCount(17);
-                inCombo[i].setSelectedIndex(0);  // "none"
+                inCombo[i].setSelectedIndex(0);  // NONE
                 if (old != null && old.inWrap != null && inDevices.indexOf(old.inWrap[i]) != -1)
                     inCombo[i].setSelectedIndex(inDevices.indexOf(old.inWrap[i]));
                 else if (findDevice(Prefs.getLastTupleIn(i), inDevices) != null)
@@ -949,7 +950,7 @@ public class Midi
                         }
                     tuple.outName[i] = str;
                                 
-                    if (outCombo[i].getSelectedItem() instanceof String)    // "None"
+                    if (outCombo[i].getSelectedItem() instanceof String)    // NONE
                         {
                         tuple.outWrap[i] = null;
                         }
@@ -970,7 +971,7 @@ public class Midi
                         }
                     tuple.inName[i] = str;
 
-                    if (inCombo[i].getSelectedItem() instanceof String)     // "None"
+                    if (inCombo[i].getSelectedItem() instanceof String)     // NONE
                         {
                         tuple.inWrap[i] = null;
                         }
@@ -1001,7 +1002,7 @@ public class Midi
                 for(int i = 0; i < numOutDevices; i++)
                     {
                     if (tuple.outWrap == null || tuple.outWrap[i] == null)
-                        Prefs.setLastTupleOut(i, "None");
+                        Prefs.setLastTupleOut(i, NONE);
                     else
                         Prefs.setLastTupleOut(i, tuple.outWrap[i].toString());
                     Prefs.setLastTupleOutChannel(i, tuple.outChannel[i]);
@@ -1011,7 +1012,7 @@ public class Midi
                 for(int i = 0; i < numInDevices; i++)
                     {
                     if (tuple.inWrap == null || tuple.inWrap[i] == null)
-                        Prefs.setLastTupleIn(i, "None");
+                        Prefs.setLastTupleIn(i, NONE);
                     else
                         Prefs.setLastTupleIn(i, tuple.inWrap[i].toString());
                     Prefs.setLastTupleInChannel(i, tuple.inChannel[i]);
