@@ -49,7 +49,7 @@ public class Transport extends JPanel implements SeqListener
     static ImageIcon playing = buildIcon("icons/playing2.png");
     static ImageIcon notPlaying = buildIcon("icons/notplaying2.png");
     static ImageIcon fastForward = buildIcon("icons/ffon.png");                         // we don't use this
-    static ImageIcon notFastForward = buildIcon("icons/ffoff.png");
+    static ImageIcon notFastForward = buildIcon("icons/forward3.png");
     static ImageIcon stopped = buildIcon("icons/stopped2.png");
     static ImageIcon notStopped = buildIcon("icons/notstopped2.png");
     static ImageIcon paused = buildIcon("icons/paused2.png");
@@ -78,7 +78,7 @@ public class Transport extends JPanel implements SeqListener
         
         // Tooltips
         playButton.setToolTipText(PLAY_BUTTON_TOOLTIP);
-        pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
+        pauseButton.setToolTipText(FAST_FORWARD_BUTTON_TOOLTIP);
         stopButton.setToolTipText(STOP_BUTTON_TOOLTIP);
         recordButton.setToolTipText(RECORD_BUTTON_TOOLTIP);
         loopButton.setToolTipText(LOOP_BUTTON_TOOLTIP);
@@ -398,6 +398,7 @@ public class Transport extends JPanel implements SeqListener
         stopButton.setIcon(_releasing ? releasing : (_stopped ? stopped : notStopped));
         playButton.setIcon(_playing ? playing : notPlaying);
         pauseButton.setIcon(_paused ? paused : (_playing ? notPaused : notFastForward));
+        pauseButton.setToolTipText(_paused || _playing ? PAUSE_BUTTON_TOOLTIP : FAST_FORWARD_BUTTON_TOOLTIP);
         loopButton.setEnabled(_stopped || !_recording);
         recordButton.setEnabled(!_paused && ((_playing && _recording) || _stopped));
         }
@@ -478,6 +479,7 @@ public class Transport extends JPanel implements SeqListener
         recordButton.setText(null);
         playButton.setIcon(playing);
         pauseButton.setIcon(notPaused);
+        pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
         stopButton.setIcon(notStopped);
         }
         
@@ -507,6 +509,7 @@ public class Transport extends JPanel implements SeqListener
             recordButton.setText(null);
             playButton.setIcon(notPlaying);
             pauseButton.setIcon(paused);
+        	pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
             stopButton.setIcon(notStopped);
             }
         else
@@ -533,6 +536,7 @@ public class Transport extends JPanel implements SeqListener
             }
         playButton.setIcon(notPlaying);
         pauseButton.setIcon(notFastForward);
+        pauseButton.setToolTipText(FAST_FORWARD_BUTTON_TOOLTIP);
         pauseButton.setEnabled(true);
         stopButton.setIcon(stopped);
         recordButton.setIcon(notRecording);
@@ -567,6 +571,7 @@ public class Transport extends JPanel implements SeqListener
                     seq.pause();
                     playButton.setIcon(notPlaying);
                     pauseButton.setIcon(paused);
+			        pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
                     stopButton.setIcon(notStopped);         // probably already this
                     }
                 else
@@ -574,6 +579,7 @@ public class Transport extends JPanel implements SeqListener
                     seq.play();
                     playButton.setIcon(playing);
                     pauseButton.setIcon(notPaused);
+			        pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
                     stopButton.setIcon(notStopped);         // probably already this
                     }
                 }
@@ -601,7 +607,14 @@ public class Transport extends JPanel implements SeqListener
         "Starts playing the sequencer.<br><br>If the <b>Count-In</b> is set to <b>Record/Play</b> in the <b>Clock Options</b>,<br>then the metronome will provide a one-bar count-in before playing.</html>";
         
     static final String PAUSE_BUTTON_TOOLTIP = "<html><b>Pause</b><br>" +
-        "Pauses or unpauses the sequencer while it's playing.</html>";
+        "Pauses or unpauses the sequencer while it's playing.<br><br>" +
+        "When the sequencer is stopped, this button turns into the <b>Fast Forward Button</b>,<br>" +
+        "which allows you to advance the sequencer to a point in the future.</html>";
+        
+    static final String FAST_FORWARD_BUTTON_TOOLTIP = "<html><b>Fast Forward</b><br>" +
+        "Advances the sequencer to a timestep you specify, then pauses the sequencer.<br><br>" +
+        "When the sequencer is playing, or paused, this button turns into the <b>Pause Button</b>,<br>" +
+        "which allows you to pause or unpause playing.</html>";
         
     static final String STOP_BUTTON_TOOLTIP = "<html><b>Stop</b><br>" +
         "Stops playing the sequencer.</html>";
