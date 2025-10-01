@@ -15,7 +15,7 @@ import java.util.concurrent.locks.*;
 
 public class FunctionInspector extends JPanel
     {
-    public static final String[] INSPECTOR_NAMES = { "None", "Note", "Delay", "Drop", "Noise", "Map"  };
+    public static final String[] INSPECTOR_NAMES = { "None", "Note", "Delay", "Drop", "Noise", "Map", "Scale", "Chord"  };
     public static final String[] PARAMETER_TYPES = { "Bend", "CC", "NRPN", "RPN", "Aftertouch" };
     public static final String[] MAP_TYPES = { "None", "BY - X", "X + BY", "X - BY", "X * BY", "Discretize[X, BY]", "1-Discretize[X,BY]", "X^2", "X^4", "1-(1-X)^2", "1-(1-x)^4" };
     // public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
@@ -1100,7 +1100,7 @@ public class FunctionInspector extends JPanel
             parameterMSB.setToolTipText(PARAMETER_PARAM_MSB_TOOLTIP);
             parameterLSB.setToolTipText(PARAMETER_PARAM_LSB_TOOLTIP);
             mapType.setToolTipText(MAP_MAP_TOOLTIP);
-            variable.setToolTipText(MAP_VARIABLE_TOOLTIP);
+            variable.setToolTipText(MAP_BY_TOOLTIP);
             min.setToolTipText(MAP_MIN_TOOLTIP);
             max.setToolTipText(MAP_MAX_TOOLTIP);
 
@@ -1172,7 +1172,217 @@ public class FunctionInspector extends JPanel
         public String getName() { return "Parameter"; }
         }
         
-        
+ 
+	public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+ 	public static final String[] ROUND_TYPES = new String[] {  "Round Down", "Round Up", "Round Near/Down", "Round Near/Up" };
+ 	public static final String[] SCALE_TYPES = new String[] {  "Chromatic", "Major", "Harmonic Minor", "Melodic Minor", "Dorian",
+ 		"Phrygian", "Lydian", "Mixolyedian", "Relative Minor", "Locrian", "Blues Minor", "Pentatonic", "Minor Pentatonic",
+ 		"Japanese Pentatonic", "Whole Tone", "Hungarian Gypsy", "Phrygian Dominant", "Persian", "Diminished (Oct)", "Augmentic (Hex)",
+ 		"Octave", "4+Octave", "5+Octave", "4+5+Octave", "Major Triad", "Minor Triad", "Major 6", "Minor 6", "Augmented Triad",
+ 		"7", "Major 7", "Minor 7", "2+Major 7", "2+Minor 7", "Diminished 7", "Major-Minor 7" };
+
+    public class ScaleInspector extends SubInspector
+        {
+        PushButton scaleType;
+        JCheckBox[] notes = new JCheckBox[12];
+        JComboBox roundType;
+        SmallDial key;
+                               
+        public ScaleInspector()
+            {
+            Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
+                        
+            key = new SmallDial(func.getKey(), defaults)
+                {
+                public String map(double val) { return KEYS[(int)(val * 11.0)]; }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return func.getKey() / 11.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setKey((int)(val * 11.0)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) func.setKey(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = func.getKey(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+                
+        	for(int i = 0; i < notes.length; i++)
+        		{
+        		final int _i = i;
+				notes[i] = new JCheckBox();
+				notes[i].setSelected(func.getScale(_i));
+				notes[i].addActionListener(new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						if (seq == null) return;
+						ReentrantLock lock = seq.getLock();
+						lock.lock();
+						try { func.setScale(_i, notes[_i].isSelected()); }
+						finally { lock.unlock(); }                              
+						}
+					});
+        		}
+
+            scaleType = new PushButton("Scale/Chord...", SCALE_TYPES)
+            	{
+            	public void perform(int index)
+            		{
+            		if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setScale(index); }
+                    finally { lock.unlock(); } 
+                    
+                    // update notes
+                    for(int i = 0; i < notes.length; i++)
+                    	{
+                    	final int _i = i;
+						if (seq == null) return;
+						lock = seq.getLock();
+						boolean val = false;
+						lock.lock();
+						try { val = func.getScale(_i); }
+						finally { lock.unlock(); }  
+						notes[i].setSelected(val);                            
+                    	}
+                    }
+                };
+
+            roundType = new JComboBox(ROUND_TYPES);
+            roundType.setSelectedIndex(func.getRound());
+            roundType.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    int result = roundType.getSelectedIndex();
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setRound(result); }
+                    finally { lock.unlock(); } 
+                    }
+                });
+
+            build(new String[] { "", "Key", "Round", "Presets", "1", "m2", "M2", "m3", "M3", "4", "Tri", "5", "m6", "M6", "m7", "M7"}, 
+                new JComponent[] 
+                    {
+                    null,
+                    key.getLabelledDial("Db"),
+                    roundType,
+                    scaleType,
+                    notes[0],
+                    notes[1],
+                    notes[2],
+                    notes[3],
+                    notes[4],
+                    notes[5],
+                    notes[6],
+                    notes[7],
+                    notes[8],
+                    notes[9],
+                    notes[10],
+                    notes[11],
+                    });
+            }
+     
+        public void revise() 
+            {
+            Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
+
+            Seq old = seq;
+            seq = null;
+            ReentrantLock lock = old.getLock();
+            lock.lock();
+            try 
+                { 
+                roundType.setSelectedIndex(func.getRound()); 
+                for(int i = 0; i < 12; i++)
+                	{
+                	notes[i].setSelected(func.getScale(i));
+                	}
+                }
+            finally { lock.unlock(); }                              
+            seq = old;
+            if (key != null) key.redraw();
+            }
+
+        public String getName() { return "Scale"; }
+        }
+              
+    public static final String[] CHORD_TYPES = { "m3", "M3", "4", "5", "m6", "M6", "m7", "Octave", "Major Triad", "Maj 1 Inv", "Maj 2 Inv", "Minor Triad", "Min 1 Inv", "Min 2 Inv", "Dom7 Without 3", "Dom7", "Major 7", "Minor 7", "Diminished 7" };   
+    public class ChordInspector extends SubInspector
+        {
+        JComboBox chordType;
+                               
+        public ChordInspector()
+            {
+            Filter.Chord func = (Filter.Chord)(filter.getFunction(index));
+
+            chordType = new JComboBox(CHORD_TYPES);
+            chordType.setSelectedIndex(func.getChord());
+            chordType.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    int result = chordType.getSelectedIndex();
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setChord(result); }
+                    finally { lock.unlock(); } 
+                    }
+                });
+            chordType.setMaximumRowCount(CHORD_TYPES.length);
+
+            build(new String[] { "", "Chord/Interval"}, 
+                new JComponent[] 
+                    {
+                    null,
+                    chordType,
+                    });
+            }
+
+        public void revise() 
+            {
+            Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
+
+            Seq old = seq;
+            seq = null;
+            ReentrantLock lock = old.getLock();
+            lock.lock();
+            try 
+                { 
+                chordType.setSelectedIndex(func.getRound()); 
+                }
+            finally { lock.unlock(); }                              
+            seq = old;
+            }
+
+        public String getName() { return "Chord"; }
+        }
+
+       
     public SubInspector buildSubinspector(String type)
         {
         if (type.equals(Filter.IDENTITY))
@@ -1198,6 +1408,14 @@ public class FunctionInspector extends JPanel
         else if (type.equals(Filter.MAP))
             {
             return new MapInspector();
+            }
+        else if (type.equals(Filter.SCALE))
+            {
+            return new ScaleInspector();
+            }
+        else if (type.equals(Filter.CHORD))
+            {
+            return new ChordInspector();
             }
         else // uh...
             {
@@ -1312,9 +1530,9 @@ public class FunctionInspector extends JPanel
     static final String MAP_MAP_TOOLTIP = "<html><b>Map</b><br>" +
         "Specifies the mapping function to use to modify the parameter value.</html>";
 
-    static final String MAP_VARIABLE_TOOLTIP = "<html><b>Variable</b><br>" +
-        "Sets the variable associated with some of the mapping functions, which changes how the<br>" +
-        "mapping function modifies the parameter value.</html>";
+    static final String MAP_BY_TOOLTIP = "<html><b>By</b><br>" +
+        "Some functions require that that the parameter value be mapped <b>by some amount</b>.<br>" +
+        "The <b>By</b> value specifies that amount.</html>";
 
     static final String MAP_MIN_TOOLTIP = "<html><b>Min</b><br>" +
         "Specifies the minimum legal parameter value.<br><br>" +
