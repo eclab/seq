@@ -79,6 +79,9 @@ public class SilenceInspector extends WidgetList
                 name,
                 time,
                 });
+
+        name.setToolTipText(NAME_TOOLTIP);
+        time.setToolTipText(LENGTH_TOOLTIP);
         }
                 
     public void revise()
@@ -87,4 +90,10 @@ public class SilenceInspector extends WidgetList
         time.revise();
         }
         
+    static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
+        "Sets the name of the Silence.  This will appear in the Motif List at left.</html>";
+
+    static final String LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
+        "Sets the length in time of the Silence.</html>";
+
     }

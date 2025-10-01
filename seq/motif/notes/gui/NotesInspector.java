@@ -1035,7 +1035,7 @@ public class NotesInspector extends WidgetList
     static final String QUANTIZE_ON_RECORD_TOOLTIP = "<html><b>Quantize on Record</b><br>" +
         "Sets whether the Notes will automatically quantize notes and events after recording.</html>";
         
-    static final String QUANTIZE_TO_TOOLTIP = "<html><b>Quantize To...</b><br>" +
+    static final String QUANTIZE_TO_TOOLTIP = "<html><b>Quantize To</b><br>" +
         "Sets the amount of automatic quantization of notes and events after recording.<br><br>" +
         "This has no effect unless <b>Quantize On Record</b> is checked.</html>";
 

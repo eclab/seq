@@ -258,6 +258,21 @@ public class ArgumentList extends JPanel
                         }
                     };
                                         
+                if (i == 0)
+                	{
+					dials[i].setToolTipText(RAND_MIN_TOOLTIP);
+	             	}
+	             else if (i == 1)
+	             	{
+					dials[i].setToolTipText(RAND_MAX_TOOLTIP);
+	             	}
+                else
+                	{
+                	dials[i].setToolTipText("<html><b>Argument " + (i - 1) + " Value</b><br>" +
+                "Here you specify the value of argument " + (i - 1) + " as passed into the child.<br>" +
+                "You can also bind the value to one of your own parameters, or to the random parameter.<br><br>" +
+                "The argument name is determined by the child's <b>Parameter Names</b>.</html>");  
+                	}                
                 comp[i] = dials[i].getLabelledDial("0.0000  ");
                 // comp[i + 1] = dials[i].getLabelledDial("0.0000  ");
                 }
@@ -279,7 +294,13 @@ public class ArgumentList extends JPanel
         setLayout(new BorderLayout());
         add(new DisclosurePanel("Arguments", list), BorderLayout.CENTER);
         }
-    
+ 
+     static final String RAND_MIN_TOOLTIP = "<html><b>Rand Min</b><br>" +
+        "Set this to specify the lower bound for the random parameter value.</html>";
+   
+     static final String RAND_MAX_TOOLTIP = "<html><b>Rand Max</b><br>" +
+        "Set this to specify the uper bound for the random parameter value.</html>";
+   
 /*
   public void revise()
   {
