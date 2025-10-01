@@ -162,6 +162,7 @@ public class NotesUI extends MotifUI
     public void buildMenu()
         {
         menu = new JMenu("Notes");
+        /*
         JMenuItem load = new JMenuItem("Load MIDI File...");
         load.addActionListener(new ActionListener()
             {
@@ -174,6 +175,7 @@ public class NotesUI extends MotifUI
         menu.add(load);
 
         menu.addSeparator();
+        */
         
         JMenuItem selectAll = new JMenuItem("Select All Notes");
         selectAll.addActionListener(new ActionListener()
