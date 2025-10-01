@@ -1225,6 +1225,7 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 };
+        key.setToolTipText(SCALE_KEY_TOOLTIP);
                 
         	for(int i = 0; i < notes.length; i++)
         		{
@@ -1242,6 +1243,7 @@ public class FunctionInspector extends JPanel
 						finally { lock.unlock(); }                              
 						}
 					});
+        notes[i].setToolTipText(SCALE_NOTE_TOOLTIP);
         		}
 
             scaleType = new PushButton("Scale/Chord...", SCALE_TYPES)
@@ -1268,6 +1270,7 @@ public class FunctionInspector extends JPanel
                     	}
                     }
                 };
+        scaleType.setToolTipText(SCALE_PRESETS_TOOLTIP);
 
             roundType = new JComboBox(ROUND_TYPES);
             roundType.setSelectedIndex(func.getRound());
@@ -1283,6 +1286,7 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); } 
                     }
                 });
+        roundType.setToolTipText(SCALE_ROUND_TOOLTIP);
 
             build(new String[] { "", "Key", "Round", "Presets", "1", "m2", "M2", "m3", "M3", "4", "Tri", "5", "m6", "M6", "m7", "M7"}, 
                 new JComponent[] 
@@ -1355,6 +1359,7 @@ public class FunctionInspector extends JPanel
                 });
             chordType.setMaximumRowCount(CHORD_TYPES.length);
 
+        chordType.setToolTipText(CHORD_INTERVAL_TOOLTIP);
             build(new String[] { "", "Chord/Interval"}, 
                 new JComponent[] 
                     {
@@ -1544,6 +1549,31 @@ public class FunctionInspector extends JPanel
         "This will both bound the parameter value before it goes into the mapping function,<br>" +
         "then scale the result after it comes out so that it's still between min and max.</html>";
 
+    static final String SCALE_KEY_TOOLTIP = "<html><b>Key</b><br>" +
+        "Specifies key of the scale to restrict MIDI notes to.</html>";
+
+    static final String SCALE_ROUND_TOOLTIP = "<html><b>Round</b><br>" +
+        "Specifies how to constrain MIDI notes to notes in the scale.  Options:" +
+        "<ul>" +
+        "<li><b>Round Down</b>&nbsp;&nbsp; Sets the MIDI note to the closest note in the scale.<br>" +
+        "below or equal to the MIDI note." +
+        "<li><b>Round Up</b>&nbsp;&nbsp; Sets the MIDI note to the closest note in the scale.<br>" +
+        "above or equal to the MIDI note." +
+        "<li><b>Round Nearest/Down</b>&nbsp;&nbsp; Sets the MIDI note to the closest note in the scale,<br>" +
+        "breaking ties by Rounding Down." +
+        "<li><b>Round Nearest/Up</b>&nbsp;&nbsp; Sets the MIDI note to the closest note in the scale,<br>" +
+        "breaking ties by Rounding Up." +
+        "</ul>" +
+        "</html>";
+
+    static final String SCALE_PRESETS_TOOLTIP = "<html><b>Presets</b><br>" +
+        "Various presets for the scale values.  The first presets are scales, and the later ones are chords.</html>";
+
+    static final String SCALE_NOTE_TOOLTIP = "<html><b>Scale Note</b><br>" +
+        "Notes in the scale to constrain incoming MIDI notes.</html>";
+
+    static final String CHORD_INTERVAL_TOOLTIP = "<html><b>Chord/Interval</b><br>" +
+        "The Interval or Chord to play in lieu of an incoming MIDI note.</html>";
 
 
     }
