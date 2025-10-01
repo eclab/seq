@@ -416,6 +416,8 @@ The Motif Menu has several options.
 \paragraph{File Menu}
 The File Menu allows you to load and save sequences and to clear the existing sequence and restart with a new one.  You can also {\bf Export} the sequence starting at the Root Motif, discarding all motifs that are not its children nor descendants.  Finally, you can {\bf Merge} another sequence into the current one: this adds to the current sequence copies of all the Motifs in the other sequence.
 
+Seq can also load Type 1 and Type 2 MIDI files via {\bf Load MIDI File...}.  If the MIDI file has multiple tracks, or a single track with multiple channels, Seq will load the file as multiple Notes Motifs, with a Parallel Motif as their common parent. Otherwise, it will load the file into a single Notes Motif.  We will discuss the Notes and Parallel Motifs later.
+
 \paragraph{Edit Menu}
 The Edit Menu largely concerns itself with {\bf Undo} and {\bf Redo}.  However Undo works differently than you're used to: only structural changes are undone.  If you change a parameter, it's not undoable.  However you can add an undo point prior to the parameter change by choosing {\bf Checkpoint} before making the change.
 
@@ -707,7 +709,7 @@ Recorded notes appear while recording.  However recorded non-note events will no
 
 \begin{itemize}
 
-\item{\bf Load MIDI File...}\quad will load MIDI data from a MIDI file, replacing the existing data.
+%\item{\bf Load MIDI File...}\quad will load MIDI data from a MIDI file, replacing the existing data.
 
 \item{\bf Select All Notes}\quad selects all notes.
 
