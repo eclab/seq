@@ -88,7 +88,7 @@ public abstract class Dial extends JPanel
         
     double currentVal;
     
-    public void setEnabled(boolean val) { enabled = val; }
+    public void setEnabled(boolean val) { enabled = val; redraw(); }  // we need to redraw to get rid of the data
     
     /** Updates the dial to a new value */
     public void update(double val, boolean changing) 
