@@ -61,6 +61,10 @@ public class DefaultParameterList extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                names[i].setToolTipText("<html><b>Name of Parameter " + (i + 1) + "</b><br>" +
+                "Here you can customize the name for Parameter " + (i + 1) + ".<br>" +
+                "This name will appear in the pop-up menus of dials you can bind to this Parameter.<br>" +
+                "It will also appear as the <b>Arguments List</b> for assigning values to arguments passed in.</html>");                  
                 names[i].setColumns(MotifUI.PARAMETER_LIST_NAME_DEFAULT_SIZE);
                 JPanel panel = new JPanel();
                 panel.setLayout(new BorderLayout());
