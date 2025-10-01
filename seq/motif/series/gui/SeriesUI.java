@@ -316,7 +316,7 @@ public class SeriesUI extends MotifUI
         ArrayList<Motif.Child> children = series.getChildren();
         if (children.size() == 0) return;
         
-        
+		seriesBox.removeAll();
         MotifList list = sequi.getMotifList();   
         for(int i = 0; i < children.size(); i++)
             {

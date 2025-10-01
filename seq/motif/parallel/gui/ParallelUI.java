@@ -330,6 +330,7 @@ public class ParallelUI extends MotifUI
         ArrayList<Motif.Child> children = parallel.getChildren();
         if (children.size() == 0) return;
 
+		parallelBox.removeAll();
         MotifList list = sequi.getMotifList();
         for(int i = 0; i < children.size(); i++)
             {
@@ -399,9 +400,13 @@ public class ParallelUI extends MotifUI
             children = parallel.getChildren();
             newButton.setAuxiliary(children.get(children.size() - 1));      // last one
             if (at != children.size())             // last position, it's already there
+                {
                 parallel.moveChild(children.size() - 1, at);              // move to right place
+                }
             else
+            	{
                 atEnd = true;
+                }
             }
         finally
             {
