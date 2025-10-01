@@ -1165,6 +1165,8 @@ At present, Filter has six MIDI Effects available:
 \item {\bf Drop}\qquad With some probability, drops a note (don't let it pass through), or drops events within an interval of time.
 \item {\bf Noise}\qquad Adds noise to the value of a non-note parameter such as pitch bend, CC, or aftertouch.
 \item {\bf Map}\qquad Maps a non-note parameter value through a function to transform it to a different value.
+\item {\bf Scale}\qquad Quantizes incoming notes, forcing them to conform to a certain scale or notes in a chord.
+\item {\bf Chord}\qquad Changes an incoming note into a set of notes forming a chord or interval.
 \end{itemize}
 
 We'll describe these next in detail.  More MIDI effects are planned for the future.
@@ -1234,11 +1236,50 @@ This allows you to change parameter values in many ways. You could invert them, 
 \item {\bf Param/MSB}\qquad The parameter to add noise to.  Pitch Bend doesn't have a parameter.  Aftertouch also doesn't have a parameter (note is disregarded\,---\,all aftertouch messages are treated the same).
   For NRPN and RPN, this serves as the {\it Most Significant Byte} (MSB) of the parameter to add noise to.
 \item {\bf LSB}\qquad The {\it Least Significant Byte} of the parameter to add noise to.  This is only used by NRPN and RPN, and complements the MSB.
-\item {\bf Map}\qquad The mapping function used.
+\item {\bf Map}\qquad The mapping function used.  See below.
 \item {\bf Min}\qquad The minimum of the bounding range.
 \item {\bf Max}\qquad The maximum of the bounding range.
-\item {\bf By}\qquad A variable used by some mapping functions to determine how strong their effect is.
+\item {\bf By}\qquad A value used by some mapping functions to determine how strong their effect is.
 \end{itemize}
+
+\newcommand\param{{\text{\it param}}}
+\newcommand\by{{\text{\it by}}}
+
+The mapping functions are as follows.  Let \(\param\) be the parameter and \(\by\) be the value of the {\bf By} dial.  Both of these values range from 0 to 1.  The result of the mapping function is bounded to be within 0 and 1.
+
+\begin{itemize}
+\item {\bf None}\qquad \(\param\) is not modified at all.
+\item \(\param \leftarrow \by - \param\).  This is particularly useful if \(\by = 1\): this just inverts \(\param\), making high values low and vice versa.
+\item \(\param \leftarrow \param + \by\).
+\item  \(\param \leftarrow \param - \by\).
+\item \(\param \leftarrow \param \times \by\).  This sounds like it makes \(\param\) bigger but in fact it makes it smaller, since \(\by \leq 1\).
+\item Discretize \(\param\) by \(by\).  This creates a stairstep effect.  Here, \(\by\) is treated as a value from 1 to 16.   \(\param\) is set to the nearest division of 1.0 into \(\by\) chunks.  For example, if \(\by = 8\). and \(\param\) is 0.352, then \param is rounded up to 0.375 (that is, \(3/8\)).  
+\item Discretize \(\param\) by \(by\), and subtract from 1 (inverting it).
+\item \(\param^2\).  This makes \(\param\) rise more slowly and in a curved fashion.
+\item \(\param^4\).  This makes \(\param\) rise even more slowly and in a curved fashion.
+\item \(1-(1-\param)^2\).  This makes \(\param\) rise faster and in a curved fashion.
+\item \(1-(1-\param)^2\).  This makes \(\param\) rise even faster and in a curved fashion: it's much like the exponential rise in an envelope.
+\end{itemize}
+
+\paragraph{The Scale Effect}
+
+This effect forces incoming notes to quantize to the nearest note in a scale or chord.
+
+\begin{itemize}
+\item {\bf Key}\qquad The key of the scale or chord.
+\item {\bf Round}\qquad How to force the incoming notes. You can {\bf round down} the note to the nearest note in the scale/chord equal to or below the incoming note.  Or you can {\bf round up} to the nearest note equal to or above the incoming note.  Or you can round the incoming note to the {\bf nearest} note in the scale/chord: if you do this, ties are broken by rounding {\bf up} or {\bf down}.
+\item {\bf The Notes}\qquad You can select which notes in the scale or chord you want to force the note to conform to.  A variety of {\bf Presets} are also offered.
+\end{itemize}
+
+\paragraph{The Chord Effect}
+
+This effect converts a note into a full chord or interval.  It is similar to the classic {\it chord memory} effect in certain synthesizers.
+
+\begin{itemize}
+\item {\bf Chord/Interval}\qquad The chord or interval to convert the note to.
+\end{itemize}
+
+
 
 \paragraph{Parameterization}
 
