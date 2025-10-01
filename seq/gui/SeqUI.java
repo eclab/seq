@@ -19,6 +19,10 @@ import java.util.*;
 import javax.sound.midi.*;
 import com.formdev.flatlaf.*;
 import org.json.*;
+import seq.motif.notes.*;
+import seq.motif.notes.gui.*;
+import seq.motif.parallel.*;
+import seq.motif.parallel.gui.*;
 
 
 /***
@@ -798,6 +802,16 @@ public class SeqUI extends JPanel
                 }
             });
 
+        JMenuItem loadMidiItem = new JMenuItem("Load MIDI File...");
+        fileMenu.add(loadMidiItem);
+        loadMidiItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doLoadMIDIFile();
+                }
+            });
+
         fileMenu.addSeparator();
         JMenuItem saveItem = new JMenuItem("Save Sequence");
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -1292,7 +1306,7 @@ public class SeqUI extends JPanel
     /** Adds the given MotifUI to the MotifList and selects it. */
     public void addMotifUI(MotifUI ui)
         {
-        list.doAdd(ui, false);
+        list.doAdd(ui, false, true);
         //setMotifUI(ui);                       // doAdd already sets it
         }
         
@@ -1863,8 +1877,146 @@ public class SeqUI extends JPanel
                 }
             });
         }
-        
-        
+    
+    
+    ArrayList[] breakByChannel(Track track)
+    	{
+    	ArrayList[] tracks = new ArrayList[17];
+    	for(int i = 0; i < track.size(); i++)
+    		{
+            MidiEvent e = track.get(i);
+            MidiMessage message = e.getMessage();
+            if (message instanceof ShortMessage && Clip.isVoiceMessage(message))
+                {
+                int channel = ((ShortMessage)message).getChannel();
+                if (tracks[channel] == null) tracks[channel] = new ArrayList();
+                tracks[channel].add(e);
+                }
+            else
+            	{
+            	if (tracks[16] == null) tracks[16] = new ArrayList();
+            	tracks[16].add(e);
+            	}
+    		}
+    	return tracks;
+    	}
+
+	public void doLoadMIDIFile()
+		{
+        FileDialog fd = new FileDialog((JFrame)getFrame(), "Load MIDI File...", FileDialog.LOAD);
+        fd.setFilenameFilter(new FilenameFilter()
+            {
+            public boolean accept(File dir, String name)
+                {
+                return ensureFileEndsWith(name, MIDI_EXTENSION).equals(name);
+                }
+            });
+
+        disableMenuBar();
+        fd.setVisible(true);
+        enableMenuBar();
+                
+        if (fd.getFile() != null)
+            {
+            try
+            	{
+            	File file = new File(fd.getDirectory(), fd.getFile());
+				Sequence sequence = MidiSystem.getSequence(file);
+				if (sequence.getDivisionType() != Sequence.PPQ)
+					{
+					showSimpleError("Invalid Time Measure", "Seq can only read MIDI files which use Parts Per Quarter-Note (PPQ)\n" +
+						"as their division type.  This file cannot be read because it uses SMPTE.");
+					}
+				else
+					{
+					Track[] tracks = sequence.getTracks();
+					if (tracks.length == 0)
+						{
+						showSimpleError("Empty File", "This MIDI file has no tracks.");
+						}
+					else if (tracks.length > 1)
+						{
+						if (showSimpleConfirm("Multiple Tracks", "This MIDI file has " + tracks.length + " tracks.\nSeq will create one Notes object per track per channel, and one Parallel as a parent.", "Load"))
+							{
+							Parallel parallel = new Parallel(seq);
+							parallel.setName(file.getName());
+							ParallelUI parallelui = (ParallelUI)(list.getOrAddMotifUIFor(parallel, true, false));
+							for(int i = 0; i < tracks.length; i++)
+								{
+								ArrayList[] channels = breakByChannel(tracks[i]);
+								for(int j = 0; j < channels.length; j++)
+									{
+									if (channels[i] == null) continue;
+			
+									Notes notes = new Notes(seq);
+									notes.setName("Tr " + i + (j == 16 ? "Non-Voice Data" : ("Channel " + (j + 1))));
+									notes.read((ArrayList<MidiEvent>)channels[j], sequence.getResolution());
+									notes.sortEvents();
+									NotesUI notesui = (NotesUI)(list.getOrAddMotifUIFor(notes, false, false));
+									parallelui.addChild(notesui);
+									}
+								}
+							setMotifUI(parallelui);		// also forces a rebuilding of the list
+							}
+						}
+					else
+						{
+						ArrayList[] channels = breakByChannel(tracks[0]);
+						int count = 0;
+						for(int i = 0; i < 16; i++)		// Note 16
+							{
+							if (channels[i] != null) count++;
+							}
+						
+						if (count <= 1)
+							{
+							for(int i = 0; i < 17; i++)		// Note 17
+								{
+								Notes notes = new Notes(seq);
+								notes.read((ArrayList<MidiEvent>)channels[i], sequence.getResolution());
+								notes.setName(file.getName());
+								notes.sortEvents();
+								NotesUI notesui = (NotesUI)(list.getOrAddMotifUIFor(notes));
+								setMotifUI(notesui);
+								}
+							}
+						else // (count > 1)
+							{
+							if (showSimpleConfirm("Multiple Channels", "This MIDI file has " + count + " channels.\nSeq will create one Notes object per channel, and one Parallel as a parent.", "Load"))
+								{
+								Parallel parallel = new Parallel(seq);
+								parallel.setName(file.getName());
+								ParallelUI parallelui = (ParallelUI)(list.getOrAddMotifUIFor(parallel, true, false));
+								for(int i = 0; i < channels.length; i++)
+									{
+									if (channels[i] == null) continue;
+			
+									Notes notes = new Notes(seq);
+									notes.setName(i == 16 ? "Non-Voice Data" : ("Channel " + (i + 1)));
+									notes.read((ArrayList<MidiEvent>)channels[i], sequence.getResolution());
+									notes.sortEvents();
+									NotesUI notesui = (NotesUI)(list.getOrAddMotifUIFor(notes, false, false));
+									parallelui.addChild(notesui);
+									}
+								setMotifUI(parallelui);		// also forces a rebuilding of the list
+								}
+							}
+						}
+					}
+				}
+			catch (InvalidMidiDataException ex) 
+				{ 
+                	showSimpleError("Corrupt File", "This MIDI file is corrupted and cannot be loaded.");
+                	ex.printStackTrace();
+				} 
+			catch (IOException ex) 
+				{ 
+                	showSimpleError("File Error", "An error occurred on opening the file.");
+                	ex.printStackTrace();
+				}
+			}
+		}		
+       
     public static final String SEQ_ABOUT_TEXT = 
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 

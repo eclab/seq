@@ -363,8 +363,19 @@ public class ParallelUI extends MotifUI
         updateIndexes();
         }
 
+	/** Adds a child to the end, but does NOT select it */
+	public void addChild(MotifUI motifui)
+		{
+		addChild(motifui, parallel.getChildren().size(), false);
+		}
 
+	/** Adds a child at the given position (or at the end if at == getChildren().size()), and selects it. */
     public void addChild(MotifUI motifui, int at)
+        { 
+        addChild(motifui, at, true);
+        }
+
+    void addChild(MotifUI motifui, int at, boolean select)
         {  
         ParallelButton newButton = new ParallelButton(sequi, motifui, ParallelUI.this, at);
 
@@ -399,7 +410,7 @@ public class ParallelUI extends MotifUI
         
         if (atEnd) parallelBox.add(newButton);
         else parallelBox.add(newButton, at);
-        select((MotifButton)newButton);
+        if (select) select((MotifButton)newButton);
         parallelBox.revalidate();
         revalidate();
         updateIndexes();

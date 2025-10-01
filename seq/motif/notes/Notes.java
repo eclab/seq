@@ -1903,15 +1903,31 @@ public class Notes extends Motif
         Track[] tracks = sequence.getTracks();
         if (tracks.length == 0) return;
         if (sequence.getDivisionType() != Sequence.PPQ) return;         // uh oh
-        int resolution = sequence.getResolution();
-                
+        
+        read(tracks[0], sequence.getResolution());
+        }
+
+    /** Read Notes from a Track, displacing the originals. */
+    public void read(javax.sound.midi.Track track, int resolution)
+        {
+        ArrayList<MidiEvent> evts = new ArrayList();
+        for(int i = 0; i < track.size(); i++)
+        	{
+        	evts.add(track.get(i));
+        	}
+        read(evts, resolution);
+        }
+        
+    /** Read Notes from an ArrayList, displacing the originals. */
+    public void read(ArrayList<MidiEvent> track, int resolution)
+        {
         Notes.Note[] recordedNoteOn = new Notes.Note[128];
         ArrayList<Notes.Event> readEvents = new ArrayList<>();  
-        
+
         // FIXME: At present we only load a single track
-        for(int i = 0; i < tracks[0].size(); i++)
+        for(int i = 0; i < track.size(); i++)
             {
-            MidiEvent e = tracks[0].get(i);
+            MidiEvent e = track.get(i);
             int pos = (int)((e.getTick() * Seq.PPQ) / resolution);                  // e.getTick() is a long
             MidiMessage message = e.getMessage();
             if (message instanceof ShortMessage)
