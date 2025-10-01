@@ -40,6 +40,7 @@ public abstract class Clip
 
     protected static int noteID = 0;
     public static final int NO_NOTE_ID = -1; 
+    public static final int SYSTEM_EXCLUSIVE_STATUS = 240;
 
     // The Seq
     protected Seq seq;
@@ -751,6 +752,7 @@ public abstract class Clip
         if (message == null) return false;
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
+        if (shortmessage.getStatus() >= SYSTEM_EXCLUSIVE_STATUS) return false;
         return (shortmessage.getCommand() == ShortMessage.NOTE_ON && shortmessage.getData2() > 0);
         }
 
@@ -761,6 +763,7 @@ public abstract class Clip
         if (message == null) return false;
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
+        if (shortmessage.getStatus() >= SYSTEM_EXCLUSIVE_STATUS) return false;
         return ((shortmessage.getCommand() == ShortMessage.NOTE_ON && shortmessage.getData2() == 0) ||
             (shortmessage.getCommand() == ShortMessage.NOTE_OFF));
         }
@@ -771,6 +774,7 @@ public abstract class Clip
         if (message == null) return false;
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
+        if (shortmessage.getStatus() >= SYSTEM_EXCLUSIVE_STATUS) return false;
         return (shortmessage.getCommand() == ShortMessage.CONTROL_CHANGE);
         }
 
@@ -780,6 +784,7 @@ public abstract class Clip
         if (message == null) return false;
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
+        if (shortmessage.getStatus() >= SYSTEM_EXCLUSIVE_STATUS) return false;
         return (shortmessage.getCommand() == ShortMessage.PROGRAM_CHANGE);
         }
 
@@ -789,6 +794,7 @@ public abstract class Clip
         if (message == null) return false;
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
+        if (shortmessage.getStatus() >= SYSTEM_EXCLUSIVE_STATUS) return false;
         return (shortmessage.getCommand() == ShortMessage.PITCH_BEND);
         }
 
@@ -798,6 +804,7 @@ public abstract class Clip
         if (message == null) return false;
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
+        if (shortmessage.getStatus() >= SYSTEM_EXCLUSIVE_STATUS) return false;
         return (shortmessage.getCommand() == ShortMessage.CHANNEL_PRESSURE);
         }
 
@@ -807,6 +814,16 @@ public abstract class Clip
         if (message == null) return false;
         if (!(message instanceof ShortMessage)) return false;
         ShortMessage shortmessage = (ShortMessage) message;
+        if (shortmessage.getStatus() >= SYSTEM_EXCLUSIVE_STATUS) return false;
         return (shortmessage.getCommand() == ShortMessage.POLY_PRESSURE);
+        }
+
+    /** Returns true if the given message is poly aftertouch. */
+    public static boolean isVoiceMessage(MidiMessage message)
+        {
+        if (message == null) return false;
+        if (!(message instanceof ShortMessage)) return false;
+        ShortMessage shortmessage = (ShortMessage) message;
+        return (shortmessage.getStatus() <= SYSTEM_EXCLUSIVE_STATUS);
         }
     }
