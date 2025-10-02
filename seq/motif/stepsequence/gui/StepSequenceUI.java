@@ -546,7 +546,7 @@ public class StepSequenceUI extends MotifUI
             }
         }
         
-    void rebuildTracks()
+    public void rebuildTracks()
         {
         // Revise TrackBox and Track Headers
         trackBox.removeAll();

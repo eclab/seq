@@ -1173,13 +1173,13 @@ public class FunctionInspector extends JPanel
         }
         
  
-	public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
- 	public static final String[] ROUND_TYPES = new String[] {  "Round Down", "Round Up", "Round Near/Down", "Round Near/Up" };
- 	public static final String[] SCALE_TYPES = new String[] {  "Chromatic", "Major", "Harmonic Minor", "Melodic Minor", "Dorian",
- 		"Phrygian", "Lydian", "Mixolyedian", "Relative Minor", "Locrian", "Blues Minor", "Pentatonic", "Minor Pentatonic",
- 		"Japanese Pentatonic", "Whole Tone", "Hungarian Gypsy", "Phrygian Dominant", "Persian", "Diminished (Oct)", "Augmentic (Hex)",
- 		"Octave", "4+Octave", "5+Octave", "4+5+Octave", "Major Triad", "Minor Triad", "Major 6", "Minor 6", "Augmented Triad",
- 		"7", "Major 7", "Minor 7", "2+Major 7", "2+Minor 7", "Diminished 7", "Major-Minor 7" };
+    public static final String[] KEYS = new String[] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+    public static final String[] ROUND_TYPES = new String[] {  "Round Down", "Round Up", "Round Near/Down", "Round Near/Up" };
+    public static final String[] SCALE_TYPES = new String[] {  "Chromatic", "Major", "Harmonic Minor", "Melodic Minor", "Dorian",
+        "Phrygian", "Lydian", "Mixolyedian", "Relative Minor", "Locrian", "Blues Minor", "Pentatonic", "Minor Pentatonic",
+        "Japanese Pentatonic", "Whole Tone", "Hungarian Gypsy", "Phrygian Dominant", "Persian", "Diminished (Oct)", "Augmentic (Hex)",
+        "Octave", "4+Octave", "5+Octave", "4+5+Octave", "Major Triad", "Minor Triad", "Major 6", "Minor 6", "Augmented Triad",
+        "7", "Major 7", "Minor 7", "2+Major 7", "2+Minor 7", "Diminished 7", "Major-Minor 7" };
 
     public class ScaleInspector extends SubInspector
         {
@@ -1225,32 +1225,32 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 };
-        key.setToolTipText(SCALE_KEY_TOOLTIP);
+            key.setToolTipText(SCALE_KEY_TOOLTIP);
                 
-        	for(int i = 0; i < notes.length; i++)
-        		{
-        		final int _i = i;
-				notes[i] = new JCheckBox();
-				notes[i].setSelected(func.getScale(_i));
-				notes[i].addActionListener(new ActionListener()
-					{
-					public void actionPerformed(ActionEvent e)
-						{
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { func.setScale(_i, notes[_i].isSelected()); }
-						finally { lock.unlock(); }                              
-						}
-					});
-        notes[i].setToolTipText(SCALE_NOTE_TOOLTIP);
-        		}
+            for(int i = 0; i < notes.length; i++)
+                {
+                final int _i = i;
+                notes[i] = new JCheckBox();
+                notes[i].setSelected(func.getScale(_i));
+                notes[i].addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { func.setScale(_i, notes[_i].isSelected()); }
+                        finally { lock.unlock(); }                              
+                        }
+                    });
+                notes[i].setToolTipText(SCALE_NOTE_TOOLTIP);
+                }
 
             scaleType = new PushButton("Scale/Chord...", SCALE_TYPES)
-            	{
-            	public void perform(int index)
-            		{
-            		if (seq == null) return;
+                {
+                public void perform(int index)
+                    {
+                    if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try { func.setScale(index); }
@@ -1258,19 +1258,19 @@ public class FunctionInspector extends JPanel
                     
                     // update notes
                     for(int i = 0; i < notes.length; i++)
-                    	{
-                    	final int _i = i;
-						if (seq == null) return;
-						lock = seq.getLock();
-						boolean val = false;
-						lock.lock();
-						try { val = func.getScale(_i); }
-						finally { lock.unlock(); }  
-						notes[i].setSelected(val);                            
-                    	}
+                        {
+                        final int _i = i;
+                        if (seq == null) return;
+                        lock = seq.getLock();
+                        boolean val = false;
+                        lock.lock();
+                        try { val = func.getScale(_i); }
+                        finally { lock.unlock(); }  
+                        notes[i].setSelected(val);                            
+                        }
                     }
                 };
-        scaleType.setToolTipText(SCALE_PRESETS_TOOLTIP);
+            scaleType.setToolTipText(SCALE_PRESETS_TOOLTIP);
 
             roundType = new JComboBox(ROUND_TYPES);
             roundType.setSelectedIndex(func.getRound());
@@ -1286,7 +1286,7 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); } 
                     }
                 });
-        roundType.setToolTipText(SCALE_ROUND_TOOLTIP);
+            roundType.setToolTipText(SCALE_ROUND_TOOLTIP);
 
             build(new String[] { "", "Key", "Round", "Presets", "1", "m2", "M2", "m3", "M3", "4", "Tri", "5", "m6", "M6", "m7", "M7"}, 
                 new JComponent[] 
@@ -1322,9 +1322,9 @@ public class FunctionInspector extends JPanel
                 { 
                 roundType.setSelectedIndex(func.getRound()); 
                 for(int i = 0; i < 12; i++)
-                	{
-                	notes[i].setSelected(func.getScale(i));
-                	}
+                    {
+                    notes[i].setSelected(func.getScale(i));
+                    }
                 }
             finally { lock.unlock(); }                              
             seq = old;
@@ -1359,7 +1359,7 @@ public class FunctionInspector extends JPanel
                 });
             chordType.setMaximumRowCount(CHORD_TYPES.length);
 
-        chordType.setToolTipText(CHORD_INTERVAL_TOOLTIP);
+            chordType.setToolTipText(CHORD_INTERVAL_TOOLTIP);
             build(new String[] { "", "Chord/Interval"}, 
                 new JComponent[] 
                     {

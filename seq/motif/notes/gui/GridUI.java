@@ -19,7 +19,7 @@ public class GridUI extends JComponent
     {
     public static final Color COLOR_CLEAR = new Color(0,0,0,0);
     // Default scaling factor.  Scaling factors are powers of 2
-    public static final double DEFAULT_SCALE = 2.0;
+    public static final double DEFAULT_SCALE = 8.0;
     // Highest (most zoomed out) scaling factor.  Scaling factors are powers of 2
     public static final double MAX_SCALE = 32.0;
     // Lowest (most zoomed in) scaling factor.  Scaling factors are powers of 2

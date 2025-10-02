@@ -1121,8 +1121,8 @@ public class FilterClip extends Clip
             Filter filter = (Filter)getMotif();
             Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
             int rounded = func.getRoundedNote(note);
-			map.put(id, rounded);
-			outs.put(id, out);
+            map.put(id, rounded);
+            outs.put(id, out);
             super.noteOn(out, rounded, vel, id, index);
             }
             
@@ -1148,7 +1148,7 @@ public class FilterClip extends Clip
             }
             
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
-        	{
+            {
             Filter filter = (Filter)getMotif();
             Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
             Integer newNote = map.remove(id);
@@ -1174,66 +1174,66 @@ public class FilterClip extends Clip
     public class Chord extends Node
         {
         HashMap<Integer, Integer> outs = new HashMap<>();                // Maps IDs to outs
-        HashMap<Integer, Integer> map = new HashMap<>();                	// Maps IDs to notes
+        HashMap<Integer, Integer> map = new HashMap<>();                        // Maps IDs to notes
         HashMap<Integer, Object> chords = new HashMap<>();                // Maps IDs to chords
         
         void noteOffChord(int id, double vel, int index)
-        	{
-        	int[] chord = (int[])(chords.remove(id));
-        	Integer note = map.remove(id);
-        	Integer out = map.remove(id);
-        	if (chord == null) return;
-        	
-        	for(int i = 0; i < chord.length; i++)
-        		{
-        		if (chord[i] >= 0 && note != null)
-        			{
-        			if (note + i < 128)
-        				{
-	        			super.noteOff(out, note + i, vel, chord[i], index);
-	        			}
-        			}
-        		}
-        	}
+            {
+            int[] chord = (int[])(chords.remove(id));
+            Integer note = map.remove(id);
+            Integer out = map.remove(id);
+            if (chord == null) return;
+                
+            for(int i = 0; i < chord.length; i++)
+                {
+                if (chord[i] >= 0 && note != null)
+                    {
+                    if (note + i < 128)
+                        {
+                        super.noteOff(out, note + i, vel, chord[i], index);
+                        }
+                    }
+                }
+            }
 
         void scheduleNoteOffChord(int id, double vel, int time, int index)
-        	{
-        	int[] chord = (int[])(chords.remove(id));
-        	Integer note = map.remove(id);
-        	Integer out = map.remove(id);
-        	if (chord == null) return;
-        	
-        	for(int i = 0; i < chord.length; i++)
-        		{
-        		if (chord[i] >= 0 && note != null)
-        			{
-        			if (note + i < 128)
-        				{
-						super.scheduleNoteOff(out, note + i, vel, time, chord[i], index);
-        				}
-        			}
-        		}
-        	}
+            {
+            int[] chord = (int[])(chords.remove(id));
+            Integer note = map.remove(id);
+            Integer out = map.remove(id);
+            if (chord == null) return;
+                
+            for(int i = 0; i < chord.length; i++)
+                {
+                if (chord[i] >= 0 && note != null)
+                    {
+                    if (note + i < 128)
+                        {
+                        super.scheduleNoteOff(out, note + i, vel, time, chord[i], index);
+                        }
+                    }
+                }
+            }
 
         void noteOnChord(int id, int out, int note, double vel, int[] chord, int index)
-        	{
-        	int[] c = new int[chord.length];
-        	for(int i = 0; i < chord.length; i++)
-        		{
-        		if (chord[i] == 1)
-        			{
-        			if (note + i < 128)
-        				{
-        				c[i] = super.noteOn(out, note + i, vel, index);	// store id in chord slot
-						}
-        			}
-        		else c[i] = -1;		// no id
-        		}
-        	
-        	chords.put(id, c);
-        	outs.put(id, out);
-			map.put(id, note);
-        	}
+            {
+            int[] c = new int[chord.length];
+            for(int i = 0; i < chord.length; i++)
+                {
+                if (chord[i] == 1)
+                    {
+                    if (note + i < 128)
+                        {
+                        c[i] = super.noteOn(out, note + i, vel, index); // store id in chord slot
+                        }
+                    }
+                else c[i] = -1;         // no id
+                }
+                
+            chords.put(id, c);
+            outs.put(id, out);
+            map.put(id, note);
+            }
         
         public void release(int index)
             {
@@ -1266,25 +1266,25 @@ public class FilterClip extends Clip
                 
             outs.clear();
             map.clear();
-			chords.clear();            
+            chords.clear();            
             }
         
         public void noteOn(int out, int note, double vel, int id, int index)    
             {
             Filter filter = (Filter)getMotif();
             Filter.Chord func = (Filter.Chord)(filter.getFunction(index));
-			int[] chord = Filter.CHORDS[func.getChord()];
-			noteOnChord(id, out, note, vel, chord, index);
+            int[] chord = Filter.CHORDS[func.getChord()];
+            noteOnChord(id, out, note, vel, chord, index);
             }
             
         public void noteOff(int out, int note, double vel, int id, int index)
             {
-			noteOffChord(id, vel, index);
+            noteOffChord(id, vel, index);
             }
             
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
-        	{
-			scheduleNoteOffChord(id, vel, time, index);
+            {
+            scheduleNoteOffChord(id, vel, time, index);
             }
         }
 

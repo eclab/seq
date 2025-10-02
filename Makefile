@@ -32,7 +32,7 @@ seq/motif/filter/*.java \
 seq/motif/filter/gui/*java \
 
 #seq/motif/modulation/*.java \
-#seq/motif/modulation/gui/*.java 
+#eq/motif/modulation/gui/*.java 
 
 # Make the main Seq code
 all:

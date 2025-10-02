@@ -33,76 +33,76 @@ public class Filter extends Motif
     public static final int MAX_DELAY_NUM_TIMES = 16;
         
 
-	public static final int SCALES[][] = 
-    {
-	/// COMMON SCALES
-	//    C  Db D  Eb E  F  Gb G  Ab A  Bb B
-		{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },		// Chromatic
-		{ 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1 },		// Major
-		{ 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1 },		// Harmonic Minor
-		{ 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 },		// Melodic Minor
-		{ 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0 },		// Dorian
-		{ 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0 },		// Phrygian
-		{ 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1 },		// Lydian
-		{ 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0 },		// Mixolydian
-		{ 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0 },		// Aeolian (Relative Minor)
-		{ 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0 },		// Locrian
-		{ 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0 },		// Blues Minor
-		{ 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0 },		// Pentatonic
-		{ 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0 },		// Minor Pentatonic
-		{ 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0 },		// Japanese Pentatonic
-		{ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 },		// Whole Tone
-		{ 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0 },		// Hungarian Gypsy
-		{ 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0 },		// Phrygian Dominant
-		{ 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1 },		// Persian
-		{ 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1 },		// Diminished (Octatonic)
-		{ 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1 },		// Augmented (Hexatonic)
+    public static final int SCALES[][] = 
+        {
+        /// COMMON SCALES
+        //    C  Db D  Eb E  F  Gb G  Ab A  Bb B
+        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },         // Chromatic
+        { 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1 },         // Major
+        { 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1 },         // Harmonic Minor
+        { 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 },         // Melodic Minor
+        { 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0 },         // Dorian
+        { 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0 },         // Phrygian
+        { 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1 },         // Lydian
+        { 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0 },         // Mixolydian
+        { 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0 },         // Aeolian (Relative Minor)
+        { 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0 },         // Locrian
+        { 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0 },         // Blues Minor
+        { 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0 },         // Pentatonic
+        { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0 },         // Minor Pentatonic
+        { 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0 },         // Japanese Pentatonic
+        { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 },         // Whole Tone
+        { 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0 },         // Hungarian Gypsy
+        { 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0 },         // Phrygian Dominant
+        { 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1 },         // Persian
+        { 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1 },         // Diminished (Octatonic)
+        { 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1 },         // Augmented (Hexatonic)
 
-		// INTERVALS AND CHORDS
-	//    C  Db D  Eb E  F  Gb G  Ab A  Bb B
-		{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		// Octave
-		{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },		// 4th + Octave 
-		{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },		// 5th + Octave 
-		{ 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 },		// 4th + 5th + Octave 
-		{ 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0 },		// Major Triad
-		{ 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },		// Minor Triad
-		{ 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0 },		// Major 6
-		{ 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0 },		// Minor 6
-		{ 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },		// Augmented Triad
-		{ 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0 },		// 7
-		{ 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1 },		// Major 7
-		{ 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0 },		// Minor 7
-		{ 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1 },		// Major 7 + 2nd 
-		{ 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0 },		// Minor 7 + 2nd 
-		{ 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 },		// Diminished 7
-		{ 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 },		// Minor-Major 7
-		};
+        // INTERVALS AND CHORDS
+        //    C  Db D  Eb E  F  Gb G  Ab A  Bb B
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },         // Octave
+        { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },         // 4th + Octave 
+        { 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },         // 5th + Octave 
+        { 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 },         // 4th + 5th + Octave 
+        { 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0 },         // Major Triad
+        { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },         // Minor Triad
+        { 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0 },         // Major 6
+        { 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0 },         // Minor 6
+        { 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },         // Augmented Triad
+        { 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0 },         // 7
+        { 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1 },         // Major 7
+        { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0 },         // Minor 7
+        { 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1 },         // Major 7 + 2nd 
+        { 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0 },         // Minor 7 + 2nd 
+        { 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 },         // Diminished 7
+        { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 },         // Minor-Major 7
+        };
 
 
-	public static final int CHORDS[][] = 
-    {
-		// INTERVALS AND CHORDS
-	//    C  Db D  Eb E  F  Gb G  Ab A  Bb B  C 
-		{ 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		// m3
-		{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },		// M3
-		{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },		// 4
-		{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },		// 5 
-		{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },		// m6 
-		{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },		// M6
-		{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },		// m7
-		{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },		// Octave
-		{ 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 },		// Major Triad
-		{ 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0 },		// Major Triad 1st Inv
-		{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },		// Major Triad 2nd Inv
-		{ 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0 },		// Minor Triad
-		{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0 },		// Minor Triad 1st Inv
-		{ 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0 },		// Minor Triad 2nd Inv
-		{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0 },		// 7 Without 3rd
-		{ 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 },		// 7
-		{ 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0 },		// Major 7
-		{ 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0 },		// Minor 7
-		{ 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0 },		// Diminished 7
-		};
+    public static final int CHORDS[][] = 
+        {
+        // INTERVALS AND CHORDS
+        //    C  Db D  Eb E  F  Gb G  Ab A  Bb B  C 
+        { 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },              // m3
+        { 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },              // M3
+        { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 },              // 4
+        { 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },              // 5 
+        { 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },              // m6 
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },              // M6
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },              // m7
+        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },              // Octave
+        { 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 },              // Major Triad
+        { 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0 },              // Major Triad 1st Inv
+        { 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },              // Major Triad 2nd Inv
+        { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0 },              // Minor Triad
+        { 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0 },              // Minor Triad 1st Inv
+        { 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0 },              // Minor Triad 2nd Inv
+        { 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0 },              // 7 Without 3rd
+        { 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 },              // 7
+        { 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0 },              // Major 7
+        { 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0 },              // Minor 7
+        { 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0 },              // Diminished 7
+        };
 
 
     // this index order is just the order of the combo box in FilterChildInspector
@@ -347,7 +347,6 @@ public class Filter extends Motif
         public String getType() { return DELAY; }
         public Delay(JSONObject obj)
             {
-            System.err.println("Load Delay " + obj);
             original = obj.optBoolean("o", true);
             //initialDelay = obj.optInt("i", 0);
             numTimes = obj.optInt("n", 0);
@@ -362,7 +361,6 @@ public class Filter extends Motif
             obj.put("n", numTimes);
             obj.put("d", delayInterval);
             obj.put("c", cut);
-            System.err.println("Save Delay " + obj);
             return obj;
             }
         }
@@ -560,105 +558,105 @@ public class Filter extends Motif
         public static final int ROUND_NEAREST_DOWN = 2;
         public static final int ROUND_NEAREST_UP = 3;
         
-        int key = 0;				// C is 0
+        int key = 0;                            // C is 0
         boolean[] scale = new boolean[12];
         int round = ROUND_DOWN;
 
         public boolean getScale(int index) { return scale[index]; }
         public void setScale(int index, boolean val) { scale[index] = val; }
         public void setScale(int scale)
-        	{
-        	for(int i = 0; i < 12; i++)
-        		{
-        		this.scale[i] = (SCALES[scale][i] == 1);
-        		}
-        	}
+            {
+            for(int i = 0; i < 12; i++)
+                {
+                this.scale[i] = (SCALES[scale][i] == 1);
+                }
+            }
         public int getKey() { return key; }
         public void setKey(int val) { key = val; }
         public int getRound() { return round; }
         public void setRound(int val) { round = val; }
         public int getRoundedNote(int note)
-        	{
-        	int under = -1;
-        	int over = -1;
-			int pos = (note % 12) - key;
-			if (pos < 0) pos += 12;
-			if (scale[pos]) // we're done
-				return note;
-			
-			// Find under.  We go down until we find a 1
-			for(under = pos; !scale[(under + 12) % 12]; under--);
-			if (round == ROUND_DOWN) 
-				{
-				int val = note + pos - under;
-				return (val < 0 ? 0 : val > 127 ? 127 : val);
-				}
-			
-			// Find over
-			for(over = pos; !scale[over % 12]; over++);
-			if (round == ROUND_UP) 
-				{
-				int val = note + over - pos;
-				return (val < 0 ? 0 : val > 127 ? 127 : val);
-				}
+            {
+            int under = -1;
+            int over = -1;
+            int pos = (note % 12) - key;
+            if (pos < 0) pos += 12;
+            if (scale[pos]) // we're done
+                return note;
+                        
+            // Find under.  We go down until we find a 1
+            for(under = pos; !scale[(under + 12) % 12]; under--);
+            if (round == ROUND_DOWN) 
+                {
+                int val = note + pos - under;
+                return (val < 0 ? 0 : val > 127 ? 127 : val);
+                }
+                        
+            // Find over
+            for(over = pos; !scale[over % 12]; over++);
+            if (round == ROUND_UP) 
+                {
+                int val = note + over - pos;
+                return (val < 0 ? 0 : val > 127 ? 127 : val);
+                }
 
-			else if (round == ROUND_NEAREST_DOWN || round == ROUND_NEAREST_UP)
-				{
-				int val = 0;
-				if (pos - under > over - pos)
-					{
-				 	val = note + over - pos;
-					}
-				else if (pos - under < over - pos)
-					{
-					val = note + pos - under;
-					}
-				else if (round == ROUND_NEAREST_DOWN)
-					{
-					val = note + pos - under;
-					}
-				else		// round == ROUND_NEAREST_UP
-					{
-				 	val = note + over - pos;
-					}
-				return (val < 0 ? 0 : val > 127 ? 127 : val);
-				}
-			
-			return note; 		// uh, bug
-        	}
+            else if (round == ROUND_NEAREST_DOWN || round == ROUND_NEAREST_UP)
+                {
+                int val = 0;
+                if (pos - under > over - pos)
+                    {
+                    val = note + over - pos;
+                    }
+                else if (pos - under < over - pos)
+                    {
+                    val = note + pos - under;
+                    }
+                else if (round == ROUND_NEAREST_DOWN)
+                    {
+                    val = note + pos - under;
+                    }
+                else            // round == ROUND_NEAREST_UP
+                    {
+                    val = note + over - pos;
+                    }
+                return (val < 0 ? 0 : val > 127 ? 127 : val);
+                }
+                        
+            return note;            // uh, bug
+            }
         
 
         public Scale() 
-        	{ 
-			for(int i = 0; i < 12; i++)
-				{
-				scale[i] = true;
-				}
-        	}
+            { 
+            for(int i = 0; i < 12; i++)
+                {
+                scale[i] = true;
+                }
+            }
         public String getType() { return SCALE; }
         public Scale(JSONObject obj)
             {
             round = obj.optInt("r", 0);
             key = obj.optInt("k", 0);
-			JSONArray array = obj.getJSONArray("s");
-			if (array != null)
-				{
-				for(int i = 0; i < 12; i++)
-					{
-					scale[i] = array.optBoolean(i, false);
-					}
-				}
+            JSONArray array = obj.getJSONArray("s");
+            if (array != null)
+                {
+                for(int i = 0; i < 12; i++)
+                    {
+                    scale[i] = array.optBoolean(i, false);
+                    }
+                }
             }
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
             obj.put("r", round);
             obj.put("k", key);
-			JSONArray array = new JSONArray();
-			for(int i = 0; i < 12; i++)
-				{
-				array.put(i, scale[i]);
-				}
+            JSONArray array = new JSONArray();
+            for(int i = 0; i < 12; i++)
+                {
+                array.put(i, scale[i]);
+                }
             obj.put("s", array);
             return obj;
             }
@@ -666,11 +664,11 @@ public class Filter extends Motif
             { 
             Scale other = (Scale)(super.copy());
             for(int i = 0; i < scale.length; i++)
-            	{
-            	other.scale[i] = scale[i];
-            	}
+                {
+                other.scale[i] = scale[i];
+                }
             return other;
-           }
+            }
         }
 
     public class Chord extends Function
@@ -686,7 +684,7 @@ public class Filter extends Motif
             {
             chord = obj.optInt("c", 0);
             }
-        	
+                
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
@@ -823,9 +821,9 @@ public class Filter extends Motif
         {
         Filter other = (Filter)(super.copy());
         for(int i = 0; i < functions.length; i++)
-        	{
-        	other.functions[i] = functions[i].copy();
-        	}
+            {
+            other.functions[i] = functions[i].copy();
+            }
         return other;
         }
 

@@ -67,31 +67,7 @@ public class Seq
     Out[] uniqueOuts = new Out[0];
     
     ReentrantLock lock = new ReentrantLock(true);
-/*
-  {
-  public void lock()
-  {
-  if (tryLock()) 
-  { 
-  System.err.println("Locked " + Thread.currentThread()); 
-  new Throwable().printStackTrace();
-  }
-  else
-  {
-  System.err.println("Waiting... "  + Thread.currentThread());
-  super.lock();
-  System.err.println("Success! " + Thread.currentThread());
-  new Throwable().printStackTrace();
-  }
-  }
-  public void unlock()
-  {
-  System.err.println("Unlocked"  + Thread.currentThread());
-  super.unlock();
-  }
-  };
-*/
-        
+
     ///// PLAY STATE
     
     // Is the sequencer currently actively playing?
@@ -222,59 +198,7 @@ public class Seq
         else return null;
         }
 
-/*
-  public Motif undo(Motif displayMotif) 
-  { 
-  if (undo.canUndo())
-  {
-  if (undo.onUndo().motifs != null)                   // heavyweight node
-  {
-  UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(data, displayMotif, motifs));
-  motifs = stuff.motifs;
-  data = stuff.data;
-  }
-  else
-  {
-  // push the display motif to 
-  UndoStuff stuff = (UndoStuff)undo.undo(new UndoStuff(displayMotif));
-  Motif.substituteMotif(stuff.data, motifs);
-  if (data == stuff.display)
-  {
-  data = stuff.data;
-  }
-  }
-  sequi.updateUndoMenus();
-  return stuff.display;
-  }
-  else return null;
-  }
- 
-  public Motif redo(Motif displayMotif) 
-  { 
-  if (undo.canRedo())
-  {
-  if (undo.onRedo().motifs != null)                   // heavyweight node
-  {
-  UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(data, displayMotif, motifs));
-  motifs = stuff.motifs;
-  data = stuff.data;
-  }
-  else
-  {
-  UndoStuff stuff = (UndoStuff)undo.redo(new UndoStuff(displayMotif));
-  Motif.substituteMotif(stuff.data, motifs);
-  if (data == stuff.display)
-  {
-  data = stuff.data;
-  }
-  }
-  sequi.updateUndoMenus();
-  return stuff.display;
-  }
-  else return null;
-  }
-*/
-        
+
    
     ///// SEQUENCE DATA
     
@@ -323,11 +247,7 @@ public class Seq
     int currentCountIn;
     
     ///// BEEP
-    //public static final int BEEP_COUNT_IN_FREQUENCY = 440;
-    //public static final int BEEP_COUNT_IN_BAR_FREQUENCY = 880 * 2;
-    // spublic static final int BEEP_FREQUENCY = 440;
-    //public static final int BEEP_BAR_FREQUENCY = 880;
-    public static final double BEEP[] =                         // Frequencies for pitches -12 ... 0 ... +12
+    public static final double BEEP_FREQUENCIES[] =                         // Frequencies for pitches -12 ... 0 ... +12
         {
         220.00000, 233.08188, 246.94165, 261.62557, 277.18263, 293.66477,
         311.12698, 329.62756, 349.22823, 369.99442, 391.99544, 415.30470,
@@ -383,7 +303,7 @@ public class Seq
     /** Returns frequencies for pitch deviations ranging from -12 to +12 */
     public double getBeepBarFrequency()
         {
-        return BEEP[getBeepPitch() + 12];
+        return BEEP_FREQUENCIES[getBeepPitch() + 12];
         }
     
     /** Prepares Seq to be thrown away. */

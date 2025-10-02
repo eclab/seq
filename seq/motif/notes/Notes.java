@@ -1912,9 +1912,9 @@ public class Notes extends Motif
         {
         ArrayList<MidiEvent> evts = new ArrayList();
         for(int i = 0; i < track.size(); i++)
-        	{
-        	evts.add(track.get(i));
-        	}
+            {
+            evts.add(track.get(i));
+            }
         read(evts, resolution);
         }
         

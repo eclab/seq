@@ -509,7 +509,7 @@ public class Transport extends JPanel implements SeqListener
             recordButton.setText(null);
             playButton.setIcon(notPlaying);
             pauseButton.setIcon(paused);
-        	pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
+            pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
             stopButton.setIcon(notStopped);
             }
         else
@@ -571,7 +571,7 @@ public class Transport extends JPanel implements SeqListener
                     seq.pause();
                     playButton.setIcon(notPlaying);
                     pauseButton.setIcon(paused);
-			        pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
+                    pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
                     stopButton.setIcon(notStopped);         // probably already this
                     }
                 else
@@ -579,7 +579,7 @@ public class Transport extends JPanel implements SeqListener
                     seq.play();
                     playButton.setIcon(playing);
                     pauseButton.setIcon(notPaused);
-			        pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
+                    pauseButton.setToolTipText(PAUSE_BUTTON_TOOLTIP);
                     stopButton.setIcon(notStopped);         // probably already this
                     }
                 }

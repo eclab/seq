@@ -163,18 +163,18 @@ public class NotesUI extends MotifUI
         {
         menu = new JMenu("Notes");
         /*
-        JMenuItem load = new JMenuItem("Load MIDI File...");
-        load.addActionListener(new ActionListener()
-            {
-            public void actionPerformed(ActionEvent event)
-                {
-                doLoadMIDIFile();
-                }
-            });
+          JMenuItem load = new JMenuItem("Load MIDI File...");
+          load.addActionListener(new ActionListener()
+          {
+          public void actionPerformed(ActionEvent event)
+          {
+          doLoadMIDIFile();
+          }
+          });
         
-        menu.add(load);
+          menu.add(load);
 
-        menu.addSeparator();
+          menu.addSeparator();
         */
         
         JMenuItem selectAll = new JMenuItem("Select All Notes");
@@ -2239,7 +2239,10 @@ public class NotesUI extends MotifUI
             }
         finally { lock.unlock(); }
 
-        getPrimaryScroll().getViewport().setViewPosition(vp); 
+        if (vp !=null) 
+        	{
+        	getPrimaryScroll().getViewport().setViewPosition(vp); 
+        	}
         }
 
                           

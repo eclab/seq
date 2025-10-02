@@ -330,7 +330,7 @@ public class ParallelUI extends MotifUI
         ArrayList<Motif.Child> children = parallel.getChildren();
         if (children.size() == 0) return;
 
-		parallelBox.removeAll();
+        parallelBox.removeAll();
         MotifList list = sequi.getMotifList();
         for(int i = 0; i < children.size(); i++)
             {
@@ -364,13 +364,13 @@ public class ParallelUI extends MotifUI
         updateIndexes();
         }
 
-	/** Adds a child to the end, but does NOT select it */
-	public void addChild(MotifUI motifui)
-		{
-		addChild(motifui, parallel.getChildren().size(), false);
-		}
+    /** Adds a child to the end, but does NOT select it */
+    public void addChild(MotifUI motifui)
+        {
+        addChild(motifui, parallel.getChildren().size(), false);
+        }
 
-	/** Adds a child at the given position (or at the end if at == getChildren().size()), and selects it. */
+    /** Adds a child at the given position (or at the end if at == getChildren().size()), and selects it. */
     public void addChild(MotifUI motifui, int at)
         { 
         addChild(motifui, at, true);
@@ -404,7 +404,7 @@ public class ParallelUI extends MotifUI
                 parallel.moveChild(children.size() - 1, at);              // move to right place
                 }
             else
-            	{
+                {
                 atEnd = true;
                 }
             }

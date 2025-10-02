@@ -602,21 +602,21 @@ public class MotifList extends JPanel
         button.setToolTipText(MOTIF_TOOLTIP);
         button.setDropTarget(new DropTarget(this, buildDropTargetListener()));
         buttons.add(button);
-		list.add(button);
-		motifui.setPrimaryButton(button);
-		
+        list.add(button);
+        motifui.setPrimaryButton(button);
+                
         if (selectAndRepaint)
-        	{
-			select(button);
-			list.revalidate();
-			list.repaint();
-			scroll.revalidate();
-			if (buttons.size() == 1)
-				{
-				setRoot(0);
-				}
-			sequi.setMotifUI(motifui);
-			}
+            {
+            select(button);
+            list.revalidate();
+            list.repaint();
+            scroll.revalidate();
+            if (buttons.size() == 1)
+                {
+                setRoot(0);
+                }
+            sequi.setMotifUI(motifui);
+            }
         }
         
     public void moveButton(MotifListButton button, int at)

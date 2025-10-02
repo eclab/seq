@@ -188,9 +188,10 @@ public class TrackInspector extends WidgetList
                     lock.lock();
                     try { ss.setNumSteps(trackNum, (int)(trackLen * 127) + 1); }
                     finally { lock.unlock(); }
+                    ssui.setSelectedStepNum(0);
                     ssui.tracks.get(trackNum).updateLength();
-                    ssui.updateSizes();
-                    ssui.redraw(false);
+                    ssui.rebuildTracks();
+                    //ssui.redraw(false);
                     }
                 };
             setNumSteps.setToolTipText(SET_LENGTH_TOOLTIP);
