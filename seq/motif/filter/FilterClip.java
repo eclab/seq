@@ -1465,6 +1465,18 @@ public class FilterClip extends Clip
             {
             return new Noise();
             }
+        else if (Filter.MAP.equals(type))
+            {
+            return new Map();
+            }
+        else if (Filter.SCALE.equals(type))
+            {
+            return new Scale();
+            }
+        else if (Filter.CHORD.equals(type))
+            {
+            return new Chord();
+            }
         else
             {
             System.err.println("FilterClip.buildNode() ERROR: unknown type " + type);
