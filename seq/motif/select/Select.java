@@ -170,6 +170,8 @@ public class Select extends Motif
     int ccIn = 0;
     int out = 0;
     int startNote = DEFAULT_START_NOTE;
+    int joyX = 0;
+    int joyY = 1;
     
     public static final int MAX_CHILDREN = 64;
     int fillPointer = 0;
@@ -234,6 +236,11 @@ public class Select extends Motif
         Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.select.Select"); }
 
+	public int getJoyX() { return joyX; }
+	public void setJoyX(int val) { joyX = val; }
+	public int getJoyY() { return joyY; }
+	public void setJoyY(int val) { joyY = val; }
+
     int gridDevice = Pad.DEVICE_LAUNCHPAD_MKIII;
         
     /** Gets the grid device type. */
@@ -277,6 +284,8 @@ public class Select extends Motif
         setMode(from.optInt("mode", MODE_SINGLE_ONE_SHOT));
         setQuantization(from.optInt("quant", QUANTIZATION_SIXTEENTH));
         setCut(from.optBoolean("cut", false));
+        setJoyX(from.optInt("x", 0));
+        setJoyY(from.optInt("y", 1));
 //        setStartNote(from.optInt("startnote", DEFAULT_START_NOTE));
 
 /*
@@ -302,6 +311,8 @@ public class Select extends Motif
         to.put("mode", getMode());
         to.put("quant", getQuantization());
         to.put("cut", getCut());
+        to.put("x", getJoyX());
+        to.put("y", getJoyY());
 //        to.put("startnote", getStartNote());
 /*
   to.put("in", getIn());

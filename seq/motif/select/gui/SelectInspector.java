@@ -34,8 +34,15 @@ public class SelectInspector extends WidgetList
     JButton finish;
     SmallDial[] dials = new SmallDial[Motif.NUM_PARAMETERS];
     JCheckBox[] uses = new JCheckBox[Motif.NUM_PARAMETERS];
+    JRadioButton[] xJoy = new JRadioButton[Motif.NUM_PARAMETERS];
+    JRadioButton[] yJoy = new JRadioButton[Motif.NUM_PARAMETERS];
+    ButtonGroup xGroup = new ButtonGroup();
+    ButtonGroup yGroup = new ButtonGroup();
     JPanel[] ccUse = new JPanel[Motif.NUM_PARAMETERS];
     JComboBox dialIn;
+    Joystick joystick;
+    
+    public Joystick getJoystick() { return joystick; }
     
     public SelectInspector(Seq seq, Select select, SelectUI selectui)
         {
@@ -250,6 +257,44 @@ public class SelectInspector extends WidgetList
                         selectui.updateDials();
                         }
                     });
+
+                xJoy[i] = new JRadioButton("X");
+                if (i == select.getJoyX()) xJoy[i].setSelected(true);
+                xJoy[i].addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { select.setJoyX(_i); }
+                        finally { lock.unlock(); }
+                        if (joystick != null) { joystick.repaint(); }
+                        }
+                    });
+                xGroup.add(xJoy[i]);
+                                        
+                yJoy[i] = new JRadioButton("  Y");
+                if (i == select.getJoyY()) yJoy[i].setSelected(true);
+                yJoy[i].addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { select.setJoyY(_i); }
+                        finally { lock.unlock(); }
+                        if (joystick != null) { joystick.repaint(); }
+                        }
+                    });
+                yGroup.add(yJoy[i]);
+                   
+                JPanel joyPanel = new JPanel();
+                joyPanel.setLayout(new BorderLayout());
+                joyPanel.add(new JLabel("   "), BorderLayout.WEST);
+                joyPanel.add(xJoy[i], BorderLayout.CENTER);
+                joyPanel.add(yJoy[i], BorderLayout.EAST);
                                         
                 ccUse[i] = new JPanel();
                 ccUse[i].setLayout(new BorderLayout());
@@ -258,6 +303,7 @@ public class SelectInspector extends WidgetList
                 pan.setLayout(new BorderLayout());
                 pan.add(new JLabel("    CC  "), BorderLayout.WEST);
                 pan.add(dials[i].getLabelledDial("None"), BorderLayout.CENTER);
+                pan.add(joyPanel, BorderLayout.CENTER);
                 ccUse[i].add(pan, BorderLayout.CENTER);
                 }
             }
@@ -350,9 +396,119 @@ public class SelectInspector extends WidgetList
         //add(result, BorderLayout.CENTER);               // re-add it as center
         add(dialDisclosure, BorderLayout.CENTER);
                 
-        add(new DefaultParameterList(seq, selectui), BorderLayout.SOUTH);
+        JPanel panel2 = new JPanel();
+        panel2.setLayout(new BorderLayout());
+        panel2.add(new DefaultParameterList(seq, selectui), BorderLayout.NORTH);
+        panel2.add(buildJoystick(select), BorderLayout.CENTER);
+        add(panel2, BorderLayout.SOUTH);
         }
-                
+            
+    
+    public void updateJoystick()
+    	{
+    	if (joystick == null) return;
+		double xVal = 0;
+		double yVal = 0;
+		ReentrantLock lock = seq.getLock();
+		lock.lock();
+		try 
+		{
+		 xVal = select.getPlayingParameter(select.getJoyX()) * 2.0 - 1.0;
+		 yVal = select.getPlayingParameter(select.getJoyY()) * 2.0 - 1.0;
+		}
+		finally { lock.unlock(); }
+		joystick.setXPos(xVal);
+		joystick.setYPos(yVal);
+		joystick.repaint();
+    	}
+
+	public JComponent buildJoystick(Select select)
+		{
+		joystick = new Joystick()
+			{
+			public void updatePosition() 
+				{
+				double xVal = (joystick.getXPos() + 1.0) / 2.0; 
+				double yVal = (joystick.getYPos() + 1.0) / 2.0;
+				int joyX;
+				int joyY;
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try 
+				{
+				select.setPlayingParameter(joyX = select.getJoyX(), xVal);
+				select.setPlayingParameter(joyY = select.getJoyY(), yVal);
+				}
+				finally { lock.unlock(); }
+				selectui.getDial(joyX).redraw();
+				selectui.getDial(joyY).redraw();
+				super.updatePosition(); 
+				}
+			};
+		/*
+		SmallDial xDial = new SmallDial(select.getJoyX() / (Motif.NUM_PARAMETERS - 1))
+			{
+			protected String map(double val) 
+				{
+				return String.valueOf((int)(val * (Motif.NUM_PARAMETERS - 1) + 1));
+				}
+			public double getValue() 
+				{ 
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try { return select.getJoyX() / (Motif.NUM_PARAMETERS - 1); }
+				finally { lock.unlock(); }
+				}
+			public void setValue(double val) 
+				{ 
+				if (seq == null) return;
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try { select.setJoyX((int)(val * (Motif.NUM_PARAMETERS - 1))); }
+				finally { lock.unlock(); }
+				if (joystick != null) { joystick.repaint(); }
+				}
+			};
+		SmallDial yDial = new SmallDial(select.getJoyY() / (Motif.NUM_PARAMETERS - 1))
+			{
+			protected String map(double val) 
+				{
+				return String.valueOf((int)(val * (Motif.NUM_PARAMETERS - 1) + 1));
+				}
+			public double getValue() 
+				{ 
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try { return select.getJoyY() / (Motif.NUM_PARAMETERS - 1); }
+				finally { lock.unlock(); }
+				}
+			public void setValue(double val) 
+				{ 
+				if (seq == null) return;
+				ReentrantLock lock = seq.getLock();
+				lock.lock();
+				try { select.setJoyY((int)(val * (Motif.NUM_PARAMETERS - 1))); }
+				finally { lock.unlock(); }
+				if (joystick != null) { joystick.updatePosition(); }
+				}
+			};
+        WidgetList list = new WidgetList(new String[] { "X Param", "Y Param" }, 
+            new JComponent[] 
+                {
+                xDial.getLabelledDial("8"),
+                yDial.getLabelledDial("8"),
+                });
+		list.add(joystick, BorderLayout.CENTER);
+        */
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(joystick, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createTitledBorder("<html><i>Joystick</i></html>"));
+        DisclosurePanel disclosure = new DisclosurePanel("Joystick", panel);
+		return disclosure;
+		}            
+            
+    
     public void revise()
         {
         Seq old = seq;
