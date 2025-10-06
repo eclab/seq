@@ -498,6 +498,7 @@ Excluding Macros and Macro Children, there are presently nine Motifs available i
 \begin{itemize}
 \item Three {\bf Basic (Note-Generating) Motifs}: Step Sequence, Notes, and Silence.  These do not have children Motifs.
 \item Four {\bf Compositional Motifs}: Series, Parallel, Automaton, and Select.  These have children Motifs.
+\item One {\bf Parameter Modification Motif}: Modulation.  This has a single child Motif.
 \item Two {\bf MIDI Effect Motifs}: Arpeggio and Filter.  These have a single child Motif each.
 \end{itemize}
 
@@ -1046,6 +1047,9 @@ The Select Inspector has an expandable region called {\bf Parameter Names}, and 
 \paragraph{Overriding Parameters}
 Select allows you to override parameters sent to certain children so you can control them by turning a big Dial or via a MIDI CC from a remote controller.  This is discussed later in Section~\ref{selectparameters}.
 
+\paragraph{The Joystick}
+You can assign two parameters to a Joystick available in the Inspector.  The parameters are assigned using the ``X'' and ``Y'' radio buttons in the Parameters section of the Inspector (again, see Section~\ref{selectparameters}).
+
 \paragraph{Using a Grid Controller}
 
 To use a Grid Controller to select Children, you specify it in the {\bf Control In} and {\bf Control Out}.  Specify the device type in {\bf Device}.  When the Select starts playing, it will reset the Launch Pad to display the same grid as your current user interface layout.  You can then choose Children by pressing buttons on the Grid Controller.
@@ -1288,13 +1292,127 @@ This effect converts a note into a full chord or interval.  It is similar to the
 Many Effect features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
 
 
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=6.5in]{Modulation}
+\vspace{-2em}
+\caption{Modulation Motif.}
+\label{filter}
+\end{figure}
+
+\subsection{Modulation}
+
+Modulation doesn't make any sound on its own, but it's not a MIDI filter.  Rather, it take a single child and provides some ways for you to modify the child's {\bf parameters}.
+
+Note that, like Filter and Arpeggio, Modulation requires a single child to operate on, or else it does nothing!
+
+Before we go any further, it might be helpful for you to read Section~\ref{parameters}, which discusses parameters.  In short: each motif has eight parameters, each of which can be set to any value from 0.0 to 1.0.  Many dials in a motif can be the value of one of the motif's parameters.  Furthermore, in the child's parent, you can modify the parameters of a child (from a parent's perspective, a child's parameters are called its {\bf arguments}).  If you don't, by default the settings of a motif's parameters are automatically set its parent's own parameters. This all allows you to change one or more dial settings in a child, or a deep descendant, or many of children or descendants at the same time, by setting a parent or ancestor's parameter values.
+
+In most motifs you can directly set a child's arguments to values as you see fit, or to random values.  And Select lets you set its own parameters via big Dials, or via MIDI CC messages (Seq's root parameters can also be set via MIDI CC messages).  But {\bf Modulation} goes much further: it lets you change the parameters of a child via an automated modulation procedure such as a Low Frequency Oscillator (LFO), Envelope Generator, or a simple parameter Step Sequencer.  This gives you a way to change the parameters of a child automatically over time.
+
+
+\paragraph{Mapping}
+
+After the parameter value is determined by the automatic modulator you have chosen, it is passed through a {\bf mapping function} before it is finally set.  This allows you to scale the value to within a range of your choosing, invert it, and warp it using certain warping functions.
+
+Your parameter value, output by the modulation function, has a range of 0.0 to 1.0.  We first warp it, using one of the following functions:
+
+\begin{itemize}
+\item {\bf None} (\(X\))\qquad No warping occurs.
+\item \(X^2\)\qquad The argument is squared.
+\item \(X^4\)\qquad The argument is squared twice.
+\item \(1-(1-X)^2\)\qquad The argument is inverted, the squared, then inverted again.  This looks a little like subjecting it to a square root.
+\item \(1-(1-X)^4\)\qquad The argument is inverted, the squared twice, then inverted again.  This looks a little like subjecting it to a square root twice.
+\end{itemize}
+
+After warping, the parameter still has a range from 0.0 to 1.0.  We then scale it to a new range from {\bf Low} to {\bf High}.  Note that {\bf Low} can be {\it higher than} {\bf High}: in this case the parameter range is inverted.
+
+After all this mapping, the parameter is then passed to the Child.
+
+\paragraph{Modulation Functions}
+
+At present, Modulation has five automated modulation functions available:
+
+\begin{itemize}
+\item {\bf None}\qquad No automation.
+\item {\bf LFO}\qquad The argument is modulated over time using a {\bf low-frequency oscillator}, which produces a repeating function.
+\item {\bf Envelope}\qquad The argument is modulated over time using an {\bf envelope} with up to eight stages.
+\item {\bf Step}\qquad The argument is modulated over time using a {\bf parameter step sequencer} with up to eight stages.
+\item {\bf Same}\qquad The argument is set to the same value as some earlier modulation function.
+\end{itemize}
+
+We'll describe these next in detail.  More modulators are planned for the future.  But first a word on mapping.
+
+
+\paragraph{None}
+
+No modulation occurs.  The value of argument \(X\) in the child is set to the equivalent parameter \(X\) in the Modulation parent.  However, the argument is optionally mapped first.
+
+\paragraph{LFO}
+
+The value of argument \(X\) is set to the output of an LFO.  The LFO has the following parameters:
+
+\begin{itemize}
+\item {\bf Type}\qquad The LFO wave.  This can be Saw Up, Saw Down, Square, Triangle, Sine, Random, and S\&H (Random Sample and Hold).  Random works by selecting a random target position from 0.0 to 1.0 and slowly moving linearly to reach that position by the end of the period, at which it picks a new random target position and repeats.  S\&H works similarly, but it doesn't move: it just holds at its previous target position until the period is completed, at which point it jumps to the new target position.
+\item {\bf Period}\qquad The length of one repetition of the wave, in time steps.
+\item {\bf Phase}\qquad The initial phase of the wave, ranging from 0.0 to 1.0.
+\item {\bf Initial}\qquad The initial value of the LFO.   The LFO outputs this until it reaches its {\bf Start} time.
+\item {\bf Start}\qquad The LFO's start time.  The LFO doesn't begin operating until this time: instead it sets the argument to {\bf Initial}.
+\item {\bf Fade In}\qquad After the LFO's start time, the LFO gradually fades in from the initial value to the full range from 0.0 to 10.  This is done over the Fade In period: this is a time interval, not a specific time step.
+\item {\bf Length}\qquad After the fade in has completed, the LFO will run for the Length.  This is a time interval, not a specific time step.
+\item {\bf Fade Out}\qquad After the length has completed, the LFO will fade back out to the Initial value over this period.  This is a time interval, not a specific time step.  After the Fade Out is completed, the LFO will simply set the argument to the Initial value again.
+\end{itemize}
+
+\paragraph{Envelope}
+
+The value of argument \(X\) is set to the output of an up to eight stage envelope with the following parameters:
+
+\begin{itemize}
+\item {\bf Initial}\qquad The initial value of the envelope.   The envelope outputs this until it reaches its {\bf Start} time.
+\item {\bf Start}\qquad The envelope's start time.  The envelope doesn't begin operating until this time: instead it sets the argument to {\bf Initial}.
+\item {\bf Stages}\qquad The number of stages in the envelope.
+\item {\bf Time \textit{n}}\qquad The length of time for stage \(n\).  This is a time interval, not a specific time step.
+\item {\bf Target \textit{n}}\qquad The target value for stage \(n\).  During its time interval, the envelope will gradually move from the previous target value (or from the initial value) to this new target value.
+\item {\bf Repeat \textit{n}}\qquad When checked, the envelope will loop: when it finishes its last stage, it will go back to its first stage and continue from there.
+\item {\bf Hold \textit{n}}\qquad When checked, the envelope will act like a {\bf Sample and Hold}: it will not gradually move towards its target value, but rather will stay at its previous target value (or at the initial value) until the stage is completed, at which time it will suddenly jump to the new target value..
+\end{itemize}
+
+\paragraph{Step Sequence}
+
+This is much like a simplified Envelope with Hold: where each stage has the same duration.   We call these stages {\bf steps}.
+
+\begin{itemize}
+\item {\bf Initial}\qquad The initial value of the step sequencer.   The step sequencer outputs this until it reaches its {\bf Start} time.
+\item {\bf Start}\qquad The step sequencer's start time.  The step sequencer doesn't begin operating until this time: instead it sets the argument to {\bf Initial}.
+\item {\bf Step Length}\qquad The length of a single step.  This is a time interval, not a specific time step.
+\item {\bf Steps}\qquad The number of steps in the envelope.
+\item {\bf Step \textit{n}}\qquad The value of Step \(n\).  When in Step \(n\), the argument is set to this value.
+\item {\bf Repeat \textit{n}}\qquad When checked, the step sequencer will loop: when it finishes its last step, it will go back to its first step and continue from there.
+\item {\bf Trigger \textit{n}}\qquad When checked, the step sequence will not output the given when it reaches Step \(n\).  Rather, if the value is non-zero it will issue a short one-time-step burst of 1.0, then output 0.0 for the rest of the step time.  If the value is zero, it will always output 0.0 for the step time.  This is a {\bf trigger}: a short burst of 1.0 to indicate a trigger has occurred along the argument.  See the {\bf Series} motif for an example use of a trigger.
+\end{itemize}
+
+\paragraph{Same}
+
+This indicates that the modulation function for this argument (let's call it \(m\) is the same as the one for some other argument \(n\). Note that \(n\) must be {\bf less than} \(m\).  If \(n \geq m\), then Same acts just like {\bf None}.  Mapping still occurs regardless.
+
+
+\paragraph{Parameterization}
+
+As usual, many Modulation features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
+
+
+
+
+
 \clearpage\subsection{Motifs Planned for the Future}
 
 At present we have a few motifs planned:
 
 \begin{itemize}
 \item A Motif for individual notes, or chords
-\item A Motif which implements functions that operates on Parameters, such as LFOs or Envelopes, Random Sequences, MIDI CC.  {\bf \color{red} We have this partially implemented in Seq (the ``Modulation'' motif) but it's not working yet.}
+\item Recorded automated modulation changes via a CC.
 \item Possibly a Motif which does Live Coding using some programming language
 \end{itemize}
 
@@ -1449,6 +1567,7 @@ The following MIDI output types are available for each Parameter.
 \end{itemize}
 
 \section{Select's Overriding of Parameters}
+\label{selectparameters}
 
 Select has an option where it can override its parameters, setting them to values chosen by Select and not by its parent.  Why would you want to do this?  Because the parameters of various children of Select can be bound to those parameters.  This allows you to change the parameters of children in real-time via a Big Dial or via CC from a remote controller.
 

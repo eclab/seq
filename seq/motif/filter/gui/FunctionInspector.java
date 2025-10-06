@@ -127,6 +127,11 @@ public class FunctionInspector extends JPanel
             {
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
                         
+            ReentrantLock lock = seq.getLock();
+        	lock.lock();
+            
+            try 
+            {
             Out[] seqOuts = seq.getOuts();
             String[] outs = new String[seqOuts.length + 1];
             outs[0] = "<html><i>Don't Change</i></html>";
@@ -396,6 +401,11 @@ public class FunctionInspector extends JPanel
                     }
                 };
             length.setDisplaysTime(false);
+            }
+            finally 
+            {
+             lock.unlock(); 
+             }
 
             
             out.setToolTipText(NOTE_OUT_TOOLTIP);
@@ -429,14 +439,14 @@ public class FunctionInspector extends JPanel
                         
         public void revise() 
             {
-            Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
-
             Seq old = seq;
             seq = null;
             ReentrantLock lock = old.getLock();
             lock.lock();
             try 
                 { 
+            Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
+
                 out.setSelectedIndex(func.getOut()); 
                 allOut.setSelected(func.isAllOut());
                 }
@@ -463,6 +473,11 @@ public class FunctionInspector extends JPanel
         SmallDial cut;
                 
         public DelayInspector()
+            {
+            ReentrantLock lock = seq.getLock();
+        	lock.lock();
+            
+            try 
             {
             Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
                         
@@ -559,7 +574,13 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 };
-
+            }
+            finally 
+            {
+             lock.unlock(); 
+             }
+             
+             
             original.setToolTipText(DELAY_ORIGINAL_TOOLTIP);
             delayInterval.setToolTipText(DELAY_INTERVAL_TOOLTIP);
             cut.setToolTipText(DELAY_CUT_TOOLTIP);
@@ -579,14 +600,14 @@ public class FunctionInspector extends JPanel
                         
         public void revise() 
             {
-            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
-
             Seq old = seq;
             seq = null;
             ReentrantLock lock = old.getLock();
             lock.lock();
             try 
                 { 
+            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
+
                 original.setSelected(func.getOriginal());
                 }
             finally { lock.unlock(); }                              
@@ -608,6 +629,11 @@ public class FunctionInspector extends JPanel
             {
             Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
                         
+            ReentrantLock lock = seq.getLock();
+        	lock.lock();
+            
+            try 
+            {
             cut = new JCheckBox();
             cut.setSelected(func.getCut());
             cut.addActionListener(new ActionListener()
@@ -655,6 +681,11 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 };
+            }
+            finally 
+            {
+             lock.unlock(); 
+             }
 
             cut.setToolTipText(DROP_CUT_TOOLTIP);
             probability.setToolTipText(DROP_PROBABILITY_TOOLTIP);
@@ -670,14 +701,14 @@ public class FunctionInspector extends JPanel
                         
         public void revise() 
             {
-            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
-
             Seq old = seq;
             seq = null;
             ReentrantLock lock = old.getLock();
             lock.lock();
             try 
                 { 
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+
                 cut.setSelected(func.getCut());
                 }
             finally { lock.unlock(); }                              
@@ -700,6 +731,11 @@ public class FunctionInspector extends JPanel
             {
             Filter.Noise func = (Filter.Noise)(filter.getFunction(index));
                         
+            ReentrantLock lock = seq.getLock();
+        	lock.lock();
+            
+            try 
+            {
             distVar = new SmallDial(func.getDistVar(), defaults)
                 {
                 protected String map(double val) { return String.valueOf(val); }
@@ -808,6 +844,11 @@ public class FunctionInspector extends JPanel
                     }
                 });
             updateParams(func.getParameterType());
+            }
+            finally 
+            {
+             lock.unlock(); 
+             }
 
             parameterType.setToolTipText(PARAMETER_TYPE_TOOLTIP);
             parameterMSB.setToolTipText(PARAMETER_PARAM_MSB_TOOLTIP);
@@ -858,14 +899,14 @@ public class FunctionInspector extends JPanel
                 
         public void revise() 
             {
-            Filter.Noise func = (Filter.Noise)(filter.getFunction(index));
-
             Seq old = seq;
             seq = null;
             ReentrantLock lock = old.getLock();
             lock.lock();
             try 
                 { 
+            Filter.Noise func = (Filter.Noise)(filter.getFunction(index));
+
                 parameterType.setSelectedIndex(func.getParameterType()); 
                 }
             finally { lock.unlock(); }                              
@@ -914,6 +955,11 @@ public class FunctionInspector extends JPanel
             {
             Filter.Map func = (Filter.Map)(filter.getFunction(index));
                         
+            ReentrantLock lock = seq.getLock();
+        	lock.lock();
+            
+            try 
+            {
             variable = new SmallDial(func.getVariable(), defaults)
                 {
                 public String map(double val) { return mapVal(val); }
@@ -1095,6 +1141,11 @@ public class FunctionInspector extends JPanel
                     }
                 });
             updateParams(func.getParameterType());
+            }
+            finally 
+            {
+             lock.unlock(); 
+             }
 
             parameterType.setToolTipText(PARAMETER_TYPE_TOOLTIP);
             parameterMSB.setToolTipText(PARAMETER_PARAM_MSB_TOOLTIP);
@@ -1149,14 +1200,14 @@ public class FunctionInspector extends JPanel
                 
         public void revise() 
             {
-            Filter.Map func = (Filter.Map)(filter.getFunction(index));
-
             Seq old = seq;
             seq = null;
             ReentrantLock lock = old.getLock();
             lock.lock();
             try 
                 { 
+            Filter.Map func = (Filter.Map)(filter.getFunction(index));
+
                 parameterType.setSelectedIndex(func.getParameterType()); 
                 mapType.setSelectedIndex(func.getMap()); 
                 }
@@ -1192,6 +1243,11 @@ public class FunctionInspector extends JPanel
             {
             Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
                         
+            ReentrantLock lock = seq.getLock();
+        	lock.lock();
+            
+            try 
+            {
             key = new SmallDial(func.getKey(), defaults)
                 {
                 public String map(double val) { return KEYS[(int)(val * 11.0)]; }
@@ -1287,6 +1343,11 @@ public class FunctionInspector extends JPanel
                     }
                 });
             roundType.setToolTipText(SCALE_ROUND_TOOLTIP);
+            }
+            finally 
+            {
+             lock.unlock(); 
+             }
 
             build(new String[] { "", "Key", "Round", "Presets", "1", "m2", "M2", "m3", "M3", "4", "Tri", "5", "m6", "M6", "m7", "M7"}, 
                 new JComponent[] 
@@ -1312,14 +1373,14 @@ public class FunctionInspector extends JPanel
      
         public void revise() 
             {
-            Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
-
             Seq old = seq;
             seq = null;
             ReentrantLock lock = old.getLock();
             lock.lock();
             try 
                 { 
+            Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
+
                 roundType.setSelectedIndex(func.getRound()); 
                 for(int i = 0; i < 12; i++)
                     {
@@ -1343,6 +1404,11 @@ public class FunctionInspector extends JPanel
             {
             Filter.Chord func = (Filter.Chord)(filter.getFunction(index));
 
+            ReentrantLock lock = seq.getLock();
+        	lock.lock();
+            
+            try 
+            {
             chordType = new JComboBox(CHORD_TYPES);
             chordType.setSelectedIndex(func.getChord());
             chordType.addActionListener(new ActionListener()
@@ -1358,6 +1424,11 @@ public class FunctionInspector extends JPanel
                     }
                 });
             chordType.setMaximumRowCount(CHORD_TYPES.length);
+            }
+            finally 
+            {
+             lock.unlock(); 
+             }
 
             chordType.setToolTipText(CHORD_INTERVAL_TOOLTIP);
             build(new String[] { "", "Chord/Interval"}, 
