@@ -2240,9 +2240,9 @@ public class NotesUI extends MotifUI
         finally { lock.unlock(); }
 
         if (vp !=null) 
-        	{
-        	getPrimaryScroll().getViewport().setViewPosition(vp); 
-        	}
+            {
+            getPrimaryScroll().getViewport().setViewPosition(vp); 
+            }
         }
 
                           

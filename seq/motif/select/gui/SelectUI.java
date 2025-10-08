@@ -269,17 +269,17 @@ public class SelectUI extends MotifUI
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    	{ 
-                    	if (select.getOverrideParameters(_i)) { select.setPlayingParameter(_i, val); } 
-                    	if (select.getJoyX() == _i ||
-                    		select.getJoyY() == _i)
-                    		{
-                    		if (selectInspector != null)
-                    			{
-                    			selectInspector.updateJoystick(); 
-                    			}
-                    		}
-                    	}
+                        { 
+                        if (select.getOverrideParameters(_i)) { select.setPlayingParameter(_i, val); } 
+                        if (select.getJoyX() == _i ||
+                            select.getJoyY() == _i)
+                            {
+                            if (selectInspector != null)
+                                {
+                                selectInspector.updateJoystick(); 
+                                }
+                            }
+                        }
                     finally { lock.unlock(); }
                     }
                 };

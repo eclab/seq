@@ -1973,12 +1973,12 @@ public class SeqUI extends JPanel
                                                 
                         if (count <= 1)
                             {
-							Notes notes = new Notes(seq);
-							notes.read(tracks[0], sequence.getResolution());
-							notes.setName(file.getName());
-							notes.sortEvents();
-							NotesUI notesui = (NotesUI)(list.getOrAddMotifUIFor(notes));
-							setMotifUI(notesui);
+                            Notes notes = new Notes(seq);
+                            notes.read(tracks[0], sequence.getResolution());
+                            notes.setName(file.getName());
+                            notes.sortEvents();
+                            NotesUI notesui = (NotesUI)(list.getOrAddMotifUIFor(notes));
+                            setMotifUI(notesui);
                             }
                         else // (count > 1)
                             {

@@ -236,10 +236,10 @@ public class Select extends Motif
         Values go 0...16 corresponding to NONE, MIDI channels 1..16 */
     public void setOut(int val) { out = val; Prefs.setLastOutDevice(0, val, "seq.motif.select.Select"); }
 
-	public int getJoyX() { return joyX; }
-	public void setJoyX(int val) { joyX = val; }
-	public int getJoyY() { return joyY; }
-	public void setJoyY(int val) { joyY = val; }
+    public int getJoyX() { return joyX; }
+    public void setJoyX(int val) { joyX = val; }
+    public int getJoyY() { return joyY; }
+    public void setJoyY(int val) { joyY = val; }
 
     int gridDevice = Pad.DEVICE_LAUNCHPAD_MKIII;
         

@@ -405,108 +405,108 @@ public class SelectInspector extends WidgetList
             
     
     public void updateJoystick()
-    	{
-    	if (joystick == null) return;
-		double xVal = 0;
-		double yVal = 0;
-		ReentrantLock lock = seq.getLock();
-		lock.lock();
-		try 
-		{
-		 xVal = select.getPlayingParameter(select.getJoyX()) * 2.0 - 1.0;
-		 yVal = select.getPlayingParameter(select.getJoyY()) * 2.0 - 1.0;
-		}
-		finally { lock.unlock(); }
-		joystick.setXPos(xVal);
-		joystick.setYPos(yVal);
-		joystick.repaint();
-    	}
+        {
+        if (joystick == null) return;
+        double xVal = 0;
+        double yVal = 0;
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            xVal = select.getPlayingParameter(select.getJoyX()) * 2.0 - 1.0;
+            yVal = select.getPlayingParameter(select.getJoyY()) * 2.0 - 1.0;
+            }
+        finally { lock.unlock(); }
+        joystick.setXPos(xVal);
+        joystick.setYPos(yVal);
+        joystick.repaint();
+        }
 
-	public JComponent buildJoystick(Select select)
-		{
-		joystick = new Joystick()
-			{
-			public void updatePosition() 
-				{
-				double xVal = (joystick.getXPos() + 1.0) / 2.0; 
-				double yVal = (joystick.getYPos() + 1.0) / 2.0;
-				int joyX;
-				int joyY;
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try 
-				{
-				select.setPlayingParameter(joyX = select.getJoyX(), xVal);
-				select.setPlayingParameter(joyY = select.getJoyY(), yVal);
-				}
-				finally { lock.unlock(); }
-				selectui.getDial(joyX).redraw();
-				selectui.getDial(joyY).redraw();
-				super.updatePosition(); 
-				}
-			};
-		/*
-		SmallDial xDial = new SmallDial(select.getJoyX() / (Motif.NUM_PARAMETERS - 1))
-			{
-			protected String map(double val) 
-				{
-				return String.valueOf((int)(val * (Motif.NUM_PARAMETERS - 1) + 1));
-				}
-			public double getValue() 
-				{ 
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try { return select.getJoyX() / (Motif.NUM_PARAMETERS - 1); }
-				finally { lock.unlock(); }
-				}
-			public void setValue(double val) 
-				{ 
-				if (seq == null) return;
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try { select.setJoyX((int)(val * (Motif.NUM_PARAMETERS - 1))); }
-				finally { lock.unlock(); }
-				if (joystick != null) { joystick.repaint(); }
-				}
-			};
-		SmallDial yDial = new SmallDial(select.getJoyY() / (Motif.NUM_PARAMETERS - 1))
-			{
-			protected String map(double val) 
-				{
-				return String.valueOf((int)(val * (Motif.NUM_PARAMETERS - 1) + 1));
-				}
-			public double getValue() 
-				{ 
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try { return select.getJoyY() / (Motif.NUM_PARAMETERS - 1); }
-				finally { lock.unlock(); }
-				}
-			public void setValue(double val) 
-				{ 
-				if (seq == null) return;
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try { select.setJoyY((int)(val * (Motif.NUM_PARAMETERS - 1))); }
-				finally { lock.unlock(); }
-				if (joystick != null) { joystick.updatePosition(); }
-				}
-			};
-        WidgetList list = new WidgetList(new String[] { "X Param", "Y Param" }, 
-            new JComponent[] 
+    public JComponent buildJoystick(Select select)
+        {
+        joystick = new Joystick()
+            {
+            public void updatePosition() 
                 {
-                xDial.getLabelledDial("8"),
-                yDial.getLabelledDial("8"),
-                });
-		list.add(joystick, BorderLayout.CENTER);
+                double xVal = (joystick.getXPos() + 1.0) / 2.0; 
+                double yVal = (joystick.getYPos() + 1.0) / 2.0;
+                int joyX;
+                int joyY;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    {
+                    select.setPlayingParameter(joyX = select.getJoyX(), xVal);
+                    select.setPlayingParameter(joyY = select.getJoyY(), yVal);
+                    }
+                finally { lock.unlock(); }
+                selectui.getDial(joyX).redraw();
+                selectui.getDial(joyY).redraw();
+                super.updatePosition(); 
+                }
+            };
+        /*
+          SmallDial xDial = new SmallDial(select.getJoyX() / (Motif.NUM_PARAMETERS - 1))
+          {
+          protected String map(double val) 
+          {
+          return String.valueOf((int)(val * (Motif.NUM_PARAMETERS - 1) + 1));
+          }
+          public double getValue() 
+          { 
+          ReentrantLock lock = seq.getLock();
+          lock.lock();
+          try { return select.getJoyX() / (Motif.NUM_PARAMETERS - 1); }
+          finally { lock.unlock(); }
+          }
+          public void setValue(double val) 
+          { 
+          if (seq == null) return;
+          ReentrantLock lock = seq.getLock();
+          lock.lock();
+          try { select.setJoyX((int)(val * (Motif.NUM_PARAMETERS - 1))); }
+          finally { lock.unlock(); }
+          if (joystick != null) { joystick.repaint(); }
+          }
+          };
+          SmallDial yDial = new SmallDial(select.getJoyY() / (Motif.NUM_PARAMETERS - 1))
+          {
+          protected String map(double val) 
+          {
+          return String.valueOf((int)(val * (Motif.NUM_PARAMETERS - 1) + 1));
+          }
+          public double getValue() 
+          { 
+          ReentrantLock lock = seq.getLock();
+          lock.lock();
+          try { return select.getJoyY() / (Motif.NUM_PARAMETERS - 1); }
+          finally { lock.unlock(); }
+          }
+          public void setValue(double val) 
+          { 
+          if (seq == null) return;
+          ReentrantLock lock = seq.getLock();
+          lock.lock();
+          try { select.setJoyY((int)(val * (Motif.NUM_PARAMETERS - 1))); }
+          finally { lock.unlock(); }
+          if (joystick != null) { joystick.updatePosition(); }
+          }
+          };
+          WidgetList list = new WidgetList(new String[] { "X Param", "Y Param" }, 
+          new JComponent[] 
+          {
+          xDial.getLabelledDial("8"),
+          yDial.getLabelledDial("8"),
+          });
+          list.add(joystick, BorderLayout.CENTER);
         */
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(joystick, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createTitledBorder("<html><i>Joystick</i></html>"));
         DisclosurePanel disclosure = new DisclosurePanel("Joystick", panel);
-		return disclosure;
-		}            
+        return disclosure;
+        }            
             
     
     public void revise()
