@@ -162,9 +162,14 @@ public class FilterUI extends MotifUI
     
     public void buildPrimary(JScrollPane scroll)
         {
+        JPanel inner = new JPanel();
+        inner.setLayout(new BorderLayout());
+        inner.add(new JLabel(" Child "), BorderLayout.WEST);
+        inner.add(filterGrid, BorderLayout.CENTER);
+
         JPanel outer = new JPanel();
         outer.setLayout(new BorderLayout());
-        outer.add(filterGrid, BorderLayout.NORTH);
+        outer.add(inner, BorderLayout.NORTH);
         scroll.setViewportView(outer);
         
         filterGrid.setDropTarget(new DropTarget(this, buildDropTargetListener()));
