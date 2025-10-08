@@ -87,6 +87,7 @@ public class SeriesButton extends MotifButton
         int repeats = 0;
         double probability = 0;
         int currentRepeat = 0;
+        boolean start = false;
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
@@ -115,6 +116,8 @@ public class SeriesButton extends MotifButton
                 probability = clip.getCorrectedValueDouble(data.getRepeatProbability());
                 currentRepeat = clip.getPlayingRepeat() + 1;
                 }
+                
+            start = data.getStart();
             }
         finally { lock.unlock(); }
 
@@ -128,7 +131,7 @@ public class SeriesButton extends MotifButton
             }
         else subname = "";
         
-        return "" + currentRepeat + "/" + (repeats + 1) + " (" + String.format("%.4f", probability)  + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + subname;
+        return (start ? "Start " : "") + currentRepeat + "/" + (repeats + 1) + " (" + String.format("%.4f", probability)  + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + subname;
         }
 
     public void doubleClick(MouseEvent e)

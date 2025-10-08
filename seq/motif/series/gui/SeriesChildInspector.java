@@ -478,7 +478,8 @@ public class SeriesChildInspector extends WidgetList
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
                 try { getData().setStart(start.isSelected(), series); }         // FIXME: is this the series or the child I should be passing in?
-                finally { lock.unlock(); }                              
+                finally { lock.unlock(); }    
+                seriesui.redraw(false);                          
                 }
             });
         start.setToolTipText(START_HERE_TOOLTIP);
