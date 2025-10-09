@@ -163,7 +163,9 @@ public class MacroClip extends Clip
                 }
             }
 
-        loadParameterValues(root, ((Macro)getMotif()).getRootParameterValues());
+		// The parameter values can either be bound values (0.0 ... 1.0) 
+		// or they can be a single negative value, namely the parent's parameter.
+        loadParameterValues(root, ((Macro)getMotif()).getRootParameterValues(), true);
         return root.advance();
         }
 

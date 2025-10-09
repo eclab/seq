@@ -51,9 +51,12 @@ public class MacroChildClip extends Clip
         MacroClip owner = getOwner();
         
         int index = getMyIndex();
-        Clip ownerClip = owner.getChild(index);
-	    loadParameterValues(ownerClip, (ownerClip.getMotif().getChild(index)));
-        if (owner != null) owner.getChild(getMyIndex()).loop();
+        if (owner != null) 
+        	{
+        	Clip ownerClip = owner.getChild(index);
+	    	loadRandomValue(ownerClip, owner.getMotif().getChild(index));
+        	owner.getChild(index).loop();
+        	}
         }
                 
     public void reset()  
@@ -62,9 +65,12 @@ public class MacroChildClip extends Clip
         MacroClip owner = getOwner();
         
         int index = getMyIndex();
-        Clip ownerClip = owner.getChild(index);
-	    loadParameterValues(ownerClip, (ownerClip.getMotif().getChild(index)));
-        if (owner != null) owner.getChild(getMyIndex()).reset();
+        if (owner != null) 
+        	{
+        	Clip ownerClip = owner.getChild(index);
+	    	loadRandomValue(ownerClip, owner.getMotif().getChild(index));
+        	owner.getChild(index).reset();
+        	}
         }
 
     public void cut()
@@ -106,7 +112,7 @@ public class MacroChildClip extends Clip
         else
             {
             Clip ownerClip = owner.getChild(index);
-	        loadParameterValues(ownerClip, (ownerClip.getMotif().getChild(index)));
+	    	loadParameterValues(ownerClip, owner.getMotif().getChild(index));
 	        boolean result = ownerClip.advance();
             owner.setChildProcessed(index, true);
             owner.setChildResult(index, result);

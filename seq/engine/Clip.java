@@ -337,7 +337,7 @@ public abstract class Clip
     */
     public void loadParameterValues(Clip child, Motif.Child motifChild) 
     	{
-    	loadParameterValues(child, motifChild.getParameters());
+    	loadParameterValues(child, motifChild.getParameters(), false);
     	}
 
     /** 
@@ -346,7 +346,7 @@ public abstract class Clip
         -       -1: bound to random
         -       -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
     */
-    public void loadParameterValues(Clip child, double[] params) 
+    public void loadParameterValues(Clip child, double[] params, boolean macro) 
         {
         Motif childMotif = child.getMotif();
         for(int i = 0; i < params.length; i++)
@@ -354,7 +354,14 @@ public abstract class Clip
             double newVal = 0;
             if (params[i] == Motif.Child.PARAMETER_RANDOM)  // it's bound to random
                 {
-                newVal = getRandomValue();
+                if (macro)
+                	{
+                	newVal = parameterValues[i];		// grab parent parameter
+                	}
+                else
+                	{
+	                newVal = getRandomValue();
+	                }
                 }
             else if (params[i] < Motif.Child.PARAMETER_RANDOM)      // it's a back link, copy through
                 {
@@ -377,15 +384,19 @@ public abstract class Clip
     /** 
         Loads the parameter values assuming that we are root, and thus using the root's values. Current options are:
         -  >=0: a ground value
-        -       -1: bound to random
-        -       -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+        -       -1... -(NUM_PARAMETERS + 1) inclusive: ALL refer to the same parent parameter
     */
     public void loadRootParameterValues()
         {
         double[] params = seq.getParameterValues();
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
             {
-            setParameterValue(i, params[i]);
+            double param = params[i];
+            if (param < 0)
+            	{
+            	param = 0;					// we've been set to our parent, which doesn't exist, so we're 0 by default
+            	}
+            setParameterValue(i, param);
             }
         }
 
