@@ -1489,10 +1489,13 @@ public class FilterClip extends Clip
     public void reset()
         {
         super.reset();
+        Filter filter = (Filter)getMotif();
+        
         if (clip == null)
             {
             buildClip();
             }
+        loadParameterValues(clip, filter.getChildren().get(0));
         clip.reset();
         childDone = false;
 
@@ -1505,11 +1508,20 @@ public class FilterClip extends Clip
     public void loop()
         {
         super.loop();
+        Filter filter = (Filter)getMotif();
+
         if (clip == null)
             {
             buildClip();
             }
+        loadParameterValues(clip, filter.getChildren().get(0));
         clip.reset();
+        childDone = false;
+
+        for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+            {
+            nodes.get(i).reset(i);
+            }
         }
         
     public void terminate()
@@ -1574,6 +1586,7 @@ public class FilterClip extends Clip
             {
             if (!childDone)
                 {
+		    	loadParameterValues(clip, filter.getChildren().get(0));
                 childDone = clip.advance();
                 }
             done = childDone;

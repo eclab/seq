@@ -124,7 +124,6 @@ public class SelectClip extends Clip
     void reset(Node node)
         {
         loadRandomValue(node.clip, node.getChild(this));
-        loadParameterValues(node.clip, node.getChild(this));
         node.clip.reset();
         node.lastPos = -1;
         node.cumulativeRate = 0;
@@ -332,6 +331,7 @@ public class SelectClip extends Clip
     boolean advance(Node node, double rate)
         {
         current = node.index;
+        loadParameterValues(node.clip, node.getChild(this));
 
         if (rate == 1.0) return node.clip.advance();
         else

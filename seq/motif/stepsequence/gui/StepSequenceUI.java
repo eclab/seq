@@ -857,7 +857,7 @@ public class StepSequenceUI extends MotifUI
         if (inResponseToStep)
             {
             primaryScroll.getViewport().repaint();                  // just repaint the viewport, not the scroll view
-            ruler.repaint();
+            if (ruler != null) ruler.repaint();
             }
         else 
             {

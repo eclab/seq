@@ -258,7 +258,7 @@ public class SelectInspector extends WidgetList
                         }
                     });
 
-                xJoy[i] = new JRadioButton("X");
+                xJoy[i] = new JRadioButton("  Y");
                 if (i == select.getJoyX()) xJoy[i].setSelected(true);
                 xJoy[i].addActionListener(new ActionListener()
                     {
@@ -274,7 +274,7 @@ public class SelectInspector extends WidgetList
                     });
                 xGroup.add(xJoy[i]);
                                         
-                yJoy[i] = new JRadioButton("  Y");
+                yJoy[i] = new JRadioButton("");
                 if (i == select.getJoyY()) yJoy[i].setSelected(true);
                 yJoy[i].addActionListener(new ActionListener()
                     {
@@ -290,21 +290,17 @@ public class SelectInspector extends WidgetList
                     });
                 yGroup.add(yJoy[i]);
                    
-                JPanel joyPanel = new JPanel();
-                joyPanel.setLayout(new BorderLayout());
-                joyPanel.add(new JLabel("   "), BorderLayout.WEST);
-                joyPanel.add(xJoy[i], BorderLayout.CENTER);
-                joyPanel.add(yJoy[i], BorderLayout.EAST);
-                                        
                 ccUse[i] = new JPanel();
                 ccUse[i].setLayout(new BorderLayout());
-                ccUse[i].add(uses[i], BorderLayout.WEST);
-                JPanel pan = new JPanel();
-                pan.setLayout(new BorderLayout());
-                pan.add(new JLabel("    CC  "), BorderLayout.WEST);
-                pan.add(dials[i].getLabelledDial("None"), BorderLayout.CENTER);
-                pan.add(joyPanel, BorderLayout.CENTER);
-                ccUse[i].add(pan, BorderLayout.CENTER);
+                JPanel box = new JPanel();
+                box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
+                box.add(uses[i]);
+                box.add(new JLabel("   CC  "));
+                box.add(dials[i].getLabelledDial("None"));
+                box.add(new JLabel("   Joy X "));
+                box.add(xJoy[i]);
+                box.add(yJoy[i]);
+                ccUse[i].add(box, BorderLayout.WEST);
                 }
             }
         finally { lock.unlock(); }
@@ -398,8 +394,8 @@ public class SelectInspector extends WidgetList
                 
         JPanel panel2 = new JPanel();
         panel2.setLayout(new BorderLayout());
-        panel2.add(new DefaultParameterList(seq, selectui), BorderLayout.NORTH);
-        panel2.add(buildJoystick(select), BorderLayout.CENTER);
+        panel2.add(buildJoystick(select), BorderLayout.NORTH);
+        panel2.add(new DefaultParameterList(seq, selectui), BorderLayout.CENTER);
         add(panel2, BorderLayout.SOUTH);
         }
             

@@ -402,7 +402,7 @@ public class Filter extends Motif
         double distVar;
         int parameterType;
         int parameter;
-        int rate;                       // How often is the Noise updated?
+        int rate = Seq.PPQ / 4;                       // How often is the Noise updated?
                 
         public double getDistVar() { return distVar; }
         public void setDistVar(double val) { distVar = val; }

@@ -296,8 +296,8 @@ public class SeriesClip extends Clip
                 
     void reset(Node node)
         {
-        resetTriggers();
         loadRandomValue(node.clip, node.child);
+        resetTriggers();
         node.clip.reset();
         node.lastPos = -1;
         node.cumulativeRate = 0;
@@ -577,8 +577,8 @@ public class SeriesClip extends Clip
                 {
                 Node playingNode = getNode(playingIndex);
                 playingNode.resetFinishedPlaying();
-                playing.loop();
                 loadRandomValue(playingNode.clip, playingNode.child);
+                playing.loop();
                 return false;
                 }
             }

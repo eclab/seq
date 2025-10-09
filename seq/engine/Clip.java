@@ -315,12 +315,18 @@ public abstract class Clip
         child.setRandomValue(child.getMotif().generateRandomValue(randomMin, randomMax));
         }
 
+    /** Loads the random value of this clip, using the given min and max */
+    public void loadRootRandomValue(double min, double max)
+        {
+        setRandomValue(getMotif().generateRandomValue(min, max));
+        }
+
     /** Loads the random value of this clip, assuming it is a root, and thus using the root's random min and max */
     public void loadRootRandomValue()
         {
         double min = seq.getRandomMin();
         double max = seq.getRandomMax();
-        setRandomValue(getMotif().generateRandomValue(min, max));
+        loadRootRandomValue(min, max);
         }
         
     /** 
@@ -330,8 +336,18 @@ public abstract class Clip
         -       -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
     */
     public void loadParameterValues(Clip child, Motif.Child motifChild) 
+    	{
+    	loadParameterValues(child, motifChild.getParameters());
+    	}
+
+    /** 
+        Loads the child's parameter values, provided in params, based on our own. Current options are:
+        -  >=0: a ground value
+        -       -1: bound to random
+        -       -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+    */
+    public void loadParameterValues(Clip child, double[] params) 
         {
-        double[] params = motifChild.getParameters();
         Motif childMotif = child.getMotif();
         for(int i = 0; i < params.length; i++)
             {

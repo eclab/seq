@@ -114,7 +114,7 @@ public class ParallelClip extends Clip
     
     void reset(Node node)
         {
-        loadParameterValues(node.clip, node.child);
+        loadRandomValue(node.clip, node.child);
         node.clip.reset();
         node.lastPos = -1;
         node.cumulativeRate = 0;
@@ -270,6 +270,8 @@ public class ParallelClip extends Clip
     
     boolean advance(Node node, double rate)
         {
+        loadParameterValues(node.clip, node.child);
+
         if (rate == 1.0) return node.clip.advance();
         else
             {

@@ -18,6 +18,13 @@ public class Macro extends Motif
     // The root of the embedded DAG
     Motif macroRoot;
     ArrayList<MacroChild> macroChildren = new ArrayList<>();
+    double[] rootParameterValues = new double[Motif.NUM_PARAMETERS];
+    double randomMin = 0.0;
+    double randomMax = 0.0;
+    
+    public double getRandomMin() { return randomMin; }
+    public double getRandomMax() { return randomMax; }
+    public double[] getRootParameterValues() { return rootParameterValues; }
         
     public int getNumMacroChildren() { return macroChildren.size(); }
             
@@ -73,11 +80,19 @@ public class Macro extends Motif
         
     public void save(JSONObject to) throws JSONException
         {
+        JSONArray params = Motif.doubleToJSONArray(rootParameterValues);
+        to.put("params", params);
+        to.put("rmax", randomMax);
+        to.put("rmin", randomMin);
         to.put("motifs", macroRoot.saveRoot());
         }
 
     public void load(JSONObject from) throws JSONException
         {
+        rootParameterValues = Motif.JSONToDoubleArray(from.getJSONArray("params"));      // note not getJSONArray
+        randomMax = from.optDouble("rmax", 0.0);
+        randomMin = from.optDouble("rmin", 1.0);
+
         JSONArray motifs = from.getJSONArray("motifs");
         ArrayList<Motif> roots = new ArrayList<>();
         roots = load(seq, motifs);              // only load rooted dag

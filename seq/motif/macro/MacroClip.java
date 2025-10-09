@@ -50,14 +50,23 @@ public class MacroClip extends Clip
     public void loop()
         {
         super.loop();
-        root.reset();                                                                           // I THINK we ought to reset here rather than loop?
+        resetRoot();                                                                           // I THINK we ought to reset here rather than loop?
         }
                 
     public void reset()  
         {
         super.reset();
-        root.reset();
+        resetRoot();
         }
+        
+    void resetRoot()
+    	{
+    	Macro macro = (Macro)getMotif();
+        double min = macro.getRandomMin();
+        double max = macro.getRandomMax();
+    	root.loadRootRandomValue(min, max);
+    	root.reset();
+    	}
 
     public double getRandomValue()
         {
@@ -101,7 +110,7 @@ public class MacroClip extends Clip
         if (root != null) root.terminate();
         root = macro.getMacroRoot().buildClip(this);
         setOwner(oldOwner);
-        root.reset();
+        resetRoot();
         version = getMotif().getVersion();
         }
         
@@ -154,6 +163,7 @@ public class MacroClip extends Clip
                 }
             }
 
+        loadParameterValues(root, ((Macro)getMotif()).getRootParameterValues());
         return root.advance();
         }
 

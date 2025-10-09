@@ -132,22 +132,28 @@ public class ArpeggioClip extends Clip
     public void reset()
         {
         super.reset();
+		Arpeggio arp = (Arpeggio)getMotif();
+		
         countdown = 0;
         if (clip == null)
             {
             buildClip();
             }
+		loadRandomValue(clip, arp.getChildren().get(0));
         clip.reset();
         }
         
     public void loop()
         {
         super.loop();
+		Arpeggio arp = (Arpeggio)getMotif();
+		
         countdown = 0;
         if (clip == null)
             {
             buildClip();
             }
+		loadRandomValue(clip, arp.getChildren().get(0));
         clip.reset();
         }
         
@@ -588,9 +594,17 @@ public class ArpeggioClip extends Clip
     
     public boolean process()
         {
-        if (!isActive()) return clip.advance();                                                 // If I'm not active, I just do what my child does
-        
         Arpeggio arp = (Arpeggio)getMotif();
+
+        if (!isActive()) 
+        	{
+        	if (clip != null)
+        		{
+		        loadParameterValues(clip, arp.getChildren().get(0));
+        		return clip.advance();                                                 // If I'm not active, I just do what my child does
+        		}
+        	}
+        	
                 
         if (clip != null)
             {
@@ -598,6 +612,7 @@ public class ArpeggioClip extends Clip
                 
             // we want to advance the child FIRST so that it sends us new notes
             // before we advance the arpeggiator
+		    loadParameterValues(clip, arp.getChildren().get(0));
             boolean done = clip.advance();
                 
             /// FIXME: should release be releasing in *countdown* or in *countdown-1* given how it's computed here?

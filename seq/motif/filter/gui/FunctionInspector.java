@@ -15,12 +15,14 @@ import java.util.concurrent.locks.*;
 
 public class FunctionInspector extends JPanel
     {
-    public static final String[] INSPECTOR_NAMES = { "None", "Note", "Delay", "Drop", "Noise", "Map", "Scale", "Chord"  };
+    public static final String[] INSPECTOR_NAMES = { "None", "Note", "Delay", "Drop", "Noise", "Map", "Scale", "Chord", "<html><i>Copy From...</i></html>" };
+    public static final int COPY_FROM = 8;
     public static final String[] PARAMETER_TYPES = { "Bend", "CC", "NRPN", "RPN", "Aftertouch" };
     public static final String[] MAP_TYPES = { "None", "BY - X", "X + BY", "X - BY", "X * BY", "Discretize[X, BY]", "1-Discretize[X,BY]", "X^2", "X^4", "1-(1-X)^2", "1-(1-x)^4" };
     // public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
     Seq seq;
+    SeqUI sequi;
     Filter filter;
     int index;
     SubInspector subinspector;
@@ -45,9 +47,10 @@ public class FunctionInspector extends JPanel
         }
 
     
-    public FunctionInspector(Seq seq, Filter filter, int index)
+    public FunctionInspector(Seq seq, SeqUI sequi, Filter filter, int index)
         {
         this.seq = seq;
+        this.sequi = sequi;
         this.filter = filter;
         this.index = index;        
         
@@ -73,6 +76,45 @@ public class FunctionInspector extends JPanel
                 {
                 String type1 = null;
                 if (seq == null) return;
+                
+               if (subcombo.getSelectedIndex() == COPY_FROM)
+                	{
+					String[] names = { "From" };
+					SmallDial from = new SmallDial(0)
+						{
+						double value;
+						public double getValue() { return value; }
+						public void setValue(double val) { value = val; }
+						public String map(double val) { return "" + (int)((val * Motif.NUM_PARAMETERS) + 1); }
+						};
+					JComponent[] components = new JComponent[] { from.getLabelledDial("8") };
+					int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Copy", "Cancel" }, 0, "Copy Stage", "Enter the Stage to copy from.");
+		
+					int _from = index;  // copy myself
+					if (result == 0)
+						{
+						_from = (int)(from.getValue() * Motif.NUM_PARAMETERS);
+						subcombo.setSelectedIndex(filter.typeIndex(filter.getFunction(_from).getType()));
+						}	
+					else
+						{
+						// reset the menu
+						subcombo.setSelectedIndex(filter.typeIndex(filter.getFunction(_from).getType()));
+						return;
+						}
+						
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try 
+						{
+	                    Filter.Function func1 = filter.getFunction(_from).copy();
+                    	type1 = func1.getType();
+                    	filter.setFunction(index, func1);
+						}
+					finally { lock.unlock(); }
+                	}
+                else	
+					{                
                 ReentrantLock lock = seq.getLock();
                 lock.lock();
                 try 
@@ -82,13 +124,15 @@ public class FunctionInspector extends JPanel
                     filter.setFunction(index, func1); 
                     }
                 finally { lock.unlock(); }
+                	}
                                 
                 remove(subinspector);
                 subinspector =  buildSubinspector(type1);
                 add(subinspector, BorderLayout.CENTER);
+                revise();
                 revalidate();
                 repaint();
-                }
+            }
             });
                 
         setLayout(new BorderLayout());
@@ -141,7 +185,7 @@ public class FunctionInspector extends JPanel
                     outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
                     }
                                                 
-                JComboBox out = new JComboBox(outs);
+                out = new JComboBox(outs);
                 out.setMaximumRowCount(outs.length);
                 out.setSelectedIndex(func.getOut() + 1);
                 out.addActionListener(new ActionListener()
@@ -447,7 +491,7 @@ public class FunctionInspector extends JPanel
                 { 
                 Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
 
-                out.setSelectedIndex(func.getOut()); 
+                out.setSelectedIndex(func.getOut() + 1); 
                 allOut.setSelected(func.isAllOut());
                 }
             finally { lock.unlock(); }                              
@@ -814,7 +858,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
 
-                rate = new TimeDisplay(Seq.PPQ / 4, seq)
+                rate = new TimeDisplay(func.getRate(), seq)
                     {
                     public int getTime()
                         {
@@ -1441,7 +1485,7 @@ public class FunctionInspector extends JPanel
 
         public void revise() 
             {
-            Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
+            Filter.Chord func = (Filter.Chord)(filter.getFunction(index));
 
             Seq old = seq;
             seq = null;
@@ -1449,7 +1493,7 @@ public class FunctionInspector extends JPanel
             lock.lock();
             try 
                 { 
-                chordType.setSelectedIndex(func.getRound()); 
+                chordType.setSelectedIndex(func.getChord()); 
                 }
             finally { lock.unlock(); }                              
             seq = old;

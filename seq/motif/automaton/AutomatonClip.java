@@ -372,7 +372,7 @@ public class AutomatonClip extends Clip
             {
             resetTriggers();
             loadRandomValue(clip, node.child);
-            loadParameterValues(clip, node.child);
+//            loadParameterValues(clip, node.child);
             clip.reset();
             cumulativeRate = 0.0;
             lastPos = -1;

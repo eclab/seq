@@ -130,7 +130,7 @@ public class FilterUI extends MotifUI
         functionGrid.removeAll();
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
             {
-            FunctionInspector functionInspector = new FunctionInspector(seq, filter, i);
+            FunctionInspector functionInspector = new FunctionInspector(seq, sequi, filter, i);
             functionGrid.add(functionInspector);
             }
         repaint();
@@ -188,7 +188,7 @@ public class FilterUI extends MotifUI
                                 
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
             {
-            FunctionInspector functionInspector = new FunctionInspector(seq, filter, i);
+            FunctionInspector functionInspector = new FunctionInspector(seq, sequi, filter, i);
             functionGrid.add(functionInspector);
             }
         }           
