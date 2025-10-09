@@ -1177,6 +1177,8 @@ At present, Filter has six MIDI Effects available:
 
 We'll describe these next in detail.  More MIDI effects are planned for the future.
 
+At the end of this list is {\bf Copy From...}, where you can ask that a MIDI Effect in the given stage, and all of its parameters, be copied exactly from another stage.
+
 \paragraph{The Note Effect}
 
 This effect allows you to change features of the notes being passed in:
@@ -1293,6 +1295,7 @@ Many Effect features can be {\bf Parameterized} by double-clicking on the dials.
 
 
 
+\clearpage
 
 \begin{figure}[t]
 \centering
@@ -1343,7 +1346,9 @@ At present, Modulation has five automated modulation functions available:
 \item {\bf Same}\qquad The argument is set to the same value as some earlier modulation function.
 \end{itemize}
 
-We'll describe these next in detail.  More modulators are planned for the future.  But first a word on mapping.
+We'll describe these next in detail.  More modulators are planned for the future.  
+
+At the end of this list is {\bf Copy From...}, where you can ask that both the Modulation Function and the Mapping for a given Argument be copied exactly from another Argument.
 
 
 \paragraph{None}
@@ -1357,7 +1362,7 @@ The value of argument \(X\) is set to the output of an LFO.  The LFO has the fol
 \begin{itemize}
 \item {\bf Type}\qquad The LFO wave.  This can be Saw Up, Saw Down, Square, Triangle, Sine, Random, and S\&H (Random Sample and Hold).  Random works by selecting a random target position from 0.0 to 1.0 and slowly moving linearly to reach that position by the end of the period, at which it picks a new random target position and repeats.  S\&H works similarly, but it doesn't move: it just holds at its previous target position until the period is completed, at which point it jumps to the new target position.
 \item {\bf Period}\qquad The length of one repetition of the wave, in time steps.
-\item {\bf Phase}\qquad The initial phase of the wave, ranging from 0.0 to 1.0.
+\item {\bf Phase / Var}\qquad For the {\bf Random} and {\bf Sample and Hold (S\&H)} wave types, this defines the {\bf Variance}, that is, how wide a swing in randomness is used when computing the next target location.  For all other wavetypes, this defines the {\bf initial phase} of the wave, ranging from 0.0 to 1.0.
 \item {\bf Initial}\qquad The initial value of the LFO.   The LFO outputs this until it reaches its {\bf Start} time.
 \item {\bf Start}\qquad The LFO's start time.  The LFO doesn't begin operating until this time: instead it sets the argument to {\bf Initial}.
 \item {\bf Fade In}\qquad After the LFO's start time, the LFO gradually fades in from the initial value to the full range from 0.0 to 10.  This is done over the Fade In period: this is a time interval, not a specific time step.
@@ -1395,8 +1400,13 @@ This is much like a simplified Envelope with Hold: where each stage has the same
 
 \paragraph{Same}
 
-This indicates that the modulation function for this argument (let's call it \(m\) is the same as the one for some other argument \(n\). Note that \(n\) must be {\bf less than} \(m\).  If \(n \geq m\), then Same acts just like {\bf None}.  Mapping still occurs regardless.
+This indicates that the modulation function for this argument (let's call it \(m\) is the same as the one for some other argument \(n\). Note that \(n\) must be set to {\bf less than} \(m\), or Same will indicate that the value is {\bf Invalid}, and will act just like {\bf None}.  Mapping still occurs regardless: thus Same can have a different mapping from the Node that it is the Same as.
 
+\paragraph{Combining Modulations}
+
+If you have a Modulation set up as a child to a Modulation, you can combine modulations on the same parameter.  For example, let's say you wanted to do an LFO until an envelope started, and when the envelope finished, you continued the LFO.  You create an LFO in the parent Modulation for parameter X, going all the time.  In the child Modulation for parameter X, you create an envelope which is delayed to start a while later.  Set the Initial value for the child Modulation to be {\it Param X} rather than a fixed number.  Add an additional stage at the end of the envelope.  Set its target value to be {\it Param X} as well.  Finally, set the time for the additional stage to be however long you'd like to fade from the envelope's termination to the LFO again.
+
+You can do tricks like this for any combination of modulation methods.
 
 \paragraph{Parameterization}
 
