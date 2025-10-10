@@ -298,7 +298,7 @@ public class FilterUI extends MotifUI
     public void select(MotifButton button)  
         {
         deselectAll();
-//        button.setSelected(true);
+        button.setSelected(true);
         int at = ((FilterButton)button).getAt();
         }
 

@@ -299,7 +299,7 @@ public class ModulationUI extends MotifUI
     public void select(MotifButton button)  
         {
         deselectAll();
-        // button.setSelected(true);
+        button.setSelected(true);
         int at = ((ModulationButton)button).getAt();
         }
 

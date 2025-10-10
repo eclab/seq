@@ -544,7 +544,7 @@ childOuter.setBorder(childBorder);
     public void select(MotifButton button)  
         {
         deselectAll();
-//        button.setSelected(true);
+        button.setSelected(true);
         int at = ((ArpeggioButton)button).getAt();
 //        setChildInspector(new ArpeggioChildInspector(seq, arpeggioChild, null, this, at));
         }
