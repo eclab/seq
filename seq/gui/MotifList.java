@@ -8,6 +8,7 @@ package seq.gui;
 import seq.engine.*;
 import seq.motif.macro.*;
 import seq.motif.macro.gui.*;
+import seq.util.*;
 import java.io.*;
 import java.util.zip.*;
 import java.awt.*;
@@ -712,6 +713,11 @@ public class MotifList extends JPanel
             try
                 {
                 Macro macro = new Macro(seq, new JSONObject(new JSONTokener(stream = new GZIPInputStream(new FileInputStream(fd.getDirectory()+fd.getFile())))));
+                String name = StringUtility.removeExtension(fd.getFile());
+                if (name != null) 
+                	{
+                	macro.setName(name);
+                	}
                 sequi.push();
                 doAdd(MacroUI.create(seq, sequi, macro));
                 }

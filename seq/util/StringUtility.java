@@ -6,6 +6,7 @@
 package seq.util;
 
 import java.util.*;
+import java.io.*;
 
 public class StringUtility
     {
@@ -361,6 +362,32 @@ public class StringUtility
         else return filename + ending;
         }
     
+    /** Removes the extension from the given file name.  
+    	From https://stackoverflow.com/questions/941272/how-do-i-trim-a-file-extension-from-a-string-in-java */
+public static String removeExtension(String s) 
+{
+    String separator = File.separator;
+    String filename;
+
+    // Remove the path upto the filename.
+    int lastSeparatorIndex = s.lastIndexOf(separator);
+    if (lastSeparatorIndex == -1) 
+    {
+        filename = s;
+    } 
+    else 
+    {
+        filename = s.substring(lastSeparatorIndex + 1);
+    }
+
+    // Remove the extension.
+    int extensionIndex = filename.lastIndexOf(".");
+    if (extensionIndex == -1)
+        return filename;
+
+    return filename.substring(0, extensionIndex);
+}
+
     /** Returns the byte as a hex number */
     public static String toHex(byte val)
         {

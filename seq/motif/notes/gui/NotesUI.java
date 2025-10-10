@@ -420,6 +420,8 @@ public class NotesUI extends MotifUI
             });
         menu.add(sendToBack);
 
+        menu.addSeparator();
+
         autoArmItem = new JCheckBoxMenuItem("Arm New Notes Motifs");
         autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
         menu.add(autoArmItem);
