@@ -249,7 +249,15 @@ public abstract class Clip
     ////
     //// To determine the current value of an exposed variable, you can call getCorrectedValInt()
     //// or getCorrectedValDouble(), which will return the "revised" value if the value is negative.
-    
+    ////
+    //// MACRO ROOT PARAMETERS
+    ////
+    //// The sequence root parameters can be either ground values, or they can be -1, which means "Macro".
+    //// This has no effect if the root is just being used in a sequence, and -1 will be treated at 0.000.
+    //// But when the root is bound up as the root of a macro, if a root parameter is set to -1, this means
+    //// that the root parameter value should be bound to the equivalent parameter in the outer Macro itself.
+    //// Thus if you a parent of the Macro sets parameter 3 to 2.34, thn the root parameter value inside the
+    //// Macro will also be wet to 2.34.
      
     // The CURRENT values of the parameters
     double[] parameterValues = new double[Motif.NUM_PARAMETERS];
