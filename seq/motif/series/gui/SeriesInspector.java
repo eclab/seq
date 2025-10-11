@@ -21,6 +21,7 @@ public class SeriesInspector extends WidgetList
 
     StringField name;
     JComboBox mode;
+    TimeDisplay rate;
 
     public static final String[] MODE_STRINGS = { "Series", "Shuffle", "Random", "Random Markov", "Round Robin", "Variation", "Rand Variation" };         // , "Round Robin Shared" };
     public static final String[] TYPE_STRINGS = { "None", "CC", "14-Bit CC", "NRPN", "NRPN Coarse", "RPN", "Bend", "Aftertouch" };
@@ -223,7 +224,7 @@ public class SeriesInspector extends WidgetList
                                 {
                                 int lsb = series.getMIDIParameter(_i) % 128;
                                 series.setMIDIParameter(_i, ((int)(val * 127.0)) * 128 + lsb);
-                                ((SmallDial)paramsLSB[_i]).redraw();
+                                if (((SmallDial)paramsLSB[_i]) != null) ((SmallDial)paramsLSB[_i]).redraw();
                                 break;
                                 }
                                 default:
@@ -335,13 +336,13 @@ public class SeriesInspector extends WidgetList
                         paramsBox[_i].remove(paramsMSBL[_i]);
                         paramsBox[_i].remove(paramsLSBL[_i]);
                         paramsBox[_i].remove(paramsL[_i]);
-                        if (type == Series.CC7 || type == Series.CC14) { paramsBox[_i].add(paramsL[_i]); params[_i].redraw(); }
+                        if (type == Series.CC7 || type == Series.CC14) { paramsBox[_i].add(paramsL[_i]); if (params[_i] != null) params[_i].redraw(); }
                         else if (type == Series.NRPN || type == Series.NRPN_COARSE || type == Series.RPN) 
                             { 
                             paramsBox[_i].add(paramsMSBL[_i]);
-                            paramsMSB[_i].redraw(); 
+                            if (paramsMSB[_i] != null) paramsMSB[_i].redraw(); 
                             paramsBox[_i].add(paramsLSBL[_i]);  
-                            paramsLSB[_i].redraw(); 
+                            if (paramsLSB[_i] != null) paramsLSB[_i].redraw(); 
                             }
                         paramsBox[_i].revalidate();
                         seriesui.revalidate();                            
@@ -351,15 +352,29 @@ public class SeriesInspector extends WidgetList
                 paramsBox[_i] = new Box(BoxLayout.X_AXIS);
                 paramsBox[_i].add(new JLabel(" "));                                 // spacer
                 int type =  types[_i].getSelectedIndex();
-                if (type == Series.CC7 || type == Series.CC14) { paramsBox[_i].add(paramsL[_i]); params[_i].redraw(); }
+                if (type == Series.CC7 || type == Series.CC14) { paramsBox[_i].add(paramsL[_i]); if (params[_i] != null) params[_i].redraw(); }
                 else if (type == Series.NRPN || type == Series.NRPN_COARSE || type == Series.RPN) 
                     { 
                     paramsBox[_i].add(paramsMSBL[_i]);
-                    paramsMSB[_i].redraw(); 
+                    if (paramsMSB[_i] != null) paramsMSB[_i].redraw(); 
                     paramsBox[_i].add(paramsLSBL[_i]);  
-                    paramsLSB[_i].redraw(); 
+                    if (paramsLSB[_i] != null) paramsLSB[_i].redraw(); 
                     }
                 }
+
+			rate = new TimeDisplay(series.getMIDIParameterRate(), seq)
+				{
+				public int getTime()
+					{
+					return series.getMIDIParameterRate();
+					}
+					
+				public void setTime(int time)
+					{
+					series.setMIDIParameterRate(time);
+					}
+				};
+			rate.setDisplaysTime(false);
             }
         finally { lock.unlock(); }
 
@@ -386,23 +401,27 @@ public class SeriesInspector extends WidgetList
                 }
             });            
 
-        JComponent[] components = new JComponent[Series.NUM_PARAMETERS + 1];
-        String[] labels = new String[Series.NUM_PARAMETERS + 1];
-        labels[0] = "Out";
-        components[0] = out;
-        for(int i = 1; i < labels.length; i++) 
+
+        JComponent[] components = new JComponent[Series.NUM_PARAMETERS + 2];
+        String[] labels = new String[Series.NUM_PARAMETERS + 2];
+        labels[0] = "Rate";
+        components[0] = rate;
+        labels[1] = "Out";
+        components[1] = out;
+        for(int i = 2; i < labels.length; i++) 
             {
-            labels[i] = "Param " + String.valueOf(i);
+            labels[i] = "Param " + String.valueOf(i - 1);
             JPanel comp2 = new JPanel();
             comp2.setLayout(new BorderLayout());
             JPanel comp = new JPanel();
             comp.setLayout(new BorderLayout());
-            comp.add(types[i-1], BorderLayout.WEST);
-            comp.add(paramsBox[i-1], BorderLayout.CENTER);
+            comp.add(types[i-2], BorderLayout.WEST);
+            comp.add(paramsBox[i-2], BorderLayout.CENTER);
             comp2.add(comp, BorderLayout.WEST);
             comp2.add(new JPanel(), BorderLayout.CENTER);
             components[i] = comp2;
             }
+            
         WidgetList cc = new WidgetList(labels, components);
         cc.makeBorder("MIDI Parameters");
         DisclosurePanel midiParameters = new DisclosurePanel("MIDI Parameters", cc);
@@ -425,6 +444,7 @@ public class SeriesInspector extends WidgetList
         finally { lock.unlock(); }                              
         seq = old;
         name.update();
+        rate.revise();
         }
 
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +

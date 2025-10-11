@@ -32,6 +32,10 @@ public class SeriesClip extends Clip
                 
     public void processMIDIValues(Series series)
         {
+        int rate = series.getMIDIParameterRate();
+        if (rate == 0) rate = 1;
+        if (getPosition() % rate != 0) return;
+        
         int midiOut = series.getMIDIParameterOut();
 
         for(int i = 0; i < midiValues.length; i++)
@@ -458,7 +462,6 @@ public class SeriesClip extends Clip
         
     public boolean process()
         {
-        
         Series series = (Series) getMotif();
         processMIDIValues(series);
 //        currentLFOValue = lfo.getCurrentValue(series.getLFO());

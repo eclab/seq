@@ -32,6 +32,7 @@ public class Series extends Motif
     int[] midiTypes = new int[NUM_PARAMETERS];
     int[] midiParameters = new int[NUM_PARAMETERS];
     int midiParameterOut = 0;
+    int midiParameterRate = Seq.PPQ / 4;
         
     public void setMIDIType(int index, int type) 
         { 
@@ -41,6 +42,9 @@ public class Series extends Motif
         if (type == CC7 && getMIDIParameter(index) > 127) setMIDIParameter(index, 0);
         }
     public int getMIDIType(int index) { return midiTypes[index]; }
+    
+    public int getMIDIParameterRate() { return midiParameterRate; }
+    public void setMIDIParameterRate(int val) { midiParameterRate = val; } 
 
     public void setMIDIParameter(int index, int param) { midiParameters[index] = param; }
     public int getMIDIParameter(int index) { return midiParameters[index]; }
@@ -519,6 +523,7 @@ public class Series extends Motif
             }
         to.put("midi", typeArray);
         to.put("out", getMIDIParameterOut());
+        to.put("rate", getMIDIParameterRate());
 /*
   JSONObject l = new JSONObject();
   lfo.save(l);
@@ -544,6 +549,7 @@ public class Series extends Motif
             System.err.println("Modulation.save(): Internal error: no LFO array");
             }
         setMIDIParameterOut(from.optInt("out", 0));
+        setMIDIParameterRate(from.optInt("rate", Seq.PPQ / 4));
 
 
         /*
