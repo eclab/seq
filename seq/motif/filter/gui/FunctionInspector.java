@@ -432,7 +432,7 @@ public class FunctionInspector extends JPanel
                         }
                     });
 
-                length = new TimeDisplay(Seq.PPQ, seq)
+                length = new TimeDisplay(func.getLength(), seq)
                     {
                     public int getTime()
                         {
