@@ -1575,6 +1575,8 @@ Let's do an example.  First set Param 1's Type to CC.  This reveals a Dial you c
 
 Now, whenever the Series is playing, if its incoming Parameter 1 has changed in value, it will be mapped to a CC value and emitted out CC 5.  Parameters have values from 0.0 to 1.0, whereas CC values range from 0 to 127.  So for example if Parameter 1 changes to 0.5, this will be mapped to 63, and so Seq will emit a CC message number 5 with a value of 63.
 
+The rate at which MIDI data is output is chosen by the {\bf Rate} parameter.  MIDI data will only be output if the parameter has changed since the last time MIDI data was output.
+
 The following MIDI output types are available for each Parameter.
 
 \begin{itemize} 
