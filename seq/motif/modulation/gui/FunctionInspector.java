@@ -76,57 +76,57 @@ public class FunctionInspector extends JPanel
             {
             public void actionPerformed(ActionEvent e)
                 {
- 				String type1 = null;
-				if (seq == null) return;
-				
-               if (subcombo.getSelectedIndex() == COPY_FROM)
-                	{
-					String[] names = { "From" };
-					SmallDial from = new SmallDial(0)
-						{
-						double value;
-						public double getValue() { return value; }
-						public void setValue(double val) { value = val; }
-						public String map(double val) { return "" + (int)((val * Motif.NUM_PARAMETERS) + 1); }
-						};
-					JComponent[] components = new JComponent[] { from.getLabelledDial("8") };
-					int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Copy", "Cancel" }, 0, "Copy Argument", "Enter the Argument to copy from.");
-		
-					int _from = index;  // copy myself
-					if (result == 0)
-						{
-						_from = (int)(from.getValue() * Motif.NUM_PARAMETERS);
-						subcombo.setSelectedIndex(modulation.typeIndex(modulation.getFunction(_from).getType()));
-						}	
-					else
-						{
-						// reset the menu
-						subcombo.setSelectedIndex(modulation.typeIndex(modulation.getFunction(_from).getType()));
-						return;
-						}
-						
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try 
-						{
-	                    Modulation.Function func1 = modulation.getFunction(_from).copy();
-                    	type1 = func1.getType();
-                    	modulation.setFunction(index, func1);
-						}
-					finally { lock.unlock(); }
-                	}
-                else	
-                	{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try 
-						{
-						Modulation.Function func1 = modulation.buildFunction(subcombo.getSelectedIndex());
-						type1 = func1.getType();
-						modulation.setFunction(index, func1); 
-						}
-					finally { lock.unlock(); }
-					}
+                String type1 = null;
+                if (seq == null) return;
+                                
+                if (subcombo.getSelectedIndex() == COPY_FROM)
+                    {
+                    String[] names = { "From" };
+                    SmallDial from = new SmallDial(0)
+                        {
+                        double value;
+                        public double getValue() { return value; }
+                        public void setValue(double val) { value = val; }
+                        public String map(double val) { return "" + (int)((val * Motif.NUM_PARAMETERS) + 1); }
+                        };
+                    JComponent[] components = new JComponent[] { from.getLabelledDial("8") };
+                    int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Copy", "Cancel" }, 0, "Copy Argument", "Enter the Argument to copy from.");
+                
+                    int _from = index;  // copy myself
+                    if (result == 0)
+                        {
+                        _from = (int)(from.getValue() * Motif.NUM_PARAMETERS);
+                        subcombo.setSelectedIndex(modulation.typeIndex(modulation.getFunction(_from).getType()));
+                        }       
+                    else
+                        {
+                        // reset the menu
+                        subcombo.setSelectedIndex(modulation.typeIndex(modulation.getFunction(_from).getType()));
+                        return;
+                        }
+                                                
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        {
+                        Modulation.Function func1 = modulation.getFunction(_from).copy();
+                        type1 = func1.getType();
+                        modulation.setFunction(index, func1);
+                        }
+                    finally { lock.unlock(); }
+                    }
+                else    
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        {
+                        Modulation.Function func1 = modulation.buildFunction(subcombo.getSelectedIndex());
+                        type1 = func1.getType();
+                        modulation.setFunction(index, func1); 
+                        }
+                    finally { lock.unlock(); }
+                    }
                                 
                 remove(subinspector);
                 subinspector =  buildSubinspector(type1, index);
@@ -141,7 +141,7 @@ public class FunctionInspector extends JPanel
         lock.lock();
         try 
             {            
-			Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
             mapLow = new SmallDial(func.getMapLow(), defaults)
                 {
                 public double getValue() 
@@ -149,10 +149,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    return func.getMapLow(); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        return func.getMapLow(); 
+                        }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -161,10 +161,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    func.setMapLow(val); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        func.setMapLow(val); 
+                        }
                     finally { lock.unlock(); }
                     }
                 public void setDefault(int val) 
@@ -172,10 +172,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    if (val != SmallDial.NO_DEFAULT) func.setMapLow(-(val + 1)); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        if (val != SmallDial.NO_DEFAULT) func.setMapLow(-(val + 1)); 
+                        }
                     finally { lock.unlock(); }
                     }
                 public int getDefault()
@@ -183,10 +183,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    double val = func.getMapLow(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        double val = func.getMapLow(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); 
+                        }
                     finally { lock.unlock(); }
                     }
                 };
@@ -198,10 +198,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    return func.getMapHigh(); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        return func.getMapHigh(); 
+                        }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -210,10 +210,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    func.setMapHigh(val); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        func.setMapHigh(val); 
+                        }
                     finally { lock.unlock(); }
                     }
                 public void setDefault(int val) 
@@ -221,10 +221,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    if (val != SmallDial.NO_DEFAULT) func.setMapHigh(-(val + 1)); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        if (val != SmallDial.NO_DEFAULT) func.setMapHigh(-(val + 1)); 
+                        }
                     finally { lock.unlock(); }
                     }
                 public int getDefault()
@@ -232,10 +232,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    double val = func.getMapHigh(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        double val = func.getMapHigh(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); 
+                        }
                     finally { lock.unlock(); }
                     }
                 };
@@ -250,10 +250,10 @@ public class FunctionInspector extends JPanel
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    { 
-            Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
-                    func.setMapBy(mapBy.getSelectedIndex()); 
-                    }
+                        { 
+                        Modulation.Function func = (Modulation.Function)(modulation.getFunction(index));
+                        func.setMapBy(mapBy.getSelectedIndex()); 
+                        }
                     finally { lock.unlock(); }
                     }
                 });      
@@ -1051,7 +1051,7 @@ public class FunctionInspector extends JPanel
                     {
                     public String map(double val)
                         {
-                        int _as = (int)(val * (Motif.NUM_PARAMETERS - 2));			// 0 ... 6
+                        int _as = (int)(val * (Motif.NUM_PARAMETERS - 2));                      // 0 ... 6
                         if (_as < index) return String.valueOf(_as + 1);
                         else return "Invalid (" + (_as + 1) + ")";
                         }
@@ -1109,7 +1109,7 @@ public class FunctionInspector extends JPanel
             lock.lock();
             try 
                 { 
-            	// Modulation.Same func = (Modulation.Same)(modulation.getFunction(index));
+                // Modulation.Same func = (Modulation.Same)(modulation.getFunction(index));
                 }
             finally { lock.unlock(); }                              
             seq = old;

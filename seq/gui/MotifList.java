@@ -715,9 +715,9 @@ public class MotifList extends JPanel
                 Macro macro = new Macro(seq, new JSONObject(new JSONTokener(stream = new GZIPInputStream(new FileInputStream(fd.getDirectory()+fd.getFile())))));
                 String name = StringUtility.removeExtension(fd.getFile());
                 if (name != null) 
-                	{
-                	macro.setName(name);
-                	}
+                    {
+                    macro.setName(name);
+                    }
                 sequi.push();
                 doAdd(MacroUI.create(seq, sequi, macro));
                 }

@@ -49,7 +49,7 @@ public class ModulationClip extends Clip
             int as = func.getAs();
             if (as < index)
                 {
-                return nodes.get(as).getLastValue();			// getParameterValue(as);
+                return nodes.get(as).getLastValue();                    // getParameterValue(as);
                 }
             else return super.update(index, position);
             }
@@ -81,14 +81,14 @@ public class ModulationClip extends Clip
 
             int type = lfo.getLFOType();
             int period = lfo.getPeriod();
-            if (period == 0) period = 1;			// we can't have a 0 length period
+            if (period == 0) period = 1;                        // we can't have a 0 length period
 
             double phase = lfo.getPhase();
             double variance = phase;
             if (type >= Modulation.TYPE_RANDOM)
-            	{
-            	phase = 0;
-            	}
+                {
+                phase = 0;
+                }
 
             // Compute our current instantaneous phase, not modded 
             double postX = ((pos % period) / (double)period + phase);
@@ -96,7 +96,7 @@ public class ModulationClip extends Clip
             double val = 0;
  
             double initial = lfo.getInitial();
-           switch (type)
+            switch (type)
                 {
                 case Modulation.TYPE_SAW_UP:
                     val = x;
@@ -113,10 +113,10 @@ public class ModulationClip extends Clip
                 case Modulation.TYPE_SINE:
                     val = (Math.sin(x * Math.PI * 2.0) + 1.0) / 2.0; 
                     break;
-                case Modulation.TYPE_RANDOM:			// Fall Thru
+                case Modulation.TYPE_RANDOM:                    // Fall Thru
                 case Modulation.TYPE_SAMPLE_AND_HOLD:
-            		// Compute our last instantaneous phase, not modded 
-            		double preX = (pos <= 0 ? -1 : (((pos - 1) % period) / (double)period + phase));
+                    // Compute our last instantaneous phase, not modded 
+                    double preX = (pos <= 0 ? -1 : (((pos - 1) % period) / (double)period + phase));
                     if (position < lfo.getStart())
                         {
                         val = initial;
@@ -127,9 +127,9 @@ public class ModulationClip extends Clip
                     else if (position == lfo.getStart())
                         {
                         if (lastTarget == -1) 
-                        	{
-                        	lastTarget = seq.getDeterministicRandom().nextDouble();
-                        	}
+                            {
+                            lastTarget = seq.getDeterministicRandom().nextDouble();
+                            }
                         target = seq.getDeterministicRandom().nextDouble();
                         }
                     else if (preX < 0.0 || (preX > postX) || period == 1)            // time to update.  period==1 is a special case 
@@ -137,9 +137,9 @@ public class ModulationClip extends Clip
                         double p = (seq.getDeterministicRandom().nextDouble() - 0.5) * variance;
                         double newTarget = lastTarget + p;
                         if (newTarget >= 1.0 || newTarget < 0.0)
-                        	{
-                        	newTarget = lastTarget - p;
-                        	}
+                            {
+                            newTarget = lastTarget - p;
+                            }
                         lastTarget = target;
                         target = newTarget ;     
                         }
@@ -193,8 +193,8 @@ public class ModulationClip extends Clip
             int startTime = envelope.getStart();
             double startTarget = envelope.getInitial();
             int numStages = envelope.getNumStages();
-	
-			// First handle when we haven't reached the first stage yet
+        
+            // First handle when we haven't reached the first stage yet
             if (position < startTime || numStages == 0)
                 {
                 return startTarget;
@@ -204,10 +204,10 @@ public class ModulationClip extends Clip
             int[] time = new int[numStages];
             int current = startTime;
             for(int i = 0; i < numStages; i++)
-            	{
-            	time[i] = envelope.getTime(i) + current;
-            	current = time[i];
-            	}
+                {
+                time[i] = envelope.getTime(i) + current;
+                current = time[i];
+                }
             int finalTime = time[numStages - 1];
             double finalTarget = 0;
 
@@ -218,37 +218,37 @@ public class ModulationClip extends Clip
                 
                 if (envelope.getRepeat())
                     {
-               	 	// We're repeating.  We need to mod the position to back within the envelope region 
+                    // We're repeating.  We need to mod the position to back within the envelope region 
                     if (finalTime > 0)
-                    	{
-//                    	System.err.println("position " + position);
-	                    position = (position - finalTime) % (finalTime - startTime) + startTime;
-//	                    System.err.println("revised " + position + " " + finalTime + " " + startTime);
-	                    }
-	                // There is no envelope -- they're all zero values.  So just reset to startTime
-	                else
-	                	{
-	                	position = startTime;
-	                	}
+                        {
+//                      System.err.println("position " + position);
+                        position = (position - finalTime) % (finalTime - startTime) + startTime;
+//                          System.err.println("revised " + position + " " + finalTime + " " + startTime);
+                        }
+                    // There is no envelope -- they're all zero values.  So just reset to startTime
+                    else
+                        {
+                        position = startTime;
+                        }
                     startTarget = finalTarget;
                     }
-               	// We're NOT repeating.  So we just return the final target.
-               	else
+                // We're NOT repeating.  So we just return the final target.
+                else
                     {
                     return finalTarget;
                     }
                 }
             
 
-			// If our stage is negative -- we just started the envelope -- we set stage to 0.
+            // If our stage is negative -- we just started the envelope -- we set stage to 0.
             if (stage < 0)
-            	{
-            	stage = 0;
-            	}
-            	
-			// If we are outside of our stage, we need to compute the next stage.
+                {
+                stage = 0;
+                }
+                
+            // If we are outside of our stage, we need to compute the next stage.
             else if ((stage == 0 && !(position >= startTime && position < time[0])) ||
-                	(stage > 0 && !(position >= time[stage - 1] && position < time[stage])))
+                (stage > 0 && !(position >= time[stage - 1] && position < time[stage])))
                 {
 //                System.err.println("Refigure");
                 // We have to figure out the stage.  First try the next stage
@@ -270,7 +270,7 @@ public class ModulationClip extends Clip
                 }
                 
 
-			// We now know what stage we're in, and the position is within the stage boundaries.
+            // We now know what stage we're in, and the position is within the stage boundaries.
             // So now we perform interpolation.
             
             int time0 = 0;
@@ -335,7 +335,7 @@ public class ModulationClip extends Clip
                     }
                 else
                     {
-                    return step.getInitial();		// step.getStep(numSteps - 1);
+                    return step.getInitial();           // step.getStep(numSteps - 1);
                     }
                 }
                         
@@ -508,7 +508,7 @@ public class ModulationClip extends Clip
 
         if (clip != null)
             {
-        	loadParameterValues(clip, modulation.getChildren().get(0));
+            loadParameterValues(clip, modulation.getChildren().get(0));
             return clip.advance();
             }
         else

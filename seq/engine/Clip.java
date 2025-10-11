@@ -344,9 +344,9 @@ public abstract class Clip
         -       -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
     */
     public void loadParameterValues(Clip child, Motif.Child motifChild) 
-    	{
-    	loadParameterValues(child, motifChild.getParameters(), false);
-    	}
+        {
+        loadParameterValues(child, motifChild.getParameters(), false);
+        }
 
     /** 
         Loads the child's parameter values, provided in params, based on our own. Current options are:
@@ -363,13 +363,13 @@ public abstract class Clip
             if (params[i] == Motif.Child.PARAMETER_RANDOM)  // it's bound to random
                 {
                 if (macro)
-                	{
-                	newVal = parameterValues[i];		// grab parent parameter
-                	}
+                    {
+                    newVal = parameterValues[i];            // grab parent parameter
+                    }
                 else
-                	{
-	                newVal = getRandomValue();
-	                }
+                    {
+                    newVal = getRandomValue();
+                    }
                 }
             else if (params[i] < Motif.Child.PARAMETER_RANDOM)      // it's a back link, copy through
                 {
@@ -401,9 +401,9 @@ public abstract class Clip
             {
             double param = params[i];
             if (param < 0)
-            	{
-            	param = 0;					// we've been set to our parent, which doesn't exist, so we're 0 by default
-            	}
+                {
+                param = 0;                                      // we've been set to our parent, which doesn't exist, so we're 0 by default
+                }
             setParameterValue(i, param);
             }
         }

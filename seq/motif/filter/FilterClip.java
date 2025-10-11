@@ -29,7 +29,7 @@ public class FilterClip extends Clip
         // ans do so we can override either one of them, or both of them, in subclasses.  The big
         // problematic class which necessitated this was Chord.
         void _noteOn(int out, int note, double vel, int id, int index)
-        	{
+            {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1) 
                 {
@@ -37,7 +37,7 @@ public class FilterClip extends Clip
                 else getParent().noteOn(out, note, vel, id);
                 }
             else nodes.get(index + 1).noteOn(out, note, vel, id, index + 1);
-        	}
+            }
         public void noteOn(int out, int note, double vel, int id, int index)    
             {
             _noteOn(out, note, vel, id, index);
@@ -1593,7 +1593,7 @@ public class FilterClip extends Clip
             {
             if (!childDone)
                 {
-		    	loadParameterValues(clip, filter.getChildren().get(0));
+                loadParameterValues(clip, filter.getChildren().get(0));
                 childDone = clip.advance();
                 }
             done = childDone;

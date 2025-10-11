@@ -1537,10 +1537,10 @@ public class SeqUI extends JPanel
         int choice = showSimpleChoice("Quit Seq", "Save sequence before quitting?", new String[] { "Cancel", "Save", "Quit" });
         System.err.println(choice);
         
-        if (choice == -1)			// close box
-        	{
-        	return false;
-        	}
+        if (choice == -1)                       // close box
+            {
+            return false;
+            }
         else if (choice == 0)        // cancel
             {
             return false;
@@ -2030,6 +2030,6 @@ public class SeqUI extends JPanel
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 
         "With Help from Filippo Carnovalini<br>" + 
-        "<b><font color='#3498db'>Version 7</font></b>, September 2025<br>" + 
+        "<b><font color='#3498db'>Version 8</font></b>, October 2025<br>" + 
         "https://github.com/eclab/seq</html>";
     }

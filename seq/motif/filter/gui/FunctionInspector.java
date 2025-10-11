@@ -77,54 +77,54 @@ public class FunctionInspector extends JPanel
                 String type1 = null;
                 if (seq == null) return;
                 
-               if (subcombo.getSelectedIndex() == COPY_FROM)
-                	{
-					String[] names = { "From" };
-					SmallDial from = new SmallDial(0)
-						{
-						double value;
-						public double getValue() { return value; }
-						public void setValue(double val) { value = val; }
-						public String map(double val) { return "" + (int)((val * Motif.NUM_PARAMETERS) + 1); }
-						};
-					JComponent[] components = new JComponent[] { from.getLabelledDial("8") };
-					int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Copy", "Cancel" }, 0, "Copy Stage", "Enter the Stage to copy from.");
-		
-					int _from = index;  // copy myself
-					if (result == 0)
-						{
-						_from = (int)(from.getValue() * Motif.NUM_PARAMETERS);
-						subcombo.setSelectedIndex(filter.typeIndex(filter.getFunction(_from).getType()));
-						}	
-					else
-						{
-						// reset the menu
-						subcombo.setSelectedIndex(filter.typeIndex(filter.getFunction(_from).getType()));
-						return;
-						}
-						
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try 
-						{
-	                    Filter.Function func1 = filter.getFunction(_from).copy();
-                    	type1 = func1.getType();
-                    	filter.setFunction(index, func1);
-						}
-					finally { lock.unlock(); }
-                	}
-                else	
-					{                
-                ReentrantLock lock = seq.getLock();
-                lock.lock();
-                try 
+                if (subcombo.getSelectedIndex() == COPY_FROM)
                     {
-                    Filter.Function func1 = filter.buildFunction(subcombo.getSelectedIndex());
-                    type1 = func1.getType();
-                    filter.setFunction(index, func1); 
+                    String[] names = { "From" };
+                    SmallDial from = new SmallDial(0)
+                        {
+                        double value;
+                        public double getValue() { return value; }
+                        public void setValue(double val) { value = val; }
+                        public String map(double val) { return "" + (int)((val * Motif.NUM_PARAMETERS) + 1); }
+                        };
+                    JComponent[] components = new JComponent[] { from.getLabelledDial("8") };
+                    int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Copy", "Cancel" }, 0, "Copy Stage", "Enter the Stage to copy from.");
+                
+                    int _from = index;  // copy myself
+                    if (result == 0)
+                        {
+                        _from = (int)(from.getValue() * Motif.NUM_PARAMETERS);
+                        subcombo.setSelectedIndex(filter.typeIndex(filter.getFunction(_from).getType()));
+                        }       
+                    else
+                        {
+                        // reset the menu
+                        subcombo.setSelectedIndex(filter.typeIndex(filter.getFunction(_from).getType()));
+                        return;
+                        }
+                                                
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        {
+                        Filter.Function func1 = filter.getFunction(_from).copy();
+                        type1 = func1.getType();
+                        filter.setFunction(index, func1);
+                        }
+                    finally { lock.unlock(); }
                     }
-                finally { lock.unlock(); }
-                	}
+                else    
+                    {                
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        {
+                        Filter.Function func1 = filter.buildFunction(subcombo.getSelectedIndex());
+                        type1 = func1.getType();
+                        filter.setFunction(index, func1); 
+                        }
+                    finally { lock.unlock(); }
+                    }
                                 
                 remove(subinspector);
                 subinspector =  buildSubinspector(type1);
@@ -132,7 +132,7 @@ public class FunctionInspector extends JPanel
                 revise();
                 revalidate();
                 repaint();
-            }
+                }
             });
                 
         setLayout(new BorderLayout());

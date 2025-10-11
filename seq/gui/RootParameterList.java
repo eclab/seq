@@ -125,26 +125,26 @@ public class RootParameterList extends JPanel
                         try { seq.setParameterValue(_i, val); }
                         finally { lock.unlock(); }
                         }
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						
-						// This is customized as follows.  
-						try { if (val != SmallDial.NO_DEFAULT) seq.setParameterValue(_i, -(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                                                
+                        // This is customized as follows.  
+                        try { if (val != SmallDial.NO_DEFAULT) seq.setParameterValue(_i, -(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
 
-						// This is customized as follows.  There is only one possible default, but it varies
-						// depending on the parameter represented by the dial, because it points to the same
-						// parent parameter as the dial's parameter.  So if we're negative, we return -1.
-						try { double val = seq.getParameterValue(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
+                        // This is customized as follows.  There is only one possible default, but it varies
+                        // depending on the parameter represented by the dial, because it points to the same
+                        // parent parameter as the dial's parameter.  So if we're negative, we return -1.
+                        try { double val = seq.getParameterValue(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
                     };
                 }
 

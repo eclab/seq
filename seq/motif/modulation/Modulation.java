@@ -364,10 +364,10 @@ public class Modulation extends Motif
 
         public Function copy() 
             { 
-                Envelope other = (Envelope)(super.copy());
-                other.time = (int[])(time.clone());
-                other.target = (double[])(target.clone());
-                return other;
+            Envelope other = (Envelope)(super.copy());
+            other.time = (int[])(time.clone());
+            other.target = (double[])(target.clone());
+            return other;
             }
         }
                 
@@ -443,9 +443,9 @@ public class Modulation extends Motif
 
         public Function copy() 
             { 
-                Step other = (Step)(super.copy());
-                other.step = (double[])(step.clone());
-                return other;
+            Step other = (Step)(super.copy());
+            other.step = (double[])(step.clone());
+            return other;
             }
         }
     

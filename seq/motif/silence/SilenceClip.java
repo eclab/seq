@@ -37,11 +37,11 @@ public class SilenceClip extends Clip
     public boolean process()
         {
         /*
-            System.err.println(getParameterValue(0));
-        	int v = (int)(getParameterValue(0) * 79);
-        	for(int j = 0; j < v; j++)
-        		System.err.print(" ");
-        	System.err.println("X");
+          System.err.println(getParameterValue(0));
+          int v = (int)(getParameterValue(0) * 79);
+          for(int j = 0; j < v; j++)
+          System.err.print(" ");
+          System.err.println("X");
         */
 
         int length = ((Silence)getMotif()).getLength();

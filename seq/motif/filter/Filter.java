@@ -590,10 +590,10 @@ public class Filter extends Motif
                         
             // Find under
             for(under = pos; !scale[(under % 12 + 12) % 12]; under--) 
-            	{ 
-            	if (under + 12 == pos) return note; // this happens if we have NO notes selected, oops
-            	} 
-            	
+                { 
+                if (under + 12 == pos) return note; // this happens if we have NO notes selected, oops
+                } 
+                
             if (round == ROUND_DOWN) 
                 {
                 int val = note - pos + under;
@@ -602,9 +602,9 @@ public class Filter extends Motif
                         
             // Find over
             for(over = pos; !scale[over % 12]; over++)
-            	{ 
-            	if (over - 12 == pos) return note; // this happens if we have NO notes selected, oops
-            	} 
+                { 
+                if (over - 12 == pos) return note; // this happens if we have NO notes selected, oops
+                } 
 
             if (round == ROUND_UP) 
                 {
@@ -613,24 +613,24 @@ public class Filter extends Motif
                 }
 
             // (round == ROUND_NEAREST_DOWN || round == ROUND_NEAREST_UP)
-                int val = 0;
-                if (pos - under > over - pos)
-                    {
-                    val = note - pos + over;
-                    }
-                else if (pos - under < over - pos)
-                    {
-                    val = note - pos + under;
-                    }
-                else if (round == ROUND_NEAREST_DOWN)
-                    {
-                    val = note - pos + under;
-                    }
-                else            // round == ROUND_NEAREST_UP
-                    {
-                    val = note - pos + over;
-                    }
-                return (val < 0 ? 0 : val > 127 ? 127 : val);
+            int val = 0;
+            if (pos - under > over - pos)
+                {
+                val = note - pos + over;
+                }
+            else if (pos - under < over - pos)
+                {
+                val = note - pos + under;
+                }
+            else if (round == ROUND_NEAREST_DOWN)
+                {
+                val = note - pos + under;
+                }
+            else            // round == ROUND_NEAREST_UP
+                {
+                val = note - pos + over;
+                }
+            return (val < 0 ? 0 : val > 127 ? 127 : val);
                         
 //            return note;            // uh, bug
             }

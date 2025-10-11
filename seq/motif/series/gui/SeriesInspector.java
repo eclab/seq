@@ -362,19 +362,19 @@ public class SeriesInspector extends WidgetList
                     }
                 }
 
-			rate = new TimeDisplay(series.getMIDIParameterRate(), seq)
-				{
-				public int getTime()
-					{
-					return series.getMIDIParameterRate();
-					}
-					
-				public void setTime(int time)
-					{
-					series.setMIDIParameterRate(time);
-					}
-				};
-			rate.setDisplaysTime(false);
+            rate = new TimeDisplay(series.getMIDIParameterRate(), seq)
+                {
+                public int getTime()
+                    {
+                    return series.getMIDIParameterRate();
+                    }
+                                        
+                public void setTime(int time)
+                    {
+                    series.setMIDIParameterRate(time);
+                    }
+                };
+            rate.setDisplaysTime(false);
             }
         finally { lock.unlock(); }
 

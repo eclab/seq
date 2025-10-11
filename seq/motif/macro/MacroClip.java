@@ -60,13 +60,13 @@ public class MacroClip extends Clip
         }
         
     void resetRoot()
-    	{
-    	Macro macro = (Macro)getMotif();
+        {
+        Macro macro = (Macro)getMotif();
         double min = macro.getRandomMin();
         double max = macro.getRandomMax();
-    	root.loadRootRandomValue(min, max);
-    	root.reset();
-    	}
+        root.loadRootRandomValue(min, max);
+        root.reset();
+        }
 
     public double getRandomValue()
         {
@@ -163,8 +163,8 @@ public class MacroClip extends Clip
                 }
             }
 
-		// The parameter values can either be bound values (0.0 ... 1.0) 
-		// or they can be a single negative value, namely the parent's parameter.
+        // The parameter values can either be bound values (0.0 ... 1.0) 
+        // or they can be a single negative value, namely the parent's parameter.
         loadParameterValues(root, ((Macro)getMotif()).getRootParameterValues(), true);
         return root.advance();
         }
