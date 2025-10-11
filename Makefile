@@ -1,4 +1,4 @@
-JAVACFLAGS = -cp "./libraries/*"
+JAVACFLAGS = -cp "./libraries/*" -g:lines,vars
 JAVAC = javac ${JAVACFLAGS}
 FLAGS = -g -Xlint:deprecation
 

@@ -24,9 +24,12 @@ public class FilterClip extends Clip
         // These are all identity functions.  They either forward to the next filter function
         // or they go to parent() or they pass to seq.  We can't just call super() and let it handle
         // seq because we're in an inner class, so we have to explicitly inline it here.  :-( 
-                
-        public void noteOn(int out, int note, double vel, int id, int index)    
-            {
+        
+        // this function exists so both versions of noteOn(...) can call it, rather than each other, 
+        // ans do so we can override either one of them, or both of them, in subclasses.  The big
+        // problematic class which necessitated this was Chord.
+        void _noteOn(int out, int note, double vel, int id, int index)
+        	{
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1) 
                 {
@@ -34,11 +37,15 @@ public class FilterClip extends Clip
                 else getParent().noteOn(out, note, vel, id);
                 }
             else nodes.get(index + 1).noteOn(out, note, vel, id, index + 1);
+        	}
+        public void noteOn(int out, int note, double vel, int id, int index)    
+            {
+            _noteOn(out, note, vel, id, index);
             }
         public int noteOn(int out, int note, double vel, int index)     
             {
             int id = noteID++;
-            noteOn(out, note, vel, id, index);
+            _noteOn(out, note, vel, id, index);
             return id;
             }
         public void noteOff(int out, int note, double vel, int id, int index)
@@ -1181,7 +1188,7 @@ public class FilterClip extends Clip
             {
             int[] chord = (int[])(chords.remove(id));
             Integer note = map.remove(id);
-            Integer out = map.remove(id);
+            Integer out = outs.remove(id);
             if (chord == null) return;
                 
             for(int i = 0; i < chord.length; i++)
@@ -1200,7 +1207,7 @@ public class FilterClip extends Clip
             {
             int[] chord = (int[])(chords.remove(id));
             Integer note = map.remove(id);
-            Integer out = map.remove(id);
+            Integer out = outs.remove(id);
             if (chord == null) return;
                 
             for(int i = 0; i < chord.length; i++)

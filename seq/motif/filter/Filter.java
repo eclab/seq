@@ -474,7 +474,7 @@ public class Filter extends Motif
         double variable;
         int map;
         double min;
-        double max;
+        double max = 1.0;
                 
         public double getMin() { return min; }
         public void setMin(double val) { min = val; }
@@ -577,52 +577,62 @@ public class Filter extends Motif
         public void setRound(int val) { round = val; }
         public int getRoundedNote(int note)
             {
-            int under = -1;
-            int over = -1;
-            int pos = (note % 12) - key;
-            if (pos < 0) pos += 12;
+            int under;
+            int over;
+            
+            // Transpose note to position where key = C
+            
+            int pos = (((note % 12) - getKey()) + 12) % 12;
+            
+            // Easiest situation: we're a legal note in the scale
             if (scale[pos]) // we're done
                 return note;
                         
-            // Find under.  We go down until we find a 1
-            for(under = pos; !scale[(under + 12) % 12]; under--);
+            // Find under
+            for(under = pos; !scale[(under % 12 + 12) % 12]; under--) 
+            	{ 
+            	if (under + 12 == pos) return note; // this happens if we have NO notes selected, oops
+            	} 
+            	
             if (round == ROUND_DOWN) 
                 {
-                int val = note + pos - under;
+                int val = note - pos + under;
                 return (val < 0 ? 0 : val > 127 ? 127 : val);
                 }
                         
             // Find over
-            for(over = pos; !scale[over % 12]; over++);
+            for(over = pos; !scale[over % 12]; over++)
+            	{ 
+            	if (over - 12 == pos) return note; // this happens if we have NO notes selected, oops
+            	} 
+
             if (round == ROUND_UP) 
                 {
-                int val = note + over - pos;
+                int val = note - pos + over;
                 return (val < 0 ? 0 : val > 127 ? 127 : val);
                 }
 
-            else if (round == ROUND_NEAREST_DOWN || round == ROUND_NEAREST_UP)
-                {
+            // (round == ROUND_NEAREST_DOWN || round == ROUND_NEAREST_UP)
                 int val = 0;
                 if (pos - under > over - pos)
                     {
-                    val = note + over - pos;
+                    val = note - pos + over;
                     }
                 else if (pos - under < over - pos)
                     {
-                    val = note + pos - under;
+                    val = note - pos + under;
                     }
                 else if (round == ROUND_NEAREST_DOWN)
                     {
-                    val = note + pos - under;
+                    val = note - pos + under;
                     }
                 else            // round == ROUND_NEAREST_UP
                     {
-                    val = note + over - pos;
+                    val = note - pos + over;
                     }
                 return (val < 0 ? 0 : val > 127 ? 127 : val);
-                }
                         
-            return note;            // uh, bug
+//            return note;            // uh, bug
             }
         
 
