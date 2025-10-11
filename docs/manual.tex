@@ -1453,10 +1453,6 @@ The Child slots of a Macro are populated in the usual way: by dragging from the 
 \clearpage\section{Parameterization}
 \label{parameters}
 
-\paragraph{\color{red} Warning}  Parameterization is a work in progress.  It works, but there are a lot of wires sticking out, and its usefulness at present is limited.
-
-\vspace{1em}
-
 Many of the dials on Seq's motifs are {\bf Parameterizable}.  This means that instead of setting a dial to a value, you can arrange for it to be changed elsewhere in Seq by something else (another dial, a MIDI message, an automatic mechanism).  This makes possible many things.  For example, you could:
 
 \begin{itemize}
@@ -1468,20 +1464,25 @@ Many of the dials on Seq's motifs are {\bf Parameterizable}.  This means that in
 \item Send a {\bf trigger} to a motif, such as a telling a Series to stop repeating one of its children.
 \end{itemize}
 
-To do this, each Motif has eight {\bf Parameters}.   These parameters can be changed by the Motif's parent.  Normally changing a parameter does nothing.  But many of the dials you see in a Motif can be {\bf bound} to one of those parameters, meaning that if that parameter is changed, the dial will also be changed.  Dials can also be bound to the {\bf random parameter}, which gets set to a random value each time the Motif starts playing the first time or when it loops back and plays again.  The Motif's parent can't set this random parameter, but they can set the minimum and maximum bounds from which the random parameter is chosen.
 
-A child motif's parent can set its child's parameters (and the min/max random bounds) to fixed values, or it can set them to one of the {\it parent motif's parameters}.  In fact this is the default: parameter 5 in a child is set by default to its parent's parameter 5, and so on all the way up to the root motif.  This chain of parameters allows you to change a parameter high up in your sequence and have it affect a wide variety of motifs down deep.
+\paragraph{Parameters} Each Motif has eight {\bf Parameters}.   Just before the Motif's parent steps the Motif to advance it a little bit, the parent has the opportunity to change the values of any of those Parameters.  The parent can change them to any value from 0.0 to 1.0, or it can set them to any of the current values of the parent's {\it own Parameters}.  (In fact, by default the value of Parameter \(X\) in a Motif is set to the value of Parameter \(X\) in its parent).
+
+Normally changing a motif's parameter does nothing.  But many of the dials you see in a Motif can be {\bf bound} to one of those parameters, meaning that if that parameter is changed, the dial will also be changed.  This allows parents, or ancestors, to change one or more dials in their children or descendants.  Multiple dials can be bound to the same parameter, meaning that by changing a single parameter, a parent can simultaneously affect a number of Dials, even spread across multiple child Motifs.
+
+\paragraph{Arguments}
+
+From the child motif's perspective, a parameter\,---\,the thing it may have connected its dials to\,---\,is unsurprisingly called a {\bf parameter}.  But from the parent's perspective, changing or setting one of its child's parameters is called changing an {\bf argument} in the child.  This terminology is borrowed from computer science, because to a computer programmer, motifs may be thought of as functions (or methods or procedures), and functions have arguments (set by the caller of the function) and parameters (read inside the function).
+
 
 \begin{wrapfigure}{r}{1.25in}
-\vspace{-1em}
+\vspace{-4em}
 \includegraphics[width=1.2in]{params}
-\vspace{-2em}
+\vspace{-1em}
 \caption{A Parameter Menu}
 \label{params}
 \vspace{-3em}
 \end{wrapfigure}
 
-From the child motif's perspective, a parameter\,---\,the thing it may have connected its dials to\,---\,is unsurprisingly called a {\bf parameter}.  But from the parent's perspective, changing or setting one of its child's parameters is called changing an {\bf argument} in the child.  This terminology is borrowed from computer science, because to a computer programmer, motifs may be thought of as functions (or methods or procedures), and functions have arguments (set by the caller of the function) and parameters (read inside the function).
 
 \paragraph{Binding a Dial to a Parameter} You can tell that a dial can be bound to a parameter because it has a little red or blue {\bf dot} in the middle of it.  You bind the dial by double-clicking on it.  This brings up a pop-up menu as shown in Figure~\ref{params} at right.  Here you can bind the dial to any of its motif's parameters, here shown as {\bf Param~1 ... Param~8}, or to the motif's random parameter ({\bf rand}).
 
@@ -1502,6 +1503,12 @@ By default the arguments are called {\bf Arg 1 ... Arg 8}.  But if you provide n
 
 Note that these dials are themselves parameterizable: this means you can bind the child's parameters to the parent's parameters (and so on up the chain).  In fact by default the arguments are bound to the parent's parameters already.  For example, {\bf Arg 1} is set to the parent's {\bf Param 1} and so on.
 
+Not all parents can change their child parameters even though they have children.  Notably the Arpeggio, Modulation, and Filter motifs cannot change the parameters of their sole child.  Instead the child's parameters are simply set to their own parameters.  
+
+\paragraph{The Random Parameter} In addition to the eight parameters, the Motif also has an additional {\bf Random Parameter}.  This parameter is set to a random value once each time a Motif is started or looped.  This value is not changed while the Motif is stepped.  Dials can also be bound to this value.  Additionally, a child's arguments can be bound to the parent's own random value.
+
+A parent cannot change the value of its child's random parameter: it is set to a random value.  But the parent can change the {\bf minimum and maximum bounds} from which the random value is selected.  These bounds, like any other parameter, can be set to fixed values or bound to the parent's own parameters or to its random parameter.
+
 \paragraph{A Warning about Child Arguments}
 
 Consider the Series motif. Each of its children can have (for example) Initial Repeats.  These can be bound to parameters.  But note that these features are {\it not features of the Child}: they are features of the {\it parent Series}, and thus they are bound to the Series's parameters, not to the Child parameters.  This can be a little confusing.  In short, if a feature appears anywhere in {\it any Inspector} associated with a Motif (the Motif Inspector, one of its Child inspectors, etc.), that feature {\it belongs to the Motif} when it comes to parameterization.  It doesn't belong to the Child.
@@ -1509,22 +1516,23 @@ Consider the Series motif. Each of its children can have (for example) Initial R
 \paragraph{Triggers} The Series and Automaton motifs have special options to repeat children forever until receiving a {\bf trigger} on Parameter 8.  What is a trigger?  A trigger on Parameter 8 is, well, triggered, when Parameter 8 changes from a value \(< 0.5\) to a value \(\geq 0.5\). 
 
 
-A parameter is just a real-valued number between 0.0 and 1.0.  But of course many Seq dials don't go 0.0 to 1.0: they go 0...127 or 0...4 or whatnot.  These ranges are mapped  as appropriate.  This can make setting the parameter a pain, but you can tell what the appropriate mapping for a parameterizable dial is but double-clicking on it: at the bottom of the pop-up menu is a grayed-out value. That's the real-valued parameter value that would correspond to the current feature value.    
-
-
 \begin{wrapfigure}{r}{1.25in}
 \vspace{-1em}
 \includegraphics[width=1.25in]{rootarguments}
 %\vspace{-2em}
 \caption{Root Arguments with default settings.}
+\vspace{-4em}
 \label{rootarguments}
 \end{wrapfigure}
+
+A parameter is just a real-valued number between 0.0 and 1.0.  But of course many Seq dials don't go 0.0 to 1.0: they go 0...127 or 0...4 or whatnot.  These ranges are mapped  as appropriate.  This can make setting the parameter a pain, but you can tell what the appropriate mapping for a parameterizable dial is but double-clicking on it: at the bottom of the pop-up menu is a grayed-out value. That's the real-valued parameter value that would correspond to the current feature value.    
+
 
 \paragraph{The Root Arguments}  If the Root Motif has bound some dials to its parameters, where are those arguments set?  They're set in the Root Arguments, located below the Transport (the play and record buttons, etc.)  See Figure~\ref{rootarguments} at right.  This is also where you can change the {\bf Random Seed} of your sequence.  If you change the random seed, the random number generator will produce a different sequence of numbers next time.
 
 For each root argument, you can also set a {\bf Control Change} or {\bf CC} parameter to allow an external controller to change the argument in real-time as you see fit.  To do this, you'll need to specify the {\bf CC In} device from which these CC messages will come.  When you start playing a sequence, the root arguments will be set to the fixed values you specified: but if you afterwards send CC messages, they will be changed.  If you don't want to use this feature, set  {\bf CC In} to {\it None}: it's a bit more efficient.
 
-You'll note a dot in the center of each of the root arguments, and you thus by double-clicking on it you can change each argument to say {\it Macro}.  This only has an effect once the root is saved out as a macro: otherwise, setting the argument to {\it Macro} is the same as setting it to 0.
+\paragraph{Macro Root Arguments} You'll note a dot in the center of each of the root arguments, and you thus by double-clicking on it you can change each argument to say {\it Macro}.  This only has an effect once the root is saved out as a macro: otherwise, setting the argument to {\it Macro} is the same as setting it to 0.
 
 When you save out a macro, the parameters of the macro's root can be set to fixed values (the root arguments) or they can be set to {\it Macro}.  This means that the root's parameter will be set to whatever the Macro's parameter values are set to when you use the Macro from its parents in the outer sequence.  For example, if Root Parameter 3 is set to {\it Macro}, then when used in a Macro, Root Parameter 3 will be bound to the Macro's own Parameter 3.  Thus you can either fix the parameters to values or you can allow them to be customized by the Macro's parents.
 
@@ -1551,11 +1559,11 @@ Note that looping back will change the random value to a new number.
 
 \begin{itemize}
 \item {\bf Notes} and {\bf Step Sequence} have dials that can be set to parameters, and you can name the parameters.
-\item {\bf Series, Parallel, Select, Filter,} and {\bf Automaton} have dials that can be set to parameters, and you can name the parameters.  Furthermore these motifs have children, and you can change each child's arguments.
-\item {\bf Filter} and {\bf Automaton} have dials that can be set to parameters, and you can name the parameters.  Furthermore these motifs have children, and you can change each child's arguments.
-\item The parameters of {\bf Silence} and {\bf MacroChild} don't do anything, because these motifs have no parameterizable dials.    You can't name the parameters for the same reason.
+\item {\bf Series, Parallel, Select, Filter, Modulation} and {\bf Automaton} have dials that can be set to parameters, and you can name the parameters.  Furthermore these motifs have children, and you can change each child's arguments.
+\item The parameters of {\bf Silence} don't do anything, because these motifs have no parameterizable dials.    You can't name the parameters for the same reason.
+\item The parameters of {\bf Macro Child} are simply passed down to the Motif assigned to the Macro Child when you are using its Macro.  You can't name the parameters.
 \item {\bf Arpeggio} has no parameterizable dials.   Is parameters are simply set to pass data down to the parameters of its sole child.  You can't name them: their names will be the names of the parameters of its sole child.
-\item {\bf Macro} has no parameterizable dials.   Is parameters are simply set to pass data down to the parameters of the root motif of its internal sequence.  You can't name them: their names will be the names of the parameters of its root motif.
+\item {\bf Macro} has no parameterizable dials.  When you change the arguments of a Macro, these values are passed down to the root Motif of its internal sequence.  Alternatively you can set Macro to always send the same fixed values to its root Motif, ignoring the arguments it receives.  This choice is made per-argument when you save the Macro out.  See {\bf Root Macro Parameters} above.
 \end{itemize}
 
 \subsection{Parameterized Control of MIDI Data}
@@ -1583,7 +1591,7 @@ The following MIDI output types are available for each Parameter.
 \section{Select's Overriding of Parameters}
 \label{selectparameters}
 
-Select has an option where it can override its parameters, setting them to values chosen by Select and not by its parent.  Why would you want to do this?  Because the parameters of various children of Select can be bound to those parameters.  This allows you to change the parameters of children in real-time via a Big Dial or via CC from a remote controller.
+Select has a performance option where it can override its own parameters, setting them to values chosen by Select and not by its parent.  Why would you want to do this?  Because the parameters of various children of Select can be bound to those parameters.  This allows you to change the parameters of children in real-time via a Big Dial, a Joystick, or a MIDI CC message from a remote controller.
 
 \paragraph{Overriding a Parameter}
 
@@ -1596,6 +1604,11 @@ Now, when the Select is playing, you can change the value of this parameter of D
 You can set up multiple children this way to respond to Dial 3.
 
 In fact, by default all children's parameters are just set to Select's parameters.  This means that if you turn on and change Dial 3, it will affect parameter 3 of every child.  So in most cases if you want to set a parameter, you're probably already set unless you want to change which parameter it is bound to.  In fact in most cases you might only want to {\it disconnect} a parameter from some child.
+
+\paragraph{Using the Joystick}
+Select provides an on-screen Joystick to control two different parameters just like the Big Knobs do.  To set up the Joystick, in the {\bf Dial Parameters} section of the Inspector, specify which two parameters should be assigned to the X and Y axes of the Joystick.
+
+Opening the {\bf Joystick} section of the Inspector reveals the Joystick.  Move the Joystick around and the corresponding Parameter will be changed.  This will happen even if the Big Dial for that Parameter is not being displayed.
 
 \paragraph{Attaching a Controller}
 Instead of turning these Dials on the screen, you can turn them with a knob on your controller.  
