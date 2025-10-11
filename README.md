@@ -1,7 +1,7 @@
 ![Seq Splash Banner](docs/web/seq.png)
 
 # Seq  
-A Modular, Hierarchical Music Sequencer (Version 7)
+A Modular, Hierarchical Music Sequencer (Version 8)
 
 By Sean Luke (sean@cs.gmu.edu)  
 With Help from Filippo Carnovalini (filippo.carnovalini@vub.be)  
@@ -24,8 +24,6 @@ Donations are welcome via Paypal to Sean's address (sean@cs.gmu.edu).
 Seq is a very unusual MIDI sequencer.  In Seq, you write chunks of music, then remix, combine, and modify them in various ways, then remix the remixes, and so on, until you reach a final song. Seq has many ways to combine stuff, everything from simple ordered series to complex networks (automata).
 
 Seq is written in pure Java.  It runs on MacOS, Linux, and Windows.
-
-This is an early release of Seq, and it's got lots of wires sticking out here and there, is missing important items, and has bugs. But it works!  **Send us feedback!**
 
 ## Publications on Seq 
 
