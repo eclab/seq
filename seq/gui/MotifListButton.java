@@ -115,6 +115,16 @@ public class MotifListButton extends MotifButton
                 {
                 dragCount = 0;
                 sequi.setMotifUI(motifui);
+                ReentrantLock lock = sequi.getSeq().getLock();
+                lock.lock();
+                try
+                    {
+                    if (sequi.getSeq().isStopped())
+                        {
+                        sequi.getMotifList().setRoot(motifui);
+                        }
+                    }
+                finally { lock.unlock(); }
                 }
             });
             
