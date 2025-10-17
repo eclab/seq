@@ -38,7 +38,7 @@ public abstract class MotifUI extends JPanel
     protected JScrollPane inspectorScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     protected JScrollPane primaryScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-    private ArrayList<MotifButton> getButtons() { return buttons; }
+    public ArrayList<MotifButton> getButtons() { return buttons; }
     
     public Seq getSeq() { return seq; }
     public SeqUI getSeqUI() { return sequi; }
