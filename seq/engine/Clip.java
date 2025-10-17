@@ -755,7 +755,7 @@ public abstract class Clip
         else parent.rpn(out, rpn, val); 
         }
         
-    /** Schedules a note off, with the given note pitch value and velocity, to be sent to the given Out at a time in the future RELATIVE to the current position.  
+    /** Schedules a note off, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.  
         Note that velocity is expressed as a double.
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
@@ -766,7 +766,7 @@ public abstract class Clip
         else parent.scheduleNoteOff(out, note, vel, time, id); 
         }
         
-    /** Schedules a note off, with the given note pitch value and with velocity 64, to be sent to the given Out at a time in the future RELATIVE to the current position. 
+    /** Schedules a note off, with the given note pitch value and with velocity 64, to be sent to the given Out at TIME ticks in the future. 
         Don't override this one. */
     public void scheduleNoteOff(int out, int note, int time, int id) 
         {
