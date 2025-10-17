@@ -399,7 +399,7 @@ public class ArpeggioClip extends Clip
                 Note note = (Note)(noteOff.extractMin());
                 if (!removeNote(note.id))                                                       // it wasn't there, I should pass it on
                     {
-                    sendScheduleNoteOff(note.out, note.pitch, RELEASE_VELOCITY, i, note.id);
+                    sendNoteOff(note.out, note.pitch, RELEASE_VELOCITY, note.id);
                     }
                 }
             else break;
