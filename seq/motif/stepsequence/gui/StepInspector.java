@@ -26,6 +26,8 @@ public class StepInspector extends WidgetList
         
     SmallDial stepNote;
     SmallDial stepVelocity;
+    SmallDial stepNoteLSB;
+    SmallDial stepVelocityLSB;
     JComboBox stepFlam;
     JComboBox stepWhen;
 
@@ -78,23 +80,32 @@ public class StepInspector extends WidgetList
         this.trackNum = trackNum;
         this.stepNum = stepNum;
         buildDefaults(ss);
+        
+        int type = 0;
                 
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
-            stepNote = new SmallDial(-1, defaults)              // 0)
+            type = ss.getType();
+            final int _type = type;
+            
+            stepNote = new SmallDial(-1, defaults)
                 {
                 protected String map(double val) 
-                    { 
-//                    if (getDefault()) return "<html><i>Default</i></html>";
+                    {                     		
                     int n = (int)(val * 127); 
-                    return NOTES[n % 12] + ((n / 12) - 2); 
+
+                    if (_type == StepSequence.TYPE_NOTE ||
+                    	_type == StepSequence.TYPE_POLYPHONIC_AFTERTOUCH)
+                    		{
+                    		return NOTES[n % 12] + ((n / 12) - 2); 
+                    		}
+                    	else
+                    		{
+                    		return "" + n;
+                    		}
                     }
-                /*
-                  public int getDefault() { int val = ss.getNote(trackNum, stepNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
-                  public void setDefault(int val) { if (val == DEFAULT) ss.setNote(trackNum, stepNum, -1); }
-                */
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
@@ -128,6 +139,44 @@ public class StepInspector extends WidgetList
             setupFirstDefault(stepNote);
             stepNote.setToolTipText(NOTE_TOOLTIP);
 
+            stepNoteLSB = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.valueOf((int)(val * 127)); 
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return ss.getParamLSB(trackNum, stepNum) / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setParamLSB(trackNum, stepNum, (int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setParamLSB(trackNum, stepNum, -(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getParamLSB(trackNum, stepNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+            setupFirstDefault(stepNoteLSB);
+
             stepFlam = new JComboBox(FLAM_STRINGS);
             stepFlam.setSelectedIndex(ss.getFlam(trackNum, stepNum) + 1);
             stepFlam.addActionListener(new ActionListener()
@@ -159,17 +208,12 @@ public class StepInspector extends WidgetList
                 });
             stepWhen.setToolTipText(WHEN_TOOLTIP);
 
-            stepVelocity = new SmallDial(-1, defaults)          // 0)
+            stepVelocity = new SmallDial(-1, defaults)
                 {
                 protected String map(double val) 
                     { 
-                    //if (getDefault()) return "<html><i>Default</i></html>"; else 
                     return String.valueOf((int)(val * 127)); 
                     }
-                /*
-                  public int getDefault() { int val = ss.getVelocity(trackNum, stepNum); return (val == -1 ? DEFAULT : NO_DEFAULT); }
-                  public void setDefault(int val) { if (val == DEFAULT) ss.setVelocity(trackNum, stepNum, -1); }
-                */
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
@@ -205,14 +249,81 @@ public class StepInspector extends WidgetList
             setupFirstDefault(stepVelocity);
             stepVelocity.setToolTipText(VELOCITY_TOOLTIP);
 
+            stepVelocityLSB = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.valueOf((int)(val * 127)); 
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return ss.getValueLSB(trackNum, stepNum) / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setValueLSB(trackNum, stepNum, (int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setValueLSB(trackNum, stepNum, -(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getValueLSB(trackNum, stepNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+            setupFirstDefault(stepVelocityLSB);
             }
         finally { lock.unlock(); }
+        
+        
+        JPanel notePanel = new JPanel();
+        JPanel innerPanel = new JPanel();
+        innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
+        innerPanel.add(stepNote.getLabelledDial("Param 8"));
+        if (type == StepSequence.TYPE_NRPN ||
+        	type == StepSequence.TYPE_RPN)
+        		{
+        		innerPanel.add(new JLabel(" LSB "));
+        		innerPanel.add(stepNoteLSB.getLabelledDial("Param 8"));
+        		}
+        notePanel.setLayout(new BorderLayout());
+        notePanel.add(innerPanel, BorderLayout.WEST);
 
-        build(new String[] { "Note", "   Velocity", "Flams", "When"}, 
+        JPanel velocityPanel = new JPanel();
+     	innerPanel = new JPanel();
+        innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
+        innerPanel.add(stepVelocity.getLabelledDial("Param 8"));		// so it lines up with the notes
+        if (type == StepSequence.TYPE_NRPN ||
+        	type == StepSequence.TYPE_RPN ||
+        	type == StepSequence.TYPE_PITCH_BEND)
+        		{
+        		innerPanel.add(new JLabel(" LSB "));
+        		innerPanel.add(stepVelocityLSB.getLabelledDial("Param 8"));
+        		}
+        velocityPanel.setLayout(new BorderLayout());
+        velocityPanel.add(innerPanel, BorderLayout.WEST);
+
+        boolean note = (type == StepSequence.TYPE_NOTE);
+        
+        build(new String[] { (note ? "Note" : "Param"), (note ? "Velocity" : "Value"), "     Flams", "When"}, 
             new JComponent[] 
                 { 
-                stepNote.getLabelledDial("<html><i>Default</i></html>"), 
-                stepVelocity.getLabelledDial("<html><i>Default</i></html>"), 
+                notePanel,
+                velocityPanel,
                 stepFlam, 
                 stepWhen 
                 });
@@ -232,6 +343,8 @@ public class StepInspector extends WidgetList
         finally { lock.unlock(); seq = old; }                              
         stepNote.redraw();
         stepVelocity.redraw();
+        stepNoteLSB.redraw();
+        stepVelocityLSB.redraw();
         }
 
 

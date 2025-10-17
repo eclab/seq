@@ -66,7 +66,10 @@ public class StepSequenceClip extends Clip
         {
         if (trackNoteOn[track] != OFF) 
             {
-            noteOff(dSeq.getFinalOut(track), trackNoteOn[track], trackNoteID[track]);
+            if (dSeq.getType() == StepSequence.TYPE_NOTE)
+            	{
+	            noteOff(dSeq.getFinalOut(track), trackNoteOn[track], trackNoteID[track]);
+	            }
             trackNoteOn[track] = OFF;
             trackNoteID[track] = NO_NOTE_ID;
             }
@@ -111,7 +114,10 @@ public class StepSequenceClip extends Clip
                 releaseTime += stepLen;
                 }
             
-            scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], releaseTime, trackNoteID[track]);
+            if (dSeq.getType() == StepSequence.TYPE_NOTE)
+            	{
+            	scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], releaseTime, trackNoteID[track]);
+            	}
             trackNoteOn[track] = OFF;                                                                       // not sure if we should do this...
             trackNoteID[track] = NO_NOTE_ID;
             }
@@ -257,8 +263,17 @@ return;
             }
         }
     
+    boolean notes = false;
+    	
     public boolean process()
         {
+        // Did the user just change from notes to non-notes, so we have to release all the notes first?
+        if (notes && dSeq.getType() != StepSequence.TYPE_NOTE)
+        	{
+        	release();
+        	notes = false;
+        	}
+        	
         // Length of entire sequence in PPQ
         int len = dSeq.getLength();
         int numTracks = dSeq.velocities.length;
@@ -348,7 +363,11 @@ return;
             int velocity = getCorrectedValueInt(dSeq.getFinalVelocity(track, step), 127);
             velocity = (int)(velocity * getCorrectedValueDouble(dSeq.getTrackGain(track), 1.0));
 
-            if (dSeq.isOn(track, step) && velocity > 0 && (numExclusiveTracks == 0 || !dSeq.isTrackExclusive(track) || track == exclusiveTrack))
+			int type = dSeq.getType();
+			
+            if (dSeq.isOn(track, step) && 
+            	(velocity > 0 || type != StepSequence.TYPE_NOTE) && 
+            	(numExclusiveTracks == 0 || !dSeq.isTrackExclusive(track) || track == exclusiveTrack))
                 {
                 playingStep[track] = step;
                 // Next are we set to do flams?  Regardless of speed, flam speed will always be the same.
@@ -382,7 +401,44 @@ return;
                     if (flam == 0 || trackPlaying[track])
                         {
                         int note = getCorrectedValueInt(dSeq.getFinalNote(track, step), 127);
-                        int id = noteOn(dSeq.getFinalOut(track), note, velocity);
+                        int id = 0;
+                        switch(dSeq.getType())
+                        	{
+                        	case(StepSequence.TYPE_NOTE):        
+                        		if (velocity == 0) velocity = 1;                	
+                        		id = noteOn(dSeq.getFinalOut(track), note, velocity);
+                        		notes = true;
+                        	break;
+                        	case(StepSequence.TYPE_CC):
+                        		cc(dSeq.getFinalOut(track), note, velocity);
+                        	break;
+                        	case(StepSequence.TYPE_POLYPHONIC_AFTERTOUCH):
+                        		aftertouch(dSeq.getFinalOut(track), note, velocity);
+                        	break;
+                        	case(StepSequence.TYPE_CHANNEL_AFTERTOUCH):
+                        		aftertouch(dSeq.getFinalOut(track), Out.CHANNEL_AFTERTOUCH, velocity);
+                        	break;
+                        	case(StepSequence.TYPE_PITCH_BEND):
+                        		bend(dSeq.getFinalOut(track), velocity);
+                        	break;
+                        	case(StepSequence.TYPE_PC):
+                        		pc(dSeq.getFinalOut(track), velocity);
+                        	break;
+                        	case(StepSequence.TYPE_NRPN):
+                        		{
+                        		int paramLSB = getCorrectedValueInt(dSeq.getFinalParamLSB(track, step), 127);
+                        		int valueLSB = getCorrectedValueInt(dSeq.getFinalValueLSB(track, step), 127);
+                        		nrpn(dSeq.getFinalOut(track), note * 128 + paramLSB, velocity * 128 + valueLSB);
+                        		}
+                        	break;
+                        	default:	// case(StepSequence.TYPE_RPN):
+                        		{
+                        		int paramLSB = getCorrectedValueInt(dSeq.getFinalParamLSB(track, step), 127);
+                        		int valueLSB = getCorrectedValueInt(dSeq.getFinalValueLSB(track, step), 127);
+                        		rpn(dSeq.getFinalOut(track), note * 128 + paramLSB, velocity * 128 + valueLSB);
+                        		}
+                        	break;
+                        	}
                         trackNoteOn[track] = note;
                         trackNoteID[track] = id;
                         }

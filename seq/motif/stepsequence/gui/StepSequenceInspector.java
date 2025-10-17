@@ -15,6 +15,7 @@ import java.util.concurrent.locks.*;
 
 public class StepSequenceInspector extends WidgetList
     {
+    public static final String[] TYPES = { "Note", "CC", "Poly AT", "Channel AT", "Bend", "PC", "NRPN", "RPN" };
     Seq seq;
     StepSequence ss;
     StepSequenceUI ssui;
@@ -24,6 +25,7 @@ public class StepSequenceInspector extends WidgetList
     SmallDial defaultSwing;
     PushButton setDefaultSwing;
     SmallDial defaultVelocity;
+    SmallDial defaultVelocityLSB;
     PushButton setDefaultVelocity;
     SmallDial initialNumSteps;
     PushButton setNumSteps;
@@ -34,6 +36,11 @@ public class StepSequenceInspector extends WidgetList
     JComboBox controlOut;
     JComboBox controlDevice;
     WidgetList midiList;
+    JComboBox type;
+    WidgetList inspector;
+    JComponent defaultVelocityLSBDial;
+    JLabel defaultVelocityLSBLabel;
+    JPanel velocityLSBPanel;
 
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
 
@@ -89,7 +96,7 @@ public class StepSequenceInspector extends WidgetList
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
             name.setToolTipText(NAME_TOOLTIP);
                         
-            numBeats = new SmallDial((StepSequence.DEFAULT_NUM_STEPS - 1) / 127.0)
+            numBeats = new SmallDial((ss.getLengthInSteps() - 1) / 127.0)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127) + 1);  }
                 public double getValue() 
@@ -111,7 +118,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             numBeats.setToolTipText(DURATION_TOOLTIP);
 
-            initialNumSteps = new SmallDial((StepSequence.DEFAULT_LENGTH_IN_STEPS - 1) / 127.0)
+            initialNumSteps = new SmallDial((ss.getInitialNumSteps() - 1) / 127.0)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127) + 1); }
                 public double getValue() 
@@ -157,7 +164,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             setNumSteps.setToolTipText(SET_TRACK_LENGTH_TOOLTIP);
 
-            defaultSwing = new SmallDial(StepSequence.DEFAULT_SWING, defaults)
+            defaultSwing = new SmallDial(ss.getDefaultSwing(), defaults)
                 {
                 public double getValue() 
                     { 
@@ -209,7 +216,7 @@ public class StepSequenceInspector extends WidgetList
                 };
             setDefaultSwing.setToolTipText(SET_SWING_TOOLTIP);
 
-            defaultVelocity = new SmallDial(StepSequence.DEFAULT_VELOCITY / 127.0, defaults)
+            defaultVelocity = new SmallDial(ss.getDefaultVelocity() / 127.0, defaults)
                 {
                 protected String map(double val) { return String.valueOf((int)(val * 127)); }
                 public double getValue() 
@@ -245,6 +252,42 @@ public class StepSequenceInspector extends WidgetList
                     }
                 };
             defaultVelocity.setToolTipText(VELOCITY_TOOLTIP);
+
+            defaultVelocityLSB = new SmallDial(ss.getDefaultValueLSB() / 127.0, defaults)
+                {
+                protected String map(double val) { return String.valueOf((int)(val * 127)); }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return ss.getDefaultValueLSB() / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setDefaultValueLSB((int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    ssui.redraw(false);
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setDefaultValueLSB(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    ssui.redraw(false);
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getDefaultValueLSB(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
                         
             setDefaultVelocity = new PushButton("Set All")
                 {
@@ -375,6 +418,37 @@ public class StepSequenceInspector extends WidgetList
                     }
                 });
 //            device.setToolTipText(CONTROL_DEVICE_TOOLTIP);
+
+
+            type = new JComboBox(TYPES);
+            type.setSelectedIndex(ss.getType());
+            type.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    int _type = 0;
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setType(type.getSelectedIndex()); _type = ss.getType(); }
+                    finally { lock.unlock(); }   
+                    // Rebuild the Track and Step inspectors to force a the restructuring of note and velocity sliders
+                    ssui.setSelectedTrackNum(ssui.getSelectedTrackNum());
+                    ssui.setSelectedStepNum(ssui.getSelectedStepNum()); 
+                    getLabels()[4].setText(_type == StepSequence.TYPE_NOTE ? "Velocity " : "Value ");		// 4 is the Velocity/Value label
+                    velocityLSBPanel.remove(defaultVelocityLSBDial);
+                    velocityLSBPanel.remove(defaultVelocityLSBLabel);
+			        if (_type == StepSequence.TYPE_NRPN ||
+			        	_type == StepSequence.TYPE_RPN ||
+			        	_type == StepSequence.TYPE_PITCH_BEND)
+			        		{
+			        		velocityLSBPanel.add(defaultVelocityLSBLabel, BorderLayout.CENTER);
+			        		velocityLSBPanel.add(defaultVelocityLSBDial, BorderLayout.EAST);
+			        		}
+                    ssui.revalidate();	// force a resizing of the inspectors
+                    }
+                });
+
             }
         finally { lock.unlock(); }
 
@@ -396,16 +470,30 @@ public class StepSequenceInspector extends WidgetList
         swingPanel.add(setDefaultSwing, BorderLayout.EAST);
         swingPanel.setToolTipText(SWING_TOOLTIP);
 
+		int _type = ss.getType();
+        velocityLSBPanel = new JPanel();
+        velocityLSBPanel.setLayout(new BorderLayout());
+        velocityLSBPanel.add(defaultVelocity.getLabelledDial("Param 8"), BorderLayout.WEST);
+        defaultVelocityLSBDial = defaultVelocityLSB.getLabelledDial("Param8");
+        defaultVelocityLSBLabel = new JLabel(" LSB ");
+		if (_type == StepSequence.TYPE_NRPN ||
+			_type == StepSequence.TYPE_RPN ||
+			_type == StepSequence.TYPE_PITCH_BEND)
+				{
+				velocityLSBPanel.add(defaultVelocityLSBLabel, BorderLayout.CENTER); 
+		        velocityLSBPanel.add(defaultVelocityLSBDial, BorderLayout.EAST);
+				}
         JPanel velocityPanel = new JPanel();
         velocityPanel.setLayout(new BorderLayout());
-        velocityPanel.add(defaultVelocity.getLabelledDial("Param 8"), BorderLayout.WEST);
+        velocityPanel.add(velocityLSBPanel, BorderLayout.WEST);
         velocityPanel.add(setDefaultVelocity, BorderLayout.EAST);
         velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
 
-        build(new String[] { "Name", "Duration", "Swing", "   Velocity", "Track Len", /* "Tracks" */ }, 
+        build(new String[] { "Name", "Type", "Duration", "Swing", (_type == StepSequence.TYPE_NOTE ? "Velocity" : "Value"), "Track Len", /* "Tracks" */ }, 
             new JComponent[] 
                 {
                 name,
+                type,
                 numBeats.getLabelledDial("128"),
                 swingPanel, 
                 velocityPanel, 
@@ -433,6 +521,7 @@ public class StepSequenceInspector extends WidgetList
             controlIn.setSelectedIndex(ss.getControlIn()); 
             controlOut.setSelectedIndex(ss.getControlOut()); 
             controlDevice.setSelectedIndex(ss.getControlDevice()); 
+            type.setSelectedIndex(ss.getType());
             }
         finally { lock.unlock(); }                              
         seq = old;

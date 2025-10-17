@@ -27,6 +27,8 @@ public class TrackInspector extends WidgetList
     SmallDial trackNote;
     PushButton setTrackNote;
     SmallDial trackVelocity;
+    SmallDial trackNoteLSB;
+    SmallDial trackVelocityLSB;
     PushButton setTrackVelocity;
     JComboBox trackFlam;
     PushButton setTrackFlam;
@@ -91,11 +93,15 @@ public class TrackInspector extends WidgetList
         this.trackNum = trackNum;
         this.ssui = ssui;
         buildDefaults(ss);
-
+		int type = 0;
+		
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
+            type = ss.getType();
+            final int _type = type;
+            
             trackExclusive = new JCheckBox();
             trackExclusive.setSelected(ss.isTrackExclusive(trackNum));
             trackExclusive.addActionListener(new ActionListener()
@@ -112,13 +118,21 @@ public class TrackInspector extends WidgetList
                 });
             trackExclusive.setToolTipText(EXCLUSIVE_RANDOM_TOOLTIP);
 
-            trackNote = new SmallDial(-1)
+            trackNote = new SmallDial(-1, defaults)
                 {
                 protected String map(double val) 
                     { 
-                    //if (getDefault()) return "<html><i>Default</i></html>";
                     int n = (int)(val * 127); 
-                    return NOTES[n % 12] + ((n / 12) - 2); 
+                    
+                    if (_type == StepSequence.TYPE_NOTE ||
+                    	_type == StepSequence.TYPE_POLYPHONIC_AFTERTOUCH)
+                    		{
+                    		return NOTES[n % 12] + ((n / 12) - 2); 
+                    		}
+                    	else
+                    		{
+                    		return "" + n;
+                    		}
                     }
                 public double getValue() 
                     { 
@@ -152,6 +166,43 @@ public class TrackInspector extends WidgetList
                 };
             trackNote.setToolTipText(NOTE_TOOLTIP);
 
+            trackNoteLSB = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.valueOf((int)(val * 127)); 
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return ss.getTrackParamLSB(trackNum) / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setTrackParamLSB(trackNum, (int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setTrackParamLSB(trackNum, -(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getTrackParamLSB(trackNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
             setTrackNote = new PushButton("Set All")
                 {
                 public void perform()
@@ -162,7 +213,11 @@ public class TrackInspector extends WidgetList
                     try 
                         {
                         int len = ss.getNumSteps(trackNum);
-                        for(int i = 0; i < len; i++) { ss.setNote(trackNum, i, StepSequence.DEFAULT); }
+                        for(int i = 0; i < len; i++) 
+                        	{ 
+                        	ss.setNote(trackNum, i, StepSequence.DEFAULT); 
+                        	ss.setParamLSB(trackNum, i, StepSequence.DEFAULT); 
+                        	}
                         }
                     finally { lock.unlock(); }
                     ssui.getStepInspector().revise();
@@ -412,6 +467,44 @@ public class TrackInspector extends WidgetList
             setupFirstDefault(trackVelocity);
             trackVelocity.setToolTipText(VELOCITY_TOOLTIP);
                 
+            trackVelocityLSB = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.valueOf((int)(val * 127)); 
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return ss.getTrackValueLSB(trackNum) / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { ss.setTrackValueLSB(trackNum, (int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) ss.setTrackValueLSB(trackNum, -(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = ss.getTrackValueLSB(trackNum); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+            setupFirstDefault(trackVelocityLSB);
+
             setTrackVelocity = new PushButton("Set All")
                 {
                 public void perform()
@@ -422,7 +515,11 @@ public class TrackInspector extends WidgetList
                     try 
                         {
                         int len = ss.getNumSteps(trackNum);
-                        for(int i = 0; i < len; i++) { ss.setVelocity(trackNum, i, StepSequence.DEFAULT); }
+                        for(int i = 0; i < len; i++) 
+                        	{ 
+                        	ss.setVelocity(trackNum, i, StepSequence.DEFAULT); 
+                        	ss.setValueLSB(trackNum, i, StepSequence.DEFAULT); 
+                        	}
                         }
                     finally { lock.unlock(); }
                     ssui.getStepInspector().revise();
@@ -549,15 +646,34 @@ public class TrackInspector extends WidgetList
         lengthPanel.setToolTipText(LENGTH_TOOLTIP);
 
         JPanel notePanel = new JPanel();
+        JPanel innerPanel = new JPanel();
+        innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
+        innerPanel.add(trackNote.getLabelledDial("Param 8"));
+        if (type == StepSequence.TYPE_NRPN ||
+        	type == StepSequence.TYPE_RPN)
+        		{
+	    	    innerPanel.add(new JLabel(" LSB "));
+    	    	innerPanel.add(trackNoteLSB.getLabelledDial("Param 8"));
+    	    	}
         notePanel.setLayout(new BorderLayout());
-        notePanel.add(trackNote.getLabelledDial("C#-2"), BorderLayout.WEST);
+        notePanel.add(innerPanel, BorderLayout.WEST);
         notePanel.add(setTrackNote, BorderLayout.EAST);
         notePanel.setToolTipText(NOTE_TOOLTIP);
 
 
         JPanel velocityPanel = new JPanel();
+        innerPanel = new JPanel();
+        innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
+        innerPanel.add(trackVelocity.getLabelledDial("Param 8"));
+        if (type == StepSequence.TYPE_NRPN ||
+        	type == StepSequence.TYPE_RPN ||
+        	type == StepSequence.TYPE_PITCH_BEND)
+        		{
+		        innerPanel.add(new JLabel(" LSB "));
+        		innerPanel.add(trackVelocityLSB.getLabelledDial("Param 8"));
+        		}
         velocityPanel.setLayout(new BorderLayout());
-        velocityPanel.add(trackVelocity.getLabelledDial("Param 8"), BorderLayout.WEST);
+        velocityPanel.add(innerPanel, BorderLayout.WEST);
         velocityPanel.add(setTrackVelocity, BorderLayout.EAST);
         velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
 
@@ -582,7 +698,9 @@ public class TrackInspector extends WidgetList
         euclidPanel.add(euclidBox, BorderLayout.WEST);
         euclidPanel.add(doEuclid, BorderLayout.EAST);
         
-        build(new String[] { "Name", "Gain", "Note", "   Velocity", "Flams", "When", "Choke", "Swing", "Ex. Rand.", "Out", "Length", "Euclid" }, 
+        boolean note = (type == StepSequence.TYPE_NOTE);
+        
+        build(new String[] { "Name", "Gain", (note ? "Note" : "Param"), (note ? "Velocity" : "Value"), "Flams", "When", "Choke", "Swing", "Ex. Rand.", "Out", "Length", "Euclid" }, 
             new JComponent[] 
                 { 
                 trackName,
@@ -622,6 +740,8 @@ public class TrackInspector extends WidgetList
         trackNote.redraw();
         trackVelocity.redraw();
         numSteps.redraw();
+        trackNoteLSB.redraw();
+        trackVelocityLSB.redraw();
         }
 
     /*** Tooltips ***/
