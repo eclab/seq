@@ -384,7 +384,7 @@ public class NotesClip extends Clip
                         // because the musician could change the transpose before the note was turned off
                         // and then the note to turn off would be a different note and we'd be in a whole,
                         // um, HEAP of trouble
-                                   
+                        
                         if (id >= 0) scheduleNoteOff(out, note.pitch, release, note.length, id);
                         }
                     }
