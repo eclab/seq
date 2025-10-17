@@ -33,6 +33,15 @@ public class StepSequence extends Motif
     public static final int DEFAULT = 0 - (Motif.NUM_PARAMETERS + 2);           // low enough to avoid the corrected parameter stuff
     public static final int DEFAULT_FLAM = -1;
     public static final int DEFAULT_WHEN = -1;
+    
+    public static final int TYPE_NOTE = 0;
+    public static final int TYPE_CC = 1;
+    public static final int TYPE_POLYPHONIC_AFTERTOUCH = 2;
+    public static final int TYPE_CHANNEL_AFTERTOUCH = 3;
+    public static final int TYPE_PITCH_BEND = 4;
+    public static final int TYPE_PC = 5;
+    public static final int TYPE_NRPN = 6;
+    public static final int TYPE_RPN = 7;
 
     public static final boolean[][] WHEN = { 
         { true, false }, { false, true },
@@ -94,22 +103,29 @@ public class StepSequence extends Motif
     
     // Default scale when one isn't provided
     public static final int[] CHROMATIC_SCALE = { C, C_S, D, D_S, E, F, F_S, G, G_S, A, A_S, B };
-                
+    
+    int type = TYPE_NOTE;
+    
     double defaultSwing = 0;                // range 0.0 ... 1.0
-    int defaultVelocity = 127;              // range 1...127
+    int defaultVelocity = 127;              // range 0...127, but but note that velocity = 0 ought to be interpreted as velocity = 1
+    int defaultValueLSB = 0;
     int defaultOut = 0;                     // range 0...Seq.getNumOuts()-1
     int initialNumSteps = DEFAULT_NUM_STEPS;
     
     boolean[][] on;
     int[][] notes;    // range -1 (DEFAULT) or 0 ... 127 where 0 is NONE
+    int[][] paramLSBs;    // range -1 (DEFAULT) or 0 ... 127 where 0 is NONE
     int[][] velocities;    // range -1 (DEFAULT) or 0 ... 127 where 0 is NONE
+    int[][] valueLSBs;    // range -1 (DEFAULT) or 0 ... 127 where 0 is NONE
     int[][] flams;                 // range -1 (DEFAULT) or 0, 1, 2, ..., 10 representing no flams (one note), 2 notes, 3, 4, 6, 8, 12, 16, 24, and 48
     int[][] when;                       // -1 (DEFAULT) or EXCLUSIVE ... A234_4 inclusive
     double[] trackSwings;  // range -1 (DEFAULT) or 0.0 ... 1.0
     int[] trackVelocities; // range -1...127 where 0 is OFF and -1 is DEFAULT
+    int[] trackValueLSBs;
     int[] trackOuts;               // range -1 ... Seq.getNumOuts()-1 where -1 is DEFAULT
     int[] trackFlams;              // range 0, 1, 2, ..., 10 representing no flams (one note), 2 notes, 3, 4, 6, 8, 12, 16, 24, and 48
     int[] trackNotes;              // range 0...127 
+    int[] trackParamLSBs;              // range 0...127 
     int[] trackChokes;             // range 0...(trackChokes.length) where 0 is NONE and x is trackChokes[x-1]
     boolean[] trackExclusive;  
     int exclusivePattern;         
@@ -204,6 +220,22 @@ public class StepSequence extends Motif
         b = trackLearning[x];
         trackLearning[x] = trackLearning[y];
         trackLearning[y] = b;
+
+        a = paramLSBs[x];
+        paramLSBs[x] = paramLSBs[y];
+        paramLSBs[y] = a;
+
+        a = valueLSBs[x];
+        valueLSBs[x] = valueLSBs[y];
+        valueLSBs[y] = a;
+
+        i = trackParamLSBs[x];
+        trackParamLSBs[x] = trackParamLSBs[y];
+        trackParamLSBs[y] = i;
+
+        i = trackValueLSBs[x];
+        trackValueLSBs[x] = trackValueLSBs[y];
+        trackValueLSBs[y] = i;
         }
         
     public void addTrack(int after)         // after can be -1
@@ -277,6 +309,10 @@ public class StepSequence extends Motif
         trackSoloed[to] = trackSoloed[from];
         when[to] = when[from];
         trackExclusive[to] = trackExclusive[from];
+        paramLSBs[to] = copy(paramLSBs[from]);
+        valueLSBs[to] = copy(paramLSBs[from]);
+        trackParamLSBs[to] = trackParamLSBs[from];
+        trackValueLSBs[to] = trackValueLSBs[from];
         }
 
     public Motif copy()
@@ -301,6 +337,10 @@ public class StepSequence extends Motif
         other.trackSoloed = copy(trackSoloed);
         other.when = copy(when);
         other.trackExclusive = copy(trackExclusive);
+        other.paramLSBs = copy(paramLSBs);
+        other.valueLSBs = copy(valueLSBs);
+        other.trackParamLSBs = copy(trackParamLSBs);
+        other.trackValueLSBs = copy(trackValueLSBs);
         return other;
         }
     
@@ -319,6 +359,8 @@ public class StepSequence extends Motif
         notes = new int[numTracks][];
         flams = new int[numTracks][];
         when = new int[numTracks][];
+        paramLSBs = new int[numTracks][];
+        valueLSBs = new int[numTracks][];
         for(int i = 0; i < velocities.length; i++)
             {
             on[i] = new boolean[lengths[i]];
@@ -330,6 +372,10 @@ public class StepSequence extends Motif
             Arrays.fill(notes[i], DEFAULT);
             when[i] = new int[lengths[i]];
             Arrays.fill(when[i], COMBO_DEFAULT);
+            paramLSBs[i] = new int[lengths[i]];
+            Arrays.fill(paramLSBs[i], DEFAULT);
+            valueLSBs[i] = new int[lengths[i]];
+            Arrays.fill(valueLSBs[i], DEFAULT);
             }
                         
         trackSwings = new double[numTracks];
@@ -356,6 +402,10 @@ public class StepSequence extends Motif
         trackWhen = new int[numTracks];
         Arrays.fill(trackWhen, ALWAYS);
         trackExclusive = new boolean[numTracks];
+        trackParamLSBs = new int[numTracks];
+        trackValueLSBs = new int[numTracks];
+        Arrays.fill(trackValueLSBs, DEFAULT);
+        type = TYPE_NOTE;
         }
         
     public StepSequence(Seq seq)
@@ -409,6 +459,8 @@ public class StepSequence extends Motif
         int[][] _notes = new int[numTracks][];
         int[][] _flams = new int[numTracks][];
         int[][] _when = new int[numTracks][];
+        int[][] _paramLSBs = new int[numTracks][];
+        int[][] _valueLSBs = new int[numTracks][];
         for(int i = 0; i < Math.min(oldNumTracks,numTracks); i++) //Copy the tracks (length) that did exist
             {
             _on[i] = new boolean[velocities[i].length];
@@ -420,6 +472,10 @@ public class StepSequence extends Motif
             Arrays.fill(_notes[i], DEFAULT);
             _when[i] = new int[when[i].length];
             Arrays.fill(_when[i], COMBO_DEFAULT);
+            _paramLSBs[i] = new int[when[i].length];
+            Arrays.fill(_paramLSBs[i], DEFAULT);
+            _valueLSBs[i] = new int[when[i].length];
+            Arrays.fill(_valueLSBs[i], DEFAULT);
             }
         for(int i = oldNumTracks; i < numTracks; i++)           //if increasing tracks, create empty ones
             {
@@ -432,6 +488,10 @@ public class StepSequence extends Motif
             Arrays.fill(_notes[i], DEFAULT);
             _when[i] = new int[initialNumSteps];
             Arrays.fill(_when[i], COMBO_DEFAULT);
+            _paramLSBs[i] = new int[initialNumSteps];
+            Arrays.fill(_paramLSBs[i], DEFAULT);
+            _valueLSBs[i] = new int[initialNumSteps];
+            Arrays.fill(_valueLSBs[i], DEFAULT);
             }
                         
         double[] _trackSwings = new double[numTracks];
@@ -454,6 +514,10 @@ public class StepSequence extends Motif
         int[] _trackWhen = new int[numTracks];
         Arrays.fill(_trackWhen, ALWAYS);
         boolean[] _trackExclusive = new boolean[numTracks];
+        int[] _trackParamLSBs = new int[numTracks];
+        Arrays.fill(_trackParamLSBs, DEFAULT);
+        int[] _trackValueLSBs = new int[numTracks];
+        Arrays.fill(_trackValueLSBs, DEFAULT);
         
         // overwrite defaults with new values
         copyTo(on, _on);
@@ -461,6 +525,8 @@ public class StepSequence extends Motif
         copyTo(notes, _notes);
         copyTo(flams, _flams);
         copyTo(when, _when);
+        copyTo(paramLSBs, _paramLSBs);
+        copyTo(valueLSBs, _valueLSBs);
         copyTo(trackSwings, _trackSwings);
         copyTo(trackVelocities, _trackVelocities);
         copyTo(trackFlams, _trackFlams);
@@ -474,6 +540,8 @@ public class StepSequence extends Motif
         copyTo(trackNames, _trackNames);
         copyTo(trackWhen, _trackWhen);
         copyTo(trackExclusive, _trackExclusive);
+        copyTo(trackParamLSBs, _trackParamLSBs);
+        copyTo(trackValueLSBs, _trackValueLSBs);
         
         // set
         on = _on;
@@ -481,6 +549,8 @@ public class StepSequence extends Motif
         notes = _notes;
         flams = _flams;
         when = _when;
+        paramLSBs = _paramLSBs;
+        valueLSBs = _valueLSBs;
         trackSwings = _trackSwings;
         trackVelocities = _trackVelocities;
         trackFlams = _trackFlams;
@@ -494,6 +564,8 @@ public class StepSequence extends Motif
         trackNames = _trackNames;
         trackWhen = _trackWhen;
         trackExclusive = _trackExclusive;
+        trackParamLSBs = _trackParamLSBs;
+        trackValueLSBs = _trackValueLSBs;
         }
 
     public int getInitialNumSteps() { return initialNumSteps; }
@@ -521,6 +593,14 @@ public class StepSequence extends Motif
         Arrays.fill(newNotes, DEFAULT);
         System.arraycopy(notes[track], 0, newNotes, 0, Math.min(notes[track].length, newNotes.length));
         notes[track] = newNotes;
+        int[] newParamLSBs = new int[len];
+        Arrays.fill(newParamLSBs, DEFAULT);
+        System.arraycopy(paramLSBs[track], 0, newParamLSBs, 0, Math.min(paramLSBs[track].length, newParamLSBs.length));
+        paramLSBs[track] = newParamLSBs;
+        int[] newValueLSBs = new int[len];
+        Arrays.fill(newValueLSBs, DEFAULT);
+        System.arraycopy(valueLSBs[track], 0, newValueLSBs, 0, Math.min(valueLSBs[track].length, newValueLSBs.length));
+        valueLSBs[track] = newValueLSBs;
 
         incrementVersion();
         }
@@ -537,11 +617,15 @@ public class StepSequence extends Motif
     // Default Setters
     public void setDefaultVelocity(int val) { defaultVelocity = val; }
     public int getDefaultVelocity() { return defaultVelocity; }
+    public void setDefaultValueLSB(int val) { defaultValueLSB = val; }
+    public int getDefaultValueLSB() { return defaultValueLSB; }
     public void setDefaultSwing(double val) { defaultSwing = val; }
     public double getDefaultSwing() { return defaultSwing; }
     public void setDefaultOut(int val) { defaultOut = val; Prefs.setLastOutDevice(0, val, "seq.motif.stepsequence.StepSequence"); }
     public int getDefaultOut() { return defaultOut; }
     public boolean isATrackSoloed() { return aTrackSoloed; }
+	public int getType() { return type; }
+	public void setType(int val) { type = val; }
 
     // Track-Level Setters
     public String getTrackName(int track) { return trackNames[track]; }
@@ -559,6 +643,12 @@ public class StepSequence extends Motif
         if (velocity == DEFAULT) velocity = defaultVelocity;
         return velocity;
         }
+    public int getFinalValueLSB(int track)
+    	{
+    	int lsb = trackValueLSBs[track];
+    	if (lsb == DEFAULT) lsb = defaultValueLSB;
+    	return lsb;
+    	}
     public int getTrackOut(int track) { return trackOuts[track]; }
     public void setTrackOut(int track, int val) { trackOuts[track] = val; /* Prefs.setLastOutDevice(1, val, "seq.motif.stepsequence.StepSequence"); */ }
     public int getFinalOut(int track) { int out = trackOuts[track]; if (out == COMBO_DEFAULT) return defaultOut; else return out; }
@@ -577,6 +667,10 @@ public class StepSequence extends Motif
     public boolean isTrackLearning(int track) { return trackLearning[track]; }
     public void setTrackLearning(int track, boolean val) { trackLearning[track] = val; }
     public boolean isTrackSoloed(int track) { return trackSoloed[track]; }
+    public int getTrackParamLSB(int track) { return trackParamLSBs[track]; }
+    public void setTrackParamLSB(int track, int val) { trackParamLSBs[track] = val; }
+    public int getTrackValueLSB(int track) { return trackValueLSBs[track]; }
+    public void setTrackValueLSB(int track, int val) { trackValueLSBs[track] = val; }
     
     public void setTrackSoloed(int track, boolean val)
         {
@@ -621,7 +715,56 @@ public class StepSequence extends Motif
     public void setNote(int track, int step, int val) { notes[track][step] = val; }
     public int getFinalNote(int track, int step) { int note = notes[track][step]; return (note == DEFAULT) ? trackNotes[track] : note; }
     public int getFinalWhen(int track, int step) { int w = when[track][step]; return (w == COMBO_DEFAULT) ? trackWhen[track] : w; }
-      
+    public int getParamLSB(int track, int step) { return paramLSBs[track][step]; }
+    public void setParamLSB(int track, int step, int val) { paramLSBs[track][step] = val; }
+    public int getFinalParamLSB(int track, int step) { int lsb = paramLSBs[track][step]; return (lsb == DEFAULT) ? trackParamLSBs[track] : lsb; }
+    public int getValueLSB(int track, int step) { return valueLSBs[track][step]; }
+    public void setValueLSB(int track, int step, int val) { valueLSBs[track][step] = val; }
+    public int getFinalValueLSB(int track, int step) { int lsb = valueLSBs[track][step]; return (lsb == DEFAULT) ? getFinalValueLSB(track) : lsb; }
+
+	public int getFullParam(int track, int step)
+		{
+		switch(type)
+			{
+			case TYPE_NOTE:
+			case TYPE_CC:
+			case TYPE_POLYPHONIC_AFTERTOUCH:
+			return getFinalNote(track, step);
+
+			case TYPE_NRPN:
+			case TYPE_RPN:
+			return getFinalNote(track, step) * 128 + getFinalParamLSB(track, step);
+
+			case TYPE_CHANNEL_AFTERTOUCH:
+			case TYPE_PITCH_BEND:
+			case TYPE_PC:
+			default:			// never happens
+			return 0;
+			}
+		} 
+
+
+	public int getFullValue(int track, int step)
+		{
+		switch(type)
+			{
+			case TYPE_NOTE:
+			case TYPE_CC:
+			case TYPE_POLYPHONIC_AFTERTOUCH:
+			case TYPE_CHANNEL_AFTERTOUCH:
+			case TYPE_PC:
+			return getFinalVelocity(track, step);
+
+			case TYPE_PITCH_BEND:
+			return (getFinalVelocity(track, step) * 128 + getFinalValueLSB(track, step)) - 8192;
+
+			case TYPE_NRPN:
+			case TYPE_RPN:
+			default:			// never happens
+			return (getFinalVelocity(track, step) * 128 + getFinalValueLSB(track, step));
+			}
+		}
+	    
     public boolean playNow(double invNumTracks, int track, int step, int iteration)
         {
         int w = getFinalWhen(track, step);
@@ -830,6 +973,7 @@ public class StepSequence extends Motif
         setLengthInSteps(obj.optInt("lengthinsteps", DEFAULT_NUM_STEPS));
         setDefaultSwing(obj.optDouble("defaultswing", 0));
         setDefaultVelocity(obj.optInt("defaultvelocity", 128));
+        setDefaultValueLSB(obj.optInt("defaultvaluelsb", 128));
         setDefaultOut(obj.optInt("defaultout", 0));
         setControlIn(obj.optInt("controlin", 0));
         setControlOut(obj.optInt("controlout", 0));
@@ -837,10 +981,13 @@ public class StepSequence extends Motif
         aTrackSoloed = obj.getBoolean("atracksoloed");
         
         // Should these be made opt rather than get?
+        on = JSONToBooleanArray2(obj.getJSONArray("on"));
         notes = JSONToIntArray2(obj.getJSONArray("notes"));
         velocities = JSONToIntArray2(obj.getJSONArray("velocities"));
         flams = JSONToIntArray2(obj.getJSONArray("flams"));
         when = JSONToIntArray2(obj.getJSONArray("when"));
+        paramLSBs = JSONToIntArray2(obj.getJSONArray("plsbs"));
+        valueLSBs = JSONToIntArray2(obj.getJSONArray("vlsbs"));
         trackSwings = JSONToDoubleArray(obj.getJSONArray("trackswings"));
         trackGains = JSONToDoubleArray(obj.getJSONArray("trackgains"));
         trackExclusive = JSONToBooleanArray(obj.getJSONArray("trackexclusive"));
@@ -854,7 +1001,8 @@ public class StepSequence extends Motif
         trackChokes = JSONToIntArray(obj.getJSONArray("trackchokes"));
         trackWhen = JSONToIntArray(obj.getJSONArray("trackwhen"));
         trackNames = JSONToStringArray(obj.getJSONArray("tracknames"));
-        on = JSONToBooleanArray2(obj.getJSONArray("on"));
+        trackParamLSBs = JSONToIntArray(obj.getJSONArray("tplsbs"));
+        trackValueLSBs = JSONToIntArray(obj.getJSONArray("tvlsbs"));
         }
         
     public void save(JSONObject obj) throws JSONException
@@ -863,6 +1011,7 @@ public class StepSequence extends Motif
         obj.put("lengthinsteps", getLengthInSteps());
         obj.put("defaultswing", getDefaultSwing());
         obj.put("defaultvelocity", getDefaultVelocity());
+        obj.put("defaultvaluelsb", getDefaultValueLSB());
         obj.put("defaultout", getDefaultOut());
         obj.put("controlin", getControlIn());
         obj.put("controlout", getControlOut());
@@ -873,6 +1022,8 @@ public class StepSequence extends Motif
         obj.put("velocities", intToJSONArray2(velocities));
         obj.put("flams", intToJSONArray2(flams));
         obj.put("when", intToJSONArray2(when));
+        obj.put("plsbs", intToJSONArray2(paramLSBs));
+        obj.put("vlsbs", intToJSONArray2(valueLSBs));
         obj.put("trackswings", doubleToJSONArray(trackSwings));
         obj.put("trackgains", doubleToJSONArray(trackGains));
         obj.put("trackexclusive", booleanToJSONArray(trackExclusive));
@@ -886,6 +1037,8 @@ public class StepSequence extends Motif
         obj.put("trackchokes", intToJSONArray(trackChokes));
         obj.put("trackwhen", intToJSONArray(trackWhen));
         obj.put("tracknames", stringToJSONArray(trackNames));
+        obj.put("tplsbs", intToJSONArray(trackParamLSBs));
+        obj.put("tvlsbs", intToJSONArray(trackValueLSBs));
         }
 
 
@@ -948,6 +1101,8 @@ public class StepSequence extends Motif
         int[] _flams = new int[len];
         int[] _when = new int[len];
         int[] _notes = new int[len];
+        int[] _paramLSBs = new int[len];
+        int[] _valueLSBs = new int[len];
         for(int i = 0; i < len; i++)
             {
             int pos = i + rotate;
@@ -957,11 +1112,15 @@ public class StepSequence extends Motif
             _velocities[pos] = velocities[track][i];
             _flams[pos] = flams[track][i];
             _notes[pos] = notes[track][i];
+            _paramLSBs[pos] = paramLSBs[track][i];
+            _valueLSBs[pos] = valueLSBs[track][i];
             }
         on[track] = _on;
         velocities[track] = _velocities;
         flams[track] = _flams;
         notes[track] = _notes;
+        paramLSBs[track] = _paramLSBs;
+        valueLSBs[track] = _valueLSBs;
         }
     
 
@@ -1011,7 +1170,7 @@ public class StepSequence extends Motif
             return steps;
             }
         
-        // fake Bressenham's by just using floor 
+        // fake Bressenham's by just using floor -- we use Math.floor in case i * slope is negative
         int lastY = -1;
         double slope = k / (double) n;
         for(int i = 0; i < n; i++)

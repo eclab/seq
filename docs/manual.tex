@@ -239,7 +239,7 @@ sean@cs.gmu.edu}\\
 \\
 \\
 \large\rm {\bf Seq Version 8}\\
-\large\rm {\bf Manual Version 8.0}\\
+\large\rm {\bf Manual Version 8.1}\\
 \large\rm  October 2025\\
 
 \vspace{5in}
@@ -287,12 +287,9 @@ sean@cs.gmu.edu}\\
 
 \clearpage\section{Introduction}
 
-\paragraph{\color{red} Note} Seq is a research project and is a work in progress.  We built Seq to help answer questions we had about the feasibility of an approach such as Seq takes.  The jury is still out on that.  Seq is not entirely written, either\,---\,it's in a usable state but is not complete.  We will be gradually adding to and improving it.
+Seq is a music sequencer quite different from other sequencers.  Rather than lay out MIDI clips in a linear timeline as you would in a DAW, or play small iterations of patterns like a step sequencer, Seq groups chunks of music into sequences, then groups multiple sequences into even larger sequences, and so on, until it has formed a large sequence, essentially a program describing how its elements are to be played.  Thus Seq is creates a sequence in the form of a {\it hierarchy} of subsequences.
 
-\paragraph{About Seq} 
-Seq is a sequencer quite different from most other sequencers.  Rather than lay out MIDI clips in a linear timeline, or play small iterations of patterns like a step sequencer, Seq groups clips into sequences, then groups sequences (and more clips) into even larger sequences, and so on, until it has formed a large sequence, essentially a program describing how the clips are to be played.  This Seq is creates a sequence in the form of a {\it hierarchy} of clips and subsequences.
-
-Seq goes further than this, however: different sequences can be built out of the same clips, or the same subsequences.  Thus clips and subsequences may be thought of as {\it modular}, and they are reused in different guises and in different scenarios.  
+Seq goes further than this, however: different sequences can be built out of the same subsequences.  Thus subsequences may be thought of as {\it modular}, and they are reused in different guises and in different scenarios.  
 
 Music made with Seq tends to be composed bottom-up: you start with some basic building blocks (step sequences, small MIDI clips), combine them in different ways, and then combine the combinations, and so on, building up larger pieces of compositions until you have your finished song.  Seq can also be useful for real-time performance, as you can modify the structure and parameters of a song in real-time.  Seq even has a dedicated object, called {\it Select}, which lets you launch MIDI subsequences just like a clip launcher in Ableton etc.  Seq sequences, or pieces of them, can also be broken out and easily shared in other compositions.  Finally, many Seq features can be {\it parameterized}, meaning that you can change them automatically or manually at a very abstract level.
 
@@ -314,14 +311,14 @@ Furthermore, when in the course of playing a child generates MIDI, the MIDI is s
 
 \paragraph{Modular} By modularity we mean that not only can a parent object in the hierarchy have multiple children, but a given object in the hierarchy can also be shared by multiple parents.  Modularity enables {\bf reuse} of objects, and perhaps transforming them or creating variations.   Modularity also allows sequence hierarchies to be {\bf compact}.
 
+As a simple example, imagine if Chain X had Chain Y as a child as well as Pattern A.  But Chain Y {\it also} had Pattern A as a child, along with Pattern B.  Both Chain X and Chain Y use Pattern A, though perhaps at different times and in different ways.  You could also imagine a Chain Z which used by Chain X and Chain Y, and thus Chain Y was also being used twice, in different ways.
+
 \begin{wrapfigure}{r}{1.5in}
 \vspace{-1em}
 \includegraphics[width=1.5in]{dag}
 \caption{A Simple Directed Acyclic Graph (DAG)}
 \label{dag}
 \end{wrapfigure}
-
-As a simple example, imagine if Chain X had Chain Y as a child as well as Pattern A.  But Chain Y {\it also} had Pattern A as a child, along with Pattern B.  Both Chain X and Chain Y use Pattern A, though perhaps at different times and in different ways.  You could also imagine a Chain Z which used by Chain X and Chain Y, and thus Chain Y was also being used twice, in different ways.
 
 Figure~\ref{dag} at right shows this very arrangement of these chains and patterns. In the computer science world, this kind of structure is known as a {\it Directed Acyclic Graph} or {\it DAG}.  It's a {\it graph} because every object is connected to other objects with lines called {\it edges}.  It is {\it directed} because there is a clear relationship between parents and children: that is, the edges are arrows indicating who the child is.  It's {\it acyclic} because no child can be its own ancestor: you can't have loops (or ``cycles'').  That is, all edges are pointing {\it down}.
 
@@ -332,6 +329,14 @@ You don't have to start playing at Chain Z.  You could instead choose to start p
 Seq's sequences are DAGs built out of basic musical building blocks (step sequences, chunks of MIDI, etc.), and objects which group other building blocks into subsequences (including grouping other subsequences together).  All these objects, both basic and grouping, are know as {\bf motifs}.  Thus (to use the LM-1's terminology) both individual step sequence patterns and pattern chains are represented as kinds of motifs.  One motif is designated the {\bf root motif}, and is the start point when playing.  Motifs which group other motifs are known as the {\bf parents} of those {\bf children}.  
 
 When you're editing a Motif, you'll be shown the {\bf Motif Display} and, to its right, various {\bf Inspectors} to modify the features of the Motif and how it manages its children (if it has them).  All your Motifs are collected into one group, called the {\bf Motif List}.
+
+\paragraph{Macros and Parameterization}
+
+Seq has two more powerful tricks up its sleeve, but neither of them is necessary to understand in order to use Seq: thus they are discussed at the end of the manual.
+
+First, you can encapsulate an entire sequence into a single motif called a {\bf Macro}.  This allows you to use one sequence as an element to be called from another sequence.  Macros can also be set up to have their own children, so the encapsulated sequence can call motifs outside, in the outer sequence: this allows you to create Macros which are essentially pattern templates.  For more information on Macros, see Section~\ref{macros}.
+
+Second, a great many of the features in motifs are {\bf parameterizable}.  This means you can attach them to {\bf parameters} in the motif itself, which can in turn be changed by the motif's parents or ancestors.  This allows a parent to automatically change a variety of features in its children or descendants.  For example, a parent could use a low-frequency envelope to change the pitch of certain notes in one of its children.  Parameters can also be changed with Control Change (CC) messages from external controllers, and parameters can also be used to send out many different kinds of MIDI messages, including CC, NRPN, and so on.  Parameterization is a complex  subject: for more information, see Section~\ref{parameters}.
 
 \paragraph{Where We're Going with Seq}
 
@@ -432,7 +437,6 @@ The {\bf Pause} button also is available to pause or resume the sequence during 
 
 \begin{wrapfigure}{r}{1.5in}
 \includegraphics[width=1.5in]{clock}
-\vspace{-2em}
 \caption{Clock Options}
 \label{clockoptions}
 \end{wrapfigure}
@@ -474,7 +478,7 @@ Also below the Current Motif Display are the {\bf Display Zoom} buttons.  These 
 
 Each sequence has a random number generator, which produces a stream of random numbers used whenever Seq has to roll the dice for something.  Each time you make a new sequence, it is given its own  unique random number generator, which is saved with the sequence.  When you stop and replay the sequence, this generator is reset so you'll always have the same random choices made and thus will have the same sequence.
 
-Normally this is desirable.  But what if you don't like the stream of numbers you were given, and want a new random generator?  Just select "New Random Number Generator", and you'll get a new one.  You can go back to the old one with {\bf Undo}.  Otherwise if you save your sequence, it'll be saved with to use the new generator.
+Normally this is desirable.  But what if you don't like the stream of numbers you were given, and want a new random generator?  Select "New Random Number Generator", and you'll get a new one.  You can go back to the old one with {\bf Undo}.  If you save your sequence, it'll be saved with to use the new generator.
 
 Note that if you change your sequence such that elements that draw random numbers are added, removed, or moved, you'll probably change the effect of the sequence on all the later random elements anyway.  So don't expect the random series to be the same after you've made significant changed to your sequence.
 
@@ -511,86 +515,6 @@ Motifs are played through once, and when they have finished playing they do not 
 You can loop the entire sequence\,---\,that is, loop the {\bf Root Motif}\,---\, by toggling the Loop button in the Transport prior to or during playback.
 
 \clearpage
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=6.5in]{StepSequence}
-\vspace{-2em}
-\caption{Step Sequence Motif.}
-\label{stepsequence}
-\end{figure}
-
-\subsection{Step Sequence}
-
-Step Sequence is one of the most complex motifs, as it is a reasonably full-featured multitrack step sequencer.  Step Sequence defines a single multitrack pattern, which is played once and then declares it is finished.  The Step Sequence can have any number of Tracks, and each Track can have any number of Steps (and that number can vary from Track to Track).  By default the Step Sequence presents itself with 16 Tracks of 16 Steps.  
-
-You select a Step by clicking on it.  This also selects the Step's Track.  You can also select a different Track (and its equivalent Step) by clicking on the Track Header (see below).  When you select a Step and Track, they will show their respective Inspectors at right below the primary Step Sequence Inspector.
-
-If you triple-click on a Step, you will deselect all the Steps in its Track.
-
-\paragraph{Defaults and Parameterization}
-
-Several of the dials the Step Sequence's Tracks and Steps can be set to a fixed value or to {\bf Default}.  In a Step, Default means that instead of being fixed to a value, the dial defers to the Track's setting.  In a Track, Default means that instead of being fixed to a value, the dial defers to the Step Sequence's overall setting.
-
-To set a dial to Default, double-click on it, and select {\it Default} from the resulting pop-up menu.  To set a Defaulted dial back to a fixed value, just change the dial.  You'll note that the pop-up menu has other values, such as Rand or Param 1 ... Param 8.  We'll discuss those in Section~\ref{parameters} ({\bf Parameterization}).  Don't set to those for now.  Furthermore, some menus don't have a Default, or no pop-up menu even appears: this means that the dial doesn't have a Default.  You can tell that a dial has a pop-up menu because it has a red or gray {\bf dot} in its center. 
-
-\paragraph{Steps}
-
-A Step is either {\bf off} (gray) or {\bf on}.  When on, the Step has a {\bf velocity} (volume), represented by a gradiated color between white and red.  Each Step can also have its own {\bf Note Pitch}, its own number of {\bf Flams} (ratchets), and a declaration of {\bf When} (or perhaps better called {\it whether}) the Step plays when its time is up.  The When setting can be {\it always}, or it can play with some {\it probability}, or it can play with some {\it pattern}.  An example pattern is \textsf{O O X}, which means to play the first two times the Step Sequence is iterated, and then not play the third time, and then repeat. 
-
-All four of these features (Note, Velocity, Flams, and When) also can be set to the special value {\bf Default}.   
-
-Every fourth Step is bolded in the interface only for visual assistance.    The currently selected Step is outlined in blue.
-
-\paragraph{Tracks}
-
-A track is an iteration of Steps played one after another.  Even though tracks can have different numbers of steps, they will play their steps such that they all finish at the same time.
-
-A Track has a {\bf Track Header} and then the list of Steps.  You can change the order of a Track in the list of Tracks by dragging its Track Header up or down.  A Track also has a {\bf Name}, which you can set in its Inspector,  Track Headers have three buttons: {\bf Learn (L), Solo (S),} and {\bf Mute (M)}.  If you select Mute, then that track will not play.  If you select Solo, then {\it only} that track will play.  If you select Learn, then the track is {\bf learning} its track note while playing.  This means that if you press a key, the track will use that key as its output {\bf Note}.     
-
-You can add, delete, and duplicate tracks with the buttons at bottom.  You can also Zoom In and Zoom Out.  The currently selected Track has its track number highlighted in red.
-
-Tracks have a number of features in their Inspectors, beyond their {\bf Name}.
-
-All the Steps in a given Track play their MIDI out the same MIDI Out as specified by the Track.  By default this is set to the special value {\it Default}, meaning that the Track defers to the Sequence's global setting.  A track also has a {\bf Gain} which is multiplied against the velocities of its Steps to determine their final volume.  
-
-A track also has a default {\bf Note}, {\bf Velocity}, number of {\bf Flams} and {\bf When} for its Steps.  By default Steps defer to these values, but you can of course change them on a per-Step basis.  You can also press {\bf Set All}, which causes all Steps to reset themselves to Default for that feature.
-
-Each track also has up to one {\bf Choke Track}: when a Step in the Track is played, any playing sound in the Choke Track is immediately stopped (a MIDI Note Off is issued).  Tracks also have some degree of {\bf Swing} (syncopation).  A typical amount of swing would be about 30\% (if you wanted Swing), else 0\%.
-
-A Track can be a member of the {\bf Exclusive Random Group} (or ``Ex. Rand.'').  When the Sequence is played, one and only one Track in the Exclusive Random Group is played; the others are hushed (independent of Mute settings).  The Track in question is selected at random. Tracks not in this group are not effected.
-
-Finally, a track has a {\bf Length}, that is, the number of steps.  This is not set until the {\bf Set} button is pressed.
-
-\paragraph{Euclidean Rhythms}
-
-In 2004 Godfried Toussaint published a paper suggesting that large numbers of common rhythms worldwide could be automatically generated using Bjorklund's Algorithm, which is somewhat related to Euclid's Algorithm.  He called these {\bf Euclidean Rhythms}.  Bjorklund's Algorithm takes a track \(K\) steps long and attempts to fill it with \(N\) steps that are statistically evenly spaced from one another.  So there are two parameters, \(0 < N < K\).  Euclidean rhythms have since become all the rage.
-
-Seq can fill a track with a Euclidean Rhythm with {\bf Euclid}.  You specify \(N\), the number of steps you want on (the rest will be off.  \(K\) is just the length of the track.  You can also {\bf Rotate} your Euclidean Rhythm to a new starting point  The Rhythm is generated when you press {\bf Set}.
-
-\paragraph{The Step Sequence Inspector}
-
-At top, the Step Sequence inspector defines the global settings for the Step Sequence.  There is its {\bf Name} of course.  After this there is the {\bf Duration}, that is, the length of time (in 16th notes) that this Step Sequence will take to complete.  For example, even if the Step Sequence is 16 steps long, if you set the Duration to 4, it'll run at the speed necessary to complete those 16 steps in one quarter note of time.  The default is of course 16: 16 steps in 4 quarter notes.
-
-You can also set the default {\bf Swing}, {\bf Velocity}, and {\bf Out}, and Tracks will defer to these if set to {\it Default}.  The {\bf Track Length} indicates the initial number of Steps for newly added Tracks. Finally, {\bf In} specifies the MIDI Input to use when recording tracks.
-
-\paragraph{The Menu}
-
-The {\bf Step Sequence} menu allows you to use keystrokes make your away around the sequence ({\bf Up, Down, Left, Right}).  You can also {\bf Toggle} the selected step to be on or off.  And you can {\bf Rotate} all the steps in the selected track {\bf Left} or {\bf Right} by one step.
-
-\ignore{
-\paragraph{Recording a Step Sequence}
-
-If you arm one or more Tracks, set their Notes, and set the Sequence's MIDI Input accordingly, then you can record in Notes to those tracks when you press Record on Seq.   You will find this easier if you turn on the metronome and if you set the Step Sequence to be the Root, so it records immediately.  Remember that if your Step Sequence motif is not a descendant of the Root, it will never be reached to do Recording.
-}
-
-\paragraph{Parameterization}
-
-Several Step Sequence features (step velocities and pitches, swing, etc.) can be {\bf Parameterized} by double-clicking on the dials.  If a step's velocity is parameterized, the step is displayed in gray-blue to indicate this.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
-
-
-\clearpage
-
 \begin{figure}[t]
 \centering
 \includegraphics[alt={yo},width=6.5in]{Notes}
@@ -760,6 +684,101 @@ Several Notes features (note velocities, release velocities, event values) can b
 
 \begin{figure}[t]
 \centering
+\includegraphics[width=6.5in]{StepSequence}
+\vspace{-2em}
+\caption{Step Sequence Motif.}
+\label{stepsequence}
+\end{figure}
+
+\subsection{Step Sequence}
+
+Step Sequence is one of the most complex motifs, as it is a reasonably full-featured multitrack step sequencer.  Step Sequence defines a single multitrack pattern, which is played once and then declares it is finished.  The Step Sequence can have any number of Tracks, and each Track can have any number of Steps (and that number can vary from Track to Track).  By default the Step Sequence presents itself with 16 Tracks of 16 Steps.  
+
+You select a Step by clicking on it.  This also selects the Step's Track.  You can also select a different Track (and its equivalent Step) by clicking on the Track Header (see below).  When you select a Step and Track, they will show their respective Inspectors at right below the primary Step Sequence Inspector.
+
+If you triple-click on a Step, you will deselect all the Steps in its Track.
+
+\paragraph{Defaults and Parameterization}
+
+Several of the dials the Step Sequence's Tracks and Steps can be set to a fixed value or to {\bf Default}.  In a Step, Default means that instead of being fixed to a value, the dial defers to the Track's setting.  In a Track, Default means that instead of being fixed to a value, the dial defers to the Step Sequence's overall setting.
+
+To set a dial to Default, double-click on it, and select {\it Default} from the resulting pop-up menu.  To set a Defaulted dial back to a fixed value, just change the dial.  You'll note that the pop-up menu has other values, such as Rand or Param 1 ... Param 8.  We'll discuss those in Section~\ref{parameters} ({\bf Parameterization}).  Don't set to those for now.  Furthermore, some menus don't have a Default, or no pop-up menu even appears: this means that the dial doesn't have a Default.  You can tell that a dial has a pop-up menu because it has a red or gray {\bf dot} in its center. 
+
+\paragraph{Steps}
+
+A Step is either {\bf off} (gray) or {\bf on}.  When on, the Step has a {\bf velocity} (volume), represented by a gradiated color between white and red.\footnote{Note that because MIDI interprets velocity=0 as a Note Off message, which we do not want, Seq will treat a velocity of 0 as a (very low) velocity of 1.} Each Step can also have its own {\bf Note Pitch}, its own number of {\bf Flams} (ratchets), and a declaration of {\bf When} (or perhaps better called {\it whether}) the Step plays when its time is up.  The When setting can be {\it always}, or it can play with some {\it probability}, or it can play with some {\it pattern}.  An example pattern is \textsf{O O X}, which means to play the first two times the Step Sequence is iterated, and then not play the third time, and then repeat. 
+
+All four of these features (Note, Velocity, Flams, and When) also can be set to the special value {\bf Default}.   
+
+Every fourth Step is bolded in the interface only for visual assistance.    The currently selected Step is outlined in blue.
+
+\paragraph{Tracks}
+
+A track is an iteration of Steps played one after another.  Even though tracks can have different numbers of steps, they will play their steps such that they all finish at the same time.
+
+A Track has a {\bf Track Header} and then the list of Steps.  You can change the order of a Track in the list of Tracks by dragging its Track Header up or down.  A Track also has a {\bf Name}, which you can set in its Inspector,  Track Headers have three buttons: {\bf Learn (L), Solo (S),} and {\bf Mute (M)}.  If you select Mute, then that track will not play.  If you select Solo, then {\it only} that track will play.  If you select Learn, then the track is {\bf learning} its track note while playing.  This means that if you press a key, the track will use that key as its output {\bf Note}.     
+
+You can add, delete, and duplicate tracks with the buttons at bottom.  You can also Zoom In and Zoom Out.  The currently selected Track has its track number highlighted in red.
+
+Tracks have a number of features in their Inspectors, beyond their {\bf Name}.
+
+All the Steps in a given Track play their MIDI out the same MIDI Out as specified by the Track.  By default this is set to the special value {\it Default}, meaning that the Track defers to the Sequence's global setting.  A track also has a {\bf Gain} which is multiplied against the velocities of its Steps to determine their final volume.  
+
+A track also has a default {\bf Note}, {\bf Velocity}, number of {\bf Flams} and {\bf When} for its Steps.  By default Steps defer to these values, but you can of course change them on a per-Step basis.  You can also press {\bf Set All}, which causes all Steps to reset themselves to Default for that feature.
+
+Each track also has up to one {\bf Choke Track}: when a Step in the Track is played, any playing sound in the Choke Track is immediately stopped (a MIDI Note Off is issued).  Tracks also have some degree of {\bf Swing} (syncopation).  A typical amount of swing would be about 30\% (if you wanted Swing), else 0\%.
+
+A Track can be a member of the {\bf Exclusive Random Group} (or ``Ex. Rand.'').  When the Sequence is played, one and only one Track in the Exclusive Random Group is played; the others are hushed (independent of Mute settings).  The Track in question is selected at random. Tracks not in this group are not effected.
+
+Finally, a track has a {\bf Length}, that is, the number of steps.  This is not set until the {\bf Set} button is pressed.
+
+\paragraph{Euclidean Rhythms}
+
+In 2004 Godfried Toussaint published a paper suggesting that large numbers of common rhythms worldwide could be automatically generated using Bjorklund's Algorithm, which is somewhat related to Euclid's Algorithm.  He called these {\bf Euclidean Rhythms}.  Bjorklund's Algorithm takes a track \(K\) steps long and attempts to fill it with \(N\) steps that are statistically evenly spaced from one another.  So there are two parameters, \(0 < N < K\).  Euclidean rhythms have since become all the rage.
+
+Seq can fill a track with a Euclidean Rhythm with {\bf Euclid}.  You specify \(N\), the number of steps you want on (the rest will be off.  \(K\) is just the length of the track.  You can also {\bf Rotate} your Euclidean Rhythm to a new starting point  The Rhythm is generated when you press {\bf Set}.
+
+\paragraph{The Step Sequence Inspector}
+
+At top, the Step Sequence inspector defines the global settings for the Step Sequence.  There is its {\bf Name} of course.  After this there is the {\bf Duration}, that is, the length of time (in 16th notes) that this Step Sequence will take to complete.  For example, even if the Step Sequence is 16 steps long, if you set the Duration to 4, it'll run at the speed necessary to complete those 16 steps in one quarter note of time.  The default is of course 16: 16 steps in 4 quarter notes.
+
+You can also set the default {\bf Swing}, {\bf Velocity}, and {\bf Out}, and Tracks will defer to these if set to {\it Default}.  The {\bf Track Length} indicates the initial number of Steps for newly added Tracks. Finally, {\bf In} specifies the MIDI Input to use when recording tracks.
+
+\paragraph{Sequencing Things Other than Notes}
+
+The Step Sequence inspector also has an option called {\bf Type}.  By default, this is set to ``Note'', but you can set it to other kinds of MIDI types, such as CC or NRPN.   This affects the meaning of the ``Note'' and ``Velocity'' dials, and also each step's Velocity coloring, as follows:
+
+\begin{itemize}
+\item {\bf Note}\qquad Nothing changes.
+\item {\bf CC (Control Change)}\qquad ``Param'' represents the CC parameter.  ``Value'' represents the CC value.
+\item {\bf Poly Aftertouch}\qquad ``Param'' represents the polyphonic aftertouch note.  ``Value'' represents the aftertouch value.
+\item {\bf Channel Aftertouch}\qquad ``Param'' does nothing.  ``Value'' represents the CC value.
+\item {\bf Pitch Bend}\qquad ``Param'' does nothing.  ``Value'' represents the MSB of the pitch bend value, and its ``LSB'' represents the LSB of the value .  The final pitch bend value, which ranges from -8192 to +8191, is defined as \(\text{\it MSB} \times 128 + \text{\it LSB} - 8192\). We recognize that Pitch Bend is defined in an inconvenient way.  We're working on it.
+\item {\bf PC}\qquad ``Param'' does nothing.  ``Value'' represents the PC value.
+\item {\bf NRPN}\qquad ``Param'' represents the MSB of the NRPN parameter, and its ``LSB'' represents the LSB of the parameter.   The final NRPN parameter, which ranges from 0 to 16383, is defined as \(\text{\it MSB} \times 128 + \text{\it LSB}\).  ``Value'' represents the MSB of the NRPN value, and its ``LSB'' represents the LSB of the value.  The final NRPN value, which ranges from 0 to 16383, is defined as \(\text{\it MSB} \times 128 + \text{\it LSB}\).  
+\item {\bf RPN}\qquad Similar to NRPN.
+\end{itemize}
+
+\paragraph{The Menu}
+
+The {\bf Step Sequence} menu allows you to use keystrokes make your away around the sequence ({\bf Up, Down, Left, Right}).  You can also {\bf Toggle} the selected step to be on or off.  And you can {\bf Rotate} all the steps in the selected track {\bf Left} or {\bf Right} by one step.
+
+\ignore{
+\paragraph{Recording a Step Sequence}
+
+If you arm one or more Tracks, set their Notes, and set the Sequence's MIDI Input accordingly, then you can record in Notes to those tracks when you press Record on Seq.   You will find this easier if you turn on the metronome and if you set the Step Sequence to be the Root, so it records immediately.  Remember that if your Step Sequence motif is not a descendant of the Root, it will never be reached to do Recording.
+}
+
+\paragraph{Parameterization}
+
+Several Step Sequence features (step velocities and pitches, swing, etc.) can be {\bf Parameterized} by double-clicking on the dials.  If a step's velocity is parameterized, the step is displayed in gray-blue to indicate this.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
+
+
+\clearpage
+
+
+\begin{figure}[t]
+\centering
 \includegraphics[width=6.5in]{Silence}
 \vspace{-2em}
 \caption{Silence Motif.}
@@ -791,7 +810,7 @@ But in fact Series has several modes, and so can be set to play its children in 
 \item{\bf Shuffle}\quad Randomly shuffle the order of the children.  Then play them in that order, then finish.
 \item{\bf Random Forever}\quad Select a random child to play.  When finished playing it, select another one at random and play it, and so on.  Do this forever.  
 \item{\bf Random Markov}\quad Select a random child to play.  When finished playing it, select a second one at random using the first child's Markov Weights, and play it.  Then select a third child at random using the second child's Markov Weights, and so on.  Do this forever.
-\item{\bf Round Robin}\quad Play the first child.  When finished playing it, finish.  If you are immediately looped back to playing again, play the second child, then finish, and so on, eventually returning back to playing the first child.  Note that if your'e not immediately being looped, you won't increment to the next children, but will just play the first child over and over.
+\item{\bf Round Robin}\quad Play the first child.  When finished playing it, finish.  If you are immediately looped back to playing again, play the second child, then finish, and so on, eventually returning back to playing the first child.  Note that if you're not immediately being looped, you won't increment to the next children, but will just play the first child over and over.
 \item{\bf Variation}\quad Play the child specified by Parameter 1, then finish. (For discussion of Parameters, see Section~\ref{parameters}).  This is particularly useful for creating and playing multiple {\it variations} of a given Motif.
 \item{\bf Random Variation}\quad Play the child specified by the Random Parameter, then finish. (For discussion of Parameters, see Section~\ref{parameters}).
 \end{itemize}
@@ -819,7 +838,7 @@ One Child is designated the {\bf Start}.  You choose it by selecting ``Start Her
 
 As a Child of the Series emits MIDI, that MIDI is handed to the Series, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
 
-Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.  Some {\bf Presets} are provided, including a Custom Rate option)
+Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.  Some {\bf Presets} are provided, including a Custom Rate option.
 
 \paragraph{Markov Weights}
 
@@ -877,6 +896,10 @@ Each Child has a {\bf Probability} in its Inspector.  This probability determine
 
 If a child has {\bf Override} set in its Inspector, then when it starts playing, it will immediately terminate all Children below it.  
 
+\paragraph{Maximum End Time}
+
+You can set the maximum end time of the Parallel with {\bf Max End Time}.  This cuts off all Children if they exceed this time.  Children (and the whole Parallel) can end sooner than the Max End Time, however.
+
 \paragraph{Delays and Quantization}
 
 Each Child can have the onset of its playing delayed.  Seq provides a {\bf Start} time in Parts, Bars, Beats, and Ticks, though you'll probably usually use Beats and Bars.
@@ -884,6 +907,11 @@ Each Child can have the onset of its playing delayed.  Seq provides a {\bf Start
 When the last Child finishes playing once, we can finish Parallel immediately, or we can first wait until some quantized time boundary (16th note, quarter note, or measure) before doing so.  This is set in its Inspector as {\bf End Quantization}.
 
 When a Child is delayed, it will shift horizontally to demonstrate this, as is shown in Figure~\ref{parallel}.
+
+\paragraph{The Ruler}
+At the top of the display is the {\bf Ruler}, which shows measures and, if zoomed in, beats and sixteenth notes. 
+You can zoom the Parallel in and out with the magnifying glass buttons at the bottom of the window.
+
 
 \paragraph{Repeating}
 
@@ -897,7 +925,7 @@ While a Child is repeating, its button text color will change to blue and it wil
 
 As a Child of the Parallel emits MIDI, that MIDI is handed to the Parallel, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
 
-Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option)
+Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option.
 
 Unlike in other Motifs, you can {\bf Mute} children in a Parallel.  The children will still have the same length and override: they just won't produce any notes.  They will produce CC and similar data (for now).
 
@@ -921,7 +949,7 @@ One trick you can do with Probabilities: bind certain child probabilities to an 
 
 \subsection{Automaton}
 
-Automaton may be think of as an elaborate combination of Parallel and Select.  In Automaton you lay out Children, and various decision point nodes, then connect them to construct a diagram indicating the process you want to take place.  This is known as an {\it Automaton}.  
+Automaton may be thought of as an elaborate combination of Parallel and Select.  In Automaton you lay out Children, and various decision point nodes, then connect them to construct a diagram indicating the process you want to take place.  This is known as an {\it Automaton}.  
 
 An Automaton contains {\bf Nodes}, that is, Children and Decision Points\,---\,and {\bf Edges}, that is, connections from Node to another.  Connections go from the endpoint of a Node to the start point of a new Node.  In our Automaton, several kinds of Nodes can have multiple endpoints, but all Nodes have just one start point.  However, while can connect many Edges to the same start point, you can connect only one Edge to a given end point.
 
@@ -984,7 +1012,7 @@ Iterate normally updates its position in the loop regardless of which Thread is 
 
 As a (Motif node) Child of the Automaton emits MIDI, that MIDI is handed to the Automaton, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
 
-Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option)
+Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option.
 
 \clearpage
 
@@ -1037,7 +1065,7 @@ Select has an action button, {\bf Finish}.  Pressing Finish will cause Select to
 
 As a Child of the Select emits MIDI, that MIDI is handed to the Select, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
 
-Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option)
+Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option.
 
 
 \paragraph{Parameters and Arguments}
@@ -1057,8 +1085,8 @@ To use a Grid Controller to select Children, you specify it in the {\bf Control 
 \paragraph{Available Grid Controller Devices}
 
 \begin{itemize}
-\item {\bf Novation LaunchPad MK I Series}\qquad LaunchPad, LaunchPad S, LaunchPad Pro (untested).   
-\item {\bf Novation LaunchPad MK III Series}\qquad Launchpad Mini, Launchpad X, LaunchPad Pro [MK3].  When using a MK3 device, you should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  
+\item {\bf Novation LaunchPad MK I Series}\qquad LaunchPad, LaunchPad S, LaunchPad Pro.  Only tested on the LaunchPad S.   
+\item {\bf Novation LaunchPad MK III Series}\qquad Launchpad Mini, Launchpad X, LaunchPad Pro [MK3].  Only tested on the LaunchPad Mini.  When using a MK3 device, you should use the Novation LaunchPad's {\bf MIDI IN} and {\bf MIDI OUT} devices, not its {\bf DAW IN} nor {\bf DAW OUT} ones.  
 \item {\bf Akai APK Mini MK2}\qquad Mini MK2.   
 
 \end{itemize}
@@ -1343,6 +1371,7 @@ At present, Modulation has five automated modulation functions available:
 \item {\bf LFO}\qquad The argument is modulated over time using a {\bf low-frequency oscillator}, which produces a repeating function.
 \item {\bf Envelope}\qquad The argument is modulated over time using an {\bf envelope} with up to eight stages.
 \item {\bf Step}\qquad The argument is modulated over time using a {\bf parameter step sequencer} with up to eight stages.
+\item {\bf Constant}\qquad The argument is fixed to a constant value.
 \item {\bf Same}\qquad The argument is set to the same value as some earlier modulation function.
 \end{itemize}
 
@@ -1398,6 +1427,10 @@ This is much like a simplified Envelope with Hold: where each stage has the same
 \item {\bf Trigger \textit{n}}\qquad When checked, the step sequence will not output the given when it reaches Step \(n\).  Rather, if the value is non-zero it will issue a short one-time-step burst of 1.0, then output 0.0 for the rest of the step time.  If the value is zero, it will always output 0.0 for the step time.  This is a {\bf trigger}: a short burst of 1.0 to indicate a trigger has occurred along the argument.  See the {\bf Series} motif for an example use of a trigger.
 \end{itemize}
 
+\paragraph{Constant}
+
+This indicates that parameter is fixed to a certain {\bf constant value}.  Mapping still occurs, but it's not very useful.
+
 \paragraph{Same}
 
 This indicates that the modulation function for this argument (let's call it \(m\) is the same as the one for some other argument \(n\). Note that \(n\) must be set to {\bf less than} \(m\), or Same will indicate that the value is {\bf Invalid}, and will act just like {\bf None}.  Mapping still occurs regardless: thus Same can have a different mapping from the Node that it is the Same as.
@@ -1437,6 +1470,7 @@ At present we have a few motifs planned:
 \end{figure}
 
 \section{Macros and Macro Children}
+\label{macros}
 
 A {\bf Macro} is a whole Seq sequence DAG bundled up into a single Motif.  When the Motif is played, the underlying sequence is played until it is finished.
 
@@ -1566,7 +1600,7 @@ Note that looping back will change the random value to a new number.
 \item {\bf Macro} has no parameterizable dials.  When you change the arguments of a Macro, these values are passed down to the root Motif of its internal sequence.  Alternatively you can set Macro to always send the same fixed values to its root Motif, ignoring the arguments it receives.  This choice is made per-argument when you save the Macro out.  See {\bf Root Macro Parameters} above.
 \end{itemize}
 
-\subsection{Parameterized Control of MIDI Data}
+\subsection{Parameterized Control of MIDI Data in Series}
 \label{mididata}
 
 The {\bf Series} motif has a trick up it sleeve: the ability to output parameters as MIDI CC, NRPN, RPN, Pitch Bend, or Aftertouch. You can find this by clicking on {\bf MIDI Parameters} in the Series inspector.  This will expand to {\bf Param 1} through {\bf 8}, along with {\bf Out}.  For each Param you can select a Type (such as CC or NRPN), and then a number if appropriate.  
@@ -1590,7 +1624,7 @@ The following MIDI output types are available for each Parameter.
 \item {\bf Channel Aftertouch}\quad Incoming parameters will be mapped to Channel Aftertouch values (0--127).
 \end{itemize}
 
-\section{Select's Overriding of Parameters}
+\subsection{Select's Overriding of Parameters}
 \label{selectparameters}
 
 Select has a performance option where it can override its own parameters, setting them to values chosen by Select and not by its parent.  Why would you want to do this?  Because the parameters of various children of Select can be bound to those parameters.  This allows you to change the parameters of children in real-time via a Big Dial, a Joystick, or a MIDI CC message from a remote controller.
@@ -1641,9 +1675,9 @@ The top-level class of Seq is {\sf seq.engine.Seq}\footnote{Well, that's not {\i
 
 Seq runs the MIDI subsystem, both sending and receiving.  The MIDI subsystem itself is managed by the class {\sf seq.engine.Midi}, which Seq owns.  Seq permits 16 outputs and 4 inputs.  Each output and input represent a combination of a MIDI Device, a MIDI channel, and a nickname given by the user.  These outputs and inputs are stored in 16 {\sf seq.engine.Out} and 4 {\sf seq.engine.In} objects respectively.
 
-{\sf seq.engine.Seq} maintains the sequence using two separate data structures.  First, there is the {\bf Motif DAG}, which stores the model itself.  Second, there is the {\bf Clip Forest}, which manages dynamically changing data while the model is playing.  
+{\sf seq.engine.Seq} maintains the sequence using two separate data structures.  First, there is the {\bf Motif DAG}, which stores the model itself.  Second, there is the {\bf Clip Tree}, which manages dynamically changing data while the model is playing.  
 
-Each of these graph structures contains an entry point where the sequence begins when you press play.  For the DAG, it's a {\sf seq.engine.Motif} object called {\bf data}.  For the Clip Tree, it's a corresponding {\sf seq.engine.Clip} called {\bf root}.  This is called the root simply because it's the entry point for the sequence: though for the Clip tree, it {\it is} the root of the tree, the corresponding {\bf data} object isn't necessarily the root of the DAG at all (and there could be multiple roots).
+Each of these graph structures contains an entry point where the sequence begins when you press play.  For the DAG, it's a {\sf seq.engine.Motif} object called {\bf data}.  For the Clip Tree, it's a corresponding {\sf seq.engine.Clip} called {\bf root}.  This is called the root simply because it's the entry point for the sequence: though for the Clip Tree, it {\it is} the root of the tree, the corresponding {\bf data} object isn't necessarily the root of the DAG at all (and there could be multiple roots).
 
 The Motif DAG consists, at the bottom, of note-generating Motif objects such as Step Sequence or Notes.  Every Motif may have multiple parent Motifs which indicate how to group their children together to play them, such as in series or in parallel.  This DAG is loaded from and saved to a JSON structure using the {\sf seq.load()} and {\sf seq.save()} methods, which in turn call similar methods on each of the Motifs.
 
