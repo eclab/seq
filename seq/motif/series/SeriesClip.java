@@ -343,8 +343,6 @@ public class SeriesClip extends Clip
             int mode = ((Series)getMotif()).getMode();
             if (mode == Series.MODE_SERIES || mode == Series.MODE_SHUFFLE)
                 {
-                previous = playing;
-                if (previous != null) previous.terminate();
                 playingIndex = 0;
                 
                 if (mode == Series.MODE_SHUFFLE)
@@ -363,61 +361,35 @@ public class SeriesClip extends Clip
                             }
                         }
                     }
-                    
-                Node playingNode = getNode(playingIndex);
-                playing = playingNode.clip;
-                reset(playingNode);
-                playingRepeat = 0;
-                playingNode.resetFinishedPlaying();
                 }
             else if (mode == Series.MODE_RANDOM || mode == Series.MODE_MARKOV)
                 {
                 playingIndex = ThreadLocalRandom.current().nextInt(kids.size());
-                previous = playing;
-                if (previous != null) previous.terminate();
-                Node playingNode = getNode(playingIndex);
-                playing = playingNode.clip;
-                reset(playingNode);
-                playingRepeat = 0;
-                playingNode.resetFinishedPlaying();
                 }
             else if (mode == Series.MODE_ROUND_ROBIN)
                 {
                 counter++;
                 playingIndex = counter % kids.size();
-                previous = playing;
-                if (previous != null) previous.terminate();
-                Node playingNode = getNode(playingIndex);
-                playing = playingNode.clip;
-                reset(playingNode);
-                playingRepeat = 0;
-                playingNode.resetFinishedPlaying();
                 }
             else if (mode == Series.MODE_VARIATION)
                 {
                 playingIndex = (int)(getParameterValue(VARIATION_PARAMETER) * kids.size());
                 if (playingIndex == kids.size()) playingIndex--;
-                previous = playing;
-                if (previous != null) previous.terminate();
-                Node playingNode = getNode(playingIndex);
-                playing = playingNode.clip;
-                reset(playingNode);
-                playingRepeat = 0;
-                playingNode.resetFinishedPlaying();
                 }
-            else if (mode == Series.MODE_RANDOM_VARIATION)
+            else // if (mode == Series.MODE_RANDOM_VARIATION)
                 {
                 playingIndex = (int)(getRandomValue() * kids.size());
                 if (playingIndex == kids.size()) playingIndex--;
-                previous = playing;
-                if (previous != null) previous.terminate();
-                Node playingNode = getNode(playingIndex);
-                playing = playingNode.clip;
-                reset(playingNode);
-                playingNode.resetFinishedPlaying();
-                playingRepeat = 0;
                 }
-            }
+
+			previous = playing;
+			if (previous != null) previous.terminate();
+			Node playingNode = getNode(playingIndex);
+			playing = playingNode.clip;
+			reset(playingNode);
+			playingNode.resetFinishedPlaying();
+			playingRepeat = 0;
+			}
         else 
             {
             playing = null;
@@ -569,7 +541,7 @@ public class SeriesClip extends Clip
                     roundRobinFinished = true;
                     return false;
                     }
-                else    // mode == Series.MODE_VARIATION
+                else    // mode == Series.MODE_VARIATION, mode == Series.MODE_RANDOM_VARIATION
                     {
                     playing.release();
                     playing.terminate();

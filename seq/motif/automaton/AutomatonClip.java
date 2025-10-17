@@ -65,9 +65,13 @@ public class AutomatonClip extends Clip
             {
             if (thread.child != null)
                 {
+            Automaton.MotifNode oldNode = currentNode;
+            if (thread.node instanceof Automaton.MotifNode) currentNode = (Automaton.MotifNode)(thread.node);
                 thread.child.terminate();
+            currentNode = oldNode;
                 }
-            if (thread.node instanceof Automaton.Chord){
+            if (thread.node instanceof Automaton.Chord)
+            	{
                 Automaton.Chord achord = (Automaton.Chord) thread.node;
                     {
                     int release = achord.getRelease();
@@ -90,7 +94,10 @@ public class AutomatonClip extends Clip
             {
             if (thread.child != null)
                 {
+            Automaton.MotifNode oldNode = currentNode;
+            if (thread.node instanceof Automaton.MotifNode) currentNode = (Automaton.MotifNode)(thread.node);
                 thread.child.terminate();
+            currentNode = oldNode;
                 }
 
             if (thread.node instanceof Automaton.Chord){
@@ -611,7 +618,10 @@ public class AutomatonClip extends Clip
         {
         for(AutomatonThread thread : unprocessed)
             {
+            Automaton.MotifNode oldNode = currentNode;
+            if (thread.node instanceof Automaton.MotifNode) currentNode = (Automaton.MotifNode)(thread.node);
             thread.release();
+            currentNode = oldNode;
             }
         }
 

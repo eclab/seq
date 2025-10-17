@@ -259,11 +259,19 @@ public class SelectClip extends Clip
     void terminateNode(Node node, Select select)
         {
         if (node == null) return;
+
+        // Certain clips, such as ArpeggioClip, attempt to schedule a note off
+        // during termination.  So we need to temporarily set current to that 
+        // node so it can successfully make it through scheduleNoteOff().
+
+        int oldCurrent = current;
+        current = node.index;
         node.clip.terminate();
         if (select.getCut())
             node.clip.cut();
         else
             node.clip.release();
+    	current = oldCurrent;
         }
         
     // Terminates all nodes and cuts or releases them.
@@ -297,7 +305,10 @@ public class SelectClip extends Clip
         {
         for(Node node : playing)
             {
+        int oldCurrent = current;
+        current = node.index;
             node.clip.release();
+        current = oldCurrent;
             setGridState(node, OFF);
             }
         terminateNodes((Select)getMotif());
