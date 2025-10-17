@@ -134,11 +134,6 @@ public abstract class Clip
             motif.decrementPlayCount();
             playing = false;
             }
-        else 
-            {
-            //System.err.println("Terminated multiple times " + this);
-            //new Throwable().printStackTrace();
-            }
         }
     
     /** Resets the clip position to 0 and informs it that it will starting anew. */
