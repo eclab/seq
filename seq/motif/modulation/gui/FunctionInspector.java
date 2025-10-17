@@ -15,7 +15,7 @@ import java.util.concurrent.locks.*;
 
 public class FunctionInspector extends JPanel
     {
-    public static final String[] INSPECTOR_NAMES = { "None", "LFO", "Envelope", "Step Sequence", "Same As", "<html><i>Copy From...</i></html>" };
+    public static final String[] INSPECTOR_NAMES = { "None", "LFO", "Envelope", "Step Sequence", "Constant", "Same As", "<html><i>Copy From...</i></html>" };
     public static final int COPY_FROM = 5;
     public static final String[] MAP_FUNCTIONS = {"None (X)", "X^2", "X^4", "1-(1-X)^2", "1-(1-X)^4" };
     public static final String[] LFO_TYPES = {"Saw Up", "Saw Down", "Square", "Triangle", "Sine", "Random", "S&H" };
@@ -1100,7 +1100,7 @@ public class FunctionInspector extends JPanel
                     });
 
             }
-                        
+
         public void revise() 
             {
             Seq old = seq;
@@ -1117,6 +1117,86 @@ public class FunctionInspector extends JPanel
             }
 
         public String getName() { return "Same"; }
+        }
+
+                        
+    public class ConstantInspector extends SubInspector
+        {
+        SmallDial value;
+
+        public ConstantInspector()
+            {
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            
+            try 
+                {
+                Modulation.Constant func = (Modulation.Constant)(modulation.getFunction(index));
+                        
+                value = new SmallDial(func.getValue(), defaults)
+                    {
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return func.getValue(); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { func.setValue(val); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) func.setValue(-(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = func.getValue(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };                
+                }
+            finally 
+                {
+                lock.unlock(); 
+                }
+
+
+            build(new String[] { "", "Value", }, 
+                new JComponent[] 
+                    {
+                    null,
+                    value.getLabelledDial("0.0000"),
+                    });
+	
+            }
+
+        public void revise() 
+            {
+            Seq old = seq;
+            seq = null;
+            ReentrantLock lock = old.getLock();
+            lock.lock();
+            try 
+                { 
+                // Modulation.Same func = (Modulation.Same)(modulation.getFunction(index));
+                }
+            finally { lock.unlock(); }                              
+            seq = old;
+            if (value != null) value.redraw();                        
+            }
+
+        public String getName() { return "Constant"; }
         }
 
 
@@ -1140,6 +1220,10 @@ public class FunctionInspector extends JPanel
         else if (type.equals(Modulation.STEP))
             {
             return new StepInspector();
+            }
+        else if (type.equals(Modulation.CONSTANT))
+            {
+            return new ConstantInspector();
             }
         else if (type.equals(Modulation.SAME))
             {
