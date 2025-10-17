@@ -49,6 +49,17 @@ public class Arpeggio extends Motif
     // BELOW that we go BELOW the chord
     public int[][] pattern = new int[MAX_PATTERN_LENGTH][PATTERN_NOTES];
 
+	public Motif copy()
+		{
+		Arpeggio other = (Arpeggio) super.copy();
+		other.pattern = new int[pattern.length][];
+		for(int i = 0; i < pattern.length; i++)
+			{
+			other.pattern[i] = (int[])pattern[i].clone();
+			}
+		return other;
+		}
+
     public Clip buildClip(Clip parent)
         {
         return new ArpeggioClip(seq, this, parent);
