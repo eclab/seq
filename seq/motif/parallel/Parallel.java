@@ -139,7 +139,9 @@ public class Parallel extends Motif
     public boolean getCrossFadeOn() { return crossFadeOn; }
     public void setCrossFadeOn(boolean val) { crossFadeOn = val; }
         
-
+	int end = Seq.MIN_MAX_TIME;
+	public int getEnd() { return end; }
+	public void setEnd(int val) { end = val; }
 
 
     public Clip buildClip(Clip parent)
@@ -172,6 +174,7 @@ public class Parallel extends Motif
         setNumChildrenToSelect(obj.getInt("num"));
         crossFade = obj.optDouble("xfade", 0.5);
         crossFadeOn = obj.optBoolean("xfon", false);
+        end = obj.optInt("end", Seq.MIN_MAX_TIME);
         }
         
     public void save(JSONObject obj) throws JSONException
@@ -179,6 +182,7 @@ public class Parallel extends Motif
         obj.put("num", getNumChildrenToSelect());
         obj.put("xfade", crossFade);
         obj.put("xfon", crossFadeOn);
+        obj.put("end", end);
         }
 
     static int document = 0;

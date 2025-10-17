@@ -65,6 +65,8 @@ public class ParallelClip extends Clip
     /** Is the current override node listening for his own  incoming notes to trigger the start of overriding? */
     boolean testOverriding;
     
+    boolean ended;
+    
     public ArrayList<Node> getNodes() { return nodes; }
     
     public void rebuild(Motif motif)
@@ -86,13 +88,21 @@ public class ParallelClip extends Clip
     public void terminate() 
         { 
         super.terminate();
-        for(Node node : nodes)
-            {
-            if (node.clip.isPlaying()) 
+        int oldCurrent = current;
+        // Certain clips, such as ArpeggioClip, attempt to schedule a note off
+        // during termination.  So we need to temporarily set current to that 
+        // node so it can successfully make it through scheduleNoteOff().
+        // As a result we have to go through the nodes by index rather than
+        // use an iterator here.
+        for(int i = 0; i < nodes.size(); i++)
+        	{
+            if (nodes.get(i).clip.isPlaying()) 
                 {
-                node.clip.terminate();
+                current = i;
+                nodes.get(i).clip.terminate();
                 }
-            }
+        	}
+        current = oldCurrent;
         }
 
     public void rebuild()
@@ -146,6 +156,7 @@ public class ParallelClip extends Clip
         determineMute();
         overriding = false;                             // we're not overriding
         testOverriding = false;
+        ended = false;
         }
 
     public void determineMute()
@@ -261,10 +272,21 @@ public class ParallelClip extends Clip
 
     public void release()  
         {
-        for(Node node : nodes)
-            {
-            node.clip.release();
-            }
+        int oldCurrent = current;
+        // Certain clips, such as ArpeggioClip, attempt to schedule a note off
+        // during termination.  So we need to temporarily set current to that 
+        // node so it can successfully make it through scheduleNoteOff().
+        // As a result we have to go through the nodes by index rather than
+        // use an iterator here.
+        for(int i = 0; i < nodes.size(); i++)
+        	{
+            if (nodes.get(i).clip.isPlaying()) 
+                {
+                current = i;
+                nodes.get(i).clip.release();
+                }
+        	}
+        current = oldCurrent;
         }
     
     
@@ -288,6 +310,16 @@ public class ParallelClip extends Clip
     public boolean process()
         {
         Parallel parallel = (Parallel)getMotif();
+        
+        if (getPosition() >= parallel.getEnd())
+        	{
+        	if (!ended)
+        		{
+        		release();
+        		ended = true;
+        		}
+        	return true;
+        	}
 
         boolean somebodyAdvanced = false;
         boolean firstAdvanced = false;
@@ -443,7 +475,7 @@ public class ParallelClip extends Clip
             {
             return;
             }
-        if (current >= 0)
+        if (current >= 0)			// Arpeggio will try to schedule during termination, when current == -1
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();
@@ -468,7 +500,7 @@ public class ParallelClip extends Clip
             {
             return;         // I'm being overridden
             }
-        if (current >= 0)
+        if (current >= 0)			// Arpeggio will try to schedule during termination, when current == -1
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();
@@ -485,7 +517,6 @@ public class ParallelClip extends Clip
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())), id);
             }
-        else System.err.println("ParallelClip.scheduleNoteOff: current was " + current);
         }
  
     public void sysex(int out, byte[] sysex)

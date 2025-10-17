@@ -25,10 +25,14 @@ public class Ruler extends JComponent
     public static final Color BACKGROUND_COLOR = Color.WHITE;
     // The color of the play marker on the ruler
     public static final Color PLAY_COLOR = Color.BLACK;
+    // The color for the End marker
+    public static final Color END_COLOR = new Color(180, 0, 180);
     // The color of the play marker on the ruler
     public static final Color BAR_COLOR = Color.BLUE;
-    // The range color
+    // The stroke of the play marker on the ruler
     public static final BasicStroke PLAY_STROKE = new BasicStroke(3.0f);
+    // The stroke of the End marker
+    public static final BasicStroke END_STROKE = new BasicStroke(3.0f);
 
     // The owner ParallelUI
     ParallelUI parallelui;
@@ -72,36 +76,51 @@ public class Ruler extends JComponent
     // because they will overwrite each other.
     // 
     // Additionally, the order matters because the bars have different heights
-    void drawVerticalBars(int startWhen, int endWhen, int divisor, Color color, Graphics2D g, int beatsPerBar)
+    void drawVerticalBars(int startWhen, int endWhen, int divisor, Color color, Graphics2D g, int beatsPerBar, boolean beat)
         {
-        int starty = 4;
+        int starty = 12;
         if (startWhen % divisor != 0)
             {
             startWhen = (startWhen / divisor) * divisor;
             }
-                        
+        
+        int scale = parallelui.getDelayMultiplier();
+
         for(int i = startWhen; i < endWhen; i += divisor)
             {
-            double _i = ParallelButton.timeToPixels(i);
+            double _i = parallelui.timeToPixels(i);
             if (i != 0) 
                 {
-                if ((i / (divisor * 4)) * (divisor * 4) == i)
+                if ((i / (Seq.PPQ * beatsPerBar)) * (Seq.PPQ * beatsPerBar) == i)
                     {
                     starty = 4;
                     g.setPaint(color);
                     }
-                else
+                else if ((i / Seq.PPQ) * Seq.PPQ == i)
                     {
-                    starty = 12;
+                    starty = 8;
                     g.setPaint(Color.BLACK);                        
                     }
+                else
+                	{
+                	starty = 12;
+                	g.setPaint(Color.BLACK);
+                	}
                 vertical.setLine(_i, starty, _i, RULER_HEIGHT);
                 g.draw(vertical);
                 }
-                                
-            if (starty == 4)                // Bar Text
-                {
-                if ((i / (divisor * 8)) * (divisor * 8) == i)   // every 4 measures if zoomed out
+            
+            if (beat)
+            	{                  
+                if (i == 0 || 
+                	((starty == 4)  &&               // Bar Text
+					 ((scale == 1 && ((i / (Seq.PPQ * beatsPerBar * 8)) * (Seq.PPQ * beatsPerBar * 8) == i)) ||   // every 4 measures if zoomed out
+
+					 (scale == 2 && ((i / (Seq.PPQ * beatsPerBar * 4)) * (Seq.PPQ * beatsPerBar * 4) == i)) ||   // every 4 measures if zoomed out
+
+					 (scale == 4 && ((i / (Seq.PPQ * beatsPerBar * 2)) * (Seq.PPQ * beatsPerBar * 2) == i)) ||   // every 4 measures if zoomed out
+
+					 (scale > 4 && ((i / (Seq.PPQ * beatsPerBar * 1)) * (Seq.PPQ * beatsPerBar * 1) == i)))))   // every 4 measures if zoomed out
                     {
                     g.setPaint(Color.BLACK);
                     int bar = (i / (Seq.PPQ * beatsPerBar)) + 1;
@@ -125,6 +144,7 @@ public class Ruler extends JComponent
         int start = bounds.x;
         int end = bounds.x + bounds.width;
 
+		int endTime = 0;
         g.setPaint(BACKGROUND_COLOR);
         g.fill(bounds);
         
@@ -135,14 +155,51 @@ public class Ruler extends JComponent
         try
             {
             beatsPerBar = seq.getBar();
+            endTime = parallelui.getParallel().getEnd();
             }
         finally
             {
             lock.unlock();
             }
                 
-        // draw bars
-        drawVerticalBars(ParallelButton.pixelsToTime(start), ParallelButton.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar);
+        // We draw:
+        // 16th Notes           (1/4 of PPQ, 48 ticks)  // 4.0 scale or below
+        // Quarter Notes        (1 PPQ, 192 ticks)              // 16.0 scale or below?
+        // Bars                         (1 * beatsPerPar PPQ, 192 * beatsPerPar ticks)  // 8.0 * beatsPerBar or below?
+        
+        int scale = parallelui.getDelayMultiplier();
+        if (scale >= 32)                // draw 16th notes
+            {
+        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ / 4, BAR_COLOR, g, beatsPerBar, false);
+            // draw beats
+            drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ, BAR_COLOR, g, beatsPerBar, false);
+        	// draw bars
+        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
+            }
+        
+        if (scale >= 8)               // draw beats
+            {
+        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ, BAR_COLOR, g, beatsPerBar, false);
+        	// draw bars
+        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
+            }
+		else if (scale >= 4)
+			{
+        	// draw bars
+        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
+			}
+		else
+			{
+        	// draw bars
+        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar * 4, BAR_COLOR, g, beatsPerBar, true);
+			}
+
+
+            // draw End Marker
+            g.setPaint(END_COLOR);
+            g.setStroke(END_STROKE);
+            double gpos = parallelui.timeToPixels(endTime);
+            g.draw(new Line2D.Double(gpos, 0, gpos, getBounds().height));
 
         // draw play
         // FIXME: Merge this lock with the one above?
@@ -159,10 +216,10 @@ public class Ruler extends JComponent
                 {
                 lock.unlock();
                 }
-
+            
             g.setPaint(PLAY_COLOR);
             g.setStroke(PLAY_STROKE);
-            double gpos = ParallelButton.pixelsToTime(pos);
+            gpos = parallelui.timeToPixels(pos);
             g.draw(new Line2D.Double(gpos, 0, gpos, getBounds().height));
             }
 

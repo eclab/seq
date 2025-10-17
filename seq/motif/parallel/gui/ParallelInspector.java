@@ -23,6 +23,7 @@ public class ParallelInspector extends WidgetList
     JComboBox childrenToSelect;
     SmallDial crossFade;
     JCheckBox crossFadeOn;
+    TimeDisplay end;
     
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
 
@@ -153,17 +154,33 @@ public class ParallelInspector extends WidgetList
             crossFadeOn.setToolTipText(CROSS_FADE_ON_TOOLTIP);
 
                 
+            end = new TimeDisplay(parallel.getEnd() , seq)
+                {
+                public int getTime()
+                    {
+                    return parallel.getEnd(); 
+                    }
+                        
+                public void setTime(int time)
+                    {
+                    parallel.setEnd(time);
+                    }
+                };
+            end.setDisplaysTime(true);
+            end.setToolTipText(END_TOOLTIP);
+
 
             }
         finally { lock.unlock(); }
 
-        JPanel result = build(new String[] { "Name", "Children Playing", "Cross-Fade", "Cross-Fade On", }, 
+        JPanel result = build(new String[] { "Name", "Children Playing", "Cross-Fade", "Cross-Fade On", "Max End Time"}, 
             new JComponent[] 
                 {
                 name,
                 childrenToSelect,
                 crossFade.getLabelledDial("0.000"),
                 crossFadeOn,
+                end,
                 });
         remove(result);
         add(result, BorderLayout.CENTER);               // re-add it as center
@@ -218,5 +235,7 @@ public class ParallelInspector extends WidgetList
     static final String CROSS_FADE_ON_TOOLTIP = "<html><b>Cross Fade On</b><br>" +
         "Select this to turn on <b>Cross Fade</b>.</html>";
 
-
+    static final String END_TOOLTIP = "<html><b>End</b><br>" +
+        "This determines the maximum length of the Parallel.  Child motifs may finish sooner than this,<br>" +
+        "but no child motif may finish later.</html>";
     }

@@ -26,6 +26,11 @@ import java.awt.datatransfer.*;
 
 public class ParallelUI extends MotifUI
     {
+    public static final int DEFAULT_BUTTON_DELAY_MULTIPLIER = 2;
+    public static final int MIN_BUTTON_DELAY_MULTIPLIER = 1;
+    public static final int MAX_BUTTON_DELAY_MULTIPLIER = 32;
+    int delayMultiplier = DEFAULT_BUTTON_DELAY_MULTIPLIER;
+
     Parallel parallel;
     ParallelChildInspector childInspector;
         
@@ -39,8 +44,50 @@ public class ParallelUI extends MotifUI
     
     Ruler ruler;
         
+    public int timeToPixels(int time)
+        {
+        return time * delayMultiplier / Seq.PPQ;
+        }
+    
+    public int pixelsToTime(int pixels)
+        {
+        return pixels * Seq.PPQ / delayMultiplier;
+        }
+    
+    /** Increases the resolution of the ParallelUI */
+    public void doZoomIn()
+        {
+        setDelayMultiplier(getDelayMultiplier() * 2);
+		for(MotifButton button : getButtons())
+			{
+			((ParallelButton)button).updateDelay();
+			}
+		repaint();
+        }
+
+    /** Decreases the resolution of the ParallelUI */
+    public void doZoomOut()
+        {
+        setDelayMultiplier(getDelayMultiplier() / 2);
+		for(MotifButton button : getButtons())
+			{
+			((ParallelButton)button).updateDelay();
+			}
+		repaint();
+        }
         
+    public int getDelayMultiplier() { return delayMultiplier; }
+    public void setDelayMultiplier(int val) 
+    	{ 
+    	if (val >= MIN_BUTTON_DELAY_MULTIPLIER && val <= MAX_BUTTON_DELAY_MULTIPLIER)
+    								 {
+    						delayMultiplier = val; 
+    						}
+    								 }
+    
     Box parallelBox = new Box(BoxLayout.Y_AXIS);
+    
+    public Parallel getParallel() { return parallel; }
     
     public Box getButtonBox() { return parallelBox; }
                 
@@ -131,6 +178,26 @@ public class ParallelUI extends MotifUI
         copyButton.setToolTipText(COPY_BUTTON_TOOLTIP);
 
 
+        PushButton zoomInButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/zoomin.png")))
+            {
+            public void perform()
+                {
+                doZoomIn();
+                }
+            };
+        zoomInButton.getButton().setPreferredSize(new Dimension(24, 24));
+        zoomInButton.setToolTipText(ZOOM_IN_BUTTON_TOOLTIP);
+
+        PushButton zoomOutButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/zoomout.png")))
+            {
+            public void perform()
+                {
+                doZoomOut();
+                }
+            };
+        zoomOutButton.getButton().setPreferredSize(new Dimension(24, 24));
+        zoomOutButton.setToolTipText(ZOOM_OUT_BUTTON_TOOLTIP);
+
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
                 
@@ -139,6 +206,11 @@ public class ParallelUI extends MotifUI
         addRemoveBox.add(removeButton);
         addRemoveBox.add(copyButton);
         console.add(addRemoveBox, BorderLayout.WEST);   
+                
+        Box otherBox = new Box(BoxLayout.X_AXIS);
+        otherBox.add(zoomInButton);
+        otherBox.add(zoomOutButton);
+        console.add(otherBox, BorderLayout.EAST);
                 
         return console; 
         }
@@ -197,7 +269,14 @@ public class ParallelUI extends MotifUI
     public void redraw(boolean inResponseToStep) 
         {
         updateText();
-        super.redraw(inResponseToStep);
+    	if (!inResponseToStep) 		// we're trying to cut down on the redrawing
+    		{
+    		super.redraw(inResponseToStep);
+    		}
+    	else
+    		{
+    		ruler.repaint();
+    		}
         }
           
     public void moveChild(ParallelButton button, int to)
@@ -699,4 +778,10 @@ public class ParallelUI extends MotifUI
     static final String COPY_BUTTON_TOOLTIP = "<html><b>Copy Motif</b><br>" +
         "Duplicates the selected motif from in the Parallel.</html>";
         
+    static final String ZOOM_IN_BUTTON_TOOLTIP = "<html><b>Zoom In</b><br>" +
+        "Magnifies the view of the Parallel timeline.</html>";
+        
+    static final String ZOOM_OUT_BUTTON_TOOLTIP = "<html><b>Zoom Out</b><br>" +
+        "Demagnifies the view of the Parallel timeline.</html>";
+
     }

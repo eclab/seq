@@ -25,8 +25,6 @@ import java.awt.datatransfer.*;
 
 public class ParallelButton extends MotifButton
     {
-    public static final int BUTTON_DELAY_MULTIPLIER = 2;
-
     int at;
     int delay = 0;
     
@@ -36,24 +34,19 @@ public class ParallelButton extends MotifButton
     Border originalBorder;
     Color originalBackground;
     
-    public static int timeToPixels(int time)
-        {
-        return time * BUTTON_DELAY_MULTIPLIER / Seq.PPQ;
-        }
-    
-    public static int pixelsToTime(int pixels)
-        {
-        return pixels * Seq.PPQ / BUTTON_DELAY_MULTIPLIER;
-        }
-    
-    public void setDelay(int val)
-        {
-        delay = val;
+    public void updateDelay()
+    	{
         updateText();
-        int slide = timeToPixels(val);
+        int slide = ((ParallelUI)owner).timeToPixels(delay);
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0,slide,0,0, /*originalBackground*/ Color.GRAY),
                 originalBorder));
+    	}
+    	
+    public void setDelay(int val)
+        {
+        delay = val;
+        updateDelay();
         }
     
     public ParallelButton(SeqUI sequi, MotifUI motifui, ParallelUI owner, int at)
