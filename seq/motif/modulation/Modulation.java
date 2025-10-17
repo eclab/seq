@@ -22,6 +22,7 @@ public class Modulation extends Motif
     public static final String ENVELOPE = "Envelope";
     public static final String STEP = "Step";                           // Repeating Step Sequence
     public static final String SAME = "Same";
+    public static final String CONSTANT = "Constant";
 
     // this index order is just the order of the combo box in ModulationChildInspector
     public static int typeIndex(String type)
@@ -42,9 +43,13 @@ public class Modulation extends Motif
             {
             return 3;
             }
-        else if (SAME.equals(type))
+        else if (CONSTANT.equals(type))
             {
             return 4;
+            }
+        else if (SAME.equals(type))
+            {
+            return 5;
             }
         else
             {
@@ -74,6 +79,10 @@ public class Modulation extends Motif
             }
         else if (index == 4)
             {
+            return new Constant();
+            }
+        else if (index == 5)
+            {
             return new Same();
             }
         else
@@ -101,6 +110,10 @@ public class Modulation extends Motif
         else if (STEP.equals(type))
             {
             return new Step(obj);
+            }
+        else if (CONSTANT.equals(type))
+            {
+            return new Constant(obj);
             }
         else if (SAME.equals(type))
             {
@@ -449,6 +462,27 @@ public class Modulation extends Motif
             }
         }
     
+    public class Constant extends Function
+        {
+        double value;
+
+        public double getValue() { return value; }
+        public void setValue(double val) { value = val; }
+                
+        public Constant() { }
+        public String getType() { return CONSTANT; }
+        
+        public Constant(JSONObject obj)
+            {
+            value = obj.optDouble("v", 0);
+            }
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            obj.put("v", value);
+            return obj;
+            }
+        }
     
     
                 
@@ -458,6 +492,17 @@ public class Modulation extends Motif
         } 
         
     Function[] functions = new Function[NUM_PARAMETERS];
+    
+    public Motif copy()
+    	{
+    	Modulation other = (Modulation)super.copy();
+    	for(int i = 0; i < functions.length; i++)
+    		{
+    		other.functions[i] = functions[i].copy();
+    		}
+    	return other;
+    	}
+    
     int from = 0;
     int to = 0;
     boolean always = true;
