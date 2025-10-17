@@ -1535,7 +1535,6 @@ public class SeqUI extends JPanel
     public boolean doQuit()
         {
         int choice = showSimpleChoice("Quit Seq", "Save sequence before quitting?", new String[] { "Cancel", "Save", "Quit" });
-        System.err.println(choice);
         
         if (choice == -1)                       // close box
             {
