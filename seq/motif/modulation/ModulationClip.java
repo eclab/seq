@@ -56,6 +56,17 @@ public class ModulationClip extends Clip
         }
         
         
+    public class Constant extends Node
+        {
+        public double update(int index, int position) 
+            {
+            Modulation modulation = (Modulation)getMotif();
+            Modulation.Constant func = (Modulation.Constant)(modulation.getFunction(index));
+            return func.getValue();
+            }
+        }
+        
+        
     public class LFO extends Node
         {
         double target = -1;
@@ -221,9 +232,7 @@ public class ModulationClip extends Clip
                     // We're repeating.  We need to mod the position to back within the envelope region 
                     if (finalTime > 0)
                         {
-//                      System.err.println("position " + position);
                         position = (position - finalTime) % (finalTime - startTime) + startTime;
-//                          System.err.println("revised " + position + " " + finalTime + " " + startTime);
                         }
                     // There is no envelope -- they're all zero values.  So just reset to startTime
                     else
@@ -250,7 +259,6 @@ public class ModulationClip extends Clip
             else if ((stage == 0 && !(position >= startTime && position < time[0])) ||
                 (stage > 0 && !(position >= time[stage - 1] && position < time[stage])))
                 {
-//                System.err.println("Refigure");
                 // We have to figure out the stage.  First try the next stage
                 if (stage < numStages - 1 && position >= time[stage] && position < time[stage + 1])
                     {
@@ -294,13 +302,10 @@ public class ModulationClip extends Clip
             
             if (envelope.getHold())
                 {
-//                System.err.println("HOLDING");
                 return target0;
                 }
             else
                 {
-//                System.err.println("" + stage + " " + time0 + " " + target0 + " " + time1 + " " + target1 + " " + position);
-//                System.err.println( (((position - time0) / (double) (time1 - time0)) * (target1 - target0) + target0));
                 return (((position - time0) / (double) (time1 - time0)) * (target1 - target0) + target0);
                 }
             }
@@ -419,6 +424,10 @@ public class ModulationClip extends Clip
         else if (Modulation.SAME.equals(type))
             {
             return new Same();
+            }
+        else if (Modulation.CONSTANT.equals(type))
+            {
+            return new Constant();
             }
         else
             {
