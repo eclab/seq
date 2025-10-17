@@ -74,6 +74,7 @@ public class MotifButton extends JToggleButton implements Transferable
                 "</font>" + 
                 (root ? "<br><b>Root</b>" : "") +
                 (owner == null ? "</html>" : ("<br>" + getSubtext() + "</html>"));
+                
             if (!text.equals(lastText))
                 {
                 setText(text);
