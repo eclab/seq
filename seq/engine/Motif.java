@@ -100,7 +100,7 @@ public abstract class Motif implements Cloneable
 
 
         // The parameter values
-        double[] parameters = new double[NUM_PARAMETERS];
+        private double[] parameters = new double[NUM_PARAMETERS];
 
         /** Return the value of the given parameter.   This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2)*/
         public double getParameter(int param) { return parameters[param]; }
@@ -143,7 +143,6 @@ public abstract class Motif implements Cloneable
             for(int i = 0; i < parameters.length; i++) 
                 {
                 parameters[i] = -(2 + i);       // Parent parameter value
-                //parameters[i] = 0.0;  // PARAMETER_UNBOUND; 
                 }
             this.motif = motif; 
             data = parent.buildData(motif);
@@ -242,6 +241,9 @@ public abstract class Motif implements Cloneable
     int version;
     // how many clips are playing right now?
     int playCount;
+    // What order am in the Motif list?  This is only used when saving and loading, and may be incorrect
+    // while the Motif is in use.
+    int order;
 
     public Motif(Seq seq)
         {
@@ -314,6 +316,9 @@ public abstract class Motif implements Cloneable
     String text = null;
     public String getText() { return text; }
     public void setText(String val) { text = val; }
+    
+    public int getOrder() { return order; }
+    public void setOrder(int val) { order = val; }
 
     ///// RANDOM NUMBER GENERATION
                 
@@ -950,6 +955,8 @@ public abstract class Motif implements Cloneable
         // text
         obj.put("text", getText());
         
+        obj.put("ord", getOrder());
+        
         // param names -- only save if they've been touched
         boolean pnameSet = false;
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
@@ -1075,6 +1082,8 @@ public abstract class Motif implements Cloneable
         
         // text
         text = from.optString("text", "");
+        
+        order = from.optInt("ord", 0);
 
         // parameter names
         JSONArray pname = from.optJSONArray("pname");
