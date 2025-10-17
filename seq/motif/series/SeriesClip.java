@@ -133,7 +133,10 @@ public class SeriesClip extends Clip
     public void terminate() 
         { 
         super.terminate();
-        if (playing != null) playing.terminate();
+        if (playing != null) 
+        	{
+        	playing.terminate();
+        	}
         }
 
     public static class Node
