@@ -1503,6 +1503,13 @@ public class Seq
         obj.put("rmin", randomMin);
         obj.put("seed", getDeterministicRandomSeed());
                 
+        // Set the display order
+        int order = 0;
+        for(Motif motif : motifs)
+        	{
+        	motif.setOrder(order++);
+        	}        
+        
         // Save the motifs
         JSONArray array = new JSONArray();
         HashSet<Motif> savedMotifs = new HashSet<>();
@@ -1585,6 +1592,17 @@ public class Seq
         seq.motifs = Motif.load(seq, obj.getJSONArray("motifs"), true);
         seq.data = seq.motifs.get(0);
         seq.root = seq.data.buildClip(null);
+        
+        // Sort by order
+        Collections.sort(seq.motifs, new Comparator<Motif>()
+        	{
+        	public int compare(Motif o1, Motif o2)
+        		{
+        		if (o1.getOrder() < o2.getOrder()) return -1;
+        		if (o1.getOrder() > o2.getOrder()) return 1;
+        		return 0;
+        		}
+        	});
         
         // Update MIDI
         seq.getLock().lock();
