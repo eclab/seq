@@ -165,7 +165,7 @@ public class Beep
 
     public Beep()
         {
-        synchronized(frequencyLock) { running = true; }
+        //synchronized(frequencyLock) { running = false; }
         Thread thread = new Thread(new Runnable()
             {
             int pos = 0;                        // Integer.MIN_VALUE;
@@ -198,6 +198,7 @@ public class Beep
                                 {
                                 try { frequencyLock.wait(); } catch (InterruptedException ex) { return; }
                                 }
+                            System.err.println("beep running");
                             }
                                                         
                         if (ramp == 1)          // steady-state, no ramping

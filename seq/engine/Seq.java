@@ -742,6 +742,9 @@ public class Seq
     /** Starts the Sequence from being stopped or paused. */
     public void play()
         {
+		firstMetronomeBeep = true;
+		firstCountInBeep = true;
+		
         startTimerTask(0);
         lock.lock();
         try
@@ -830,6 +833,8 @@ public class Seq
             lock.unlock();
             }
         updateGUI(false);
+		firstMetronomeBeep = true;
+		firstCountInBeep = true;
         }
     
     /** Blocks until the next time the sequence has stopped. */
@@ -1041,16 +1046,31 @@ public class Seq
         fastForwarding = false;
         updateGUI(false);
         }
-        
+    
+    static final int MAX_JITTER = 8; 
+    long lastTime = -1;
+    void testJitter()
+    	{
+    	long time = System.currentTimeMillis();
+    	if (time - lastTime > MAX_JITTER)
+    		{
+    		System.err.println("Jitter over " + (time - lastTime));
+    		}
+    	lastTime = time;
+    	}
     
     int ccount = 0;
     long lastCCTime = 0;
+    
+    boolean firstCountInBeep = true;
+    boolean firstMetronomeBeep = true;
     
     // Called by the timer to advance the sequencer one step.  
     // Returns TRUE if advance() believes that it is now finished after processing 
     // this step, that is, its NEXT step would exceed its length
     void step()
         {
+        //testJitter();
         lock.lock();
         try
             {
@@ -1060,6 +1080,8 @@ public class Seq
                         ((recording && (countInMode != COUNT_IN_NONE)) ||                   // we're recording, and the count-in is for recording 
                         ((playing && (countInMode == COUNT_IN_RECORDING_AND_PLAYING)))))    // we're playing, and teh count-in is for playing
                     {
+                    if (firstCountInBeep) { firstCountInBeep = false; beep.setRunning(true); System.err.println("COUNT IN"); }
+                    
                     // we're in the count-in phase
                     doBeep(Math.abs(bar) * PPQ - currentCountIn, getBeepBarFrequency(), getBeepBarFrequency() * 4);
                     if ((currentCountIn % PPQ) == 0)
@@ -1078,10 +1100,17 @@ public class Seq
 
                 else
                     {
+                    if (firstMetronomeBeep)
+                    	{
+                    	beep.setRunning(metronome == METRONOME_RECORDING_AND_PLAYING ||
+                    					(metronome == METRONOME_RECORDING_ONLY && isRecording()));
+                    	firstMetronomeBeep = false;
+                    	}
+
                     if (currentCountIn == 0)
                         {
                         setCountIn(currentCountIn);
-                        currentCountIn--;                                                       // we're done with count-ins
+                        currentCountIn--;				// we're done with count-ins
                         }
                     
                     if (clock == CLOCK_OUT)
