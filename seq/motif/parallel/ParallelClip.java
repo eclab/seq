@@ -311,16 +311,6 @@ public class ParallelClip extends Clip
         {
         Parallel parallel = (Parallel)getMotif();
         
-        if (getPosition() >= parallel.getEnd())
-        	{
-        	if (!ended)
-        		{
-        		release();
-        		ended = true;
-        		}
-        	return true;
-        	}
-
         boolean somebodyAdvanced = false;
         boolean firstAdvanced = false;
         if (nodes.isEmpty()) return true;
@@ -394,6 +384,18 @@ public class ParallelClip extends Clip
             testOverriding = false;                                                                             // we're not testing any more
             }
         current = -1;
+
+		// check if next time we'd be at our designated end.  If so, return true from now on.
+        if (getPosition() >= parallel.getEnd() - 1)
+        	{
+        	if (!ended)
+        		{
+        		release();
+        		ended = true;
+        		}
+        	return true;
+        	}
+
         return (!somebodyAdvanced || (!firstAdvanced && numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST));
         }
  
