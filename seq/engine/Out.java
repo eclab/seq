@@ -110,6 +110,7 @@ public class Out
         
     public boolean sendMIDI(MidiMessage message)
         {
+        //System.err.println(seq.getTime() + " -> " + Midi.format(message));
         Receiver receiver = null;
         //Receiver receiver = seq.emitter;
         Midi.Tuple tuple = seq.tuple;
