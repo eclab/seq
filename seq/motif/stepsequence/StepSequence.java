@@ -986,8 +986,10 @@ public class StepSequence extends Motif
         velocities = JSONToIntArray2(obj.getJSONArray("velocities"));
         flams = JSONToIntArray2(obj.getJSONArray("flams"));
         when = JSONToIntArray2(obj.getJSONArray("when"));
-        paramLSBs = JSONToIntArray2(obj.getJSONArray("plsbs"));
-        valueLSBs = JSONToIntArray2(obj.getJSONArray("vlsbs"));
+        JSONArray aa = obj.optJSONArray("plsbs");
+        if (aa != null) paramLSBs = JSONToIntArray2(aa);
+        JSONArray a = obj.optJSONArray("vlsbs");
+        if (aa != null) valueLSBs = JSONToIntArray2(aa);
         trackSwings = JSONToDoubleArray(obj.getJSONArray("trackswings"));
         trackGains = JSONToDoubleArray(obj.getJSONArray("trackgains"));
         trackExclusive = JSONToBooleanArray(obj.getJSONArray("trackexclusive"));

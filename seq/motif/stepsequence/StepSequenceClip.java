@@ -58,7 +58,7 @@ public class StepSequenceClip extends Clip
         playingStep = new int[numTracks];
         currentStep = new int[numTracks];
         currentPos = new double[numTracks];
-        clear();                                                                // clears the track notes and sets to OFF, sets playingStep to DEFAULT
+        cut();                                                                // clears the track notes and sets to OFF, sets playingStep to DEFAULT
         version = getMotif().getVersion();
         }
 
@@ -66,7 +66,7 @@ public class StepSequenceClip extends Clip
         {
         if (trackNoteOn[track] != OFF) 
             {
-            if (dSeq.getType() == StepSequence.TYPE_NOTE)
+           if (dSeq.getType() == StepSequence.TYPE_NOTE)
             	{
 	            noteOff(dSeq.getFinalOut(track), trackNoteOn[track], trackNoteID[track]);
 	            }
@@ -75,7 +75,7 @@ public class StepSequenceClip extends Clip
             }
         }
            
-    public void clear()
+    public void cut()
         {
         int numTracks = dSeq.getNumTracks();
 
