@@ -16,6 +16,7 @@ public class FilterClip extends Clip
     
     /// The four nodes representing our filter functions
     ArrayList<Node> nodes = new ArrayList<>();
+    
     // Our child, if any
     Clip clip;
 
@@ -27,47 +28,59 @@ public class FilterClip extends Clip
         
         // this function exists so both versions of noteOn(...) can call it, rather than each other, 
         // ans do so we can override either one of them, or both of them, in subclasses.  The big
-        // problematic class which necessitated this was Chord.
+        // problematic class which necessitated this was Delay.
         void _noteOn(int out, int note, double vel, int id, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1) 
                 {
-                if (seq.getRoot() == FilterClip.this) seq.noteOn(out, note, vel);
-                else getParent().noteOn(out, note, vel, id);
+                sendNoteOn(out, note, vel, id);
                 }
             else nodes.get(index + 1).noteOn(out, note, vel, id, index + 1);
             }
+            
         public void noteOn(int out, int note, double vel, int id, int index)    
             {
             _noteOn(out, note, vel, id, index);
             }
+            
         public int noteOn(int out, int note, double vel, int index)     
             {
             int id = noteID++;
             _noteOn(out, note, vel, id, index);
             return id;
             }
+            
         public void noteOff(int out, int note, double vel, int id, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1) 
                 {
-                if (seq.getRoot() == FilterClip.this) seq.noteOff(out, note, vel);
-                else getParent().noteOff(out, note, vel, id);
+                sendNoteOff(out, note, vel, id);
                 }
             else nodes.get(index + 1).noteOff(out, note, vel, id, index + 1);
             }
+            
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1) 
                 {
-                if (seq.getRoot() == FilterClip.this) seq.scheduleNoteOff(out, note, vel, time);
-                else getParent().scheduleNoteOff(out, note, vel, time, id);
+                sendScheduleNoteOff(out, note, vel, time, id);
                 }
             else nodes.get(index + 1).scheduleNoteOff(out, note, vel, time, id, index + 1);
             }
+            
+        public int scheduleNoteOn(int out, int note, double vel, int time, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            if (index == filter.NUM_TRANSFORMERS - 1) 
+                {
+                return sendScheduleNoteOn(out, note, vel, time);
+                }
+            else return nodes.get(index + 1).scheduleNoteOn(out, note, vel, time, index + 1);
+            }
+            
         public void sysex(int out, byte[] sysex, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -78,6 +91,7 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).sysex(out, sysex, index + 1);
             }
+            
         public void bend(int out, int val, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -88,6 +102,7 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).bend(out, val, index + 1);
             }
+            
         public void cc(int out, int cc, int val, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -98,6 +113,7 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).cc(out, cc, val, index + 1);
             }
+            
         public void pc(int out, int val, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -108,6 +124,7 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).pc(out, val, index + 1);
             }
+            
         public void aftertouch(int out, int note, int val, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -118,6 +135,7 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).aftertouch(out, note, val, index + 1);
             }
+            
         public void nrpn(int out, int nrpn, int val, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -128,6 +146,7 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).nrpn(out, nrpn, val, index + 1);
             }
+            
         public void nrpnCoarse(int out, int nrpn, int msb, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -138,6 +157,7 @@ public class FilterClip extends Clip
                 }
             else nodes.get(index + 1).nrpnCoarse(out, nrpn, msb, index + 1);
             }
+            
         public void rpn(int out, int rpn, int val, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -181,7 +201,7 @@ public class FilterClip extends Clip
                     {
                     Integer note = map.get(id);
                     Integer out = outs.get(id);
-                    super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
+                    super.noteOff(out.intValue(), note.intValue(), 0x40, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
                     }
                 }
                 
@@ -200,7 +220,7 @@ public class FilterClip extends Clip
                     {
                     Integer note = map.get(id);
                     Integer out = outs.get(id);
-                    super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
+                    super.noteOff(out.intValue(), note.intValue(), 0x40, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
                     }
                 }
                 
@@ -300,7 +320,7 @@ public class FilterClip extends Clip
                         
             if (changeLength)
                 {
-                super.scheduleNoteOff(out, note, (double)0x64, length, id, index);
+                super.scheduleNoteOff(out, note, (double)0x40, length, id, index);
                 mapScheduled.put(id, note);                                     // WARNING this could create a memory leak, better that than stuck notes?
                 }
             else
@@ -524,22 +544,152 @@ public class FilterClip extends Clip
         }
 
 
+public class Delay extends Node
+	{
+	class DelayNote
+		{
+		public int out;						// output of the original note and the delayed notes
+		public int note;					// pitch of the original note and the delayed notes
+		public int originalID = -1;			// id of the original note
+		public int[] delays;				// delays of the delayed notes
+		public int[] ids;					// id of the delayed notes
+		
+		public DelayNote(int out, int note, int numDelays, int originalID)
+			{
+			this.out = out;
+			this.note = note;
+			this.originalID = originalID;
+			this.ids = new int[numDelays];				// these will have to be set later
+			this.delays = new int[numDelays];			// these will have to be set later
+			}
+		}
+		
+	public void reset(int index)
+		{
+		clearNotes();
+		}
+	
+	public void cut(int index)
+		{
+		clearNotes();		// this doesn't clear, but rather releases, but we have to do it after the note-on onsets...
+		}
+		
+	public void release(int index)
+		{
+		clearNotes();		// sadly we don't know when the release should be!  So we have to fake it.
+		}
+		
 
+	// A map, of originalID -> DelayNote, of currently playing notes
+	HashMap<Integer, DelayNote> notePlaying = new HashMap<Integer, DelayNote>();
+	
+	// Turn off all playing notes.  We try to turn them off by a large enough delay
+	// that the note-off is AFTER the note-on.
+	void clearNotes()
+		{
+		for(Integer id : notePlaying.keySet())
+			{
+			DelayNote note = notePlaying.get(id);
 
+			// Clear original LENGTH after the onset, which is NOW
+			if (note.originalID >= 0)
+				{
+				sendNoteOff(note.out, note.note, 0x40, note.originalID);		// do it now
+				}
+			
+			// Clear the delays LENGTH after their corresponding onsets
+			for(int i = 0; i < note.delays.length; i++)
+				{
+				sendScheduleNoteOff(note.out, note.note, 0x40, note.delays[i], note.ids[i]);
+				}
+			}
+			
+		notePlaying.clear();
+		}
+		
+		
+	/** Play the original note if instructed to, then schedule all the delays.
+		Create a DelayNote and add it to the notePlaying hash.
+	*/
+	public void noteOn(int out, int note, double vel, int id, int index)    
+		{
+		Filter filter = (Filter)getMotif();
+		Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
+		
+		int numTimes = func.getNumTimes();
+		double cut = func.getCut();
+		int delayInterval = func.getDelayInterval();
+		boolean random = func.getRandom();
+		boolean original = func.getOriginal();
+		
+		DelayNote dnote = new DelayNote(out, note, numTimes, original ? id : -1);
+		
+		// Send original
+		if (func.getOriginal())
+			{
+			sendNoteOn(out, note, vel, id);
+			}
+		
+		// Send delays
+		for(int i = 0; i < numTimes; i++)
+			{
+			vel *= cut;
+			dnote.delays[i] = 
+				random ?
+					(int)(seq.getDeterministicRandom().nextDouble() * ((i + 1) * delayInterval)) :
+					(i + 1) * delayInterval;
+			dnote.ids[i] = sendScheduleNoteOn(out, note, vel, dnote.delays[i]);
+			notePlaying.put(id, dnote);
+			}
+		}
+                        
+	/** Stop playing the original note if instructed to, then schedule all the delays to be turned off.
+		Remove the DelayNote from the hash.
+	*/
+	public void noteOff(int out, int note, double vel, int id, int index)
+		{
+		Filter filter = (Filter)getMotif();
+		Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
+		
+		DelayNote dnote = notePlaying.remove(id);
+		if (dnote != null)
+			{
+			// Send original
+			if (dnote.originalID >= 0)
+				{
+				sendNoteOff(dnote.out, dnote.note, vel, dnote.originalID);
+				}
+				
+			for(int i = 0; i < dnote.delays.length; i++)
+				{
+				sendScheduleNoteOff(dnote.out, dnote.note, vel, dnote.delays[i], dnote.ids[i]);
+				}
+			}
+        }      
+	}
+	
+	
+	
+	
+/*
     /// Delay Node
     public class Delay extends Node
         {
+        final static int STATE_NOT_PLAYED = 0;
+        final static int STATE_PLAYED = 1;
+        final static int STATE_RELEASED = 2;
+        
         class DelayNote implements Comparable
             {
-            int pos;                                                // the timestamp at which I was inserted into the queue (not played -- that's the key for me in the heap)
-            int releasePos = -1;                    // the timestamp when I am supposed to be released
-            boolean played = false;                 // have I been played yet, and am now waiting to release?
-            int out;                                                // My out
-            int note;                                               // My pitch
-            double vel;                                             // My velocity
-            int id;                                                 // My id -- this is only set when I am played
-            int delay;
-            double releaseVel = 64;                    // My release velocity
+            int pos;                                // The timestamp at which I was inserted into the queue
+            int state = STATE_NOT_PLAYED;           // Have I been not played yet, played, or released?
+            int playPos;							// The timestamp at which I am supposed to be played
+            int releasePos = -1;                    // the timestamp when I am supposed to be released.  If -1, then this time has not yet been determined.
+            int out;                                // My out
+            int note;                               // My pitch
+            double vel;                             // My velocity
+            double releaseVel = 64;                 // My release velocity
+            int id;                                 // My id -- this is only set when I am played
 
             public DelayNote(int out, int note, double vel, int pos) 
                 { 
@@ -552,7 +702,7 @@ public class FilterClip extends Clip
             // the timestamp we should be sorted by
             public int sortTime()
                 {
-                return played ? releasePos : pos;
+                return state == STATE_NOT_PLAYED ? pos : (state == STATE_RELEASED ? Seq.MIN_MAX_TIME : releasePos);
                 }
 
             public int compareTo(Object obj)
@@ -568,14 +718,19 @@ public class FilterClip extends Clip
                         
         // All notes waiting to play or waiting to release, keyed by when they should be played or released
         Heap delay = new Heap();
+        
         // Arrays of delayed notes for a given incoming note, keyed by the id of the incoming note
         HashMap<Integer, DelayNote[]> delayedNotes = new HashMap<>();           // indexed by id
-                
                 
         public boolean finished()
             {
             return delay.size() == 0;
             }
+        
+        public void reset(int index)
+        	{
+        	release(index);
+        	}
                 
         // This is called when the Clip is processed, BEFORE noteOn/NoteOff/etc. may show up
         public void process(int index)
@@ -589,19 +744,36 @@ public class FilterClip extends Clip
                 if (i <= pos)
                     {
                     DelayNote note = (DelayNote)(delay.extractMin());
-                    if (!note.played)
+                    if (note.state == STATE_NOT_PLAYED)
                         {
+                        note.state = STATE_PLAYED;
+                        super.noteOn(note.out, note.note, note.vel, note.id, index);
+                        
+                        // reinsert only if we have a release pos!
+                        // This is tricky.  If we have a release pos,
+                        // the MIDI has already arrived, but we couldn't add the
+                        // released note then because it was already in the heap.  Now
+                        // that it's been removed from the delay, we can finally
+                        // re-add it.  So we want to add it now.
+                        //
+                        // But if we don't have a release pos, the MIDI has not
+                        // yet arrived, so we can't add it yet, and we'll add it
+                        // when the MIDI shows up.
+                        if (note.releasePos != -1)
+                        	{
+                        	delay.add(note, Integer.valueOf(note.releasePos));
+                        	}
+                        	                        
                         // this is tricky.  We can't call super.noteOn(...) without an ID because it will
                         // call noteOn(with ID), which calls OUR overridden version.  So we need to directly
                         // call super.noteOn(with ID), meaning that we need to generate our own ID here.
-                        note.id = noteID++;
-                        super.noteOn(note.out, note.note, note.vel, note.id, index);
-                        note.played = true;
-                        delay.add(note, note.releasePos);
+                        //note.id = noteID++;
+                        //super.noteOn(note.out, note.note, note.vel, note.id, index);
                         }
-                    else
+                    else if (note.state == STATE_PLAYED)
                         {
-                        super.noteOff(note.out, note.note, note.vel, note.id, index);                   // we do noteOff, not scheduleNoteOff
+                        note.state = STATE_RELEASED;
+                        super.noteOff(note.out, note.note, note.releaseVel, note.id, index);
                         }
                     }
                 else break;
@@ -616,9 +788,9 @@ public class FilterClip extends Clip
                 if (comp == null) break;
                 int i = ((Integer)comp).intValue();
                 DelayNote note = (DelayNote)(delay.extractMin());
-                if (note.played)
+                if (note.state == STATE_PLAYED)
                     {
-                    FilterClip.this.sendNoteOff(note.out, note.note, note.vel, note.id);                       // we do noteOff, not scheduleNoteOff
+                    sendNoteOff(note.out, note.note, note.releaseVel, note.id);
                     }
                 }
             delayedNotes.clear();
@@ -633,10 +805,33 @@ public class FilterClip extends Clip
                 if (comp == null) break;
                 int i = ((Integer)comp).intValue();
                 DelayNote note = (DelayNote)(delay.extractMin());
-                if (note.played && note.releasePos != -1)
+                if (note.state == STATE_PLAYED)
                     {
-                    FilterClip.this.scheduleNoteOff(note.out, note.note, note.vel, note.releasePos - pos, note.id);                    // we do noteOff, not scheduleNoteOff
+                    if (note.releasePos > 0)  // we have a release pos
+                    	{
+	                    System.err.println("Schedule for " + (note.releasePos - pos));
+                   	 	sendScheduleNoteOff(note.out, note.note, note.vel, note.releasePos - pos, note.id); 
+                   	 	}
+                   	else					// we should cut now
+                   		{
+	                    System.err.println("Cutting Now?");
+                   	 	sendNoteOff(note.out, note.note, note.vel, note.id); 
+                   		}
                     }
+                else if (note.state == STATE_NOT_PLAYED)
+                	{
+                    if (note.releasePos > 0)  // we have a release pos
+                    	{
+                     	System.err.println("Schedule ON for " + (note.playPos - pos));
+                    	note.id = sendScheduleNoteOn(note.out, note.note, note.vel, note.playPos - pos); 
+                   		System.err.println("Schedule OFF for " + (note.releasePos - pos));
+	                    sendScheduleNoteOff(note.out, note.note, note.vel, note.releasePos - pos, note.id);
+                    	}
+                    else
+                    	{
+                    	System.err.println("Not Playing");
+                    	}
+                	}
                 }
             delayedNotes.clear();
             }
@@ -646,8 +841,8 @@ public class FilterClip extends Clip
             Filter filter = (Filter)getMotif();
             Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
                         
-            //int initialDelay = func.getInitialDelay();
             boolean original = func.getOriginal();
+            boolean random = func.getRandom();
             double cut = getCorrectedValueDouble(func.getCut(), 1.0);
             int numTimes = getCorrectedValueInt(func.getNumTimes(), Filter.MAX_DELAY_NUM_TIMES);
             int delayInterval = func.getDelayInterval();
@@ -666,10 +861,18 @@ public class FilterClip extends Clip
                     {
                     vel = vel * cut;
                     notes[i] = new DelayNote(out, note, vel, pos);
-                    notes[i].delay = (i + 1) * delayInterval;
-                    delay.add(notes[i], Integer.valueOf(notes[i].delay));
+                    if (random)
+                    	{
+                    	notes[i].playPos = pos + (int)(seq.getDeterministicRandom().nextDouble() * ((i + 1) * delayInterval));
+                    	}
+                    else
+                    	{
+                    	notes[i].playPos = pos + (i + 1) * delayInterval;
+                    	}
+                    delay.add(notes[i], Integer.valueOf(notes[i].playPos));
                     if (delayInterval == 0) // have to do it NOW
                         {
+	                    notes[i].state = STATE_PLAYED;
                         super.noteOn(out, note, vel, id, index);
                         }
                     }
@@ -685,17 +888,33 @@ public class FilterClip extends Clip
             int delayInterval = func.getDelayInterval();
 
             // Add releases to the notes in hash
+            int pos = getPosition();
             DelayNote[] notes = delayedNotes.remove(id);
             if (notes != null)
                 {
                 for(int i = 0; i < notes.length; i++)
                     {
                     notes[i].releaseVel = vel;
-                    notes[i].releasePos = notes[i].pos + notes[i].delay;
+                    notes[i].releasePos = pos + notes[i].playPos;
                     if (delayInterval == 0) // have to do it NOW
                         {
+	                    notes[i].state = STATE_RELEASED;
                         super.noteOff(out, notes[i].note, vel, id, index);
                         }
+                    else
+                    	{
+                    	// We only add the released note if it's not already in
+                    	// the delay and being used as a play-note.  Otherwise
+                    	// we'll wait and add it after the play-note has played.
+                    	// See process() above. 
+                    	
+                    	System.err.println("Added for " + notes[i].releasePos);
+                    	if (notes[i].state != STATE_NOT_PLAYED)		// it's no longer in the heap
+                    		{
+                    		delay.add(notes[i], Integer.valueOf(notes[i].releasePos));
+                    		}
+                    	// else we'll wait until it comes up in the heap and then play it
+                    	}
                     }
                 }
             else
@@ -714,14 +933,17 @@ public class FilterClip extends Clip
             int delayInterval = func.getDelayInterval();
 
             // Add releases to the notes in hash
+            int pos = getPosition();
             DelayNote[] notes = delayedNotes.remove(id);
             if (notes != null)
                 {
                 for(int i = 0; i < notes.length; i++)
                     {
                     notes[i].releaseVel = vel;
-                    notes[i].releasePos = notes[i].pos + time + notes[i].delay;
-                    super.scheduleNoteOff(out, notes[i].note, vel, notes[i].releasePos, id, index);
+                    notes[i].releasePos = pos + notes[i].playPos;
+                    System.err.println("Schedule OFF for " + (pos - notes[i].releasePos));
+                    notes[i].state = STATE_RELEASED;
+                    super.scheduleNoteOff(out, notes[i].note, vel, (pos - notes[i].releasePos), id, index);
                     }
                 }
             else
@@ -731,7 +953,45 @@ public class FilterClip extends Clip
                 super.scheduleNoteOff(out, note, vel, time, id, index); 
                 }
             }
+
+        public int scheduleNoteOn(int out, int note, double vel, int time, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
+            int id = noteID++;
+                        
+                        //// FIXME
+                        
+            int delayInterval = func.getDelayInterval();
+
+            // Add releases to the notes in hash
+            int pos = getPosition();
+            DelayNote[] notes = delayedNotes.remove(id);
+            if (notes != null)
+                {
+                for(int i = 0; i < notes.length; i++)
+                    {
+                    notes[i].vel = vel;
+                    notes[i].pos = pos + notes[i].playPos;
+                    System.err.println("Schedule ON for " + (pos - notes[i].playPos));
+                    // Now the big issue is what my state is.
+                    if (notes[i].state == STATE_NOT_PLAYED)
+                    	{
+                    	notes[i].state = STATE_PLAYED;
+	                    super.scheduleNoteOn(out, notes[i].note, vel, (pos - notes[i].playPos), index);
+	                    }
+	                // else, um....?
+                    }
+                }
+            else
+                {
+                // We don't have this note, we need to pass it through
+                // Or if we have an initial delay of 0 we have to pass it through NOW
+                return super.scheduleNoteOn(out, note, vel, time, index); 
+                }
+            }
         }
+    */
 
 
     /// Noise Node
@@ -1095,7 +1355,7 @@ public class FilterClip extends Clip
                     {
                     Integer note = map.get(id);
                     Integer out = outs.get(id);
-                    super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
+                    super.noteOff(out.intValue(), note.intValue(), 0x40, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
                     }
                 }
                 
@@ -1114,7 +1374,7 @@ public class FilterClip extends Clip
                     {
                     Integer note = map.get(id);
                     Integer out = outs.get(id);
-                    super.noteOff(out.intValue(), note.intValue(), 0x64, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
+                    super.noteOff(out.intValue(), note.intValue(), 0x40, id.intValue(), index);             // should we send it this way or bypass and go straight to parent?
                     }
                 }
                 
@@ -1250,7 +1510,7 @@ public class FilterClip extends Clip
                 System.err.println("FilterClip.Chord.release(): non-released notes.");
                 for(Integer id : map.keySet())
                     {
-                    noteOffChord(id, 0x64, index);
+                    noteOffChord(id, 0x40, index);
                     }
                 }
                 
@@ -1267,7 +1527,7 @@ public class FilterClip extends Clip
                 System.err.println("FilterClip.Chord.release(): non-released notes.");
                 for(Integer id : map.keySet())
                     {
-                    noteOffChord(id, 0x64, index);
+                    noteOffChord(id, 0x40, index);
                     }
                 }
                 
@@ -1296,36 +1556,7 @@ public class FilterClip extends Clip
         }
 
 
-               
-    /// SENT MESSAGES
-    /// These are copies of the same messages in Clip, but with "send" in front.
-    /// They allow me to override the Clip messages to route MIDI to the 
-    /// filter, but have the filter send messages on with these.
-    public int sendNoteOn(int out, int note, double vel) 
-        {
-        int id = noteID++;
-        if (seq.getRoot() == this) seq.noteOn(out, note, vel);
-        else getParent().noteOn(out, note, vel, id); 
-        return id;
-        }
-        
-    public void sendNoteOff(int out, int note, double vel, int id) 
-        {
-        if (seq.getRoot() == this) seq.noteOff(out, note, vel);
-        else getParent().noteOff(out, note, vel, id); 
-        }
-        
-    public void sendScheduleNoteOff(int out, int note, double vel, int time, int id) 
-        {
-        if (seq.getRoot() == this) seq.scheduleNoteOff(out, note, vel, time);
-        else getParent().scheduleNoteOff(out, note, vel, time, id); 
-        }
-
-
-
-
-
-
+	/// MIDI INPUT
 
     public void noteOn(int out, int note, double vel, int id)    
         {
@@ -1336,6 +1567,7 @@ public class FilterClip extends Clip
         else
             super.noteOn(out, note, vel, id);
         }
+        
     public void noteOff(int out, int note, double vel, int id)
         {
         if (active())
@@ -1343,6 +1575,7 @@ public class FilterClip extends Clip
         else
             super.noteOff(out, note, vel, id);
         }
+        
     public void scheduleNoteOff(int out, int note, double vel, int time, int id)
         {
         if (active())
@@ -1350,6 +1583,15 @@ public class FilterClip extends Clip
         else 
             super.scheduleNoteOff(out, note, vel, time, id);
         }
+
+    public int scheduleNoteOn(int out, int note, double vel, int time)
+        {
+        if (active())
+            return nodes.get(0).scheduleNoteOn(out, note, vel, time, 0);
+        else 
+            return super.scheduleNoteOn(out, note, vel, time);
+        }
+
     public void sysex(int out, byte[] sysex)
         {
         if (active())
@@ -1357,6 +1599,7 @@ public class FilterClip extends Clip
         else 
             super.sysex(out, sysex);
         }
+        
     public void bend(int out, int val)
         {
         if (active())
@@ -1364,6 +1607,7 @@ public class FilterClip extends Clip
         else 
             super.bend(out, val);
         }
+        
     public void cc(int out, int cc, int val)
         {
         if (active())
@@ -1371,6 +1615,7 @@ public class FilterClip extends Clip
         else
             super.cc(out, cc, val);
         }
+        
     public void pc(int out, int val)
         {
         if (active())
@@ -1378,6 +1623,7 @@ public class FilterClip extends Clip
         else
             super.pc(out, val);
         }
+        
     public void aftertouch(int out, int note, int val)
         {
         if (active())
@@ -1385,6 +1631,7 @@ public class FilterClip extends Clip
         else 
             super.aftertouch(out, note, val);
         }
+        
     public void nrpn(int out, int nrpn, int val)
         {
         if (active())
@@ -1392,6 +1639,7 @@ public class FilterClip extends Clip
         else
             super.nrpn(out, nrpn, val);
         }
+        
     public void nrpnCoarse(int out, int nrpn, int msb)
         {
         if (active())
@@ -1399,6 +1647,7 @@ public class FilterClip extends Clip
         else
             super.nrpn(out, nrpn, msb);
         }
+        
     public void rpn(int out, int rpn, int val)
         {
         if (active())
@@ -1515,7 +1764,7 @@ public class FilterClip extends Clip
     public void loop()
         {
         super.loop();
-        Filter filter = (Filter)getMotif();
+       Filter filter = (Filter)getMotif();
 
         if (clip == null)
             {
@@ -1561,6 +1810,7 @@ public class FilterClip extends Clip
     public void release() 
         { 
         super.release();
+
 
         // release the kid first, so we get the remaining notes
         if (clip != null)
@@ -1624,10 +1874,13 @@ public class FilterClip extends Clip
             }
         
         // Our child may be done but we're not done yet...
+        /*
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
             {
             done = done && nodes.get(i).finished();
             }
+        */
+          
                 
         return done;
         }

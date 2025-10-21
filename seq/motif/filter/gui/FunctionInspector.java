@@ -515,6 +515,7 @@ public class FunctionInspector extends JPanel
         TimeDisplay delayInterval;
         SmallDial numTimes;
         SmallDial cut;
+        JCheckBox random;
                 
         public DelayInspector()
             {
@@ -618,6 +619,19 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                random = new JCheckBox();
+                random.setSelected(func.getRandom());
+                random.addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { func.setRandom(random.isSelected()); }
+                        finally { lock.unlock(); }                              
+                        }
+                    });
                 }
             finally 
                 {
@@ -630,7 +644,7 @@ public class FunctionInspector extends JPanel
             cut.setToolTipText(DELAY_CUT_TOOLTIP);
             numTimes.setToolTipText(DELAY_NUM_DELAYS_TOOLTIP);
                                                                         
-            build(new String[] { "", "Original", /*"Initial",*/ "Interval", "Cut", "Num Delays"}, 
+            build(new String[] { "", "Original", /*"Initial",*/ "Interval", "Cut", "Num Delays", "Random"}, 
                 new JComponent[] 
                     {
                     null,
@@ -638,7 +652,8 @@ public class FunctionInspector extends JPanel
                     //initialDelay,
                     delayInterval,
                     cut.getLabelledDial("0.0000"),
-                    numTimes.getLabelledDial("16")
+                    numTimes.getLabelledDial("16"),
+                    random,
                     });
             }
                         
@@ -653,6 +668,7 @@ public class FunctionInspector extends JPanel
                 Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
 
                 original.setSelected(func.getOriginal());
+                random.setSelected(func.getRandom());
                 }
             finally { lock.unlock(); }                              
             seq = old;

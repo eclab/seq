@@ -1229,6 +1229,7 @@ This effect adds delays and unison to notes.  You can add one or more delays to 
 \item {\bf Interval}\qquad The interval between successive delays. 
 \item {\bf Cut}\qquad How much to multiply the current delay volume by to get the volume of the next delay.  This eventually will cut delays down to 0 volume.
 \item {\bf Num Delays}\qquad How many delays to do (besides the original, if you're playing that one).
+\item {\bf Random}\qquad Whether the delay is fixed or random.  If random, then the actual delay will be between 0 and Interval in length.  This is particularly useful to humanize notes by adding a slightly randomized delay to when they're actually played.  To do this, set Original to false, set Cut to full, set Num Delays to 1, set Random to true, and then set Interval to the maximum delay length you'd want to add (usually something very small, perhaps 40 ticks).  Note that you cannot cause notes to be played slightly {\it earlier}, just {\it later}: Delay doesn't know what notes are arriving.
 \end{itemize}
 
 \paragraph{The Drop Effect}

@@ -329,6 +329,10 @@ public class Filter extends Motif
         int numTimes;                   // min is 0, max is MAX_DELAY_TIMES
         int delayInterval = Seq.PPQ / 4;                   // sixteenth note
         double cut;
+        boolean random;
+        
+        public boolean getRandom() { return random; }
+        public void setRandom(boolean val) { random = val; }
         
         public boolean getOriginal() { return original; }
         public void setOriginal(boolean val) { original = val; }        
@@ -352,6 +356,7 @@ public class Filter extends Motif
             numTimes = obj.optInt("n", 0);
             delayInterval = obj.optInt("d", 0);
             cut = obj.optDouble("c", 0);
+            random = obj.optBoolean("r", false);
             }
         public JSONObject save() throws JSONException
             {
@@ -361,6 +366,7 @@ public class Filter extends Motif
             obj.put("n", numTimes);
             obj.put("d", delayInterval);
             obj.put("c", cut);
+            obj.put("r", random);
             return obj;
             }
         }
