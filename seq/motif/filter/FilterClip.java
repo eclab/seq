@@ -22,14 +22,7 @@ public class FilterClip extends Clip
 
     public class Node
         {
-        // These are all identity functions.  They either forward to the next filter function
-        // or they go to parent() or they pass to seq.  We can't just call super() and let it handle
-        // seq because we're in an inner class, so we have to explicitly inline it here.  :-( 
-        
-        // this function exists so both versions of noteOn(...) can call it, rather than each other, 
-        // ans do so we can override either one of them, or both of them, in subclasses.  The big
-        // problematic class which necessitated this was Delay.
-        void _noteOn(int out, int note, double vel, int id, int index)
+        public void noteOn(int out, int note, double vel, int id, int index)    
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1) 
@@ -37,18 +30,6 @@ public class FilterClip extends Clip
                 sendNoteOn(out, note, vel, id);
                 }
             else nodes.get(index + 1).noteOn(out, note, vel, id, index + 1);
-            }
-            
-        public void noteOn(int out, int note, double vel, int id, int index)    
-            {
-            _noteOn(out, note, vel, id, index);
-            }
-            
-        public int noteOn(int out, int note, double vel, int index)     
-            {
-            int id = noteID++;
-            _noteOn(out, note, vel, id, index);
-            return id;
             }
             
         public void noteOff(int out, int note, double vel, int id, int index)
@@ -71,14 +52,14 @@ public class FilterClip extends Clip
             else nodes.get(index + 1).scheduleNoteOff(out, note, vel, time, id, index + 1);
             }
             
-        public int scheduleNoteOn(int out, int note, double vel, int time, int index)
+        public void scheduleNoteOn(int out, int note, double vel, int time, int id, int index)
             {
             Filter filter = (Filter)getMotif();
             if (index == filter.NUM_TRANSFORMERS - 1) 
                 {
-                return sendScheduleNoteOn(out, note, vel, time);
+                sendScheduleNoteOn(out, note, vel, time, id);
                 }
-            else return nodes.get(index + 1).scheduleNoteOn(out, note, vel, time, index + 1);
+            else nodes.get(index + 1).scheduleNoteOn(out, note, vel, time, id, index + 1);
             }
             
         public void sysex(int out, byte[] sysex, int index)
@@ -363,6 +344,45 @@ public class FilterClip extends Clip
                 }
             }
             
+        public void scheduleNoteOn(int out, int note, double vel, int time, int id, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
+            int _out = func.getOut();
+            int transpose = getCorrectedValueInt(func.getTranspose(), Filter.MAX_TRANSPOSE * 2);
+            double transposeV = getCorrectedValueDouble(func.getTransposeVariance(), 1.0);
+            double gain = getCorrectedValueDouble(func.getGain(), Filter.MAX_GAIN);
+            double gainV = getCorrectedValueDouble(func.getGainVariance(), 1.0);
+            int length = func.getLength();
+            boolean changeLength = func.getChangeLength();
+                        
+            if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
+            note += (transpose - Filter.MAX_TRANSPOSE);         // this centers it
+            if (transposeV != 0) note += (seq.getDeterministicRandom().nextDouble() * transposeV * 2 - 1) * Filter.MAX_TRANSPOSE_NOISE;
+            if (note > 127) note = 127;
+            if (note < 0) note = 0;
+            vel *= gain;
+            if (gainV != 0) 
+                {
+                double val = seq.getDeterministicRandom().nextDouble() * gainV * Filter.MAX_GAIN + 1.0;
+                if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
+                vel *= val;
+                }
+            super.scheduleNoteOn(out, note, vel, time, id, index);
+                        
+            if (changeLength)
+                {
+                super.scheduleNoteOff(out, note, (double)0x40, time + length, id, index);
+                mapScheduled.put(id, note);                                     // WARNING this could create a memory leak, better that than stuck notes?
+                }
+            else
+                {
+                map.put(id, note);
+                outs.put(id, out);
+                }
+            }
+            
+        
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -430,6 +450,26 @@ public class FilterClip extends Clip
                 super.noteOff(out, note, vel, id, index);
                 }
             }
+
+        public void scheduleNoteOn(int out, int note, double vel, int time, int id, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Drop func = (Filter.Drop)(filter.getFunction(index));
+            int pos = getPosition();
+            
+            double probability = getCorrectedValueDouble(func.getProbability(), 1.0);
+            if (func.getCut() || seq.getDeterministicRandom().nextDouble() < probability)
+                {
+                // drop
+                dropped.add(id);
+                }
+            else
+                {
+                // don't drop
+                super.scheduleNoteOn(out, note, vel, time, id, index);
+                }
+            }
+
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -566,17 +606,17 @@ public class Delay extends Node
 		
 	public void reset(int index)
 		{
-		clearNotes();
+		clearNotes(index);
 		}
 	
 	public void cut(int index)
 		{
-		clearNotes();		// this doesn't clear, but rather releases, but we have to do it after the note-on onsets...
+		clearNotes(index);		// this doesn't clear, but rather releases, but we have to do it after the note-on onsets...
 		}
 		
 	public void release(int index)
 		{
-		clearNotes();		// sadly we don't know when the release should be!  So we have to fake it.
+		clearNotes(index);		// sadly we don't know when the release should be!  So we have to fake it.
 		}
 		
 
@@ -585,7 +625,7 @@ public class Delay extends Node
 	
 	// Turn off all playing notes.  We try to turn them off by a large enough delay
 	// that the note-off is AFTER the note-on.
-	void clearNotes()
+	void clearNotes(int index)
 		{
 		for(Integer id : notePlaying.keySet())
 			{
@@ -594,13 +634,13 @@ public class Delay extends Node
 			// Clear original LENGTH after the onset, which is NOW
 			if (note.originalID >= 0)
 				{
-				sendNoteOff(note.out, note.note, 0x40, note.originalID);		// do it now
+				super.noteOff(note.out, note.note, 0x40, note.originalID, index);		// do it now
 				}
 			
 			// Clear the delays LENGTH after their corresponding onsets
 			for(int i = 0; i < note.delays.length; i++)
 				{
-				sendScheduleNoteOff(note.out, note.note, 0x40, note.delays[i], note.ids[i]);
+				super.scheduleNoteOff(note.out, note.note, 0x40, note.delays[i], note.ids[i], index);
 				}
 			}
 			
@@ -627,7 +667,7 @@ public class Delay extends Node
 		// Send original
 		if (func.getOriginal())
 			{
-			sendNoteOn(out, note, vel, id);
+			super.noteOn(out, note, vel, id, index);
 			}
 		
 		// Send delays
@@ -638,7 +678,7 @@ public class Delay extends Node
 				random ?
 					(int)(seq.getDeterministicRandom().nextDouble() * ((i + 1) * delayInterval)) :
 					(i + 1) * delayInterval;
-			dnote.ids[i] = sendScheduleNoteOn(out, note, vel, dnote.delays[i]);
+			super.scheduleNoteOn(out, note, vel, dnote.delays[i], dnote.ids[i] = noteID++, index);
 			notePlaying.put(id, dnote);
 			}
 		}
@@ -657,341 +697,17 @@ public class Delay extends Node
 			// Send original
 			if (dnote.originalID >= 0)
 				{
-				sendNoteOff(dnote.out, dnote.note, vel, dnote.originalID);
+				super.noteOff(dnote.out, dnote.note, vel, dnote.originalID, index);
 				}
 				
 			for(int i = 0; i < dnote.delays.length; i++)
 				{
-				sendScheduleNoteOff(dnote.out, dnote.note, vel, dnote.delays[i], dnote.ids[i]);
+				super.scheduleNoteOff(dnote.out, dnote.note, vel, dnote.delays[i], dnote.ids[i], index);
 				}
 			}
         }      
 	}
 	
-	
-	
-	
-/*
-    /// Delay Node
-    public class Delay extends Node
-        {
-        final static int STATE_NOT_PLAYED = 0;
-        final static int STATE_PLAYED = 1;
-        final static int STATE_RELEASED = 2;
-        
-        class DelayNote implements Comparable
-            {
-            int pos;                                // The timestamp at which I was inserted into the queue
-            int state = STATE_NOT_PLAYED;           // Have I been not played yet, played, or released?
-            int playPos;							// The timestamp at which I am supposed to be played
-            int releasePos = -1;                    // the timestamp when I am supposed to be released.  If -1, then this time has not yet been determined.
-            int out;                                // My out
-            int note;                               // My pitch
-            double vel;                             // My velocity
-            double releaseVel = 64;                 // My release velocity
-            int id;                                 // My id -- this is only set when I am played
-
-            public DelayNote(int out, int note, double vel, int pos) 
-                { 
-                this.out = out; 
-                this.note = note; 
-                this.vel = vel; 
-                this.pos = pos; 
-                }
-                
-            // the timestamp we should be sorted by
-            public int sortTime()
-                {
-                return state == STATE_NOT_PLAYED ? pos : (state == STATE_RELEASED ? Seq.MIN_MAX_TIME : releasePos);
-                }
-
-            public int compareTo(Object obj)
-                {
-                if (obj == null) return -1;
-                if (!(obj instanceof DelayNote)) return -1;
-                DelayNote note = (DelayNote)obj;
-                int st = sortTime();
-                int nst = note.sortTime();
-                return st < nst ? -1 : st == nst ? 0 : +1;
-                }
-            }
-                        
-        // All notes waiting to play or waiting to release, keyed by when they should be played or released
-        Heap delay = new Heap();
-        
-        // Arrays of delayed notes for a given incoming note, keyed by the id of the incoming note
-        HashMap<Integer, DelayNote[]> delayedNotes = new HashMap<>();           // indexed by id
-                
-        public boolean finished()
-            {
-            return delay.size() == 0;
-            }
-        
-        public void reset(int index)
-        	{
-        	release(index);
-        	}
-                
-        // This is called when the Clip is processed, BEFORE noteOn/NoteOff/etc. may show up
-        public void process(int index)
-            {
-            int pos = getPosition();
-            while(true)
-                {
-                Comparable comp = delay.getMinKey();
-                if (comp == null) break;
-                int i = ((Integer)comp).intValue();
-                if (i <= pos)
-                    {
-                    DelayNote note = (DelayNote)(delay.extractMin());
-                    if (note.state == STATE_NOT_PLAYED)
-                        {
-                        note.state = STATE_PLAYED;
-                        super.noteOn(note.out, note.note, note.vel, note.id, index);
-                        
-                        // reinsert only if we have a release pos!
-                        // This is tricky.  If we have a release pos,
-                        // the MIDI has already arrived, but we couldn't add the
-                        // released note then because it was already in the heap.  Now
-                        // that it's been removed from the delay, we can finally
-                        // re-add it.  So we want to add it now.
-                        //
-                        // But if we don't have a release pos, the MIDI has not
-                        // yet arrived, so we can't add it yet, and we'll add it
-                        // when the MIDI shows up.
-                        if (note.releasePos != -1)
-                        	{
-                        	delay.add(note, Integer.valueOf(note.releasePos));
-                        	}
-                        	                        
-                        // this is tricky.  We can't call super.noteOn(...) without an ID because it will
-                        // call noteOn(with ID), which calls OUR overridden version.  So we need to directly
-                        // call super.noteOn(with ID), meaning that we need to generate our own ID here.
-                        //note.id = noteID++;
-                        //super.noteOn(note.out, note.note, note.vel, note.id, index);
-                        }
-                    else if (note.state == STATE_PLAYED)
-                        {
-                        note.state = STATE_RELEASED;
-                        super.noteOff(note.out, note.note, note.releaseVel, note.id, index);
-                        }
-                    }
-                else break;
-                }
-            }
-                        
-        public void cut(int index)
-            {
-            while(true)             // clear out all of them
-                {
-                Comparable comp = delay.getMinKey();
-                if (comp == null) break;
-                int i = ((Integer)comp).intValue();
-                DelayNote note = (DelayNote)(delay.extractMin());
-                if (note.state == STATE_PLAYED)
-                    {
-                    sendNoteOff(note.out, note.note, note.releaseVel, note.id);
-                    }
-                }
-            delayedNotes.clear();
-            }
-                
-        public void release(int index)
-            {
-            int pos = getPosition();
-            while(true)             // clear out all of them
-                {
-                Comparable comp = delay.getMinKey();
-                if (comp == null) break;
-                int i = ((Integer)comp).intValue();
-                DelayNote note = (DelayNote)(delay.extractMin());
-                if (note.state == STATE_PLAYED)
-                    {
-                    if (note.releasePos > 0)  // we have a release pos
-                    	{
-	                    System.err.println("Schedule for " + (note.releasePos - pos));
-                   	 	sendScheduleNoteOff(note.out, note.note, note.vel, note.releasePos - pos, note.id); 
-                   	 	}
-                   	else					// we should cut now
-                   		{
-	                    System.err.println("Cutting Now?");
-                   	 	sendNoteOff(note.out, note.note, note.vel, note.id); 
-                   		}
-                    }
-                else if (note.state == STATE_NOT_PLAYED)
-                	{
-                    if (note.releasePos > 0)  // we have a release pos
-                    	{
-                     	System.err.println("Schedule ON for " + (note.playPos - pos));
-                    	note.id = sendScheduleNoteOn(note.out, note.note, note.vel, note.playPos - pos); 
-                   		System.err.println("Schedule OFF for " + (note.releasePos - pos));
-	                    sendScheduleNoteOff(note.out, note.note, note.vel, note.releasePos - pos, note.id);
-                    	}
-                    else
-                    	{
-                    	System.err.println("Not Playing");
-                    	}
-                	}
-                }
-            delayedNotes.clear();
-            }
-                
-        public void noteOn(int out, int note, double vel, int id, int index)    
-            {
-            Filter filter = (Filter)getMotif();
-            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
-                        
-            boolean original = func.getOriginal();
-            boolean random = func.getRandom();
-            double cut = getCorrectedValueDouble(func.getCut(), 1.0);
-            int numTimes = getCorrectedValueInt(func.getNumTimes(), Filter.MAX_DELAY_NUM_TIMES);
-            int delayInterval = func.getDelayInterval();
-            int pos = getPosition();
-                        
-            if (original)
-                {
-                super.noteOn(out, note, vel, id, index);
-                }            
-
-            // Add delays to the heap and hash
-            if (numTimes > 0)
-                {
-                DelayNote[] notes = new DelayNote[numTimes];
-                for(int i = 0; i < numTimes; i++)
-                    {
-                    vel = vel * cut;
-                    notes[i] = new DelayNote(out, note, vel, pos);
-                    if (random)
-                    	{
-                    	notes[i].playPos = pos + (int)(seq.getDeterministicRandom().nextDouble() * ((i + 1) * delayInterval));
-                    	}
-                    else
-                    	{
-                    	notes[i].playPos = pos + (i + 1) * delayInterval;
-                    	}
-                    delay.add(notes[i], Integer.valueOf(notes[i].playPos));
-                    if (delayInterval == 0) // have to do it NOW
-                        {
-	                    notes[i].state = STATE_PLAYED;
-                        super.noteOn(out, note, vel, id, index);
-                        }
-                    }
-                delayedNotes.put(id, notes);
-                }
-            }
-
-        public void noteOff(int out, int note, double vel, int id, int index)
-            {
-            Filter filter = (Filter)getMotif();
-            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
-                        
-            int delayInterval = func.getDelayInterval();
-
-            // Add releases to the notes in hash
-            int pos = getPosition();
-            DelayNote[] notes = delayedNotes.remove(id);
-            if (notes != null)
-                {
-                for(int i = 0; i < notes.length; i++)
-                    {
-                    notes[i].releaseVel = vel;
-                    notes[i].releasePos = pos + notes[i].playPos;
-                    if (delayInterval == 0) // have to do it NOW
-                        {
-	                    notes[i].state = STATE_RELEASED;
-                        super.noteOff(out, notes[i].note, vel, id, index);
-                        }
-                    else
-                    	{
-                    	// We only add the released note if it's not already in
-                    	// the delay and being used as a play-note.  Otherwise
-                    	// we'll wait and add it after the play-note has played.
-                    	// See process() above. 
-                    	
-                    	System.err.println("Added for " + notes[i].releasePos);
-                    	if (notes[i].state != STATE_NOT_PLAYED)		// it's no longer in the heap
-                    		{
-                    		delay.add(notes[i], Integer.valueOf(notes[i].releasePos));
-                    		}
-                    	// else we'll wait until it comes up in the heap and then play it
-                    	}
-                    }
-                }
-            else
-                {
-                // We don't have this note, we need to pass it through
-                // Or if we have an initial delay of 0 we have to pass it through NOW
-                super.noteOff(out, note, vel, id, index);
-                }
-            }
-            
-        public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
-            {
-            Filter filter = (Filter)getMotif();
-            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
-                        
-            int delayInterval = func.getDelayInterval();
-
-            // Add releases to the notes in hash
-            int pos = getPosition();
-            DelayNote[] notes = delayedNotes.remove(id);
-            if (notes != null)
-                {
-                for(int i = 0; i < notes.length; i++)
-                    {
-                    notes[i].releaseVel = vel;
-                    notes[i].releasePos = pos + notes[i].playPos;
-                    System.err.println("Schedule OFF for " + (pos - notes[i].releasePos));
-                    notes[i].state = STATE_RELEASED;
-                    super.scheduleNoteOff(out, notes[i].note, vel, (pos - notes[i].releasePos), id, index);
-                    }
-                }
-            else
-                {
-                // We don't have this note, we need to pass it through
-                // Or if we have an initial delay of 0 we have to pass it through NOW
-                super.scheduleNoteOff(out, note, vel, time, id, index); 
-                }
-            }
-
-        public int scheduleNoteOn(int out, int note, double vel, int time, int index)
-            {
-            Filter filter = (Filter)getMotif();
-            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
-            int id = noteID++;
-                        
-                        //// FIXME
-                        
-            int delayInterval = func.getDelayInterval();
-
-            // Add releases to the notes in hash
-            int pos = getPosition();
-            DelayNote[] notes = delayedNotes.remove(id);
-            if (notes != null)
-                {
-                for(int i = 0; i < notes.length; i++)
-                    {
-                    notes[i].vel = vel;
-                    notes[i].pos = pos + notes[i].playPos;
-                    System.err.println("Schedule ON for " + (pos - notes[i].playPos));
-                    // Now the big issue is what my state is.
-                    if (notes[i].state == STATE_NOT_PLAYED)
-                    	{
-                    	notes[i].state = STATE_PLAYED;
-	                    super.scheduleNoteOn(out, notes[i].note, vel, (pos - notes[i].playPos), index);
-	                    }
-	                // else, um....?
-                    }
-                }
-            else
-                {
-                // We don't have this note, we need to pass it through
-                // Or if we have an initial delay of 0 we have to pass it through NOW
-                return super.scheduleNoteOn(out, note, vel, time, index); 
-                }
-            }
-        }
-    */
 
 
     /// Noise Node
@@ -1414,6 +1130,16 @@ public class Delay extends Node
                 }
             }
             
+        public void scheduleNoteOn(int out, int note, double vel, int time, int id, int index)    
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Scale func = (Filter.Scale)(filter.getFunction(index));
+            int rounded = func.getRoundedNote(note);
+            map.put(id, rounded);
+            outs.put(id, out);
+            super.scheduleNoteOn(out, rounded, vel, time, id, index);
+            }
+            
         public void scheduleNoteOff(int out, int note, double vel, int time, int id, int index)
             {
             Filter filter = (Filter)getMotif();
@@ -1482,6 +1208,26 @@ public class Delay extends Node
                 }
             }
 
+        void scheduleNoteOnChord(int id, int out, int note, double vel, int time, int[] chord, int index)
+            {
+            int[] c = new int[chord.length];
+            for(int i = 0; i < chord.length; i++)
+                {
+                if (chord[i] == 1)
+                    {
+                    if (note + i < 128)
+                        {
+                        super.scheduleNoteOn(out, note + i, vel, time, c[i] = noteID++, index); // store id in chord slot
+                        }
+                    }
+                else c[i] = -1;         // no id
+                }
+                
+            chords.put(id, c);
+            outs.put(id, out);
+            map.put(id, note);
+            }
+        
         void noteOnChord(int id, int out, int note, double vel, int[] chord, int index)
             {
             int[] c = new int[chord.length];
@@ -1491,7 +1237,7 @@ public class Delay extends Node
                     {
                     if (note + i < 128)
                         {
-                        c[i] = super.noteOn(out, note + i, vel, index); // store id in chord slot
+                        super.noteOn(out, note + i, vel, c[i] = noteID++, index); // store id in chord slot
                         }
                     }
                 else c[i] = -1;         // no id
@@ -1553,6 +1299,14 @@ public class Delay extends Node
             {
             scheduleNoteOffChord(id, vel, time, index);
             }
+
+        public void scheduleNoteOn(int out, int note, double vel, int time, int id, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Chord func = (Filter.Chord)(filter.getFunction(index));
+            int[] chord = Filter.CHORDS[func.getChord()];
+            scheduleNoteOnChord(id, out, note, vel, time, chord, index);
+            }
         }
 
 
@@ -1584,12 +1338,12 @@ public class Delay extends Node
             super.scheduleNoteOff(out, note, vel, time, id);
         }
 
-    public int scheduleNoteOn(int out, int note, double vel, int time)
+    public void scheduleNoteOn(int out, int note, double vel, int time, int id)
         {
         if (active())
-            return nodes.get(0).scheduleNoteOn(out, note, vel, time, 0);
+            nodes.get(0).scheduleNoteOn(out, note, vel, time, id, 0);
         else 
-            return super.scheduleNoteOn(out, note, vel, time);
+            super.scheduleNoteOn(out, note, vel, time, id);
         }
 
     public void sysex(int out, byte[] sysex)

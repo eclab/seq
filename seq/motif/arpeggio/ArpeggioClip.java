@@ -27,6 +27,7 @@ public class ArpeggioClip extends Clip
         int id;
         int out;
         boolean tie;
+        boolean on;
 
         // this version generates its own id
         public Note(int pitch, int velocity)
@@ -44,12 +45,13 @@ public class ArpeggioClip extends Clip
             }
         
         // this version is used for incoming note off messages
-        public Note(int out, int pitch, int velocity, int id)
+        public Note(int out, int pitch, int velocity, int id, boolean on)
             {
             this.out = out;
             this.pitch = pitch;
             this.velocity = velocity;
             this.id = id;
+            this.on = on;
             }
             
         public void setID(int val)
@@ -168,7 +170,7 @@ public class ArpeggioClip extends Clip
          
             // Tell my internal heap to send note off messages to me so I can remove
             // them from the arpeggio                      
-            processNoteOffs(true);
+            processNoteOffs(true, true);
 
             // Clear the arpeggio chord
             removeAll();
@@ -270,7 +272,7 @@ public class ArpeggioClip extends Clip
                 
         // Tell my internal heap to send note off messages to me so I can remove
         // them from the arpeggio                      
-        //processNoteOffs(true);
+        //processNoteOffs(true, true);
         }
     
 
@@ -297,7 +299,7 @@ public class ArpeggioClip extends Clip
          
         // Tell my internal heap to send note off messages to me so I can remove
         // them from the arpeggio                      
-        //processNoteOffs(true);
+        //processNoteOffs(true, true);
         }
     
     
@@ -352,7 +354,7 @@ public class ArpeggioClip extends Clip
         Arpeggio arp = (Arpeggio)getMotif();
         if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
             {
-            noteOff.add(new Note(out, note, (int)vel, id), Integer.valueOf(time + seq.getTime()));
+            noteOff.add(new Note(out, note, (int)vel, id, false), Long.valueOf((time + seq.getTime()) * ((long)Integer.MAX_VALUE) + (noteQueueCounter++)));
             }
         else
             {
@@ -366,7 +368,7 @@ public class ArpeggioClip extends Clip
         if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
             {
             int id = noteID++;
-            noteOff.add(new Note(out, note, (int)vel, id), Integer.valueOf(time + seq.getTime()));
+            noteOff.add(new Note(out, note, (int)vel, id, true), Long.valueOf((time + seq.getTime()) * ((long)Integer.MAX_VALUE) + (noteQueueCounter++)));
         	return id; 
         	}
         else
@@ -376,22 +378,29 @@ public class ArpeggioClip extends Clip
         }        
 
 
-    // This is a modified copy of the same method in Seq, which removes
+    int noteQueueCounter = 0;
+    Heap noteQueue = new Heap();
+
+   // This is a modified copy of the same method in Seq, which removes
     // Note-Off messages and processes them if their time has come up.
-    void processNoteOffs(boolean all)
+    void processNoteOffs(boolean all, boolean noteOffsOnly)
         {
-        int position = getPosition();
+        int time = seq.getTime();
         while(true)
             {
-            Integer i = (Integer)(noteOff.getMinKey());
+            Long i = (Long)(noteQueue.getMinKey());
             if (i == null) return;
-            if (all || position >= i.intValue())
+            if (all || time >= (i.longValue() / Integer.MAX_VALUE))
                 {
-                Note note = (Note)(noteOff.extractMin());
-                if (!removeNote(note.id))                                                       // it wasn't there, I should pass it on
-                    {
-                    sendNoteOff(note.out, note.pitch, RELEASE_VELOCITY, note.id);
-                    }
+                Note note = (Note)(noteQueue.extractMin());
+                if (note.on)
+                	{
+   					if (!noteOffsOnly) noteOn(note.out, note.pitch, note.velocity, note.id);
+   					}
+                else 
+                	{
+                	noteOff(note.out, note.pitch, 0x40, note.id);
+                	}
                 }
             else break;
             }       
@@ -599,7 +608,7 @@ public class ArpeggioClip extends Clip
                 
         if (clip != null)
             {
-            processNoteOffs(false);
+            processNoteOffs(false, false);
                 
             // we want to advance the child FIRST so that it sends us new notes
             // before we advance the arpeggiator
