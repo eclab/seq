@@ -1003,8 +1003,10 @@ public class StepSequence extends Motif
         trackChokes = JSONToIntArray(obj.getJSONArray("trackchokes"));
         trackWhen = JSONToIntArray(obj.getJSONArray("trackwhen"));
         trackNames = JSONToStringArray(obj.getJSONArray("tracknames"));
-        trackParamLSBs = JSONToIntArray(obj.getJSONArray("tplsbs"));
-        trackValueLSBs = JSONToIntArray(obj.getJSONArray("tvlsbs"));
+        aa = obj.optJSONArray("tplsbs");
+        if (aa != null) trackParamLSBs = JSONToIntArray(aa);
+        aa = obj.optJSONArray("tvlsbs");
+        if (aa != null) trackValueLSBs = JSONToIntArray(aa);
         }
         
     public void save(JSONObject obj) throws JSONException
