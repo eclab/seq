@@ -435,17 +435,17 @@ public class StepSequenceInspector extends WidgetList
                     // Rebuild the Track and Step inspectors to force a the restructuring of note and velocity sliders
                     ssui.setSelectedTrackNum(ssui.getSelectedTrackNum());
                     ssui.setSelectedStepNum(ssui.getSelectedStepNum()); 
-                    getLabels()[4].setText(_type == StepSequence.TYPE_NOTE ? "Velocity " : "Value ");		// 4 is the Velocity/Value label
+                    getLabels()[4].setText(_type == StepSequence.TYPE_NOTE ? "Velocity " : "Value ");           // 4 is the Velocity/Value label
                     velocityLSBPanel.remove(defaultVelocityLSBDial);
                     velocityLSBPanel.remove(defaultVelocityLSBLabel);
-			        if (_type == StepSequence.TYPE_NRPN ||
-			        	_type == StepSequence.TYPE_RPN ||
-			        	_type == StepSequence.TYPE_PITCH_BEND)
-			        		{
-			        		velocityLSBPanel.add(defaultVelocityLSBLabel, BorderLayout.CENTER);
-			        		velocityLSBPanel.add(defaultVelocityLSBDial, BorderLayout.EAST);
-			        		}
-                    ssui.revalidate();	// force a resizing of the inspectors
+                    if (_type == StepSequence.TYPE_NRPN ||
+                        _type == StepSequence.TYPE_RPN ||
+                        _type == StepSequence.TYPE_PITCH_BEND)
+                        {
+                        velocityLSBPanel.add(defaultVelocityLSBLabel, BorderLayout.CENTER);
+                        velocityLSBPanel.add(defaultVelocityLSBDial, BorderLayout.EAST);
+                        }
+                    ssui.revalidate();  // force a resizing of the inspectors
                     }
                 });
 
@@ -470,19 +470,19 @@ public class StepSequenceInspector extends WidgetList
         swingPanel.add(setDefaultSwing, BorderLayout.EAST);
         swingPanel.setToolTipText(SWING_TOOLTIP);
 
-		int _type = ss.getType();
+        int _type = ss.getType();
         velocityLSBPanel = new JPanel();
         velocityLSBPanel.setLayout(new BorderLayout());
         velocityLSBPanel.add(defaultVelocity.getLabelledDial("Param 8"), BorderLayout.WEST);
         defaultVelocityLSBDial = defaultVelocityLSB.getLabelledDial("Param8");
         defaultVelocityLSBLabel = new JLabel(" LSB ");
-		if (_type == StepSequence.TYPE_NRPN ||
-			_type == StepSequence.TYPE_RPN ||
-			_type == StepSequence.TYPE_PITCH_BEND)
-				{
-				velocityLSBPanel.add(defaultVelocityLSBLabel, BorderLayout.CENTER); 
-		        velocityLSBPanel.add(defaultVelocityLSBDial, BorderLayout.EAST);
-				}
+        if (_type == StepSequence.TYPE_NRPN ||
+            _type == StepSequence.TYPE_RPN ||
+            _type == StepSequence.TYPE_PITCH_BEND)
+            {
+            velocityLSBPanel.add(defaultVelocityLSBLabel, BorderLayout.CENTER); 
+            velocityLSBPanel.add(defaultVelocityLSBDial, BorderLayout.EAST);
+            }
         JPanel velocityPanel = new JPanel();
         velocityPanel.setLayout(new BorderLayout());
         velocityPanel.add(velocityLSBPanel, BorderLayout.WEST);

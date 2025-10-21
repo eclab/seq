@@ -494,14 +494,14 @@ public class Modulation extends Motif
     Function[] functions = new Function[NUM_PARAMETERS];
     
     public Motif copy()
-    	{
-    	Modulation other = (Modulation)super.copy();
-    	for(int i = 0; i < functions.length; i++)
-    		{
-    		other.functions[i] = functions[i].copy();
-    		}
-    	return other;
-    	}
+        {
+        Modulation other = (Modulation)super.copy();
+        for(int i = 0; i < functions.length; i++)
+            {
+            other.functions[i] = functions[i].copy();
+            }
+        return other;
+        }
     
     int from = 0;
     int to = 0;

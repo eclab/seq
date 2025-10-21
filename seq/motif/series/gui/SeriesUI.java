@@ -186,10 +186,10 @@ public class SeriesUI extends MotifUI
     public void redraw(boolean inResponseToStep) 
         {
         updateText();
-    	if (!inResponseToStep) 		// we're trying to cut down on the redrawing
-    		{
-    		super.redraw(inResponseToStep);
-    		}
+        if (!inResponseToStep)          // we're trying to cut down on the redrawing
+            {
+            super.redraw(inResponseToStep);
+            }
         }
           
     public void moveChild(SeriesButton button, int to)

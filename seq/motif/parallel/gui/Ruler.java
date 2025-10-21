@@ -102,25 +102,25 @@ public class Ruler extends JComponent
                     g.setPaint(Color.BLACK);                        
                     }
                 else
-                	{
-                	starty = 12;
-                	g.setPaint(Color.BLACK);
-                	}
+                    {
+                    starty = 12;
+                    g.setPaint(Color.BLACK);
+                    }
                 vertical.setLine(_i, starty, _i, RULER_HEIGHT);
                 g.draw(vertical);
                 }
             
             if (beat)
-            	{                  
+                {                  
                 if (i == 0 || 
-                	((starty == 4)  &&               // Bar Text
-					 ((scale == 1 && ((i / (Seq.PPQ * beatsPerBar * 8)) * (Seq.PPQ * beatsPerBar * 8) == i)) ||   // every 4 measures if zoomed out
+                        ((starty == 4)  &&               // Bar Text
+                            ((scale == 1 && ((i / (Seq.PPQ * beatsPerBar * 8)) * (Seq.PPQ * beatsPerBar * 8) == i)) ||   // every 4 measures if zoomed out
 
-					 (scale == 2 && ((i / (Seq.PPQ * beatsPerBar * 4)) * (Seq.PPQ * beatsPerBar * 4) == i)) ||   // every 4 measures if zoomed out
+                            (scale == 2 && ((i / (Seq.PPQ * beatsPerBar * 4)) * (Seq.PPQ * beatsPerBar * 4) == i)) ||   // every 4 measures if zoomed out
 
-					 (scale == 4 && ((i / (Seq.PPQ * beatsPerBar * 2)) * (Seq.PPQ * beatsPerBar * 2) == i)) ||   // every 4 measures if zoomed out
+                            (scale == 4 && ((i / (Seq.PPQ * beatsPerBar * 2)) * (Seq.PPQ * beatsPerBar * 2) == i)) ||   // every 4 measures if zoomed out
 
-					 (scale > 4 && ((i / (Seq.PPQ * beatsPerBar * 1)) * (Seq.PPQ * beatsPerBar * 1) == i)))))   // every 4 measures if zoomed out
+                            (scale > 4 && ((i / (Seq.PPQ * beatsPerBar * 1)) * (Seq.PPQ * beatsPerBar * 1) == i)))))   // every 4 measures if zoomed out
                     {
                     g.setPaint(Color.BLACK);
                     int bar = (i / (Seq.PPQ * beatsPerBar)) + 1;
@@ -144,7 +144,7 @@ public class Ruler extends JComponent
         int start = bounds.x;
         int end = bounds.x + bounds.width;
 
-		int endTime = 0;
+        int endTime = 0;
         g.setPaint(BACKGROUND_COLOR);
         g.fill(bounds);
         
@@ -170,36 +170,36 @@ public class Ruler extends JComponent
         int scale = parallelui.getDelayMultiplier();
         if (scale >= 32)                // draw 16th notes
             {
-        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ / 4, BAR_COLOR, g, beatsPerBar, false);
+            drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ / 4, BAR_COLOR, g, beatsPerBar, false);
             // draw beats
             drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ, BAR_COLOR, g, beatsPerBar, false);
-        	// draw bars
-        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
+            // draw bars
+            drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
             }
         
         if (scale >= 8)               // draw beats
             {
-        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ, BAR_COLOR, g, beatsPerBar, false);
-        	// draw bars
-        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
+            drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ, BAR_COLOR, g, beatsPerBar, false);
+            // draw bars
+            drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
             }
-		else if (scale >= 4)
-			{
-        	// draw bars
-        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
-			}
-		else
-			{
-        	// draw bars
-        	drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar * 4, BAR_COLOR, g, beatsPerBar, true);
-			}
+        else if (scale >= 4)
+            {
+            // draw bars
+            drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar, BAR_COLOR, g, beatsPerBar, true);
+            }
+        else
+            {
+            // draw bars
+            drawVerticalBars(parallelui.pixelsToTime(start), parallelui.pixelsToTime(end), Seq.PPQ * beatsPerBar * 4, BAR_COLOR, g, beatsPerBar, true);
+            }
 
 
-            // draw End Marker
-            g.setPaint(END_COLOR);
-            g.setStroke(END_STROKE);
-            double gpos = parallelui.timeToPixels(endTime);
-            g.draw(new Line2D.Double(gpos, 0, gpos, getBounds().height));
+        // draw End Marker
+        g.setPaint(END_COLOR);
+        g.setStroke(END_STROKE);
+        double gpos = parallelui.timeToPixels(endTime);
+        g.draw(new Line2D.Double(gpos, 0, gpos, getBounds().height));
 
         // draw play
         // FIXME: Merge this lock with the one above?

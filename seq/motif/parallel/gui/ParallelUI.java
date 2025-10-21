@@ -58,32 +58,32 @@ public class ParallelUI extends MotifUI
     public void doZoomIn()
         {
         setDelayMultiplier(getDelayMultiplier() * 2);
-		for(MotifButton button : getButtons())
-			{
-			((ParallelButton)button).updateDelay();
-			}
-		repaint();
+        for(MotifButton button : getButtons())
+            {
+            ((ParallelButton)button).updateDelay();
+            }
+        repaint();
         }
 
     /** Decreases the resolution of the ParallelUI */
     public void doZoomOut()
         {
         setDelayMultiplier(getDelayMultiplier() / 2);
-		for(MotifButton button : getButtons())
-			{
-			((ParallelButton)button).updateDelay();
-			}
-		repaint();
+        for(MotifButton button : getButtons())
+            {
+            ((ParallelButton)button).updateDelay();
+            }
+        repaint();
         }
         
     public int getDelayMultiplier() { return delayMultiplier; }
     public void setDelayMultiplier(int val) 
-    	{ 
-    	if (val >= MIN_BUTTON_DELAY_MULTIPLIER && val <= MAX_BUTTON_DELAY_MULTIPLIER)
-    								 {
-    						delayMultiplier = val; 
-    						}
-    								 }
+        { 
+        if (val >= MIN_BUTTON_DELAY_MULTIPLIER && val <= MAX_BUTTON_DELAY_MULTIPLIER)
+            {
+            delayMultiplier = val; 
+            }
+        }
     
     Box parallelBox = new Box(BoxLayout.Y_AXIS);
     
@@ -269,14 +269,14 @@ public class ParallelUI extends MotifUI
     public void redraw(boolean inResponseToStep) 
         {
         updateText();
-    	if (!inResponseToStep) 		// we're trying to cut down on the redrawing
-    		{
-    		super.redraw(inResponseToStep);
-    		}
-    	else
-    		{
-    		ruler.repaint();
-    		}
+        if (!inResponseToStep)          // we're trying to cut down on the redrawing
+            {
+            super.redraw(inResponseToStep);
+            }
+        else
+            {
+            ruler.repaint();
+            }
         }
           
     public void moveChild(ParallelButton button, int to)

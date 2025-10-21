@@ -369,8 +369,8 @@ public class ArpeggioClip extends Clip
             {
             int id = noteID++;
             noteOff.add(new Note(out, note, (int)vel, id, true), Long.valueOf((time + seq.getTime()) * ((long)Integer.MAX_VALUE) + (noteQueueCounter++)));
-        	return id; 
-        	}
+            return id; 
+            }
         else
             {
             return super.scheduleNoteOn(out, note, vel, time);
@@ -381,7 +381,7 @@ public class ArpeggioClip extends Clip
     int noteQueueCounter = 0;
     Heap noteQueue = new Heap();
 
-   // This is a modified copy of the same method in Seq, which removes
+    // This is a modified copy of the same method in Seq, which removes
     // Note-Off messages and processes them if their time has come up.
     void processNoteOffs(boolean all, boolean noteOffsOnly)
         {
@@ -394,13 +394,13 @@ public class ArpeggioClip extends Clip
                 {
                 Note note = (Note)(noteQueue.extractMin());
                 if (note.on)
-                	{
-   					if (!noteOffsOnly) noteOn(note.out, note.pitch, note.velocity, note.id);
-   					}
+                    {
+                    if (!noteOffsOnly) noteOn(note.out, note.pitch, note.velocity, note.id);
+                    }
                 else 
-                	{
-                	noteOff(note.out, note.pitch, 0x40, note.id);
-                	}
+                    {
+                    noteOff(note.out, note.pitch, 0x40, note.id);
+                    }
                 }
             else break;
             }       

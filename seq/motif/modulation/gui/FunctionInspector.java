@@ -1178,7 +1178,7 @@ public class FunctionInspector extends JPanel
                     null,
                     value.getLabelledDial("0.0000"),
                     });
-	
+        
             }
 
         public void revise() 

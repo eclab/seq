@@ -134,9 +134,9 @@ public class SeriesClip extends Clip
         { 
         super.terminate();
         if (playing != null) 
-        	{
-        	playing.terminate();
-        	}
+            {
+            playing.terminate();
+            }
         }
 
     public static class Node
@@ -385,14 +385,14 @@ public class SeriesClip extends Clip
                 if (playingIndex == kids.size()) playingIndex--;
                 }
 
-			previous = playing;
-			if (previous != null) previous.terminate();
-			Node playingNode = getNode(playingIndex);
-			playing = playingNode.clip;
-			reset(playingNode);
-			playingNode.resetFinishedPlaying();
-			playingRepeat = 0;
-			}
+            previous = playing;
+            if (previous != null) previous.terminate();
+            Node playingNode = getNode(playingIndex);
+            playing = playingNode.clip;
+            reset(playingNode);
+            playingNode.resetFinishedPlaying();
+            playingRepeat = 0;
+            }
         else 
             {
             playing = null;
@@ -637,10 +637,10 @@ public class SeriesClip extends Clip
             return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
             }
         else 
-        	{
-        	System.err.println("SeriesClip.scheduleNoteOn: playingIndex was " + playingIndex);
-        	return noteID++;
-        	}
+            {
+            System.err.println("SeriesClip.scheduleNoteOn: playingIndex was " + playingIndex);
+            return noteID++;
+            }
         }
         
     // TESTING

@@ -95,13 +95,13 @@ public class ParallelClip extends Clip
         // As a result we have to go through the nodes by index rather than
         // use an iterator here.
         for(int i = 0; i < nodes.size(); i++)
-        	{
+            {
             if (nodes.get(i).clip.isPlaying()) 
                 {
                 current = i;
                 nodes.get(i).clip.terminate();
                 }
-        	}
+            }
         current = oldCurrent;
         }
 
@@ -279,13 +279,13 @@ public class ParallelClip extends Clip
         // As a result we have to go through the nodes by index rather than
         // use an iterator here.
         for(int i = 0; i < nodes.size(); i++)
-        	{
+            {
             if (nodes.get(i).clip.isPlaying()) 
                 {
                 current = i;
                 nodes.get(i).clip.release();
                 }
-        	}
+            }
         current = oldCurrent;
         }
     
@@ -385,16 +385,16 @@ public class ParallelClip extends Clip
             }
         current = -1;
 
-		// check if next time we'd be at our designated end.  If so, return true from now on.
+        // check if next time we'd be at our designated end.  If so, return true from now on.
         if (getPosition() >= parallel.getEnd() - 1)
-        	{
-        	if (!ended)
-        		{
-        		release();
-        		ended = true;
-        		}
-        	return true;
-        	}
+            {
+            if (!ended)
+                {
+                release();
+                ended = true;
+                }
+            return true;
+            }
 
         return (!somebodyAdvanced || (!firstAdvanced && numChildren == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST));
         }
@@ -477,7 +477,7 @@ public class ParallelClip extends Clip
             {
             return;
             }
-        if (current >= 0)			// Arpeggio will try to schedule during termination, when current == -1
+        if (current >= 0)                       // Arpeggio will try to schedule during termination, when current == -1
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();
@@ -502,7 +502,7 @@ public class ParallelClip extends Clip
             {
             return;         // I'm being overridden
             }
-        if (current >= 0)			// Arpeggio will try to schedule during termination, when current == -1
+        if (current >= 0)                       // Arpeggio will try to schedule during termination, when current == -1
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();
@@ -527,7 +527,7 @@ public class ParallelClip extends Clip
             {
             return noteID++;         // I'm being overridden
             }
-        if (current >= 0)			// Arpeggio will try to schedule during termination, when current == -1
+        if (current >= 0)                       // Arpeggio will try to schedule during termination, when current == -1
             {
             Node node = nodes.get(current);
             Parallel.Data data = node.getData();
@@ -545,10 +545,10 @@ public class ParallelClip extends Clip
             return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
             }
         else
-        	{
-        	System.err.println("ParallelClip.scheduleNoteOn: current is " + current);
-        	return noteID++;
-        	}
+            {
+            System.err.println("ParallelClip.scheduleNoteOn: current is " + current);
+            return noteID++;
+            }
         }
  
     public void sysex(int out, byte[] sysex)

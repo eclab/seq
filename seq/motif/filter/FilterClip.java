@@ -584,130 +584,130 @@ public class FilterClip extends Clip
         }
 
 
-public class Delay extends Node
-	{
-	class DelayNote
-		{
-		public int out;						// output of the original note and the delayed notes
-		public int note;					// pitch of the original note and the delayed notes
-		public int originalID = -1;			// id of the original note
-		public int[] delays;				// delays of the delayed notes
-		public int[] ids;					// id of the delayed notes
-		
-		public DelayNote(int out, int note, int numDelays, int originalID)
-			{
-			this.out = out;
-			this.note = note;
-			this.originalID = originalID;
-			this.ids = new int[numDelays];				// these will have to be set later
-			this.delays = new int[numDelays];			// these will have to be set later
-			}
-		}
-		
-	public void reset(int index)
-		{
-		clearNotes(index);
-		}
-	
-	public void cut(int index)
-		{
-		clearNotes(index);		// this doesn't clear, but rather releases, but we have to do it after the note-on onsets...
-		}
-		
-	public void release(int index)
-		{
-		clearNotes(index);		// sadly we don't know when the release should be!  So we have to fake it.
-		}
-		
+    public class Delay extends Node
+        {
+        class DelayNote
+            {
+            public int out;                                         // output of the original note and the delayed notes
+            public int note;                                        // pitch of the original note and the delayed notes
+            public int originalID = -1;                     // id of the original note
+            public int[] delays;                            // delays of the delayed notes
+            public int[] ids;                                       // id of the delayed notes
+                
+            public DelayNote(int out, int note, int numDelays, int originalID)
+                {
+                this.out = out;
+                this.note = note;
+                this.originalID = originalID;
+                this.ids = new int[numDelays];                          // these will have to be set later
+                this.delays = new int[numDelays];                       // these will have to be set later
+                }
+            }
+                
+        public void reset(int index)
+            {
+            clearNotes(index);
+            }
+        
+        public void cut(int index)
+            {
+            clearNotes(index);              // this doesn't clear, but rather releases, but we have to do it after the note-on onsets...
+            }
+                
+        public void release(int index)
+            {
+            clearNotes(index);              // sadly we don't know when the release should be!  So we have to fake it.
+            }
+                
 
-	// A map, of originalID -> DelayNote, of currently playing notes
-	HashMap<Integer, DelayNote> notePlaying = new HashMap<Integer, DelayNote>();
-	
-	// Turn off all playing notes.  We try to turn them off by a large enough delay
-	// that the note-off is AFTER the note-on.
-	void clearNotes(int index)
-		{
-		for(Integer id : notePlaying.keySet())
-			{
-			DelayNote note = notePlaying.get(id);
+        // A map, of originalID -> DelayNote, of currently playing notes
+        HashMap<Integer, DelayNote> notePlaying = new HashMap<Integer, DelayNote>();
+        
+        // Turn off all playing notes.  We try to turn them off by a large enough delay
+        // that the note-off is AFTER the note-on.
+        void clearNotes(int index)
+            {
+            for(Integer id : notePlaying.keySet())
+                {
+                DelayNote note = notePlaying.get(id);
 
-			// Clear original LENGTH after the onset, which is NOW
-			if (note.originalID >= 0)
-				{
-				super.noteOff(note.out, note.note, 0x40, note.originalID, index);		// do it now
-				}
-			
-			// Clear the delays LENGTH after their corresponding onsets
-			for(int i = 0; i < note.delays.length; i++)
-				{
-				super.scheduleNoteOff(note.out, note.note, 0x40, note.delays[i], note.ids[i], index);
-				}
-			}
-			
-		notePlaying.clear();
-		}
-		
-		
-	/** Play the original note if instructed to, then schedule all the delays.
-		Create a DelayNote and add it to the notePlaying hash.
-	*/
-	public void noteOn(int out, int note, double vel, int id, int index)    
-		{
-		Filter filter = (Filter)getMotif();
-		Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
-		
-		int numTimes = func.getNumTimes();
-		double cut = func.getCut();
-		int delayInterval = func.getDelayInterval();
-		boolean random = func.getRandom();
-		boolean original = func.getOriginal();
-		
-		DelayNote dnote = new DelayNote(out, note, numTimes, original ? id : -1);
-		
-		// Send original
-		if (func.getOriginal())
-			{
-			super.noteOn(out, note, vel, id, index);
-			}
-		
-		// Send delays
-		for(int i = 0; i < numTimes; i++)
-			{
-			vel *= cut;
-			dnote.delays[i] = 
-				random ?
-					(int)(seq.getDeterministicRandom().nextDouble() * ((i + 1) * delayInterval)) :
-					(i + 1) * delayInterval;
-			super.scheduleNoteOn(out, note, vel, dnote.delays[i], dnote.ids[i] = noteID++, index);
-			notePlaying.put(id, dnote);
-			}
-		}
+                // Clear original LENGTH after the onset, which is NOW
+                if (note.originalID >= 0)
+                    {
+                    super.noteOff(note.out, note.note, 0x40, note.originalID, index);               // do it now
+                    }
                         
-	/** Stop playing the original note if instructed to, then schedule all the delays to be turned off.
-		Remove the DelayNote from the hash.
-	*/
-	public void noteOff(int out, int note, double vel, int id, int index)
-		{
-		Filter filter = (Filter)getMotif();
-		Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
-		
-		DelayNote dnote = notePlaying.remove(id);
-		if (dnote != null)
-			{
-			// Send original
-			if (dnote.originalID >= 0)
-				{
-				super.noteOff(dnote.out, dnote.note, vel, dnote.originalID, index);
-				}
-				
-			for(int i = 0; i < dnote.delays.length; i++)
-				{
-				super.scheduleNoteOff(dnote.out, dnote.note, vel, dnote.delays[i], dnote.ids[i], index);
-				}
-			}
-        }      
-	}
-	
+                // Clear the delays LENGTH after their corresponding onsets
+                for(int i = 0; i < note.delays.length; i++)
+                    {
+                    super.scheduleNoteOff(note.out, note.note, 0x40, note.delays[i], note.ids[i], index);
+                    }
+                }
+                        
+            notePlaying.clear();
+            }
+                
+                
+        /** Play the original note if instructed to, then schedule all the delays.
+            Create a DelayNote and add it to the notePlaying hash.
+        */
+        public void noteOn(int out, int note, double vel, int id, int index)    
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
+                
+            int numTimes = func.getNumTimes();
+            double cut = func.getCut();
+            int delayInterval = func.getDelayInterval();
+            boolean random = func.getRandom();
+            boolean original = func.getOriginal();
+                
+            DelayNote dnote = new DelayNote(out, note, numTimes, original ? id : -1);
+                
+            // Send original
+            if (func.getOriginal())
+                {
+                super.noteOn(out, note, vel, id, index);
+                }
+                
+            // Send delays
+            for(int i = 0; i < numTimes; i++)
+                {
+                vel *= cut;
+                dnote.delays[i] = 
+                    random ?
+                    (int)(seq.getDeterministicRandom().nextDouble() * ((i + 1) * delayInterval)) :
+                    (i + 1) * delayInterval;
+                super.scheduleNoteOn(out, note, vel, dnote.delays[i], dnote.ids[i] = noteID++, index);
+                notePlaying.put(id, dnote);
+                }
+            }
+                        
+        /** Stop playing the original note if instructed to, then schedule all the delays to be turned off.
+            Remove the DelayNote from the hash.
+        */
+        public void noteOff(int out, int note, double vel, int id, int index)
+            {
+            Filter filter = (Filter)getMotif();
+            Filter.Delay func = (Filter.Delay)(filter.getFunction(index));
+                
+            DelayNote dnote = notePlaying.remove(id);
+            if (dnote != null)
+                {
+                // Send original
+                if (dnote.originalID >= 0)
+                    {
+                    super.noteOff(dnote.out, dnote.note, vel, dnote.originalID, index);
+                    }
+                                
+                for(int i = 0; i < dnote.delays.length; i++)
+                    {
+                    super.scheduleNoteOff(dnote.out, dnote.note, vel, dnote.delays[i], dnote.ids[i], index);
+                    }
+                }
+            }      
+        }
+        
 
 
     /// Noise Node
@@ -1310,7 +1310,7 @@ public class Delay extends Node
         }
 
 
-	/// MIDI INPUT
+    /// MIDI INPUT
 
     public void noteOn(int out, int note, double vel, int id)    
         {
@@ -1518,7 +1518,7 @@ public class Delay extends Node
     public void loop()
         {
         super.loop();
-       Filter filter = (Filter)getMotif();
+        Filter filter = (Filter)getMotif();
 
         if (clip == null)
             {
@@ -1629,10 +1629,10 @@ public class Delay extends Node
         
         // Our child may be done but we're not done yet...
         /*
-        for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-            {
-            done = done && nodes.get(i).finished();
-            }
+          for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
+          {
+          done = done && nodes.get(i).finished();
+          }
         */
           
                 

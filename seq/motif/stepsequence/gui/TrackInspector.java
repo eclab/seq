@@ -93,8 +93,8 @@ public class TrackInspector extends WidgetList
         this.trackNum = trackNum;
         this.ssui = ssui;
         buildDefaults(ss);
-		int type = 0;
-		
+        int type = 0;
+                
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
@@ -125,14 +125,14 @@ public class TrackInspector extends WidgetList
                     int n = (int)(val * 127); 
                     
                     if (_type == StepSequence.TYPE_NOTE ||
-                    	_type == StepSequence.TYPE_POLYPHONIC_AFTERTOUCH)
-                    		{
-                    		return NOTES[n % 12] + ((n / 12) - 2); 
-                    		}
-                    	else
-                    		{
-                    		return "" + n;
-                    		}
+                        _type == StepSequence.TYPE_POLYPHONIC_AFTERTOUCH)
+                        {
+                        return NOTES[n % 12] + ((n / 12) - 2); 
+                        }
+                    else
+                        {
+                        return "" + n;
+                        }
                     }
                 public double getValue() 
                     { 
@@ -214,10 +214,10 @@ public class TrackInspector extends WidgetList
                         {
                         int len = ss.getNumSteps(trackNum);
                         for(int i = 0; i < len; i++) 
-                        	{ 
-                        	ss.setNote(trackNum, i, StepSequence.DEFAULT); 
-                        	ss.setParamLSB(trackNum, i, StepSequence.DEFAULT); 
-                        	}
+                            { 
+                            ss.setNote(trackNum, i, StepSequence.DEFAULT); 
+                            ss.setParamLSB(trackNum, i, StepSequence.DEFAULT); 
+                            }
                         }
                     finally { lock.unlock(); }
                     ssui.getStepInspector().revise();
@@ -516,10 +516,10 @@ public class TrackInspector extends WidgetList
                         {
                         int len = ss.getNumSteps(trackNum);
                         for(int i = 0; i < len; i++) 
-                        	{ 
-                        	ss.setVelocity(trackNum, i, StepSequence.DEFAULT); 
-                        	ss.setValueLSB(trackNum, i, StepSequence.DEFAULT); 
-                        	}
+                            { 
+                            ss.setVelocity(trackNum, i, StepSequence.DEFAULT); 
+                            ss.setValueLSB(trackNum, i, StepSequence.DEFAULT); 
+                            }
                         }
                     finally { lock.unlock(); }
                     ssui.getStepInspector().revise();
@@ -650,11 +650,11 @@ public class TrackInspector extends WidgetList
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
         innerPanel.add(trackNote.getLabelledDial("Param 8"));
         if (type == StepSequence.TYPE_NRPN ||
-        	type == StepSequence.TYPE_RPN)
-        		{
-	    	    innerPanel.add(new JLabel(" LSB "));
-    	    	innerPanel.add(trackNoteLSB.getLabelledDial("Param 8"));
-    	    	}
+            type == StepSequence.TYPE_RPN)
+            {
+            innerPanel.add(new JLabel(" LSB "));
+            innerPanel.add(trackNoteLSB.getLabelledDial("Param 8"));
+            }
         notePanel.setLayout(new BorderLayout());
         notePanel.add(innerPanel, BorderLayout.WEST);
         notePanel.add(setTrackNote, BorderLayout.EAST);
@@ -666,12 +666,12 @@ public class TrackInspector extends WidgetList
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
         innerPanel.add(trackVelocity.getLabelledDial("Param 8"));
         if (type == StepSequence.TYPE_NRPN ||
-        	type == StepSequence.TYPE_RPN ||
-        	type == StepSequence.TYPE_PITCH_BEND)
-        		{
-		        innerPanel.add(new JLabel(" LSB "));
-        		innerPanel.add(trackVelocityLSB.getLabelledDial("Param 8"));
-        		}
+            type == StepSequence.TYPE_RPN ||
+            type == StepSequence.TYPE_PITCH_BEND)
+            {
+            innerPanel.add(new JLabel(" LSB "));
+            innerPanel.add(trackVelocityLSB.getLabelledDial("Param 8"));
+            }
         velocityPanel.setLayout(new BorderLayout());
         velocityPanel.add(innerPanel, BorderLayout.WEST);
         velocityPanel.add(setTrackVelocity, BorderLayout.EAST);

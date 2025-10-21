@@ -139,9 +139,9 @@ public class Parallel extends Motif
     public boolean getCrossFadeOn() { return crossFadeOn; }
     public void setCrossFadeOn(boolean val) { crossFadeOn = val; }
         
-	int end = Seq.MIN_MAX_TIME;
-	public int getEnd() { return end; }
-	public void setEnd(int val) { end = val; }
+    int end = Seq.MIN_MAX_TIME;
+    public int getEnd() { return end; }
+    public void setEnd(int val) { end = val; }
 
 
     public Clip buildClip(Clip parent)

@@ -93,18 +93,18 @@ public class StepInspector extends WidgetList
             stepNote = new SmallDial(-1, defaults)
                 {
                 protected String map(double val) 
-                    {                     		
+                    {                                   
                     int n = (int)(val * 127); 
 
                     if (_type == StepSequence.TYPE_NOTE ||
-                    	_type == StepSequence.TYPE_POLYPHONIC_AFTERTOUCH)
-                    		{
-                    		return NOTES[n % 12] + ((n / 12) - 2); 
-                    		}
-                    	else
-                    		{
-                    		return "" + n;
-                    		}
+                        _type == StepSequence.TYPE_POLYPHONIC_AFTERTOUCH)
+                        {
+                        return NOTES[n % 12] + ((n / 12) - 2); 
+                        }
+                    else
+                        {
+                        return "" + n;
+                        }
                     }
                 public double getValue() 
                     { 
@@ -295,25 +295,25 @@ public class StepInspector extends WidgetList
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
         innerPanel.add(stepNote.getLabelledDial("Param 8"));
         if (type == StepSequence.TYPE_NRPN ||
-        	type == StepSequence.TYPE_RPN)
-        		{
-        		innerPanel.add(new JLabel(" LSB "));
-        		innerPanel.add(stepNoteLSB.getLabelledDial("Param 8"));
-        		}
+            type == StepSequence.TYPE_RPN)
+            {
+            innerPanel.add(new JLabel(" LSB "));
+            innerPanel.add(stepNoteLSB.getLabelledDial("Param 8"));
+            }
         notePanel.setLayout(new BorderLayout());
         notePanel.add(innerPanel, BorderLayout.WEST);
 
         JPanel velocityPanel = new JPanel();
-     	innerPanel = new JPanel();
+        innerPanel = new JPanel();
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
-        innerPanel.add(stepVelocity.getLabelledDial("Param 8"));		// so it lines up with the notes
+        innerPanel.add(stepVelocity.getLabelledDial("Param 8"));                // so it lines up with the notes
         if (type == StepSequence.TYPE_NRPN ||
-        	type == StepSequence.TYPE_RPN ||
-        	type == StepSequence.TYPE_PITCH_BEND)
-        		{
-        		innerPanel.add(new JLabel(" LSB "));
-        		innerPanel.add(stepVelocityLSB.getLabelledDial("Param 8"));
-        		}
+            type == StepSequence.TYPE_RPN ||
+            type == StepSequence.TYPE_PITCH_BEND)
+            {
+            innerPanel.add(new JLabel(" LSB "));
+            innerPanel.add(stepVelocityLSB.getLabelledDial("Param 8"));
+            }
         velocityPanel.setLayout(new BorderLayout());
         velocityPanel.add(innerPanel, BorderLayout.WEST);
 

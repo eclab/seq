@@ -35,14 +35,14 @@ public class ParallelButton extends MotifButton
     Color originalBackground;
     
     public void updateDelay()
-    	{
+        {
         updateText();
         int slide = ((ParallelUI)owner).timeToPixels(delay);
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0,slide,0,0, /*originalBackground*/ Color.GRAY),
                 originalBorder));
-    	}
-    	
+        }
+        
     public void setDelay(int val)
         {
         delay = val;

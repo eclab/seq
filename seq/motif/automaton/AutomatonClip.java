@@ -65,13 +65,13 @@ public class AutomatonClip extends Clip
             {
             if (thread.child != null)
                 {
-            Automaton.MotifNode oldNode = currentNode;
-            if (thread.node instanceof Automaton.MotifNode) currentNode = (Automaton.MotifNode)(thread.node);
+                Automaton.MotifNode oldNode = currentNode;
+                if (thread.node instanceof Automaton.MotifNode) currentNode = (Automaton.MotifNode)(thread.node);
                 thread.child.terminate();
-            currentNode = oldNode;
+                currentNode = oldNode;
                 }
             if (thread.node instanceof Automaton.Chord)
-            	{
+                {
                 Automaton.Chord achord = (Automaton.Chord) thread.node;
                     {
                     int release = achord.getRelease();
@@ -94,10 +94,10 @@ public class AutomatonClip extends Clip
             {
             if (thread.child != null)
                 {
-            Automaton.MotifNode oldNode = currentNode;
-            if (thread.node instanceof Automaton.MotifNode) currentNode = (Automaton.MotifNode)(thread.node);
+                Automaton.MotifNode oldNode = currentNode;
+                if (thread.node instanceof Automaton.MotifNode) currentNode = (Automaton.MotifNode)(thread.node);
                 thread.child.terminate();
-            currentNode = oldNode;
+                currentNode = oldNode;
                 }
 
             if (thread.node instanceof Automaton.Chord){
@@ -861,10 +861,10 @@ public class AutomatonClip extends Clip
             return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(currentNode.getRate())));
             }
         else 
-        	{
-        	System.err.println("SeriesClip.scheduleNoteOff: currentNode is null");
-        	return noteID++;
-        	}
+            {
+            System.err.println("SeriesClip.scheduleNoteOff: currentNode is null");
+            return noteID++;
+            }
         }
         
 

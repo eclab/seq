@@ -386,16 +386,16 @@ public class Seq
         Runtime.getRuntime().addShutdownHook(shutdownHook = new Thread(new Runnable()
             {
             public void run() 
-            	{ 
-            	try 
-            		{ 
-            			if (root != null)
-            				{
-            				stop();
-			            	} 
-			        }
-			    catch (Exception ex) { }   // not threadsafe of course
-			    }
+                { 
+                try 
+                    { 
+                    if (root != null)
+                        {
+                        stop();
+                        } 
+                    }
+                catch (Exception ex) { }   // not threadsafe of course
+                }
             }));
         shutdownHook.setName("Seq Shutdown Hook");
 
@@ -752,9 +752,9 @@ public class Seq
     /** Starts the Sequence from being stopped or paused. */
     public void play()
         {
-		firstMetronomeBeep = true;
-		firstCountInBeep = true;
-		
+        firstMetronomeBeep = true;
+        firstCountInBeep = true;
+                
         startTimerTask(0);
         lock.lock();
         try
@@ -843,8 +843,8 @@ public class Seq
             lock.unlock();
             }
         updateGUI(false);
-		firstMetronomeBeep = true;
-		firstCountInBeep = true;
+        firstMetronomeBeep = true;
+        firstCountInBeep = true;
         }
     
     /** Blocks until the next time the sequence has stopped. */
@@ -1060,14 +1060,14 @@ public class Seq
     static final int MAX_JITTER = 8; 
     long lastTime = -1;
     void testJitter()
-    	{
-    	long time = System.currentTimeMillis();
-    	if (time - lastTime > MAX_JITTER)
-    		{
-    		System.err.println("Jitter over " + (time - lastTime));
-    		}
-    	lastTime = time;
-    	}
+        {
+        long time = System.currentTimeMillis();
+        if (time - lastTime > MAX_JITTER)
+            {
+            System.err.println("Jitter over " + (time - lastTime));
+            }
+        lastTime = time;
+        }
     
     int ccount = 0;
     long lastCCTime = 0;
@@ -1111,16 +1111,16 @@ public class Seq
                 else
                     {
                     if (firstMetronomeBeep)
-                    	{
-                    	beep.setRunning(metronome == METRONOME_RECORDING_AND_PLAYING ||
-                    					(metronome == METRONOME_RECORDING_ONLY && isRecording()));
-                    	firstMetronomeBeep = false;
-                    	}
+                        {
+                        beep.setRunning(metronome == METRONOME_RECORDING_AND_PLAYING ||
+                            (metronome == METRONOME_RECORDING_ONLY && isRecording()));
+                        firstMetronomeBeep = false;
+                        }
 
                     if (currentCountIn == 0)
                         {
                         setCountIn(currentCountIn);
-                        currentCountIn--;				// we're done with count-ins
+                        currentCountIn--;                               // we're done with count-ins
                         }
                     
                     if (clock == CLOCK_OUT)
@@ -1503,26 +1503,26 @@ public class Seq
                 {
                 Object obj = noteQueue.extractMin();
                 if (obj instanceof NoteOn)
-                	{
-                	if (!noteOffOnly)
-                		{
-						NoteOn note = (NoteOn) obj;
-						Out out = outs[note.out];
-						if (out != null)
-							{
-							out.noteOn(note.note, note.velocity);
-							}
-						}
-                	}
+                    {
+                    if (!noteOffOnly)
+                        {
+                        NoteOn note = (NoteOn) obj;
+                        Out out = outs[note.out];
+                        if (out != null)
+                            {
+                            out.noteOn(note.note, note.velocity);
+                            }
+                        }
+                    }
                 else 
-                	{
-                	NoteOff note = (NoteOff) obj;
-					Out out = outs[note.out];
-					if (out != null)
-						{
-						out.noteOff(note.note, note.velocity);
-						}
-                	}
+                    {
+                    NoteOff note = (NoteOff) obj;
+                    Out out = outs[note.out];
+                    if (out != null)
+                        {
+                        out.noteOff(note.note, note.velocity);
+                        }
+                    }
                 }
             else break;
             }       
@@ -1577,9 +1577,9 @@ public class Seq
         // Set the display order
         int order = 0;
         for(Motif motif : motifs)
-        	{
-        	motif.setOrder(order++);
-        	}        
+            {
+            motif.setOrder(order++);
+            }        
         
         // Save the motifs
         JSONArray array = new JSONArray();
@@ -1666,14 +1666,14 @@ public class Seq
         
         // Sort by order
         Collections.sort(seq.motifs, new Comparator<Motif>()
-        	{
-        	public int compare(Motif o1, Motif o2)
-        		{
-        		if (o1.getOrder() < o2.getOrder()) return -1;
-        		if (o1.getOrder() > o2.getOrder()) return 1;
-        		return 0;
-        		}
-        	});
+                {
+                public int compare(Motif o1, Motif o2)
+                    {
+                    if (o1.getOrder() < o2.getOrder()) return -1;
+                    if (o1.getOrder() > o2.getOrder()) return 1;
+                    return 0;
+                    }
+            });
         
         // Update MIDI
         seq.getLock().lock();

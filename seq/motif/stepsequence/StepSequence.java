@@ -624,8 +624,8 @@ public class StepSequence extends Motif
     public void setDefaultOut(int val) { defaultOut = val; Prefs.setLastOutDevice(0, val, "seq.motif.stepsequence.StepSequence"); }
     public int getDefaultOut() { return defaultOut; }
     public boolean isATrackSoloed() { return aTrackSoloed; }
-	public int getType() { return type; }
-	public void setType(int val) { type = val; }
+    public int getType() { return type; }
+    public void setType(int val) { type = val; }
 
     // Track-Level Setters
     public String getTrackName(int track) { return trackNames[track]; }
@@ -644,11 +644,11 @@ public class StepSequence extends Motif
         return velocity;
         }
     public int getFinalValueLSB(int track)
-    	{
-    	int lsb = trackValueLSBs[track];
-    	if (lsb == DEFAULT) lsb = defaultValueLSB;
-    	return lsb;
-    	}
+        {
+        int lsb = trackValueLSBs[track];
+        if (lsb == DEFAULT) lsb = defaultValueLSB;
+        return lsb;
+        }
     public int getTrackOut(int track) { return trackOuts[track]; }
     public void setTrackOut(int track, int val) { trackOuts[track] = val; /* Prefs.setLastOutDevice(1, val, "seq.motif.stepsequence.StepSequence"); */ }
     public int getFinalOut(int track) { int out = trackOuts[track]; if (out == COMBO_DEFAULT) return defaultOut; else return out; }
@@ -722,49 +722,49 @@ public class StepSequence extends Motif
     public void setValueLSB(int track, int step, int val) { valueLSBs[track][step] = val; }
     public int getFinalValueLSB(int track, int step) { int lsb = valueLSBs[track][step]; return (lsb == DEFAULT) ? getFinalValueLSB(track) : lsb; }
 
-	public int getFullParam(int track, int step)
-		{
-		switch(type)
-			{
-			case TYPE_NOTE:
-			case TYPE_CC:
-			case TYPE_POLYPHONIC_AFTERTOUCH:
-			return getFinalNote(track, step);
+    public int getFullParam(int track, int step)
+        {
+        switch(type)
+            {
+            case TYPE_NOTE:
+            case TYPE_CC:
+            case TYPE_POLYPHONIC_AFTERTOUCH:
+                return getFinalNote(track, step);
 
-			case TYPE_NRPN:
-			case TYPE_RPN:
-			return getFinalNote(track, step) * 128 + getFinalParamLSB(track, step);
+            case TYPE_NRPN:
+            case TYPE_RPN:
+                return getFinalNote(track, step) * 128 + getFinalParamLSB(track, step);
 
-			case TYPE_CHANNEL_AFTERTOUCH:
-			case TYPE_PITCH_BEND:
-			case TYPE_PC:
-			default:			// never happens
-			return 0;
-			}
-		} 
+            case TYPE_CHANNEL_AFTERTOUCH:
+            case TYPE_PITCH_BEND:
+            case TYPE_PC:
+            default:                        // never happens
+                return 0;
+            }
+        } 
 
 
-	public int getFullValue(int track, int step)
-		{
-		switch(type)
-			{
-			case TYPE_NOTE:
-			case TYPE_CC:
-			case TYPE_POLYPHONIC_AFTERTOUCH:
-			case TYPE_CHANNEL_AFTERTOUCH:
-			case TYPE_PC:
-			return getFinalVelocity(track, step);
+    public int getFullValue(int track, int step)
+        {
+        switch(type)
+            {
+            case TYPE_NOTE:
+            case TYPE_CC:
+            case TYPE_POLYPHONIC_AFTERTOUCH:
+            case TYPE_CHANNEL_AFTERTOUCH:
+            case TYPE_PC:
+                return getFinalVelocity(track, step);
 
-			case TYPE_PITCH_BEND:
-			return (getFinalVelocity(track, step) * 128 + getFinalValueLSB(track, step)) - 8192;
+            case TYPE_PITCH_BEND:
+                return (getFinalVelocity(track, step) * 128 + getFinalValueLSB(track, step)) - 8192;
 
-			case TYPE_NRPN:
-			case TYPE_RPN:
-			default:			// never happens
-			return (getFinalVelocity(track, step) * 128 + getFinalValueLSB(track, step));
-			}
-		}
-	    
+            case TYPE_NRPN:
+            case TYPE_RPN:
+            default:                        // never happens
+                return (getFinalVelocity(track, step) * 128 + getFinalValueLSB(track, step));
+            }
+        }
+            
     public boolean playNow(double invNumTracks, int track, int step, int iteration)
         {
         int w = getFinalWhen(track, step);

@@ -271,7 +271,7 @@ public class SelectClip extends Clip
             node.clip.cut();
         else
             node.clip.release();
-    	current = oldCurrent;
+        current = oldCurrent;
         }
         
     // Terminates all nodes and cuts or releases them.
@@ -305,10 +305,10 @@ public class SelectClip extends Clip
         {
         for(Node node : playing)
             {
-        int oldCurrent = current;
-        current = node.index;
+            int oldCurrent = current;
+            current = node.index;
             node.clip.release();
-        current = oldCurrent;
+            current = oldCurrent;
             setGridState(node, OFF);
             }
         terminateNodes((Select)getMotif());
@@ -1026,10 +1026,10 @@ public class SelectClip extends Clip
             return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
             }
         else 
-        	{
-        	System.err.println("SelectClip.scheduleNoteOn: current was " + current);
-        	return noteID++;
-        	}
+            {
+            System.err.println("SelectClip.scheduleNoteOn: current was " + current);
+            return noteID++;
+            }
         }
         
         
