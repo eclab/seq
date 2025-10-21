@@ -385,7 +385,17 @@ public class Seq
         // Let's try to clean up notes if we can when we get a control-C
         Runtime.getRuntime().addShutdownHook(shutdownHook = new Thread(new Runnable()
             {
-            public void run() { try { if (root != null) root.cut(); root.terminate(); } catch (Exception ex) { } }  // not threadsafe of course
+            public void run() 
+            	{ 
+            	try 
+            		{ 
+            			if (root != null)
+            				{
+            				stop();
+			            	} 
+			        }
+			    catch (Exception ex) { }   // not threadsafe of course
+			    }
             }));
         shutdownHook.setName("Seq Shutdown Hook");
 
@@ -917,7 +927,7 @@ public class Seq
             if (root != null)
                 {
                 root.cut();
-                processNoteOffs(true);
+                processNoteOffs(true, true);
                 releasing = false;
                 updateGUI(false);
                 }
@@ -1034,7 +1044,7 @@ public class Seq
         for(int i = 0; i < by; i++)
             {
             if (root.advance()) return true;
-            processNoteOffs(false);
+            processNoteOffs(false, false);
             time++;
             }
         return false;
@@ -1165,7 +1175,7 @@ public class Seq
                         }
                         
                     checkParameterCCs();
-                    processNoteOffs(false);
+                    processNoteOffs(false, false);
 
                     boolean atEnd = (time == NUM_BARS_PER_PART * NUM_PARTS * bar - 1);
                     if (ccount == 0)
@@ -1187,7 +1197,7 @@ public class Seq
                             if (time % (PPQ * 4) == (PPQ * 4 - 1))
                                 {
                                 root.release();
-                                processNoteOffs(true);
+                                processNoteOffs(true, false);
                                 resetTime();
                                 recording = false;
                                 root.terminate();
@@ -1455,6 +1465,7 @@ public class Seq
         public String toString() { return "NoteOff[" + note + "," + velocity + "," + out + "]"; }
         }
     
+    int noteQueueCounter = 0;
     Heap noteQueue = new Heap();
 
     /** Schedules a note on, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.
@@ -1465,7 +1476,9 @@ public class Seq
         to delay notes even beyond the end of the clip. */
     public void scheduleNoteOn(int out, int note, double velocity, int time)
         {
-        noteQueue.add(new NoteOn(out, note, velocity), Integer.valueOf(time + getTime()));
+        // Our key is the time, shifted by 31, plus our counter, so notes are in the queue
+        // in order by time, then in order by how they arrived.
+        noteQueue.add(new NoteOn(out, note, velocity), Long.valueOf((time + getTime()) * ((long)Integer.MAX_VALUE) + (noteQueueCounter++)));
         }
         
     /** Schedules a note off, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.
@@ -1475,45 +1488,44 @@ public class Seq
         to an int. */
     public void scheduleNoteOff(int out, int note, double velocity, int time)
         {
-        noteQueue.add(new NoteOff(out, note, velocity), Integer.valueOf(time + getTime()));
+        // Our key is the time, shifted by 31, plus our counter, so notes are in the queue
+        // in order by time, then in order by how they arrived.
+        noteQueue.add(new NoteOff(out, note, velocity), Long.valueOf((time + getTime()) * (long)(Integer.MAX_VALUE) + (noteQueueCounter++)));
         }
         
-    void processNoteOffs(boolean all)
+    void processNoteOffs(boolean all, boolean noteOffOnly)
         {
-	    ArrayList<NoteOff> noteOffs = new ArrayList<>();
-    
-        // process note on first
         while(true)
             {
-            Integer i = (Integer)(noteQueue.getMinKey());
+            Long i = (Long)(noteQueue.getMinKey());
             if (i == null) return;
-            if (all || time >= i.intValue())
+            if (all || time >= (i.longValue() / Integer.MAX_VALUE))
                 {
                 Object obj = noteQueue.extractMin();
                 if (obj instanceof NoteOn)
                 	{
-                	NoteOn note = (NoteOn) obj;
-                	Out out = outs[note.out];
-					if (out != null)
-						{
-						out.noteOn(note.note, note.velocity);
+                	if (!noteOffOnly)
+                		{
+						NoteOn note = (NoteOn) obj;
+						Out out = outs[note.out];
+						if (out != null)
+							{
+							out.noteOn(note.note, note.velocity);
+							}
 						}
                 	}
-                else noteOffs.add((NoteOff) obj);
+                else 
+                	{
+                	NoteOff note = (NoteOff) obj;
+					Out out = outs[note.out];
+					if (out != null)
+						{
+						out.noteOff(note.note, note.velocity);
+						}
+                	}
                 }
             else break;
             }       
-
-		// Process note offs.  They were added in reverse order, so we reverse them.
-		Collections.reverse(noteOffs);
-		for(NoteOff note : noteOffs)
-			{
-			Out out = outs[note.out];
-			if (out != null)
-				{
-				out.noteOff(note.note, note.velocity);
-				}
-			}
         }
         
         
