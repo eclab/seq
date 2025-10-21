@@ -198,7 +198,6 @@ public class Beep
                                 {
                                 try { frequencyLock.wait(); } catch (InterruptedException ex) { return; }
                                 }
-                            System.err.println("beep running");
                             }
                                                         
                         if (ramp == 1)          // steady-state, no ramping
