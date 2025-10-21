@@ -520,6 +520,36 @@ public class ParallelClip extends Clip
             super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())), id);
             }
         }
+
+    public int scheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        if (overriding && !currentDataIsOverriding())                   // If we're already overriding and we're not an override node, MUTE
+            {
+            return noteID++;         // I'm being overridden
+            }
+        if (current >= 0)			// Arpeggio will try to schedule during termination, when current == -1
+            {
+            Node node = nodes.get(current);
+            Parallel.Data data = node.getData();
+            if (data.getMute()) 
+                {
+                return noteID++;
+                }        
+            if (data.getOut() != Parallel.Data.DISABLED)
+                {
+                out = data.getOut();
+                }
+            note += getCorrectedValueInt(data.getTranspose(), Parallel.Data.MAX_TRANSPOSE * 2) - Parallel.Data.MAX_TRANSPOSE;
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
+            }
+        else
+        	{
+        	System.err.println("ParallelClip.scheduleNoteOn: current is " + current);
+        	return noteID++;
+        	}
+        }
  
     public void sysex(int out, byte[] sysex)
         {

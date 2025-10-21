@@ -38,7 +38,7 @@ public abstract class Clip
     {
     private static final long serialVersionUID = 1;
 
-    protected static int noteID = 0;
+    public static int noteID = 0;
     public static final int NO_NOTE_ID = -1; 
     public static final int SYSTEM_EXCLUSIVE_STATUS = 240;
 
@@ -551,80 +551,12 @@ public abstract class Clip
         
     ///// MIDI METHODS
     
-    /*
-      protected class NoteDelay
-      {
-      int out;
-      int note;
-      double vel;
-      int delay = 0;
-      public static final int TYPE_ON = 0;
-      public static final int TYPE_OFF = 1;
-      public static final int TYPE_OFF_NO_VEL = 2; 
-      int type;
-                
-      public void step()
-      {
-      if (delay > 0)
-      {
-      delay--;
-      if (delay == 0) playDelay();
-      }
-      }
-                        
-      void playDelay()
-      {
-      if (type == TYPE_ON)
-      {
-      noteOn(out, note, vel);
-      }
-      else if (type == TYPE_OFF)
-      {
-      noteOff(out, note, vel);
-      }
-      else    // TYPE_OFF_VEL
-      {
-      noteOff(out, note);
-      }
-      }
-                
-      public void delayNoteOn(int out, int note, double vel, int delay)
-      {
-      if (this.delay > 0) playDelay();
-      type = TYPE_ON;
-      this.vel = vel;
-      this.note = note;
-      this.out = out;
-      this.delay = delay;
-      }
-                        
-      public void delayNoteOff(int out, int note, double vel, int delay)
-      {
-      if (this.delay > 0) playDelay();
-      type = TYPE_OFF;
-      this.vel = vel;
-      this.note = note;
-      this.out = out;
-      this.delay = delay;
-      }
-                        
-      public void delayNoteOff(int out, int note, int delay)
-      {
-      if (this.delay > 0) playDelay();
-      type = TYPE_OFF_NO_VEL;
-      this.note = note;
-      this.out = out;
-      this.delay = delay;
-      }
-      }
-    */
         
     /** Sends a sysex message to the given out.  
         Returns true if the message was successfully sent.  */
     public void sysex(int out, byte[] sysex)
         {
         if (seq.root == this) seq.sysex(out, sysex);
-        // else if (parent == null) // uhh.....
         else parent.sysex(out, sysex); 
         }
 
@@ -648,16 +580,6 @@ public abstract class Clip
         else parent.noteOn(out, note, vel, id); 
         }
         
-    /** Sends a note on to the given Out, generating a new ID, which is returned.  This method
-        should be used when creating a new Note from scratch.    Note that velocity is expressed as a double.
-        This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
-        gains, and then returned to reasonable values.  Ultimately it will be floored 
-        to an int.  Returns true if the message was successfully sent.  */
-    public int noteOn(int out, int note) 
-        {
-        return noteOn(out, note, 64); 
-        }
-        
     /** Sends a note off to the given Out, with the given ID.  Note that velocity is expressed as a double.
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
@@ -668,13 +590,6 @@ public abstract class Clip
         else parent.noteOff(out, note, vel, id); 
         }
         
-    /** Sends a note off to the given Out, with the given ID, and with default velocity. 
-        Returns true if the message was successfully sent.  */
-    public void noteOff(int out, int note, int id) 
-        {
-        noteOff(out, note, 64, id);
-        }
-
     /** Sends a bend to the given Out. Bend goes -8192...8191.
         Returns true if the message was successfully sent.  */
     public void bend(int out, int val) 
@@ -682,26 +597,6 @@ public abstract class Clip
         if (seq.root == this) seq.bend(out, val);
         else parent.bend(out, val); 
         }
-        
-    /** Sends a CC to the given Out, associated with a given note (for MPE).
-        Returns true if the message was successfully sent.  */
-    /*
-      public void cc(int out, int note, int cc, int val) 
-      {
-      if (seq.root == this) seq.cc(out, note, cc, val);
-      else parent.cc(out, note, cc, val); 
-      }
-    */
-        
-    /** Sends a bend to the given Out, associated with a given note (for MPE). Bend goes -8192...8191.
-        Returns true if the message was successfully sent.  */
-    /*
-      public void bend(int out, int note, int val) 
-      {
-      if (seq.root == this) seq.bend(out, note, val);
-      else parent.bend(out, note, val); 
-      }
-    */
         
     /** Sends a CC to the given Out. 
         Returns true if the message was successfully sent.  */
@@ -755,6 +650,29 @@ public abstract class Clip
         else parent.rpn(out, rpn, val); 
         }
         
+    /** Schedules a note on, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.  
+        Note that velocity is expressed as a double.
+        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int. NOTE: this is rarely called, at present only by Filter's Delay function to delay notes even beyond the end of the clip. */
+    public int scheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        int id = noteID++;
+        scheduleNoteOn(out, note, vel, time, id);
+        return id;
+        }
+
+    /** Schedules a note on, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.  
+        Note that velocity is expressed as a double.
+        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int. NOTE: this is rarely called, at present only by Filter's Delay function to delay notes even beyond the end of the clip. */
+    public void scheduleNoteOn(int out, int note, double vel, int time, int id) 
+        {
+        if (seq.root == this) seq.scheduleNoteOn(out, note, vel, time);
+        else parent.scheduleNoteOn(out, note, vel, time, id); 
+        }
+
     /** Schedules a note off, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.  
         Note that velocity is expressed as a double.
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
@@ -764,13 +682,6 @@ public abstract class Clip
         {
         if (seq.root == this) seq.scheduleNoteOff(out, note, vel, time);
         else parent.scheduleNoteOff(out, note, vel, time, id); 
-        }
-        
-    /** Schedules a note off, with the given note pitch value and with velocity 64, to be sent to the given Out at TIME ticks in the future. 
-        Don't override this one. */
-    public void scheduleNoteOff(int out, int note, int time, int id) 
-        {
-        scheduleNoteOff(out, note, 64, time, id);
         }
         
     ///// UTILITY
@@ -856,4 +767,80 @@ public abstract class Clip
         ShortMessage shortmessage = (ShortMessage) message;
         return (shortmessage.getStatus() <= SYSTEM_EXCLUSIVE_STATUS);
         }
+
+
+
+
+    /// SENT MESSAGES
+    /// These are copies of the equivalent messages in Clip, but with "send" in front.
+    /// They allow us to override the primary messages, but still call them from within
+    /// the Clip subclass.  For example, Filter overrides noteOn(...) to do stuff, then
+    /// turns around and calls sendNoteOn(...) to send stuff on.  Why not call super.noteOn(...)?
+    /// Mostly just hygene: noteOn(...) calls noteOn(...,id), so to keep us from going in an infinite
+    /// loop we'd have to separate them entirely.
+    
+    /** Sends a note on to the given Out, generating a new ID, which is returned.  This method
+        should be used when creating a new Note from scratch.  Note that velocity is expressed as a double.
+        This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int.  Returns true if the message was successfully sent.  */
+    protected int sendNoteOn(int out, int note, double vel) 
+        {
+        int id = noteID++;
+        sendNoteOn(out, note, vel, id);
+        return id;
+        }
+        
+    /** Sends a note on to the given Out, with the provided ID.  This version of the method
+        should only be called if you are overriding it and calling super. Otherwise, call noteOn(out, note, vel) */
+    protected void sendNoteOn(int out, int note, double vel, int id) 
+        {
+        if (seq.root == this) seq.noteOn(out, note, vel);
+        else parent.noteOn(out, note, vel, id); 
+        }
+        
+    /** Sends a note off to the given Out, with the given ID.  Note that velocity is expressed as a double.
+        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int.  Returns true if the message was successfully sent.  */
+    protected void sendNoteOff(int out, int note, double vel, int id) 
+        {
+        if (seq.root == this) seq.noteOff(out, note, vel);
+        else parent.noteOff(out, note, vel, id); 
+        }
+        
+    /** Schedules a note on, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.  
+        Note that velocity is expressed as a double.
+        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int. NOTE: this is rarely called, at present only by Filter's Delay function to delay notes even beyond the end of the clip. */
+    protected int sendScheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        int id = noteID++;
+        sendScheduleNoteOn(out, note, vel, time, id);
+        return id;
+        }
+
+    /** Schedules a note on, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.  
+        Note that velocity is expressed as a double.
+        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int. NOTE: this is rarely called, at present only by Filter's Delay function to delay notes even beyond the end of the clip. */
+    protected void sendScheduleNoteOn(int out, int note, double vel, int time, int id) 
+        {
+        if (seq.root == this) seq.scheduleNoteOn(out, note, vel, time);
+        else parent.scheduleNoteOn(out, note, vel, time, id); 
+        }
+
+    /** Schedules a note off, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.  
+        Note that velocity is expressed as a double.
+        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int. */
+    protected void sendScheduleNoteOff(int out, int note, double vel, int time, int id) 
+        {
+        if (seq.root == this) seq.scheduleNoteOff(out, note, vel, time);
+        else parent.scheduleNoteOff(out, note, vel, time, id); 
+        }
+        
     }

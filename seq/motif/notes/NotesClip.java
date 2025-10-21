@@ -187,7 +187,7 @@ public class NotesClip extends Clip
             Notes.Note noteOn = recordedNoteOn[pitch];
             if (noteOn != null)
                 {
-                if (notes.getEcho()) noteOff(out, pitch, noteOn.release);
+                if (notes.getEcho()) noteOff(out, pitch, 0x40, noteOn.release);
                 recordedNoteOn[pitch] = null;
                 }
             }
@@ -203,7 +203,7 @@ public class NotesClip extends Clip
             Notes.Note noteOn = recordedNoteOn[pitch];
             if (noteOn != null)
                 {
-                if (notes.getEcho()) noteOff(out, pitch, noteOn.release);
+                if (notes.getEcho()) noteOff(out, pitch, 0x40, noteOn.release);
                 recordedNoteOn[pitch] = null;
                 }
             }

@@ -1204,7 +1204,7 @@ public class Seq
                             {
                             root.release();
                             releasing = true;
-                            if (noteOff.isEmpty())
+                            if (noteQueue.isEmpty())
                                 {
                                 releasing = false;
                                 stop();
@@ -1437,18 +1437,37 @@ public class Seq
         }
         
 
+    static class NoteOn
+        {
+        int out;
+        int note;
+        double velocity;
+        public NoteOn(int out, int note, double velocity) { this.out = out; this.note = note; this.velocity = velocity; }
+        public String toString() { return "NoteOn[" + note + "," + velocity + "," + out + "]"; }
+        }
+    
     static class NoteOff
         {
         int out;
         int note;
         double velocity;
         public NoteOff(int out, int note, double velocity) { this.out = out; this.note = note; this.velocity = velocity; }
-        public NoteOff(int out, int note) { this.out = out; this.note = note; this.velocity = 64; }
         public String toString() { return "NoteOff[" + note + "," + velocity + "," + out + "]"; }
         }
     
-    Heap noteOff = new Heap();
+    Heap noteQueue = new Heap();
 
+    /** Schedules a note on, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.
+        Note that velocity is expressed as a double.
+        this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
+        gains, and then returned to reasonable values.  Ultimately it will be floored 
+        to an int. NOTE: this is rarely called, at present only by Filter's Delay function 
+        to delay notes even beyond the end of the clip. */
+    public void scheduleNoteOn(int out, int note, double velocity, int time)
+        {
+        noteQueue.add(new NoteOn(out, note, velocity), Integer.valueOf(time + getTime()));
+        }
+        
     /** Schedules a note off, with the given note pitch value and velocity, to be sent to the given Out at TIME ticks in the future.
         Note that velocity is expressed as a double.
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
@@ -1456,34 +1475,45 @@ public class Seq
         to an int. */
     public void scheduleNoteOff(int out, int note, double velocity, int time)
         {
-        //lock.lock();
-        //try
-        //    {
-            noteOff.add(new NoteOff(out, note, velocity), Integer.valueOf(time + getTime()));
-        //    }
-        //finally
-        //    {
-        //    lock.unlock();
-        //    }
+        noteQueue.add(new NoteOff(out, note, velocity), Integer.valueOf(time + getTime()));
         }
         
     void processNoteOffs(boolean all)
         {
+	    ArrayList<NoteOff> noteOffs = new ArrayList<>();
+    
+        // process note on first
         while(true)
             {
-            Integer i = (Integer)(noteOff.getMinKey());
+            Integer i = (Integer)(noteQueue.getMinKey());
             if (i == null) return;
             if (all || time >= i.intValue())
                 {
-                NoteOff note = (NoteOff)(noteOff.extractMin());
-                Out out = outs[note.out];
-                if (out != null)
-                    {
-                    out.noteOff(note.note, note.velocity);
-                    }
+                Object obj = noteQueue.extractMin();
+                if (obj instanceof NoteOn)
+                	{
+                	NoteOn note = (NoteOn) obj;
+                	Out out = outs[note.out];
+					if (out != null)
+						{
+						out.noteOn(note.note, note.velocity);
+						}
+                	}
+                else noteOffs.add((NoteOff) obj);
                 }
             else break;
             }       
+
+		// Process note offs.  They were added in reverse order, so we reverse them.
+		Collections.reverse(noteOffs);
+		for(NoteOff note : noteOffs)
+			{
+			Out out = outs[note.out];
+			if (out != null)
+				{
+				out.noteOff(note.note, note.velocity);
+				}
+			}
         }
         
         

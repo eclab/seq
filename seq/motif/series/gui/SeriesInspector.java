@@ -348,6 +348,7 @@ public class SeriesInspector extends WidgetList
                         seriesui.revalidate();                            
                         }
                     });
+                types[i].setToolTipText(PARAM_TOOLTIP);
                 
                 paramsBox[_i] = new Box(BoxLayout.X_AXIS);
                 paramsBox[_i].add(new JLabel(" "));                                 // spacer
@@ -375,6 +376,7 @@ public class SeriesInspector extends WidgetList
                     }
                 };
             rate.setDisplaysTime(false);
+            mode.setToolTipText(RATE_TOOLTIP);
             }
         finally { lock.unlock(); }
 
@@ -399,7 +401,8 @@ public class SeriesInspector extends WidgetList
                 try { series.setMIDIParameterOut(out.getSelectedIndex()); }
                 finally { lock.unlock(); }
                 }
-            });            
+            });      
+        out.setToolTipText(OUT_TOOLTIP);      
 
 
         JComponent[] components = new JComponent[Series.NUM_PARAMETERS + 2];
@@ -470,4 +473,38 @@ public class SeriesInspector extends WidgetList
         "</ul>" +
         "Each child may repeat multiple times before it is finished playing, as determined by its<br>" +
         "<b>Fixed Repeats</b> and <b>Repeat Probability</b> settings in its inspector.</html>";
+
+    static final String RATE_TOOLTIP = "<html><b>Rate</b><br>" +
+        "Sets how often Series's parameters will be output as MIDI parameters.<br>" +
+        "If this is too fast, the MIDI channel will be flooded with MIDI parameters,<br>" +
+        "and notes may not be able to be played in time.<br><br>" +
+        "Note that regardless of the rate, a MIDI parameter will not be emitted<br>" +
+        "if the underlying Series parameter hasn't changed since last time.</html>";
+
+    static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
+        "Sets the device to be used to emit MIDI parameters being generated from Series's<br>" +
+        "own parameters.</html>";
+
+    static final String PARAM_TOOLTIP = "<html><b>MIDI Parameter Type</b><br>" +
+        "Sets the type of MIDI parameter to be generated from a given Series parameter and emitted.<br>" +
+        "Options are:" +
+        "<ul>" +
+        "<li><b>Control Change (CC)</b>  You specify the CC parameter (0...127).  Series's parameter<br>" +
+        "value of 0...1 is mapped to a CC value 0...127." +
+        "<li><b>14-bit Control Change (CC)</b>  This is an MSB + LSB 14-bit CC pair consisting of a CC<br>" +
+        "in the range 0-31, and another in the range 32-63.  You specify the CC parameter MSB (0...31).<br>" +
+        "Series's parameter value of 0...1 is mapped to a 14-bit CC value 0...16383." +
+        "<li><b>Non-Registered Parameter Numbers (NRPN)</b>  This is the full 14-bit NRPN parameter and value.<br>" +
+        "You specify the MSB and the LSB of the NRPN parameter.  Series's parameter value of 0...1 is mapped to an<br>" +
+        "NRPN value 0...16383.<br>" +
+        "<li><b>NRPN Coarse</b>  This is the full 14-bit NRPN parameter, but the MSB only for value.<br>" +
+        "You specify the MSB and the LSB of the NRPN parameter.  Series's parameter value of 0...1 is mapped to an<br>" +
+        "NRPN MSB value 0...127." +
+        "<li><b>Registered Parameter Numbers (RPN)</b>  This is the full 14-bit RPN parameter and value.<br>" +
+        "You specify the MSB and the LSB of the NRPN parameter.  Series's parameter value of 0...1 is mapped to an<br>" +
+        "RPN value 0...16383.<br>" +
+        "<li><b>Pitch Bend</b>  Series's parameter of 0...1 is mapped to -8192 ... 8191." +
+        "<li><b>Channel Aftertouch</b>   Series's parameter of 0...1 is mapped to 0...127." +
+        "</ul></html>";
+
     }

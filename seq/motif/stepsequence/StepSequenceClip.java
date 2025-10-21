@@ -68,7 +68,7 @@ public class StepSequenceClip extends Clip
             {
            if (dSeq.getType() == StepSequence.TYPE_NOTE)
             	{
-	            noteOff(dSeq.getFinalOut(track), trackNoteOn[track], trackNoteID[track]);
+	            noteOff(dSeq.getFinalOut(track), trackNoteOn[track], 0x40, trackNoteID[track]);
 	            }
             trackNoteOn[track] = OFF;
             trackNoteID[track] = NO_NOTE_ID;
@@ -116,7 +116,7 @@ public class StepSequenceClip extends Clip
             
             if (dSeq.getType() == StepSequence.TYPE_NOTE)
             	{
-            	scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], releaseTime, trackNoteID[track]);
+            	scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], 0x40, releaseTime, trackNoteID[track]);
             	}
             trackNoteOn[track] = OFF;                                                                       // not sure if we should do this...
             trackNoteID[track] = NO_NOTE_ID;

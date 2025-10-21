@@ -620,6 +620,29 @@ public class SeriesClip extends Clip
         else System.err.println("SeriesClip.scheduleNoteOff: playingIndex was " + playingIndex);
         }
         
+    public int scheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        if (playingIndex >= 0)
+            {
+            Node node = getNode(playingIndex);
+            Series.Data data = node.getData();
+            if (data.getOut() != Series.Data.DISABLED)
+                {
+                out = data.getOut();
+                }
+            note += getCorrectedValueInt(data.getTranspose(), Series.Data.MAX_TRANSPOSE * 2) - Series.Data.MAX_TRANSPOSE;
+            note = data.adjustNote(note);
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
+            }
+        else 
+        	{
+        	System.err.println("SeriesClip.scheduleNoteOn: playingIndex was " + playingIndex);
+        	return noteID++;
+        	}
+        }
+        
     // TESTING
     public static void main(String[] args) throws Exception
         {

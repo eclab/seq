@@ -1011,6 +1011,26 @@ public class SelectClip extends Clip
         else System.err.println("SelectClip.scheduleNoteOff: current was " + current);
         }
         
+    public int scheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        if (current >= 0)
+            {
+            Select.Data data = ((Select.Data)(getMotif().getChildren().get(current).getData()));
+            if (data.getOut() != Select.Data.DISABLED)
+                {
+                out = data.getOut();
+                }
+            note += getCorrectedValueInt(data.getTranspose(), Select.Data.MAX_TRANSPOSE * 2) - Select.Data.MAX_TRANSPOSE;
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));
+            }
+        else 
+        	{
+        	System.err.println("SelectClip.scheduleNoteOn: current was " + current);
+        	return noteID++;
+        	}
+        }
         
         
     // TESTING

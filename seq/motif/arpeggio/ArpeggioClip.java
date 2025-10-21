@@ -302,30 +302,6 @@ public class ArpeggioClip extends Clip
     
     
     
-    /// SENT MESSAGES
-    /// These are copies of the same messages in Clip, but with "send" in front.
-    /// They allow me to override the Clip messages to route MIDI to the 
-    /// arpeggio, but have the arpeggio send messages on with these.
-    public int sendNoteOn(int out, int note, double vel) 
-        {
-        int id = noteID++;
-        if (seq.getRoot() == this) seq.noteOn(out, note, vel);
-        else getParent().noteOn(out, note, vel, id); 
-        return id;
-        }
-        
-    public void sendNoteOff(int out, int note, double vel, int id) 
-        {
-        if (seq.getRoot() == this) seq.noteOff(out, note, vel);
-        else getParent().noteOff(out, note, vel, id); 
-        }
-        
-    public void sendScheduleNoteOff(int out, int note, double vel, int time, int id) 
-        {
-        if (seq.getRoot() == this) seq.scheduleNoteOff(out, note, vel, time);
-        else getParent().scheduleNoteOff(out, note, vel, time, id); 
-        }
-
     public boolean isActive()
         {
         return isActive(getPosition());
@@ -381,6 +357,21 @@ public class ArpeggioClip extends Clip
         else
             {
             super.scheduleNoteOff(out, note, vel, time, id);
+            }
+        }        
+
+    public int scheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        Arpeggio arp = (Arpeggio)getMotif();
+        if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
+            {
+            int id = noteID++;
+            noteOff.add(new Note(out, note, (int)vel, id), Integer.valueOf(time + seq.getTime()));
+        	return id; 
+        	}
+        else
+            {
+            return super.scheduleNoteOn(out, note, vel, time);
             }
         }        
 

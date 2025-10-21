@@ -1251,11 +1251,13 @@ public class FunctionInspector extends JPanel
     static final String STAGE_TYPE_TOOLTIP = "<html><b>Stage Type</b><br>" +
         "Sets the stage function type, at present one of:" + 
         "<ul>" +
-        "<li><b>None</b>&nbsp;&nbsp;No modulationing." +
-        "<li><b>Note</b>&nbsp;&nbsp;Change note output, velocity, release velocity, pitch, or length." +
-        "<li><b>Delay</b>&nbsp;&nbsp;Delay the onset of the note, or repeat it one or more times." +
-        "<li><b>Drop</b>&nbsp;&nbsp;With a certain probability, modulation out (delete) a note." +
-        "<li><b>Parameter</b>&nbsp;&nbsp;Vary a non-note parameter, such as CC or Pitch Bend." +
+        "<li><b>None</b>&nbsp;&nbsp;No modulation (but the parameter is still mapped)." +
+        "<li><b>LFO</b>&nbsp;&nbsp;A low-frequency oscillator." +
+        "<li><b>Envelope</b>&nbsp;&nbsp;An up to eight-stage envelope generator with repeats." +
+        "<li><b>Step Sequence</b>&nbsp;&nbsp;An up to 16-stage step sequence with repeats." +
+        "<li><b>Constant</b>&nbsp;&nbsp;A constant value (the parmaeter is still mapped, though that's useless)." +
+        "<li><b>Same As</b>&nbsp;&nbsp;The same as another modulation argument, but with possibly different mapping." +
+        "<li><b><i>Copy From</i></b>&nbsp;&nbsp;Copy from another argument." +
         "</ul></html>";
 
     static final String NOTE_OUT_TOOLTIP = "<html><b>Out</b><br>" +

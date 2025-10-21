@@ -846,6 +846,27 @@ public class AutomatonClip extends Clip
         else System.err.println("SeriesClip.scheduleNoteOff: currentNode is null");
         }
         
+    public int scheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        if (currentNode != null)
+            {
+            if (currentNode.getOutMIDI() != Automaton.MotifNode.DISABLED)
+                {
+                out = currentNode.getOutMIDI();
+                }
+            note += getCorrectedValueInt(currentNode.getTranspose(), Automaton.MotifNode.MAX_TRANSPOSE * 2) - Automaton.MotifNode.MAX_TRANSPOSE;
+            //note = currentNode.adjustNote(note);
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(currentNode.getRate())));
+            }
+        else 
+        	{
+        	System.err.println("SeriesClip.scheduleNoteOff: currentNode is null");
+        	return noteID++;
+        	}
+        }
+        
 
     // TESTING
     public static void main(String[] args) throws Exception
