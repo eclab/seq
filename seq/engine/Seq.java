@@ -391,10 +391,10 @@ public class Seq
                     { 
                     if (root != null)
                         {
-                        stop();
+                        stop();   // not threadsafe of course
                         } 
                     }
-                catch (Exception ex) { }   // not threadsafe of course
+                catch (Exception ex) { }
                 }
             }));
         shutdownHook.setName("Seq Shutdown Hook");
