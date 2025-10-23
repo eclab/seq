@@ -298,6 +298,7 @@ public class Seq
     public void setBeepPitch(int val)
         {
         beepPitch = val;
+        Prefs.setLastInt("seq.Seq.beeppitch", beepPitch);
         }
     
     /** Returns frequencies for pitch deviations ranging from -12 to +12 */
@@ -306,6 +307,13 @@ public class Seq
         return BEEP_FREQUENCIES[getBeepPitch() + 12];
         }
     
+
+	/** Turn Beep Off */
+	public void beepOff()
+		{
+		beep.setAmplitude(0);
+		}
+		
     /** Prepares Seq to be thrown away. */
     public void shutdown()
         {
@@ -422,6 +430,11 @@ public class Seq
             {
             parameterCCs[i] = Prefs.getLastInt("seq.Seq.parametercc" + i, CC_NONE); 
             }
+
+        countInMode = Prefs.getLastInt("seq.Seq.countin", COUNT_IN_RECORDING_ONLY);
+        metronome = Prefs.getLastInt("seq.Seq.metronome", METRONOME_RECORDING_ONLY);
+        beepVolume = Prefs.getLastDouble("seq.Seq.beepvolume", 1.0);
+        beepPitch = Prefs.getLastInt("seq.Seq.beeppitch", 0);
         }
         
     // doesn't kill the old timer task, you'll need to do that manually
@@ -550,7 +563,11 @@ public class Seq
     /** Returns the metronome mode. */
     public int getMetronome() { return metronome; }
     /** Sets the metronome mode.  */
-    public void setMetronome(int val) { metronome = val; }
+    public void setMetronome(int val) 
+    	{ 
+    	metronome = val; 
+        Prefs.setLastInt("seq.Seq.metronome", metronome);
+    	}
     /** Returns the count-in mode, one of COUNT_IN_NONE, COUNT_IN_RECORDING_ONLY, or COUNT_IN_RECORDING_AND_PLAYING.
         The length of the count-in is one BAR as determined by getBar(). The metronome must be ON in order
         to get a count-in.  */
@@ -558,7 +575,11 @@ public class Seq
     /** Sets the count-in mode, one of COUNT_IN_NONE, COUNT_IN_RECORDING_ONLY, or COUNT_IN_RECORDING_AND_PLAYING.
         The length of the count-in is one BAR as determined by getBar().   The metronome must be ON in order
         to get a count-in.  */
-    public void setCountInMode(int val) { countInMode = val; }
+    public void setCountInMode(int val) 
+    	{ 
+    	countInMode = val; 
+        Prefs.setLastInt("seq.Seq.countin", countInMode);
+    	}
 
 /*
   public void addPlayingClip(Clip clip) { playingClips.add(clip); }
@@ -634,7 +655,11 @@ public class Seq
         
     // BEEP
     public double getBeepVolume() { return beepVolume; }
-    public void setBeepVolume(double val) { beepVolume = val; }
+    public void setBeepVolume(double val) 
+    	{ 
+    	beepVolume = val; 
+        Prefs.setLastDouble("seq.Seq.beepvolume", beepVolume);
+    	}
     
     // BPM
     /** Sets the BPM and modifies the timer appropriately.  */
@@ -1563,10 +1588,12 @@ public class Seq
         /// FIXME: How do I save / load the ins and outs?
         obj.put("clock", clock);
         obj.put("bar", bar);
+/*
         obj.put("countin", countInMode);
         obj.put("metronome", metronome);
         obj.put("beepvolume", beepVolume);
         obj.put("beeppitch", beepPitch);
+*/
         obj.put("macrochildcounter", macroChildCounter);
         JSONArray params = Motif.doubleToJSONArray(parameterValues);
         obj.put("params", params);
@@ -1638,10 +1665,13 @@ public class Seq
         seq.looping = obj.optBoolean("loop", false);
         seq.clock = obj.optInt("clock", CLOCK_IGNORE);
         seq.bar = obj.optInt("bar", DEFAULT_BAR);
+
+/*
         seq.countInMode = obj.optInt("countin", COUNT_IN_RECORDING_ONLY);
         seq.metronome = obj.optInt("metronome", METRONOME_RECORDING_ONLY);
         seq.beepVolume = obj.optDouble("beepvolume", 1.0);
         seq.beepPitch = obj.optInt("beeppitch", 0);
+*/
         seq.macroChildCounter = obj.getInt("macrochildcounter");                // note not optInt
         seq.parameterValues = Motif.JSONToDoubleArray(obj.getJSONArray("params"));      // note not getJSONArray
         seq.randomMax = obj.optDouble("rmax", 0.0);

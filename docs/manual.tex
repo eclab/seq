@@ -447,7 +447,7 @@ Recording only has an effect on certain Motifs, such as the {\bf Notes} motif, w
 
 Below the Transport buttons is the {\bf Clock}, which shows the current play time in (right to left) ticks (192 ticks per beat), beats, measures, and parts (256 measures per part).  To the left of the clock is a small dot.  This dot will light up momentarily when Seq receives MIDI information (other than Note Off) from any of its currently registered devices and channels.
 
-Below the clock are two expandable regions: the {\bf Clock Options} and the {\bf Root Arguments}.  The Clock Options include the tempo, whether the clock is Internal or External, the number of beats per measure, whether the metronome plays for recording,  for recording and playing, or for none; whether a count-in is provided for recording, for recording and playing, or for none; and the metronome volume and pitch..
+Below the clock are two expandable regions: the {\bf Clock Options} and the {\bf Root Arguments}.  The Clock Options include the tempo, whether the clock is Internal or External, the number of beats per measure, whether the metronome plays for recording,  for recording and playing, or for none; whether a count-in is provided for recording, for recording and playing, or for none; and the metronome volume and pitch.  Thee settings of some of these elements are stored with your Sequence; others persist in the application's preferences.
 
 We'll discuss the Root Arguments later in Section~\ref{parameters}.  However we mention one item here: the {\bf Random Seed}.  This is the seed of the random number generator used by Seq when playing, and the generator is always reset to that seed each time we play again.  That way the sequence will always be deterministic.  The seed is saved with the Sequence when you write it to a file, but new Sequences get new random seeds. You can always change this seed to cause the sequence's random choices to be different.
 
@@ -569,7 +569,7 @@ If you have selected only one note, its Inspector will appear, and you can chang
 
 When you change the time or length of a note and you have {\bf Snap To} turned on (see the pop-up menu at the bottom of the screen), it will {\bf snap} to the nearest 64th note, 16th note, triplet, or beat.  If instead you have {\bf Snap By} turned on, it will {\bf jump} forward or backward by one 64th note, 16th note, triplet, or beat in distance.
 
-If you have lost your notes, just play the {\bf Show Notes} button (the {\bf ``S''} at the bottom of the window, and the piano player roll will scroll to show your selected notes, or any notes at all (if you have nothing selected).
+If you have lost your notes, just play the {\bf Find Notes} button (the {\bf ``F''} at the bottom of the window, and the piano player roll will scroll to show your selected notes, or any notes at all (if you have nothing selected).
 
 Selected notes can also be moved by through the {\bf Up, Down, Left, and Right} menus and their corresponding keystrokes. 
 
@@ -676,7 +676,7 @@ Note that you can cut/copy from one Notes motif and Paste into a different one.
 
 \paragraph{Parameterization}
 
-Several Notes features (note velocities, release velocities, event values) can be {\bf Parameterized} by double-clicking on the dials.  If a note velocity or event value is parameterized, the note or event is displayed in gray-blue to indicate this.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
+Several Notes features (note velocities, release velocities, event values) can be {\bf Parameterized} by double-clicking on the dials.  If a note velocity or event value is parameterized, the note or event is displayed in gray-blue to indicate this.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}).
 
 \clearpage
 
@@ -769,7 +769,7 @@ If you arm one or more Tracks, set their Notes, and set the Sequence's MIDI Inpu
 
 \paragraph{Parameterization}
 
-Several Step Sequence features (step velocities and pitches, swing, etc.) can be {\bf Parameterized} by double-clicking on the dials.  If a step's velocity is parameterized, the step is displayed in gray-blue to indicate this.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
+Several Step Sequence features (step velocities and pitches, swing, etc.) can be {\bf Parameterized} by double-clicking on the dials.  If a step's velocity is parameterized, the step is displayed in gray-blue to indicate this.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}).
 
 
 \clearpage
@@ -1223,6 +1223,8 @@ This effect allows you to change features of the notes being passed in:
 
 This effect adds delays and unison to notes.  You can add one or more delays to an original note, and choose whether to play the original at all.  If you set the delay interval to zero, you can bulk up your original note with more of the same note, creating a {\bf unison} effect.
 
+The Delay options are:
+
 \begin{itemize}
 \item {\bf Original}\qquad Whether to play the original note at its original time.
 \item {\bf Interval}\qquad The interval between successive delays. 
@@ -1230,6 +1232,11 @@ This effect adds delays and unison to notes.  You can add one or more delays to 
 \item {\bf Num Delays}\qquad How many delays to do (besides the original, if you're playing that one).
 \item {\bf Random}\qquad Whether the delay is fixed or random.  If random, then the actual delay will be between 0 and Interval in length.  This is particularly useful to humanize notes by adding a slightly randomized delay to when they're actually played.  To do this, set Original to false, set Cut to full, set Num Delays to 1, set Random to true, and then set Interval to the maximum delay length you'd want to add (usually something very small, perhaps 40 ticks).  Note that you cannot cause notes to be played slightly {\it earlier}, just {\it later}: Delay doesn't know what notes are arriving.
 \end{itemize}
+
+MIDI delays can wreak havoc on some simpleminded synthesizers.  MIDI instructs synthesizers to start playing a note with a {\it Note On} message (specifying the pitch), and to stop playing the note with a {\it Note Off} message (with the same pitch). Imagine that you have a single short delay on a long note.  The note commences with a {\it Note On}, and then the Delay issues a {\it Note On} (for the {\it same pitch}) for the delayed note.  Then the original note ends with a {\it Note Off}, followed by another {\it Note Off} for the delay.  But some synthesizers can only play {\it one note for a given pitch at a time}, so when the second {\it Note On} arrives, the first note is unceremoniously cut short to make way for the new one.  Or when the first {\it Note Off} arrives a synthesizer may not know which of the two notes to turn off; or it may turn off both notes, and so on.    Finally, a large delay count may overwhelm the total number of notes a synthesizer can play at one time, causing it to take drastic measures to compensate.
+
+If your notes are short enough, and have a long enough time between them, such that delays never overlap with a note of the same pitch, then you'll probably be fine.  Otherwise, expect Delay to present challenges to your synthesizer.
+
 
 \paragraph{The Drop Effect}
 
@@ -1319,7 +1326,7 @@ This effect converts a note into a full chord or interval.  It is similar to the
 
 \paragraph{Parameterization}
 
-Many Effect features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
+Many Effect features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}).
 
 
 
@@ -1443,7 +1450,7 @@ You can do tricks like this for any combination of modulation methods.
 
 \paragraph{Parameterization}
 
-As usual, many Modulation features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}.
+As usual, many Modulation features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}).
 
 
 
