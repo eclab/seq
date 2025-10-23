@@ -762,6 +762,7 @@ public class NotesUI extends MotifUI
                 rect.y = 127 - rect.y;
                 rect.y -= rect.height;          // because we're flipped, we need the top left corner, not bottom left
                 rect.height += 1;
+                rect.width += 1;
                 rect.x = (int)(rect.x * scale);
                 rect.y *= PitchUI.getPitchHeight();
                 rect.height *= PitchUI.getPitchHeight();
@@ -770,13 +771,12 @@ public class NotesUI extends MotifUI
                                                                 
             /// BUG IN JAVA (at least MacOS)
             /// scrollRectToVisible is broken.  So we have to fake it here.
-            /// getPrimaryScroll().getViewport().scrollRectToVisible(rect);
 
             int viewportWidth = (int)(getPrimaryScroll().getViewport().getViewRect().getWidth());
             int viewportHeight = (int)(getPrimaryScroll().getViewport().getViewRect().getHeight());
 
             int posx = Math.max(0, rect.x);
-            int posy = Math.max(0, rect.y + (rect.height - viewportHeight) / 2);
+            int posy = Math.max(0, rect.y) + ((rect.height - viewportHeight) / 2);
 
             Rectangle viewRect = getPrimaryScroll().getViewport().getViewRect();
             if (!forceScroll)
@@ -793,6 +793,9 @@ public class NotesUI extends MotifUI
                     }
                 }
 
+			// We have to scroll to bottom before we scroll to the point, 
+			// otherwise it doesn't work due to Java bugs.
+            getPrimaryScroll().getViewport().setViewPosition(new Point(posx, PitchUI.getPitchHeight() * 127));
             getPrimaryScroll().getViewport().setViewPosition(new Point(posx, posy));
             }       
         }
@@ -1740,7 +1743,7 @@ public class NotesUI extends MotifUI
         JPanel console = new JPanel();
         console.setLayout(new BorderLayout());
 
-        PushButton scrollButton = new PushButton("S")
+        PushButton scrollButton = new PushButton("F")
             {
             public void perform()
                 {

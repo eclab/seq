@@ -898,7 +898,7 @@ public class GridUI extends JComponent
         int maxx = -1;
         int maxy = -1;
         ReentrantLock lock = seq.getLock();
-        for(EventUI eventui : (selectedEvents ? selected : getAllNoteUIs()))
+        for(EventUI eventui : (selectedEvents && selected.size() > 0 ? selected : getAllNoteUIs()))
             {
             lock.lock();
             try 
@@ -926,8 +926,8 @@ public class GridUI extends JComponent
                     {
                     if (minx == -1)
                         {
-                        minx = event.when;
-                        maxx = event.when;
+                        miny = 0;
+                        maxy = 127;
                         }
                     else
                         {
@@ -940,9 +940,10 @@ public class GridUI extends JComponent
                 {
                 lock.unlock();
                 }
-            }
+            }        
         if (minx == -1) return null;
-        else return new Rectangle(minx, miny, maxx - minx, maxy - miny);
+        
+        return new Rectangle(minx, miny, maxx - minx, maxy - miny);
         }
     
     /** Removes all NoteUIs from selected and deselects them. */
