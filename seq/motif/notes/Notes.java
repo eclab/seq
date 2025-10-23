@@ -1750,10 +1750,10 @@ public class Notes extends Motif
                         
                 // change back to length
                 ((Note)event).length = noteOffPos - event.when;
-                if (event.getLength() < 0)
+                if (event.getLength() <= 0)
                     {
-                    System.err.println("QUANTIZE ERROR: event length went negative: " + event.getLength()); 
-                    ((Note)event).length = 0;
+//                    System.err.println("QUANTIZE ERROR: event length went <= 0: " + event.getLength()); 
+                    ((Note)event).length = divisor;
                     }
                 }
             }
