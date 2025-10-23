@@ -45,13 +45,13 @@ public class EventUI extends JComponent
     //int parameter;
     // Normalized Event value, also used for velocity by NoteUI
     protected double value;
-    // Am I selected?
-    boolean selected;
     // Temporary storage of old time and value to allow us to compute new locations while moving events
     int originalWhen;
     protected double originalValue;               // reused as originalPitch
+    byte polyATPitch = -1;
+    // Am I selected?
+    boolean selected;
     boolean boundsSet = false;
-    
 
     // These are carefully chosen to be static variables so we can save some memory
     
@@ -130,6 +130,16 @@ public class EventUI extends JComponent
         try 
             {
             when = event.when;
+
+            if (event instanceof Notes.Aftertouch) // && parameterui.getNotesUI().getNotes().getPolyAftertouchPitch())
+            	{
+            	Notes.Aftertouch aftertouch = (Notes.Aftertouch)event;
+            	if (aftertouch.pitch != Out.CHANNEL_AFTERTOUCH)
+            		{
+            		polyATPitch = (byte)(aftertouch.pitch);
+            		}
+            	}
+
             if (event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
                 {
                 value = ((Notes.Bend)event).getWarpedNormalizedValue();
@@ -467,7 +477,11 @@ public class EventUI extends JComponent
         bounds.y = 0;
         bounds.height = HEIGHT;
         
-        if (value < 0)
+        if (polyATPitch >= 0)
+        	{
+        	g.setPaint(VALUE_MAP.getColor(polyATPitch));
+        	}
+        else if (value < 0)
             {
             g.setPaint(DEFAULT_COLOR);
             }

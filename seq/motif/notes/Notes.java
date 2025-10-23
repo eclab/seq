@@ -105,7 +105,7 @@ public class Notes extends Motif
         if (!isValidType(type)) return "<error>";
         if (type < TYPE_CC) return "" + (type - TYPE_NOTE);
         if (type < TYPE_POLYPHONIC_AFTERTOUCH) return "" + (type - TYPE_CC);
-        if (type < TYPE_CHANNEL_AFTERTOUCH) return NOTES[(type - TYPE_POLYPHONIC_AFTERTOUCH) % 12] + ((type - TYPE_POLYPHONIC_AFTERTOUCH) / 12);
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return "";  //NOTES[(type - TYPE_POLYPHONIC_AFTERTOUCH) % 12] + ((type - TYPE_POLYPHONIC_AFTERTOUCH) / 12);
         if (type == TYPE_CHANNEL_AFTERTOUCH) return "";
         if (type == TYPE_PITCH_BEND) return "";
         if (type == TYPE_PC) return "";
@@ -157,7 +157,12 @@ public class Notes extends Motif
     int lastNRPN = -1;
     boolean wasRPN = false;
     
-
+    /*
+    boolean polyAftertouchPitch = false;
+    
+    public boolean getPolyAftertouchPitch() { return polyAftertouchPitch; }
+    public void setPolyAftertouchPitch(boolean val) { polyAftertouchPitch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.polyaftertouchpitch", val); }
+	*/
 
     public abstract static class Event
         {
@@ -649,7 +654,7 @@ public class Notes extends Motif
         public double getNormalizedValue() { return value < 0 ? value : value / 127.0; }
         public void setNormalizedValue(double value) { this.value = (int)(value * 127.0); }
         public int getParameter() { return pitch; }
-        public int getType() { return (pitch == Out.CHANNEL_AFTERTOUCH ? 384 : TYPE_POLYPHONIC_AFTERTOUCH + pitch); }
+        public int getType() { return (pitch == Out.CHANNEL_AFTERTOUCH ? 384 : TYPE_POLYPHONIC_AFTERTOUCH + 0 /* pitch */); }
         }
         
         
@@ -1024,6 +1029,7 @@ public class Notes extends Motif
         recordIntegration = Prefs.getLastInt("seq.motif.notes.Notes.recordintegration", INTEGRATE_REPLACE); 
         defaultVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultVelocity", 64);         
         defaultReleaseVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultReleaseVelocity", 64); 
+		//polyAftertouchPitch = Prefs.getLastBoolean("seq.motif.notes.Notes.polyaftertouchpitch", false); 
 
         for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
             {

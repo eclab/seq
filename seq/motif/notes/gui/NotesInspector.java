@@ -37,6 +37,7 @@ public class NotesInspector extends WidgetList
     JCheckBox recordPC;
     JCheckBox convertNRPNRPN;
     JCheckBox warpedBend;
+    //JCheckBox polyAftertouchPitch;
     JComboBox parameterHeight;
     JCheckBox quantize;
     JCheckBox quantizeNoteEnds;
@@ -93,7 +94,7 @@ public class NotesInspector extends WidgetList
 
     public static final String[] EVENT_TYPES = { "None", "CC", "Poly AT", "Channel AT", "Bend", "PC", "NRPN", "RPN" };
     public static final boolean[] EVENT_HAS_LSB = { false, false, false, false, false, false, true, true };
-    public static final boolean[] EVENT_HAS_MSB = { false, true, true, false, false, false, true, true };
+    public static final boolean[] EVENT_HAS_MSB = { false, true, false, false, false, false, true, true };
 
     public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
     public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
@@ -647,7 +648,22 @@ public class NotesInspector extends WidgetList
                     notesui.getEventsUI().repaint();                                    // gotta redraw the bends!                            
                     }
                 });
-
+/*
+			polyAftertouchPitch = new JCheckBox();
+			polyAftertouchPitch.setSelected(notes.getPolyAftertouchPitch());
+			polyAftertouchPitch.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent e)
+					{
+					if (seq == null) return;
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { notes.setPolyAftertouchPitch(polyAftertouchPitch.isSelected()); }
+					finally { lock.unlock(); }                              
+					}
+				});
+			polyAftertouchPitch.setToolTipText(POLY_AFTERTOUCH_PITCH);
+*/
             parameterHeight = new JComboBox(PARAMETER_HEIGHT_STRINGS);
             parameterHeight.addActionListener(new ActionListener()
                 {
@@ -868,7 +884,7 @@ public class NotesInspector extends WidgetList
                 }
             else if (type == Notes.EVENT_PARAMETER_POLY_AT)
                 {
-                full = " " + Notes.NOTES[eventParamMSB % 12] + (eventParamMSB / 12);
+                full = ""; //  + Notes.NOTES[eventParamMSB % 12] + (eventParamMSB / 12);
                 }
             else if (type == Notes.EVENT_PARAMETER_CHANNEL_AT)
                 {
@@ -965,6 +981,7 @@ public class NotesInspector extends WidgetList
             quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
             convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
             warpedBend.setSelected(notes.getWarped());
+           // polyAftertouchPitch.setSelected(notes.getPolyAftertouchPitch());
             
             quantizeTo.setSelectedIndex(notes.getQuantizeTo());
             for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
@@ -1117,4 +1134,8 @@ public class NotesInspector extends WidgetList
 
     static final String DEFAULT_NOTE_RELEASE_VELOCITY_TOOLTIP = "<html><b>Initial Note Release Velocity</b><br>" +
         "Sets the release velocity of notes drawn on-screen with the mouse (not recorded ones).</html>";
+
+    static final String POLY_AFTERTOUCH_PITCH = "<html><b>Pitch Determines Color</b><br>" +
+    	"Sets whether the color of a polyphonic aftertouch even is based on its color," +
+    	"rather than based on its aftertouch value.</html>";
     }

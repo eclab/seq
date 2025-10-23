@@ -775,6 +775,8 @@ public class EventInspector extends WidgetList
                             lock.lock();
                             try { aftertouch.pitch = (int)((val * 128.0) - 1); }
                             finally { lock.unlock(); }
+                            EventUI eventui = notesui.getEventsUI().getEventUIFor(event, event.getType());
+                            if (eventui != null) eventui.reload();
                             updateTable();  
                             }
                         };
