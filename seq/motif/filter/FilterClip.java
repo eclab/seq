@@ -156,8 +156,6 @@ public class FilterClip extends Clip
         public void release(int index) { }
         // Called each timestep to let the node update itself, AFTER MIDI has been pushed through
         public void process(int index) { }
-        // Asks the node if it believes it is finished yet
-        public boolean finished() { return true; }
         // Informs the Node that we have been reset
         public void reset(int index) { }
         }
@@ -1444,13 +1442,17 @@ public class FilterClip extends Clip
             Motif.Child child = children.get(0);
             clip = child.getMotif().buildClip(this);
             }
-            
+        buildNodes(filter);
+        }
+        
+    public void buildNodes(Filter filter)
+    	{
         nodes.clear();
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
             {
             nodes.add(buildNode(filter, i));
             }
-        }
+    	}
         
     public Node buildNode(Filter trans, int index)
         {
@@ -1627,15 +1629,6 @@ public class FilterClip extends Clip
                 }
             }
         
-        // Our child may be done but we're not done yet...
-        /*
-          for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
-          {
-          done = done && nodes.get(i).finished();
-          }
-        */
-          
-                
         return done;
         }
     }

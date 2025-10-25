@@ -123,7 +123,13 @@ public class FunctionInspector extends JPanel
                         {
                         Modulation.Function func1 = modulation.buildFunction(subcombo.getSelectedIndex());
                         type1 = func1.getType();
-                        modulation.setFunction(index, func1); 
+                        modulation.setFunction(index, func1);                         
+                        Clip clip = modulation.getPlayingClip();
+                        if (clip != null && clip instanceof ModulationClip)
+                        	{
+                        	((ModulationClip) clip).buildNodes(modulation);
+                        	}
+
                         }
                     finally { lock.unlock(); }
                     }

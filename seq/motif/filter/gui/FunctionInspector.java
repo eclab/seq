@@ -122,12 +122,17 @@ public class FunctionInspector extends JPanel
                         Filter.Function func1 = filter.buildFunction(subcombo.getSelectedIndex());
                         type1 = func1.getType();
                         filter.setFunction(index, func1); 
+                        Clip clip = filter.getPlayingClip();
+                        if (clip != null && clip instanceof FilterClip)
+                        	{
+                        	((FilterClip) clip).buildNodes(filter);
+                        	}
                         }
                     finally { lock.unlock(); }
                     }
                                 
                 remove(subinspector);
-                subinspector =  buildSubinspector(type1);
+                subinspector = buildSubinspector(type1);
                 add(subinspector, BorderLayout.CENTER);
                 revise();
                 revalidate();
@@ -750,7 +755,7 @@ public class FunctionInspector extends JPanel
             cut.setToolTipText(DROP_CUT_TOOLTIP);
             probability.setToolTipText(DROP_PROBABILITY_TOOLTIP);
                                                                         
-            build(new String[] { "", "Delete All", "Note Probability"}, 
+            build(new String[] { "", "Delete All", "Drop Probability"}, 
                 new JComponent[] 
                     {
                     null,

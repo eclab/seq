@@ -759,9 +759,9 @@ public class Filter extends Motif
     public void setFunction(int index, Function function)
         {
         functions[index] = function;
-        incrementVersion();
-        Clip clip = getPlayingClip();
-        if (clip != null) clip.rebuild();
+        // incrementVersion();
+       // Clip clip = getPlayingClip();
+       // if (clip != null) clip.rebuild();
         }
     
     public Filter(Seq seq)

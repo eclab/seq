@@ -394,7 +394,11 @@ public class ModulationClip extends Clip
             Motif.Child child = children.get(0);
             clip = child.getMotif().buildClip(this);
             }
-            
+        buildNodes(modulation);
+        }
+    
+    public void buildNodes(Modulation modulation)
+    	{
         nodes.clear();
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
             {
