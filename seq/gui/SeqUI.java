@@ -389,6 +389,7 @@ public class SeqUI extends JPanel
 
                 seq.setFile(null);
                 frame.setTitle("Untitled");
+                setupMenu(getFrame());		// must be before building the main motifui
 
                 Motif dSeq = null;
                 Motif[] temp = new Motif[1];
@@ -728,6 +729,7 @@ public class SeqUI extends JPanel
                 seq = newSeq;                                
                 reset(seq);
                 Seq.incrementDocument();
+                setupMenu(getFrame());		// must be before building the main motifui
 
                 MotifUI motifui = list.getMotifUIFor(seq.getData());
                 list.setRoot(motifui);
