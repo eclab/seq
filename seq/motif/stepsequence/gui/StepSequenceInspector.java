@@ -158,6 +158,7 @@ public class StepSequenceInspector extends WidgetList
                         {
                         ssui.tracks.get(i).updateLength();
                         }
+                    ssui.setSelectedStepNum(0);
                     ssui.updateSizes();
                     ssui.redraw(false);
                     }

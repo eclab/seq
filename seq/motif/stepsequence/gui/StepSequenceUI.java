@@ -169,6 +169,7 @@ public class StepSequenceUI extends MotifUI
         oldStepUI.repaint();
         newStepUI.repaint();
         }
+        
     public void shiftSelectionHorizontally(boolean right)
         {
         int val = getSelectedStepNum();
@@ -364,23 +365,23 @@ public class StepSequenceUI extends MotifUI
                         currentSteps[i] = clip.getCurrentStep(i);
                         }
                     }
+                                
+				// Now, who's dirty?
+				if (lastSteps == null)
+					setAllDirty(true);
+				else
+					{
+					for(int i = 0; i < numTracks; i++)
+						{
+						if (lastSteps[i] != currentSteps[i]) // it's changed
+							{
+							setDirty(i, lastSteps[i], true);
+							setDirty(i, currentSteps[i], true);
+							}
+						}
+					}
                 }
             finally { lock.unlock(); }
-                                
-            // Now, who's dirty?
-            if (lastSteps == null)
-                setAllDirty(true);
-            else
-                {
-                for(int i = 0; i < numTracks; i++)
-                    {
-                    if (lastSteps[i] != currentSteps[i]) // it's changed
-                        {
-                        setDirty(i, lastSteps[i], true);
-                        setDirty(i, currentSteps[i], true);
-                        }
-                    }
-                }
             }
         else
             {
