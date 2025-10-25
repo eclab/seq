@@ -187,7 +187,7 @@ public class NotesClip extends Clip
             Notes.Note noteOn = recordedNoteOn[pitch];
             if (noteOn != null)
                 {
-                if (notes.getEcho()) noteOff(out, pitch, 0x40, noteOn.release);
+                // if (notes.getEcho()) noteOff(out, pitch, 0x40, noteOn.release);
                 recordedNoteOn[pitch] = null;
                 }
             }
@@ -203,7 +203,7 @@ public class NotesClip extends Clip
             Notes.Note noteOn = recordedNoteOn[pitch];
             if (noteOn != null)
                 {
-                if (notes.getEcho()) noteOff(out, pitch, 0x40, noteOn.release);
+                // if (notes.getEcho()) noteOff(out, pitch, 0x40, noteOn.release);
                 recordedNoteOn[pitch] = null;
                 }
             }
@@ -290,7 +290,7 @@ public class NotesClip extends Clip
                                 int pitch = shortmessage.getData1();
                                 Notes.Note noteOn = new Notes.Note(pitch, shortmessage.getData2(), pos, 1);             // gotta have something for length
                                 recording.add(noteOn);
-                                if (notes.getEcho()) noteOn(out, pitch, noteOn.velocity, NO_NOTE_ID);
+                                //if (notes.getEcho()) noteOn(out, pitch, noteOn.velocity, NO_NOTE_ID);
                                 recordedNoteOn[pitch] = noteOn;
                                 }
                             else if (isNoteOff(shortmessage))
@@ -305,7 +305,7 @@ public class NotesClip extends Clip
                                     release = noteOn.release;
                                     recordedNoteOn[pitch] = null;
                                     }
-                                if (notes.getEcho()) noteOff(out, pitch, release, NO_NOTE_ID);
+                                //if (notes.getEcho()) noteOff(out, pitch, release, NO_NOTE_ID);
                                 addRecorded(noteOn);
                                 }
                             else if (isPitchBend(shortmessage) && notes.getRecordBend())
@@ -315,7 +315,7 @@ public class NotesClip extends Clip
 
                                 Notes.Bend bend = new Notes.Bend(msb * 128 + lsb - 8192, pos);
                                 recording.add(bend);
-                                if (notes.getEcho()) bend(out, bend.value);
+                                //if (notes.getEcho()) bend(out, bend.value);
                                 }
                             else if (isCC(shortmessage) && notes.getRecordCC())
                                 {
@@ -324,7 +324,7 @@ public class NotesClip extends Clip
 
                                 Notes.CC cc = new Notes.CC(parameter, value, pos);
                                 recording.add(cc);
-                                if (notes.getEcho()) cc(out, parameter, value);
+                                //if (notes.getEcho()) cc(out, parameter, value);
                                 }
                             else if (isPC(shortmessage) && notes.getRecordPC())
                                 {
@@ -332,7 +332,7 @@ public class NotesClip extends Clip
 
                                 Notes.PC pc = new Notes.PC(value, pos);
                                 recording.add(pc);
-                                if (notes.getEcho()) pc(out, value);
+                                //if (notes.getEcho()) pc(out, value);
                                 }
                             else if (isChannelAftertouch(shortmessage) && notes.getRecordAftertouch())
                                 {
@@ -340,7 +340,7 @@ public class NotesClip extends Clip
 
                                 Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos);
                                 recording.add(aftertouch);
-                                if (notes.getEcho()) aftertouch(out, Out.CHANNEL_AFTERTOUCH, value);
+                                //if (notes.getEcho()) aftertouch(out, Out.CHANNEL_AFTERTOUCH, value);
                                 }
                             else if (isPolyphonicAftertouch(shortmessage) && notes.getRecordAftertouch())
                                 {
@@ -349,7 +349,7 @@ public class NotesClip extends Clip
 
                                 Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos);
                                 recording.add(aftertouch);
-                                if (notes.getEcho()) aftertouch(out, pitch, value);
+                                //if (notes.getEcho()) aftertouch(out, pitch, value);
                                 }
                             }
                         }

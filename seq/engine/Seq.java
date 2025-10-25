@@ -115,6 +115,40 @@ public class Seq
     int routeIn;
     int routeOut;
     
+    public void routeMIDI(int in, MidiMessage message, long timestamp)
+    	{
+    	ReentrantLock lock = getLock();
+    	lock.lock();
+    	try	
+    		{
+    		if (in == routeIn && routeIn >= 0 && routeOut >= 0)
+    			{
+    			if (Clip.isVoiceMessage(message))
+    				{
+    				ShortMessage sm = (ShortMessage) message;
+    				try
+    					{
+	    				// we need to modify the channel
+						sm.setMessage(
+							sm.getCommand(), 
+							tuple.outChannel[routeOut], 
+							sm.getData1(), 
+							sm.getData2());
+						}
+					catch (InvalidMidiDataException ex) { ex.printStackTrace(); }
+    				}
+    			
+    			outs[routeOut].sendMIDI(message, timestamp);
+    			}
+    		}
+    	finally
+    		{
+    		lock.unlock();
+    		}
+    	}
+    
+    
+    
     class UndoStuff
         {
         Motif display;
@@ -534,7 +568,8 @@ public class Seq
     public int getNumIns() { return ins.length; }
 
     // ROUTING
-    public static final int ROUTE_IN_NONE = NUM_INS;
+    public static final int ROUTE_IN_NONE = -1;
+    public static final int ROUTE_OUT_NONE = -1;
     public int getRouteIn() { return routeIn; }
     public void setRouteIn(int val) { routeIn = val; }
     public int getRouteOut() { return routeOut; }
@@ -819,16 +854,6 @@ public class Seq
                     ins[i].pullMessages();
                     }
                 }
-            /*
-            // Route
-            if (routeIn != ROUTE_IN_NONE)
-            {
-            for(MidiMessage message : ins[routeIn].getMessages())
-            {
-            outs[routeOut].sendMIDI(message);
-            ]
-            }
-            */
             }
         finally
             {
@@ -1115,7 +1140,7 @@ public class Seq
                         ((recording && (countInMode != COUNT_IN_NONE)) ||                   // we're recording, and the count-in is for recording 
                         ((playing && (countInMode == COUNT_IN_RECORDING_AND_PLAYING)))))    // we're playing, and teh count-in is for playing
                     {
-                    if (firstCountInBeep) { firstCountInBeep = false; beep.setRunning(true); System.err.println("COUNT IN"); }
+                    if (firstCountInBeep) { firstCountInBeep = false; beep.setRunning(true); }
                     
                     // we're in the count-in phase
                     doBeep(Math.abs(bar) * PPQ - currentCountIn, getBeepBarFrequency(), getBeepBarFrequency() * 4);

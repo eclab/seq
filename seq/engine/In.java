@@ -71,6 +71,7 @@ public class In implements Receiver
             {
             messages.add(message);
             }
+        seq.routeMIDI(index, message, timestamp);
         if (!Clip.isNoteOff(message)) seq.fireMIDIIn();
         }
         

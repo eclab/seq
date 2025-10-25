@@ -459,6 +459,33 @@ public class NotesUI extends MotifUI
         super.uiWasSet();
         // revise arm menu
         autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
+		updateEcho();
+		}
+	
+	public void updateEcho()
+		{
+        // update echo
+		Seq seq = sequi.getSeq();
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            if (notes.getEcho())
+            	{
+ 		       	seq.setRouteIn(notes.getIn());
+ 		       	seq.setRouteOut(notes.getOut());
+ 		       	}
+ 		    else
+ 		    	{
+ 		    	seq.setRouteIn(Seq.ROUTE_IN_NONE);
+ 		    	seq.setRouteOut(Seq.ROUTE_OUT_NONE);
+ 		    	}
+			seq.sendPanic(); 
+ 		  	}
+ 		finally
+ 			{
+ 			lock.unlock();
+ 			}
         }
     
     /** Returns the NotesUI menu */

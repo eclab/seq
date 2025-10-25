@@ -152,7 +152,8 @@ public class NotesInspector extends WidgetList
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try { notes.setOut(out.getSelectedIndex()); }
-                    finally { lock.unlock(); }                              
+                    finally { lock.unlock(); }     
+                    notesui.updateEcho();                         
                     }
                 });
                 
@@ -174,6 +175,7 @@ public class NotesInspector extends WidgetList
                     lock.lock();
                     try { notes.setIn(in.getSelectedIndex()); }
                     finally { lock.unlock(); }                              
+                    notesui.updateEcho();                         
                     }
                 });
 
@@ -279,6 +281,7 @@ public class NotesInspector extends WidgetList
                     lock.lock();
                     try { notes.setEcho(echo.isSelected()); }
                     finally { lock.unlock(); }                              
+                    notesui.updateEcho();                         
                     }
                 });
                 
