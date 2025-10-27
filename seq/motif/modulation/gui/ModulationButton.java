@@ -136,9 +136,10 @@ public class ModulationButton extends MotifButton
     public String getSubtext()
         {
         Seq seq = sequi.getSeq();
-        
+		Modulation modulation = (Modulation)(owner.getMotif());   
         String subname = null;
         int repeats = 0;
+        int currentRepeat = 0;
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
@@ -148,6 +149,13 @@ public class ModulationButton extends MotifButton
                 return "BAD CHILD? " + at;
             Motif.Child child = children.get(at);
             subname = child.getNickname();                    // FIXME: could this be made just volatile?
+
+            ModulationClip clip = ((ModulationClip)(owner.getDisplayClip()));
+            if (clip != null) 
+                {
+                repeats = clip.getCorrectedValueInt(modulation.getRepeats(), Modulation.MAX_REPEAT_VALUE);
+                currentRepeat = clip.getNumTimes();
+                }
             }
         finally { lock.unlock(); }
 
@@ -161,7 +169,7 @@ public class ModulationButton extends MotifButton
             }
         else subname = "";
         
-        return subname;
+        return "" + currentRepeat + "/" + (repeats + 1) + " " + subname;
         }
 
     public void doubleClick(MouseEvent e)

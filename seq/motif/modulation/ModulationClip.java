@@ -18,6 +18,10 @@ public class ModulationClip extends Clip
     ArrayList<Node> nodes = new ArrayList<>();
     // Our child, if any
     Clip clip;
+    
+    int lastPos;
+    double cumulativeRate = 0.0;
+    int numTimes = 0;
 
     public class Node
         {
@@ -450,6 +454,11 @@ public class ModulationClip extends Clip
             buildClip();
             }
         loadParameterValues(clip, modulation.getChildren().get(0));
+        // FIXME: are these two in the right position?  Normally they're in resetNode()
+        lastPos = -1;
+        cumulativeRate = 0;
+        
+        numTimes = 0;
         clip.reset();
 
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
@@ -468,6 +477,7 @@ public class ModulationClip extends Clip
             buildClip();
             }
         loadParameterValues(clip, modulation.getChildren().get(0));
+        numTimes = 0;
         clip.reset();
 
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
@@ -508,6 +518,26 @@ public class ModulationClip extends Clip
         }
         
 
+    boolean advanceChild(Modulation modulation)
+        {
+        loadParameterValues(clip, modulation.getChildren().get(0));
+                
+        double rate = modulation.getRate();   
+        if (rate == 1.0) return clip.advance();
+        else
+            {
+            boolean result = false;
+            cumulativeRate += rate;
+            for( /* Empty */ ; lastPos + 1.0 < cumulativeRate; lastPos++)
+                {
+                result = result || clip.advance();
+                }
+            return result;
+            }
+        }
+
+	public int getNumTimes() { return numTimes; }
+	
     public boolean process()
         {
         Modulation modulation = (Modulation)getMotif();
@@ -521,14 +551,89 @@ public class ModulationClip extends Clip
 
         if (clip != null)
             {
-            loadParameterValues(clip, modulation.getChildren().get(0));
-            return clip.advance();
+            //loadParameterValues(clip, modulation.getChildren().get(0));
+            boolean val = advanceChild(modulation);
+            if (val)		// all done.  Should we loop?
+            	{
+            	numTimes++;
+            	if (numTimes > modulation.getRepeats())		// for example, if repeats is 4, then numTimes must have reached 5 to be done
+            		{
+            		return val;
+            		}
+            	else
+            		{
+            		clip.loop();
+            		return false;
+            		}
+            	}
+            else return val;
             }
         else
             {
             return true;
             }
         }
+
+
+    public void noteOn(int out, int note, double vel, int id) 
+        {
+        Modulation modulation = (Modulation)getMotif();
+
+        if (modulation.getOut() != Modulation.DISABLED)
+                {
+                out = modulation.getOut();
+                }
+		note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+		if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+		if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+		vel *= getCorrectedValueDouble(modulation.getGain(), Modulation.MAX_GAIN);
+		if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
+        super.noteOn(out, note, vel, id);
+        }
+        
+    public void noteOff(int out, int note, double vel, int id) 
+        {
+        Modulation modulation = (Modulation)getMotif();
+
+        if (modulation.getOut() != Modulation.DISABLED)
+                {
+                out = modulation.getOut();
+                }
+            note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+        super.noteOff(out, note, vel, id);
+        }
+        
+    public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
+        {
+        Modulation modulation = (Modulation)getMotif();
+
+            if (modulation.getOut() != Modulation.DISABLED)
+                {
+                out = modulation.getOut();
+                }
+            note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(modulation.getRate())), id);
+        }
+        
+    public int scheduleNoteOn(int out, int note, double vel, int time) 
+        {
+        Modulation modulation = (Modulation)getMotif();
+
+            if (modulation.getOut() != Modulation.DISABLED)
+                {
+                out = modulation.getOut();
+                }
+            note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(modulation.getRate())));
+        }
+        
+
     }
 
 

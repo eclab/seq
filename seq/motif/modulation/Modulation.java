@@ -24,6 +24,12 @@ public class Modulation extends Motif
     public static final String SAME = "Same";
     public static final String CONSTANT = "Constant";
 
+        public static final int MAX_TRANSPOSE = 24;
+        public static final double MAX_GAIN = 4.0;
+        public static final double MAX_RATE = 16.0;
+        public static final double DEFAULT_RATE = 1.0;
+        public static final int MAX_REPEAT_VALUE = 127;                // values go 0..127 inclusive
+
     // this index order is just the order of the combo box in ModulationChildInspector
     public static int typeIndex(String type)
         {
@@ -485,7 +491,31 @@ public class Modulation extends Motif
         }
     
     
-                
+        public static final int DISABLED = -1;
+
+        double rate = DEFAULT_RATE;
+    	double gain = 1.0;
+        int transpose = MAX_TRANSPOSE;                                        // ranges 0 ... MAX_TRANSPOSE * 2 inclusive, representing -MAX_TRANSPOSE ... MAX_TRANSPOSE
+    	int out = DISABLED;
+    	int repeats;
+
+    	public void setGain(double gain) { this.gain = gain; }
+        public double getGain() { return gain; }
+
+        public void setOut(int out) { this.out = out; }
+        public int getOut() { return out; }
+        
+        public double getRate() { return rate; }
+        public void setRate(double val) { rate = val; }
+        
+        public void setTranspose(int transpose) { this.transpose = transpose; }
+        public int getTranspose() { return transpose; }
+        
+        public void setRepeats(int val) { repeats = val; }
+        public int getRepeats() { return repeats; }
+
+
+           
     public void add(Motif motif)
         {
         addChild(motif);
@@ -580,6 +610,11 @@ public class Modulation extends Motif
         setFrom(obj.optInt("from", 0));
         setTo(obj.optInt("to", 0));
         setAlways(obj.optBoolean("always", false));
+        setRate(obj.optDouble("rate", 1.0));
+        setTranspose(obj.optInt("tran", MAX_TRANSPOSE));
+        setGain(obj.optDouble("gain", 1.0));
+        setOut(obj.optInt("out", DISABLED));
+        setRepeats(obj.optInt("repeats", 0));
         }
                         
     public void save(JSONObject obj) throws JSONException
@@ -593,6 +628,11 @@ public class Modulation extends Motif
         obj.put("from", getFrom());
         obj.put("to", getTo());
         obj.put("always", isAlways());
+        obj.put("rate", rate);
+        obj.put("tran", transpose);
+        obj.put("gain", gain);
+        obj.put("out", out);
+        obj.put("repeats", repeats);
         }
 
     public String getParameterName(int param) 
