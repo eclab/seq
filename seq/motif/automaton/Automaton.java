@@ -645,10 +645,10 @@ public class Automaton extends Motif
             repeatProbability = from.optDouble("prob", 0.0);
             repeatUntilTrigger = from.optBoolean("trig", false);
             quantization = from.optInt("quant", QUANTIZATION_SIXTEENTH);
-        transpose = from.optInt("tran", 0);
+        transpose = from.optInt("tran", MotifNode.MAX_TRANSPOSE);
         rate = from.optDouble("rate", 1.0);
         gain = from.optDouble("gain", 1.0);
-        outMIDI = from.optInt("outm", 0);
+        outMIDI = from.optInt("outm", DISABLED);
             super.loadFinal(from, automaton); 
             }
         public void setRepeats(int val) { repeats = val; }

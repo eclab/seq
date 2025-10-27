@@ -110,10 +110,10 @@ public class Parallel extends Motif
         Data d = (Data)buildData(motif);
         d.mute = from.optBoolean("mute", false);
         d.delay = from.optInt("delay", 0);
-        d.transpose = from.optInt("tran", 0);
+        d.transpose = from.optInt("tran", Data.MAX_TRANSPOSE);
         d.rate = from.optDouble("rate", 1.0);
         d.gain = from.optDouble("gain", 1.0);
-        d.out = from.optInt("out", 0);
+        d.out = from.optInt("out", Data.DISABLED);
         d.probability = from.optDouble("prob", 1.0);
         d.endingQuantization = from.optInt("equant", QUANTIZATION_NONE);
         d.repeat = from.optBoolean("repeat", false);
