@@ -40,6 +40,7 @@ public class Transport extends JPanel implements SeqListener
     JComboBox clock;
     WidgetList options;
     JLabel time;
+    boolean wallClockTime = false;
     DisclosurePanel clockOptions;
     
     public static final String[] CLOCK_STRINGS = { "Internal", "Emit Clock" };          // FIXME: need to add  "External" };

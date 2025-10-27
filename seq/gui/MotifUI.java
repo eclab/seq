@@ -33,7 +33,7 @@ public abstract class MotifUI extends JPanel
     JTextArea text;
     JSplitPane split;
     MotifListButton primaryButton;
-    ArrayList<MotifButton> buttons = new ArrayList<>();
+    ArrayList<MotifButton> buttons = new ArrayList<>();			// These are in ANY ORDER
         
     protected JScrollPane inspectorScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     protected JScrollPane primaryScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -189,7 +189,7 @@ public abstract class MotifUI extends JPanel
     public MotifListButton getPrimaryButton() { return primaryButton; }
     public void setPrimaryButton(MotifListButton button) { this.primaryButton = button; }
     public void addButton(MotifButton button) { buttons.add(button); button.updateList(); }
-    public void removeButton(MotifButton button) { ArrayLists.removeFast(buttons, button); button.updateList(); }                        // O(n) search, O(1) remove
+    public void removeButton(MotifButton button) { buttons.remove(button); button.updateList(); }
     public boolean isPlaying() 
         { 
         ReentrantLock lock = seq.getLock();
@@ -223,6 +223,7 @@ public abstract class MotifUI extends JPanel
             {
             primaryButton.updateText();
             }
+            
         for(MotifButton button : buttons)
             {
             button.updateText();
@@ -232,9 +233,12 @@ public abstract class MotifUI extends JPanel
     /** Called by the MotifList when the motif is being removed entirely from the
         sequence.  This is called IMMEDIATELY BEFORE the motif is removed. 
         If you override this, be sure to call super.disconnect().  */     
-    public void disconnect()
+    public void disconnectButtons()
         {
-        for(MotifButton button : buttons)
+        // copy buttons2 because the buttons will be removing themselves from me
+        ArrayList<MotifButton> buttons2 = new ArrayList<>(buttons);
+        
+        for(MotifButton button : buttons2)
             {
             button.disconnect();
             }

@@ -1051,6 +1051,7 @@ public abstract class Motif implements Cloneable
             System.err.println("Motif.load(): Error loading object id " + /*obj.getInt("id")*/ id  + " of broken class " + obj.getString("type") + ":\n" + ex);
             motif = new seq.motif.blank.Blank(seq);
             ((seq.motif.blank.Blank)motif).setWasToClass(obj.getString("type"));
+        	ex.printStackTrace();
             }
         loadedMotifs.put(id, motif);
         motif.load(loadedMotifs, motifs, obj);

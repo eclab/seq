@@ -35,7 +35,7 @@ public class ArpeggioButton extends MotifButton
     public Dimension getPreferredSize() { return getMinimumSize(); }
 
     // Make a "Blank" button
-    public ArpeggioButton(SeqUI ui, ArpeggioUI owner, int at)   
+    public ArpeggioButton(SeqUI sequi, ArpeggioUI owner, int at)   
         {
         super();
         

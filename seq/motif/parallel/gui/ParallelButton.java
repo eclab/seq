@@ -94,7 +94,7 @@ public class ParallelButton extends MotifButton
                 {
                 ParallelClip.Node n = null;
                 try { n = clip.getNodes().get(at); } 
-                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); return false; }                // FIXME: This appears to be a bug...
+                catch (java.lang.IndexOutOfBoundsException ex) { ex.printStackTrace(); return false; }                // FIXME: This appears to be a bug...
                 if (n != null)
                     {
                     playing = n.isPlaying() && !n.isRepeating();
@@ -118,7 +118,7 @@ public class ParallelButton extends MotifButton
                 {
                 ParallelClip.Node n = null;
                 try { n = clip.getNodes().get(at); } 
-                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); return false; }                // FIXME: This appears to be a bug...
+                catch (java.lang.IndexOutOfBoundsException ex) { ex.printStackTrace(); return false; }                // FIXME: This appears to be a bug...
                 if (n != null)
                     {
                     playing = n.isRepeating();
@@ -138,7 +138,7 @@ public class ParallelButton extends MotifButton
         boolean muted = false;
         boolean override = false;
         boolean repeating = false;
-        
+                
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try 
@@ -148,7 +148,7 @@ public class ParallelButton extends MotifButton
                 {
                 ParallelClip.Node n = null;
                 try { n = clip.getNodes().get(at); } 
-                catch (java.lang.IndexOutOfBoundsException ex) { System.err.println(ex); }                // FIXME: This appears to be a bug...
+                catch (java.lang.IndexOutOfBoundsException ex) { ex.printStackTrace(); }                // FIXME: This appears to be a bug...
                 if (n != null)
                     {
                     repeating = n.isRepeating();
@@ -195,6 +195,11 @@ public class ParallelButton extends MotifButton
     public void doubleClick(MouseEvent e)
         {
         sequi.showMotifUI(motifui);
+        }
+
+    public String toString() 
+        {
+        return this.getClass().getSimpleName() + "@" + System.identityHashCode(this) + "[MotifUI + " + motifui + " owner " + owner + " at " + at + "]";
         }
     }
         

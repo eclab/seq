@@ -38,7 +38,7 @@ public class SelectButton extends MotifButton
     public Dimension getPreferredSize() { return getMinimumSize(); }
     
     // Make a "Blank" button
-    public SelectButton(SeqUI ui, SelectUI owner, int at)   
+    public SelectButton(SeqUI sequi, SelectUI owner, int at)   
         {
         super();
         

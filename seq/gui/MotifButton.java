@@ -24,7 +24,7 @@ import java.awt.datatransfer.*;
 public class MotifButton extends JToggleButton implements Transferable
     {
     public static final int ICON_WIDTH = 32;
-    protected SeqUI sequi;
+	protected SeqUI sequi;
     protected MotifUI motifui;
     protected MotifUI owner;
     protected Object auxiliary;
@@ -157,7 +157,10 @@ public class MotifButton extends JToggleButton implements Transferable
         
     public void disconnect()
         {
-        if (motifui != null) motifui.removeButton(this);
+        if (owner != null) 
+        	{
+        	owner.removeButton(this);
+        	}
         }
         
     public void doubleClick(MouseEvent e) { }

@@ -275,7 +275,7 @@ public class SeriesUI extends MotifUI
                 }
             sequi.getMotifList().rebuildClipsForMotif(getMotif());
             }
-        else System.err.println("SeriesUI.moveChild: button not in list");
+        else System.err.println("SeriesUI.doRemove: button not in list");
         seriesBox.revalidate();
         seriesBox.repaint();                    // FIXME This has to be forced when it's th only one in the list -- a bug in Java?
         updateIndexes();

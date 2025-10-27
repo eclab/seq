@@ -35,7 +35,7 @@ public class ModulationButton extends MotifButton
     public Dimension getPreferredSize() { return getMinimumSize(); }
 
     // Make a "Blank" button
-    public ModulationButton(SeqUI ui, ModulationUI owner, int at)   
+    public ModulationButton(SeqUI sequi, ModulationUI owner, int at)   
         {
         super();
         

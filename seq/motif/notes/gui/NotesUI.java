@@ -480,7 +480,7 @@ public class NotesUI extends MotifUI
  		    	seq.setRouteIn(Seq.ROUTE_IN_NONE);
  		    	seq.setRouteOut(Seq.ROUTE_OUT_NONE);
  		    	}
-			seq.sendPanic(); 
+			//seq.sendPanic(); 
  		  	}
  		finally
  			{

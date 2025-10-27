@@ -844,7 +844,7 @@ public class MotifList extends JPanel
             }
         
         // At this point we can probably delete it.
-        selectedButton.getMotifUI().disconnect();
+        selectedButton.getMotifUI().disconnectButtons();
 
         lock = seq.getLock();
         lock.lock();

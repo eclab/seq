@@ -35,7 +35,7 @@ public class FilterButton extends MotifButton
     public Dimension getPreferredSize() { return getMinimumSize(); }
 
     // Make a "Blank" button
-    public FilterButton(SeqUI ui, FilterUI owner, int at)   
+    public FilterButton(SeqUI sequi, FilterUI owner, int at)   
         {
         super();
         

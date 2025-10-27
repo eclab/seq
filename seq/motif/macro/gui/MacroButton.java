@@ -35,7 +35,7 @@ public class MacroButton extends MotifButton
     public Dimension getPreferredSize() { return getMinimumSize(); }
 
     // Make a "Blank" button
-    public MacroButton(SeqUI ui, MacroUI owner, int at)   
+    public MacroButton(SeqUI sequi, MacroUI owner, int at)   
         {
         super();
         
