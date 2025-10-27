@@ -1454,6 +1454,10 @@ You can do tricks like this for any combination of modulation methods.
 
 As usual, many Modulation features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}).
 
+\paragraph{Child Repeats}
+
+As is the case for Serial, you can specify the number of times the child will repeat (loop) beyond its initial iteration before the Modulation determines that it has finished.
+
 \paragraph{Child MIDI}
 
 Like a number of other motifs, Modulation lets you modulate the rate, transpose, gain, and out of your (sole) child.  There is a difference however.  If you set the rate, transpose, or gain to a {\it parameter}, keep in mind that the whole point of Modulation is to modulate {\it its own parameters}, which are normally passed down to the child.  However these parameters that Modulation is modulating will {\it also} affect your Child MIDI settings.  This is by design: if for example you set your Child's MIDI gain to Param 1, then if you set up an Envelope on Argument 1, it will modulate that gain!
