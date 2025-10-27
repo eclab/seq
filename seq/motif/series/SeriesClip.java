@@ -581,7 +581,7 @@ public class SeriesClip extends Clip
                 out = data.getOut();
                 }
             note += getCorrectedValueInt(data.getTranspose(), Series.Data.MAX_TRANSPOSE * 2) - Series.Data.MAX_TRANSPOSE;
-            note = data.adjustNote(note);
+//            note = data.adjustNote(note);
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             vel *= getCorrectedValueDouble(data.getGain(), Series.Data.MAX_GAIN);
@@ -601,7 +601,7 @@ public class SeriesClip extends Clip
                 out = data.getOut();
                 }
             note += getCorrectedValueInt(data.getTranspose(), Series.Data.MAX_TRANSPOSE * 2) - Series.Data.MAX_TRANSPOSE;
-            note = data.adjustNote(note);
+//            note = data.adjustNote(note);
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             }
@@ -619,7 +619,7 @@ public class SeriesClip extends Clip
                 out = data.getOut();
                 }
             note += getCorrectedValueInt(data.getTranspose(), Series.Data.MAX_TRANSPOSE * 2) - Series.Data.MAX_TRANSPOSE;
-            note = data.adjustNote(note);
+//            note = data.adjustNote(note);
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())), id);
@@ -638,7 +638,7 @@ public class SeriesClip extends Clip
                 out = data.getOut();
                 }
             note += getCorrectedValueInt(data.getTranspose(), Series.Data.MAX_TRANSPOSE * 2) - Series.Data.MAX_TRANSPOSE;
-            note = data.adjustNote(note);
+//            note = data.adjustNote(note);
             if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
             if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
             return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(data.getRate())));

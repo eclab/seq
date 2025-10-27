@@ -19,7 +19,7 @@ public class SeriesChildInspector extends WidgetList
     {
     public static final double MAX_RATE = 16.0;
 //    public static final double MAX_RATE_LOG = Math.log(Series.Data.MAX_RATE);
-    public static final double RATE_LOG_FIX = 0.000000001;
+//    public static final double RATE_LOG_FIX = 0.000000001;
     public static final String[] RATE_OPTIONS = ParallelChildInspector.RATE_OPTIONS; 
     public static final double[] RATES = ParallelChildInspector.RATES;
     
@@ -41,9 +41,9 @@ public class SeriesChildInspector extends WidgetList
     JComboBox out;
     StringField name;
     JComboBox quantization;
-    JComboBox scale;
-    JComboBox root;
-    Box scaleAndRoot;
+    //JComboBox scale;
+    //JComboBox root;
+    //Box scaleAndRoot;
     JPanel repeatPanel;
     JCheckBox start;
 
@@ -327,6 +327,7 @@ public class SeriesChildInspector extends WidgetList
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
+                    // Yes, we're reusing ParallelChildInspector.getRate(...)
                     try { getData().setRate(ParallelChildInspector.getRate(SeriesChildInspector.this, val));}
                     finally { lock.unlock(); }
                     rate.redraw();
@@ -371,6 +372,7 @@ public class SeriesChildInspector extends WidgetList
                 };
             transpose.setToolTipText(MIDI_CHANGES_TRANSPOSE_TOOLTIP);
 
+/*
             root = new JComboBox(Series.Data.rootNames);
             root.setMaximumRowCount(Series.Data.rootNames.length);
             root.setSelectedIndex(getData().getRoot());
@@ -404,7 +406,7 @@ public class SeriesChildInspector extends WidgetList
             scaleAndRoot = new Box(BoxLayout.X_AXIS);
             scaleAndRoot.add(root);
             scaleAndRoot.add(scale);           
-
+*/
             gain = new SmallDial(getData().getGain() / Series.Data.MAX_GAIN, defaults)
                 {
                 protected String map(double val) { return super.map(val * Series.Data.MAX_GAIN); }
@@ -604,8 +606,8 @@ public class SeriesChildInspector extends WidgetList
         try 
             { 
             out.setSelectedIndex(getData().getOut() + 1); 
-            scale.setSelectedIndex(getData().getScale()); 
-            root.setSelectedIndex(getData().getRoot()); 
+//            scale.setSelectedIndex(getData().getScale()); 
+//            root.setSelectedIndex(getData().getRoot()); 
             start.setSelected(getData().getStart());
             }
         finally { lock.unlock(); }   
@@ -622,7 +624,7 @@ public class SeriesChildInspector extends WidgetList
     static final String NAME_TOOLTIP = "<html><b>Nickname</b><br>" +
         "Sets the nickname of the child in the Series.</html>";
 
-    static final String INITIAL_REPEATS_TOOLTIP = "<html><b>Repeat Probability</b><br>" +
+    static final String INITIAL_REPEATS_TOOLTIP = "<html><b>Initial Repeats</b><br>" +
         "Sets how often the child motif will repeat before transitioning to the next child.<br><br>" + 
         "Repeating works as follows:" +
         "<ol>" +
@@ -636,8 +638,8 @@ public class SeriesChildInspector extends WidgetList
         "All the while, if a 1.0 is sent to <b>Parameter 8</b> and <b>Until Trigger 8</b> is<br>" +
         "selected, then the child motif transitions to the next motif with no further repeats.</html>";
         
-    static final String REPEAT_PROBABILITY_TOOLTIP = "<html><b>Initial Repeats</b><br>" +
-        "Sets how often the child motif will repeat before transitioning to the next child.<br><br>" + 
+    static final String REPEAT_PROBABILITY_TOOLTIP = "<html><b>Repeat Probability</b><br>" +
+        "Sets how often the child motif will probabilistically repeat before transitioning to the next child.<br><br>" + 
         "Repeating works as follows:" +
         "<ol>" +
         "<li>The child motif is played once." +

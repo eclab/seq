@@ -64,6 +64,7 @@ public class Series extends Motif
         public static final double MAX_RATE = 16.0;
         public static final double DEFAULT_RATE = 1.0;
     
+    /*
         public static final int[][] scales = 
             {
             /// COMMON SCALES
@@ -162,6 +163,7 @@ public class Series extends Motif
 
         int scale = 0;         // CHROMATIC
         int root = 0;
+         */
          
         int repeatAtLeast;
         double repeatProbability;
@@ -206,6 +208,7 @@ public class Series extends Motif
         public void setTranspose(int transpose) { this.transpose = transpose; }
         public int getTranspose() { return transpose; }
 
+/*
         public void setScale(int scale) { this.scale = scale; }
         public int getScale() { return scale; }
         
@@ -230,7 +233,7 @@ public class Series extends Motif
             // Otherwise this is O(n)
             // We need to find the first note in the scale that is below the given note
             // FIXME we should modify scales to make this an O(1) lookup
-            /*int[] _scale = scales[scale];
+            // int[] _scale = scales[scale];
 //              int n = note % 12;
 //              for(int i = n; i > n - 12; i--)
 //                      {
@@ -242,8 +245,9 @@ public class Series extends Motif
 //                              return note - n + i;
 //                              }
 //                      }
-//              return note;            // should never happen*/
+//              return note;            // should never happen
             }
+*/
 
         public void setGain(double gain) { this.gain = gain; }
         public double getGain() { return gain; }
@@ -333,8 +337,8 @@ public class Series extends Motif
             gain = other.gain;
             out = other.out;
             weights = copy(other.weights);
-            scale = other.scale;
-            root = other.root;
+//            scale = other.scale;
+//            root = other.root;
             }
         }
 
@@ -447,10 +451,10 @@ public class Series extends Motif
         d.repeatAtLeast = from.optInt("least", 0);
         d.repeatProbability = from.optDouble("prob", 0);
         d.repeatUntilTrigger = from.optBoolean("trig", false);
-        d.transpose = from.optInt("tran", 0);
+        d.transpose = from.optInt("tran", Data.MAX_TRANSPOSE);
         d.rate = from.optDouble("rate", 1.0);
         d.gain = from.optDouble("gain", 1.0);
-        d.out = from.optInt("out", 0);
+        d.out = from.optInt("out", Data.DISABLED);
         //d.length = from.optInt("len");
         JSONArray w = from.getJSONArray("weight");
         d.weights = new double[w.length()];
