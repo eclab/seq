@@ -373,39 +373,39 @@ public class SeriesChildInspector extends WidgetList
             transpose.setToolTipText(MIDI_CHANGES_TRANSPOSE_TOOLTIP);
 
 /*
-            root = new JComboBox(Series.Data.rootNames);
-            root.setMaximumRowCount(Series.Data.rootNames.length);
-            root.setSelectedIndex(getData().getRoot());
-            root.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { getData().setRoot(root.getSelectedIndex()); }
-                    finally { lock.unlock(); }                              
-                    }
-                });            
+  root = new JComboBox(Series.Data.rootNames);
+  root.setMaximumRowCount(Series.Data.rootNames.length);
+  root.setSelectedIndex(getData().getRoot());
+  root.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { getData().setRoot(root.getSelectedIndex()); }
+  finally { lock.unlock(); }                              
+  }
+  });            
 
-            scale = new JComboBox(Series.Data.scaleNames);
-            scale.setMaximumRowCount(Series.Data.scaleNames.length);
-            scale.setSelectedIndex(getData().getScale());
-            scale.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { getData().setScale(scale.getSelectedIndex()); }
-                    finally { lock.unlock(); }                              
-                    }
-                }); 
+  scale = new JComboBox(Series.Data.scaleNames);
+  scale.setMaximumRowCount(Series.Data.scaleNames.length);
+  scale.setSelectedIndex(getData().getScale());
+  scale.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { getData().setScale(scale.getSelectedIndex()); }
+  finally { lock.unlock(); }                              
+  }
+  }); 
                 
-            scaleAndRoot = new Box(BoxLayout.X_AXIS);
-            scaleAndRoot.add(root);
-            scaleAndRoot.add(scale);           
+  scaleAndRoot = new Box(BoxLayout.X_AXIS);
+  scaleAndRoot.add(root);
+  scaleAndRoot.add(scale);           
 */
             gain = new SmallDial(getData().getGain() / Series.Data.MAX_GAIN, defaults)
                 {

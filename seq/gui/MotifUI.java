@@ -33,7 +33,7 @@ public abstract class MotifUI extends JPanel
     JTextArea text;
     JSplitPane split;
     MotifListButton primaryButton;
-    ArrayList<MotifButton> buttons = new ArrayList<>();			// These are in ANY ORDER
+    ArrayList<MotifButton> buttons = new ArrayList<>();                 // These are in ANY ORDER
         
     protected JScrollPane inspectorScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     protected JScrollPane primaryScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);

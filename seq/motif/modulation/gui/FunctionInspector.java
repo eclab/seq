@@ -126,9 +126,9 @@ public class FunctionInspector extends JPanel
                         modulation.setFunction(index, func1);                         
                         Clip clip = modulation.getPlayingClip();
                         if (clip != null && clip instanceof ModulationClip)
-                        	{
-                        	((ModulationClip) clip).buildNodes(modulation);
-                        	}
+                            {
+                            ((ModulationClip) clip).buildNodes(modulation);
+                            }
 
                         }
                     finally { lock.unlock(); }

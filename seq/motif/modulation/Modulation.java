@@ -24,12 +24,12 @@ public class Modulation extends Motif
     public static final String SAME = "Same";
     public static final String CONSTANT = "Constant";
 
-        public static final int MAX_TRANSPOSE = 24;
-        public static final double MAX_GAIN = 4.0;
-        public static final double MAX_RATE = 16.0;
-        public static final double DEFAULT_RATE = 1.0;
-        public static final int MAX_REPEAT_VALUE = 127;                // values go 0..127 inclusive
-        public static final int DISABLED = -1;
+    public static final int MAX_TRANSPOSE = 24;
+    public static final double MAX_GAIN = 4.0;
+    public static final double MAX_RATE = 16.0;
+    public static final double DEFAULT_RATE = 1.0;
+    public static final int MAX_REPEAT_VALUE = 127;                // values go 0..127 inclusive
+    public static final int DISABLED = -1;
 
 
     // this index order is just the order of the combo box in ModulationChildInspector
@@ -494,26 +494,26 @@ public class Modulation extends Motif
         }
     
     
-        double rate = DEFAULT_RATE;
-    	double gain = 1.0;
-        int transpose = MAX_TRANSPOSE;                                        // ranges 0 ... MAX_TRANSPOSE * 2 inclusive, representing -MAX_TRANSPOSE ... MAX_TRANSPOSE
-    	int out = DISABLED;
-    	int repeats;
+    double rate = DEFAULT_RATE;
+    double gain = 1.0;
+    int transpose = MAX_TRANSPOSE;                                        // ranges 0 ... MAX_TRANSPOSE * 2 inclusive, representing -MAX_TRANSPOSE ... MAX_TRANSPOSE
+    int out = DISABLED;
+    int repeats;
 
-    	public void setGain(double gain) { this.gain = gain; }
-        public double getGain() { return gain; }
+    public void setGain(double gain) { this.gain = gain; }
+    public double getGain() { return gain; }
 
-        public void setOut(int out) { this.out = out; }
-        public int getOut() { return out; }
+    public void setOut(int out) { this.out = out; }
+    public int getOut() { return out; }
         
-        public double getRate() { return rate; }
-        public void setRate(double val) { rate = val; }
+    public double getRate() { return rate; }
+    public void setRate(double val) { rate = val; }
         
-        public void setTranspose(int transpose) { this.transpose = transpose; }
-        public int getTranspose() { return transpose; }
+    public void setTranspose(int transpose) { this.transpose = transpose; }
+    public int getTranspose() { return transpose; }
         
-        public void setRepeats(int val) { repeats = val; }
-        public int getRepeats() { return repeats; }
+    public void setRepeats(int val) { repeats = val; }
+    public int getRepeats() { return repeats; }
 
 
            
@@ -577,8 +577,8 @@ public class Modulation extends Motif
         {
         functions[index] = function;
         // incrementVersion();
-       // Clip clip = getPlayingClip();
-       // if (clip != null) clip.rebuild();
+        // Clip clip = getPlayingClip();
+        // if (clip != null) clip.rebuild();
         }
     
     public Modulation(Seq seq)

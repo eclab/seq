@@ -771,8 +771,8 @@ public class Filter extends Motif
         {
         functions[index] = function;
         // incrementVersion();
-       // Clip clip = getPlayingClip();
-       // if (clip != null) clip.rebuild();
+        // Clip clip = getPlayingClip();
+        // if (clip != null) clip.rebuild();
         }
     
     public Filter(Seq seq)

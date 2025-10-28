@@ -124,9 +124,9 @@ public class FunctionInspector extends JPanel
                         filter.setFunction(index, func1); 
                         Clip clip = filter.getPlayingClip();
                         if (clip != null && clip instanceof FilterClip)
-                        	{
-                        	((FilterClip) clip).buildNodes(filter);
-                        	}
+                            {
+                            ((FilterClip) clip).buildNodes(filter);
+                            }
                         }
                     finally { lock.unlock(); }
                     }

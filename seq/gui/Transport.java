@@ -251,10 +251,10 @@ public class Transport extends JPanel implements SeqListener
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    	{ 
-                    	seq.setCountInMode(countIn.getSelectedIndex()); 
-                    	seq.beepOff();
-                    	}
+                        { 
+                        seq.setCountInMode(countIn.getSelectedIndex()); 
+                        seq.beepOff();
+                        }
                     finally { lock.unlock(); }                       
                     }
                 });
@@ -269,10 +269,10 @@ public class Transport extends JPanel implements SeqListener
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
-                    	{ 
-                    	seq.setMetronome(metronome.getSelectedIndex()); 
-                    	seq.beepOff();
-                    	}
+                        { 
+                        seq.setMetronome(metronome.getSelectedIndex()); 
+                        seq.beepOff();
+                        }
                     finally { lock.unlock(); }                              
                     }
                 });

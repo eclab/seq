@@ -366,20 +366,20 @@ public class StepSequenceUI extends MotifUI
                         }
                     }
                                 
-				// Now, who's dirty?
-				if (lastSteps == null)
-					setAllDirty(true);
-				else
-					{
-					for(int i = 0; i < numTracks; i++)
-						{
-						if (lastSteps[i] != currentSteps[i]) // it's changed
-							{
-							setDirty(i, lastSteps[i], true);
-							setDirty(i, currentSteps[i], true);
-							}
-						}
-					}
+                // Now, who's dirty?
+                if (lastSteps == null)
+                    setAllDirty(true);
+                else
+                    {
+                    for(int i = 0; i < numTracks; i++)
+                        {
+                        if (lastSteps[i] != currentSteps[i]) // it's changed
+                            {
+                            setDirty(i, lastSteps[i], true);
+                            setDirty(i, currentSteps[i], true);
+                            }
+                        }
+                    }
                 }
             finally { lock.unlock(); }
             }

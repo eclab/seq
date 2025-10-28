@@ -38,46 +38,46 @@ public class MotifListButton extends MotifButton
 
     public void updateText()
         {
-		String name = null;
-		boolean armed = false;
-			
-		if (motifui != null)
-			{
-			Motif motif = motifui.getMotif();
-			ReentrantLock lock = sequi.getSeq().getLock();
-			lock.lock();
-			try 
-				{ 
-				name = motif.getDisplayedName();
-				armed = motif.isArmed();
-				}
-			finally { lock.unlock(); }
-			name = StringUtility.sanitize(name);
-			boolean root = (this instanceof MotifListButton && sequi.getMotifList().getRoot() == this);
+        String name = null;
+        boolean armed = false;
+                        
+        if (motifui != null)
+            {
+            Motif motif = motifui.getMotif();
+            ReentrantLock lock = sequi.getSeq().getLock();
+            lock.lock();
+            try 
+                { 
+                name = motif.getDisplayedName();
+                armed = motif.isArmed();
+                }
+            finally { lock.unlock(); }
+            name = StringUtility.sanitize(name);
+            boolean root = (this instanceof MotifListButton && sequi.getMotifList().getRoot() == this);
 
-			if (sequi.getMotifList().isCompressed())
-				{
-				setText("<html>" + 
-				(armed ? "<font color=red>&#x25CF; </font><font color=" : "<font color=") + 
-				(motifui.isPlaying() && shouldHighlight() ? PLAYING_TEXT_COLOR : 
-				(shouldPreHighlight() ? PREHIGHLIGHT_TEXT_COLOR : DEFAULT_TEXT_COLOR)) + ">" +
-				(root ? "<b>" + name + "</b>" : name) +
-				"</font>" + 
-				(owner == null ? "</html>" : ("<br>" + getSubtext() + "</html>")));
-				}
-			else
-				{
-				setText("<html>" +
-				(armed ? "<font color=red>&#x25CF; </font><font color=" : "<font color=") + 
-				(motifui.isPlaying() && shouldHighlight() ? PLAYING_TEXT_COLOR : 
-				(shouldPreHighlight() ? PREHIGHLIGHT_TEXT_COLOR : DEFAULT_TEXT_COLOR)) + ">" +
-				(root ? "<b>" + name + "</b>" : name) +
-				"</font>" + 
-				(root ? "<br><b>Root</b>" : "") +
-				(owner == null ? "</html>" : ("<br>" + getSubtext() + "</html>")));
-				}
-			}
-	}
+            if (sequi.getMotifList().isCompressed())
+                {
+                setText("<html>" + 
+                    (armed ? "<font color=red>&#x25CF; </font><font color=" : "<font color=") + 
+                        (motifui.isPlaying() && shouldHighlight() ? PLAYING_TEXT_COLOR : 
+                        (shouldPreHighlight() ? PREHIGHLIGHT_TEXT_COLOR : DEFAULT_TEXT_COLOR)) + ">" +
+                    (root ? "<b>" + name + "</b>" : name) +
+                    "</font>" + 
+                    (owner == null ? "</html>" : ("<br>" + getSubtext() + "</html>")));
+                }
+            else
+                {
+                setText("<html>" +
+                    (armed ? "<font color=red>&#x25CF; </font><font color=" : "<font color=") + 
+                        (motifui.isPlaying() && shouldHighlight() ? PLAYING_TEXT_COLOR : 
+                        (shouldPreHighlight() ? PREHIGHLIGHT_TEXT_COLOR : DEFAULT_TEXT_COLOR)) + ">" +
+                    (root ? "<b>" + name + "</b>" : name) +
+                    "</font>" + 
+                    (root ? "<br><b>Root</b>" : "") +
+                    (owner == null ? "</html>" : ("<br>" + getSubtext() + "</html>")));
+                }
+            }
+        }
 
     /// Drag-and-drop data flavor
     public static DataFlavor dataFlavor = null;
@@ -123,18 +123,18 @@ public class MotifListButton extends MotifButton
                 dragCount = 0;
                 sequi.setMotifUI(motifui);
                 if (sequi.getSelectedFrameIsRoot())
-                	{
-					ReentrantLock lock = sequi.getSeq().getLock();
-					lock.lock();
-					try
-						{
-						if (sequi.getSeq().isStopped())
-							{
-							sequi.getMotifList().setRoot(motifui);
-							}
-						}
-					finally { lock.unlock(); }
-					}
+                    {
+                    ReentrantLock lock = sequi.getSeq().getLock();
+                    lock.lock();
+                    try
+                        {
+                        if (sequi.getSeq().isStopped())
+                            {
+                            sequi.getMotifList().setRoot(motifui);
+                            }
+                        }
+                    finally { lock.unlock(); }
+                    }
                 }
             });
             

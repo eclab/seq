@@ -158,11 +158,11 @@ public class Notes extends Motif
     boolean wasRPN = false;
     
     /*
-    boolean polyAftertouchPitch = false;
+      boolean polyAftertouchPitch = false;
     
-    public boolean getPolyAftertouchPitch() { return polyAftertouchPitch; }
-    public void setPolyAftertouchPitch(boolean val) { polyAftertouchPitch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.polyaftertouchpitch", val); }
-	*/
+      public boolean getPolyAftertouchPitch() { return polyAftertouchPitch; }
+      public void setPolyAftertouchPitch(boolean val) { polyAftertouchPitch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.polyaftertouchpitch", val); }
+    */
 
     public abstract static class Event
         {
@@ -1029,7 +1029,7 @@ public class Notes extends Motif
         recordIntegration = Prefs.getLastInt("seq.motif.notes.Notes.recordintegration", INTEGRATE_REPLACE); 
         defaultVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultVelocity", 64);         
         defaultReleaseVelocity = Prefs.getLastInt("seq.motif.notes.Notes.defaultReleaseVelocity", 64); 
-		//polyAftertouchPitch = Prefs.getLastBoolean("seq.motif.notes.Notes.polyaftertouchpitch", false); 
+        //polyAftertouchPitch = Prefs.getLastBoolean("seq.motif.notes.Notes.polyaftertouchpitch", false); 
 
         for(int i = 0; i < NUM_EVENT_PARAMETERS; i++)
             {

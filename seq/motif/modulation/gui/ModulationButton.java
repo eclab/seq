@@ -136,7 +136,7 @@ public class ModulationButton extends MotifButton
     public String getSubtext()
         {
         Seq seq = sequi.getSeq();
-		Modulation modulation = (Modulation)(owner.getMotif());   
+        Modulation modulation = (Modulation)(owner.getMotif());   
         String subname = null;
         int repeats = 0;
         int currentRepeat = 0;

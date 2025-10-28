@@ -304,7 +304,7 @@ public class FilterClip extends Clip
                 outs.put(id, out);
                 }
             else if (changeLength)
-            	{
+                {
                 super.scheduleNoteOff(out, note, (double)0x40, length, id, index);
                 mapScheduled.put(id, note);                                     // WARNING this could create a memory leak, better that than stuck notes?
                 }
@@ -338,10 +338,10 @@ public class FilterClip extends Clip
             if (newNote != null)                                                // revise note pitch?
                 {
                 note = newNote.intValue();
-				if (changeLength && addLength)
-					{
-					super.scheduleNoteOff(out, note, vel, func.getLength(), id, index);
-					}
+                if (changeLength && addLength)
+                    {
+                    super.scheduleNoteOff(out, note, vel, func.getLength(), id, index);
+                    }
                 else super.noteOff(out, note, vel, id, index);
                 }
             else
@@ -350,10 +350,10 @@ public class FilterClip extends Clip
                 if (scheduledNote == null)                      // not scheduled already
                     {
                     if (changeLength && addLength)
-						{
-						super.scheduleNoteOff(out, note, vel, func.getLength(), id, index);
-						}
-					else super.noteOff(out, note, vel, id, index);              // hope for the best
+                        {
+                        super.scheduleNoteOff(out, note, vel, func.getLength(), id, index);
+                        }
+                    else super.noteOff(out, note, vel, id, index);              // hope for the best
                     }
                 }
             }
@@ -386,12 +386,12 @@ public class FilterClip extends Clip
                 }
             super.scheduleNoteOn(out, note, vel, time, id, index);
                         
-			if (changeLength && addLength)
+            if (changeLength && addLength)
                 {
                 map.put(id, note);
                 outs.put(id, out);
                 }
-			else if (changeLength)
+            else if (changeLength)
                 {
                 super.scheduleNoteOff(out, note, (double)0x40, time + length, id, index);
                 mapScheduled.put(id, note);                                     // WARNING this could create a memory leak, better that than stuck notes?
@@ -421,9 +421,9 @@ public class FilterClip extends Clip
                 {
                 note = newNote.intValue();
                 if (changeLength && addLength)
-                	{
-					super.scheduleNoteOff(out, note, vel, time + func.getLength(), id, index);
-                	}
+                    {
+                    super.scheduleNoteOff(out, note, vel, time + func.getLength(), id, index);
+                    }
                 else super.scheduleNoteOff(out, note, vel, time, id, index);
                 }
             else
@@ -432,10 +432,10 @@ public class FilterClip extends Clip
                 if (scheduledNote == null)                      // not scheduled already
                     {
                     if (changeLength && addLength)
-						{
-						super.scheduleNoteOff(out, note, vel, time + func.getLength(), id, index); // hope for the best
-						}
-					else super.scheduleNoteOff(out, note, vel, time, id, index); // hope for the best
+                        {
+                        super.scheduleNoteOff(out, note, vel, time + func.getLength(), id, index); // hope for the best
+                        }
+                    else super.scheduleNoteOff(out, note, vel, time, id, index); // hope for the best
                     }
                 }
             }
@@ -1489,13 +1489,13 @@ public class FilterClip extends Clip
         }
         
     public void buildNodes(Filter filter)
-    	{
+        {
         nodes.clear();
         for(int i = 0; i < Filter.NUM_TRANSFORMERS; i++)
             {
             nodes.add(buildNode(filter, i));
             }
-    	}
+        }
         
     public Node buildNode(Filter trans, int index)
         {

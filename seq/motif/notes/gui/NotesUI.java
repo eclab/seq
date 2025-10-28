@@ -459,33 +459,33 @@ public class NotesUI extends MotifUI
         super.uiWasSet();
         // revise arm menu
         autoArmItem.setSelected(Prefs.getLastBoolean("ArmNewNotesMotifs", false));
-		updateEcho();
-		}
-	
-	public void updateEcho()
-		{
+        updateEcho();
+        }
+        
+    public void updateEcho()
+        {
         // update echo
-		Seq seq = sequi.getSeq();
+        Seq seq = sequi.getSeq();
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
             if (notes.getEcho())
-            	{
- 		       	seq.setRouteIn(notes.getIn());
- 		       	seq.setRouteOut(notes.getOut());
- 		       	}
- 		    else
- 		    	{
- 		    	seq.setRouteIn(Seq.ROUTE_IN_NONE);
- 		    	seq.setRouteOut(Seq.ROUTE_OUT_NONE);
- 		    	}
-			//seq.sendPanic(); 
- 		  	}
- 		finally
- 			{
- 			lock.unlock();
- 			}
+                {
+                seq.setRouteIn(notes.getIn());
+                seq.setRouteOut(notes.getOut());
+                }
+            else
+                {
+                seq.setRouteIn(Seq.ROUTE_IN_NONE);
+                seq.setRouteOut(Seq.ROUTE_OUT_NONE);
+                }
+            //seq.sendPanic(); 
+            }
+        finally
+            {
+            lock.unlock();
+            }
         }
     
     /** Returns the NotesUI menu */
@@ -820,8 +820,8 @@ public class NotesUI extends MotifUI
                     }
                 }
 
-			// We have to scroll to bottom before we scroll to the point, 
-			// otherwise it doesn't work due to Java bugs.
+            // We have to scroll to bottom before we scroll to the point, 
+            // otherwise it doesn't work due to Java bugs.
             getPrimaryScroll().getViewport().setViewPosition(new Point(posx, PitchUI.getPitchHeight() * 127));
             getPrimaryScroll().getViewport().setViewPosition(new Point(posx, posy));
             }       

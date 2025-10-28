@@ -116,36 +116,36 @@ public class Seq
     int routeOut;
     
     public void routeMIDI(int in, MidiMessage message, long timestamp)
-    	{
-    	ReentrantLock lock = getLock();
-    	lock.lock();
-    	try	
-    		{
-    		if (in == routeIn && routeIn >= 0 && routeOut >= 0)
-    			{
-    			if (Clip.isVoiceMessage(message))
-    				{
-    				ShortMessage sm = (ShortMessage) message;
-    				try
-    					{
-	    				// we need to modify the channel
-						sm.setMessage(
-							sm.getCommand(), 
-							tuple.outChannel[routeOut], 
-							sm.getData1(), 
-							sm.getData2());
-						}
-					catch (InvalidMidiDataException ex) { ex.printStackTrace(); }
-    				}
-    			
-    			outs[routeOut].sendMIDI(message, timestamp);
-    			}
-    		}
-    	finally
-    		{
-    		lock.unlock();
-    		}
-    	}
+        {
+        ReentrantLock lock = getLock();
+        lock.lock();
+        try     
+            {
+            if (in == routeIn && routeIn >= 0 && routeOut >= 0)
+                {
+                if (Clip.isVoiceMessage(message))
+                    {
+                    ShortMessage sm = (ShortMessage) message;
+                    try
+                        {
+                        // we need to modify the channel
+                        sm.setMessage(
+                            sm.getCommand(), 
+                            tuple.outChannel[routeOut], 
+                            sm.getData1(), 
+                            sm.getData2());
+                        }
+                    catch (InvalidMidiDataException ex) { ex.printStackTrace(); }
+                    }
+                        
+                outs[routeOut].sendMIDI(message, timestamp);
+                }
+            }
+        finally
+            {
+            lock.unlock();
+            }
+        }
     
     
     
@@ -342,12 +342,12 @@ public class Seq
         }
     
 
-	/** Turn Beep Off */
-	public void beepOff()
-		{
-		beep.setAmplitude(0);
-		}
-		
+    /** Turn Beep Off */
+    public void beepOff()
+        {
+        beep.setAmplitude(0);
+        }
+                
     /** Prepares Seq to be thrown away. */
     public void shutdown()
         {
@@ -599,10 +599,10 @@ public class Seq
     public int getMetronome() { return metronome; }
     /** Sets the metronome mode.  */
     public void setMetronome(int val) 
-    	{ 
-    	metronome = val; 
+        { 
+        metronome = val; 
         Prefs.setLastInt("seq.Seq.metronome", metronome);
-    	}
+        }
     /** Returns the count-in mode, one of COUNT_IN_NONE, COUNT_IN_RECORDING_ONLY, or COUNT_IN_RECORDING_AND_PLAYING.
         The length of the count-in is one BAR as determined by getBar(). The metronome must be ON in order
         to get a count-in.  */
@@ -611,10 +611,10 @@ public class Seq
         The length of the count-in is one BAR as determined by getBar().   The metronome must be ON in order
         to get a count-in.  */
     public void setCountInMode(int val) 
-    	{ 
-    	countInMode = val; 
+        { 
+        countInMode = val; 
         Prefs.setLastInt("seq.Seq.countin", countInMode);
-    	}
+        }
 
 /*
   public void addPlayingClip(Clip clip) { playingClips.add(clip); }
@@ -691,10 +691,10 @@ public class Seq
     // BEEP
     public double getBeepVolume() { return beepVolume; }
     public void setBeepVolume(double val) 
-    	{ 
-    	beepVolume = val; 
+        { 
+        beepVolume = val; 
         Prefs.setLastDouble("seq.Seq.beepvolume", beepVolume);
-    	}
+        }
     
     // BPM
     /** Sets the BPM and modifies the timer appropriately.  */
@@ -1614,10 +1614,10 @@ public class Seq
         obj.put("clock", clock);
         obj.put("bar", bar);
 /*
-        obj.put("countin", countInMode);
-        obj.put("metronome", metronome);
-        obj.put("beepvolume", beepVolume);
-        obj.put("beeppitch", beepPitch);
+  obj.put("countin", countInMode);
+  obj.put("metronome", metronome);
+  obj.put("beepvolume", beepVolume);
+  obj.put("beeppitch", beepPitch);
 */
         obj.put("macrochildcounter", macroChildCounter);
         JSONArray params = Motif.doubleToJSONArray(parameterValues);
@@ -1692,10 +1692,10 @@ public class Seq
         seq.bar = obj.optInt("bar", DEFAULT_BAR);
 
 /*
-        seq.countInMode = obj.optInt("countin", COUNT_IN_RECORDING_ONLY);
-        seq.metronome = obj.optInt("metronome", METRONOME_RECORDING_ONLY);
-        seq.beepVolume = obj.optDouble("beepvolume", 1.0);
-        seq.beepPitch = obj.optInt("beeppitch", 0);
+  seq.countInMode = obj.optInt("countin", COUNT_IN_RECORDING_ONLY);
+  seq.metronome = obj.optInt("metronome", METRONOME_RECORDING_ONLY);
+  seq.beepVolume = obj.optDouble("beepvolume", 1.0);
+  seq.beepPitch = obj.optInt("beeppitch", 0);
 */
         seq.macroChildCounter = obj.getInt("macrochildcounter");                // note not optInt
         seq.parameterValues = Motif.JSONToDoubleArray(obj.getJSONArray("params"));      // note not getJSONArray

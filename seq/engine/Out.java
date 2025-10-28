@@ -109,10 +109,10 @@ public class Out
     ///// SENDING MIDI
         
     public boolean sendMIDI(MidiMessage message)
-    	{
-    	return sendMIDI(message, -1L);
-    	}
-    	
+        {
+        return sendMIDI(message, -1L);
+        }
+        
     public boolean sendMIDI(MidiMessage message, long timestamp)
         {
         //System.err.println(seq.getTime() + " -> " + Midi.format(message));

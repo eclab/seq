@@ -652,20 +652,20 @@ public class NotesInspector extends WidgetList
                     }
                 });
 /*
-			polyAftertouchPitch = new JCheckBox();
-			polyAftertouchPitch.setSelected(notes.getPolyAftertouchPitch());
-			polyAftertouchPitch.addActionListener(new ActionListener()
-				{
-				public void actionPerformed(ActionEvent e)
-					{
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { notes.setPolyAftertouchPitch(polyAftertouchPitch.isSelected()); }
-					finally { lock.unlock(); }                              
-					}
-				});
-			polyAftertouchPitch.setToolTipText(POLY_AFTERTOUCH_PITCH);
+  polyAftertouchPitch = new JCheckBox();
+  polyAftertouchPitch.setSelected(notes.getPolyAftertouchPitch());
+  polyAftertouchPitch.addActionListener(new ActionListener()
+  {
+  public void actionPerformed(ActionEvent e)
+  {
+  if (seq == null) return;
+  ReentrantLock lock = seq.getLock();
+  lock.lock();
+  try { notes.setPolyAftertouchPitch(polyAftertouchPitch.isSelected()); }
+  finally { lock.unlock(); }                              
+  }
+  });
+  polyAftertouchPitch.setToolTipText(POLY_AFTERTOUCH_PITCH);
 */
             parameterHeight = new JComboBox(PARAMETER_HEIGHT_STRINGS);
             parameterHeight.addActionListener(new ActionListener()
@@ -984,7 +984,7 @@ public class NotesInspector extends WidgetList
             quantizeNonNotes.setSelected(notes.getQuantizeNonNotes());
             convertNRPNRPN.setSelected(notes.getConvertNRPNRPN()); 
             warpedBend.setSelected(notes.getWarped());
-           // polyAftertouchPitch.setSelected(notes.getPolyAftertouchPitch());
+            // polyAftertouchPitch.setSelected(notes.getPolyAftertouchPitch());
             
             quantizeTo.setSelectedIndex(notes.getQuantizeTo());
             for(int i = 0; i < Notes.NUM_EVENT_PARAMETERS; i++)
@@ -1139,6 +1139,6 @@ public class NotesInspector extends WidgetList
         "Sets the release velocity of notes drawn on-screen with the mouse (not recorded ones).</html>";
 
     static final String POLY_AFTERTOUCH_PITCH = "<html><b>Pitch Determines Color</b><br>" +
-    	"Sets whether the color of a polyphonic aftertouch even is based on its color," +
-    	"rather than based on its aftertouch value.</html>";
+        "Sets whether the color of a polyphonic aftertouch even is based on its color," +
+        "rather than based on its aftertouch value.</html>";
     }

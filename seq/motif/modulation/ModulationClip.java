@@ -402,7 +402,7 @@ public class ModulationClip extends Clip
         }
     
     public void buildNodes(Modulation modulation)
-    	{
+        {
         nodes.clear();
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
             {
@@ -536,8 +536,8 @@ public class ModulationClip extends Clip
             }
         }
 
-	public int getNumTimes() { return numTimes; }
-	
+    public int getNumTimes() { return numTimes; }
+        
     public boolean process()
         {
         Modulation modulation = (Modulation)getMotif();
@@ -553,19 +553,19 @@ public class ModulationClip extends Clip
             {
             //loadParameterValues(clip, modulation.getChildren().get(0));
             boolean val = advanceChild(modulation);
-            if (val)		// all done.  Should we loop?
-            	{
-            	numTimes++;
-            	if (numTimes > modulation.getRepeats())		// for example, if repeats is 4, then numTimes must have reached 5 to be done
-            		{
-            		return val;
-            		}
-            	else
-            		{
-            		clip.loop();
-            		return false;
-            		}
-            	}
+            if (val)            // all done.  Should we loop?
+                {
+                numTimes++;
+                if (numTimes > modulation.getRepeats())         // for example, if repeats is 4, then numTimes must have reached 5 to be done
+                    {
+                    return val;
+                    }
+                else
+                    {
+                    clip.loop();
+                    return false;
+                    }
+                }
             else return val;
             }
         else
@@ -580,14 +580,14 @@ public class ModulationClip extends Clip
         Modulation modulation = (Modulation)getMotif();
 
         if (modulation.getOut() != Modulation.DISABLED)
-                {
-                out = modulation.getOut();
-                }
-		note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
-		if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
-		if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-		vel *= getCorrectedValueDouble(modulation.getGain(), Modulation.MAX_GAIN);
-		if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
+            {
+            out = modulation.getOut();
+            }
+        note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+        if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+        if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+        vel *= getCorrectedValueDouble(modulation.getGain(), Modulation.MAX_GAIN);
+        if (vel > 127) vel = 127;                   // FIXME: should we check for vel = 0?
         super.noteOn(out, note, vel, id);
         }
         
@@ -596,12 +596,12 @@ public class ModulationClip extends Clip
         Modulation modulation = (Modulation)getMotif();
 
         if (modulation.getOut() != Modulation.DISABLED)
-                {
-                out = modulation.getOut();
-                }
-            note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
-            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
-            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+            {
+            out = modulation.getOut();
+            }
+        note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+        if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+        if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
         super.noteOff(out, note, vel, id);
         }
         
@@ -609,28 +609,28 @@ public class ModulationClip extends Clip
         {
         Modulation modulation = (Modulation)getMotif();
 
-            if (modulation.getOut() != Modulation.DISABLED)
-                {
-                out = modulation.getOut();
-                }
-            note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
-            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
-            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-            super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(modulation.getRate())), id);
+        if (modulation.getOut() != Modulation.DISABLED)
+            {
+            out = modulation.getOut();
+            }
+        note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+        if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+        if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+        super.scheduleNoteOff(out, note, vel, (int)(time / getCorrectedValueDouble(modulation.getRate())), id);
         }
         
     public int scheduleNoteOn(int out, int note, double vel, int time) 
         {
         Modulation modulation = (Modulation)getMotif();
 
-            if (modulation.getOut() != Modulation.DISABLED)
-                {
-                out = modulation.getOut();
-                }
-            note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
-            if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
-            if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
-            return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(modulation.getRate())));
+        if (modulation.getOut() != Modulation.DISABLED)
+            {
+            out = modulation.getOut();
+            }
+        note += getCorrectedValueInt(modulation.getTranspose(), Modulation.MAX_TRANSPOSE * 2) - Modulation.MAX_TRANSPOSE;
+        if (note > 127) note = 127;                 // FIXME: should we instead just not play the note?
+        if (note < 0) note = 0;                             // FIXME: should we instead just not play the note?
+        return super.scheduleNoteOn(out, note, vel, (int)(time / getCorrectedValueDouble(modulation.getRate())));
         }
         
 

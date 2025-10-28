@@ -132,13 +132,13 @@ public class EventUI extends JComponent
             when = event.when;
 
             if (event instanceof Notes.Aftertouch) // && parameterui.getNotesUI().getNotes().getPolyAftertouchPitch())
-            	{
-            	Notes.Aftertouch aftertouch = (Notes.Aftertouch)event;
-            	if (aftertouch.pitch != Out.CHANNEL_AFTERTOUCH)
-            		{
-            		polyATPitch = (byte)(aftertouch.pitch);
-            		}
-            	}
+                {
+                Notes.Aftertouch aftertouch = (Notes.Aftertouch)event;
+                if (aftertouch.pitch != Out.CHANNEL_AFTERTOUCH)
+                    {
+                    polyATPitch = (byte)(aftertouch.pitch);
+                    }
+                }
 
             if (event instanceof Notes.Bend && parameterui.getNotesUI().getNotes().getWarped())
                 {
@@ -478,9 +478,9 @@ public class EventUI extends JComponent
         bounds.height = HEIGHT;
         
         if (polyATPitch >= 0)
-        	{
-        	g.setPaint(VALUE_MAP.getColor(polyATPitch));
-        	}
+            {
+            g.setPaint(VALUE_MAP.getColor(polyATPitch));
+            }
         else if (value < 0)
             {
             g.setPaint(DEFAULT_COLOR);

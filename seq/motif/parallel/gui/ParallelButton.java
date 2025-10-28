@@ -184,9 +184,9 @@ public class ParallelButton extends MotifButton
         int ticks = (delay % Seq.PPQ) + 1;
         int _delay = delay / Seq.PPQ;
         int beats = (_delay % bar) + 1;
-		_delay = _delay / bar;
-		int bars = (_delay % Seq.NUM_BARS_PER_PART) + 1;
-		int parts = (_delay / Seq.NUM_BARS_PER_PART) + 1;
+        _delay = _delay / bar;
+        int bars = (_delay % Seq.NUM_BARS_PER_PART) + 1;
+        int parts = (_delay / Seq.NUM_BARS_PER_PART) + 1;
         
         return (override ? "Override&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + (delay == 0 ? "" : (parts + " : " + bars + " : " + beats + " : " + ticks + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")) + (muted ? "Muted&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") +
             (repeating ? "Repeating&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + subname;

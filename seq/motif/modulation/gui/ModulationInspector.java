@@ -94,197 +94,197 @@ public class ModulationInspector extends WidgetList
         name.setToolTipText(NAME_TOOLTIP);
 
 
-            repeats = new SmallDial(-1, defaults)
-                {
-                protected String map(double val) { return String.valueOf((int)(val * Modulation.MAX_REPEAT_VALUE)); }
-                public double getValue() 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { return (Math.min(Modulation.MAX_REPEAT_VALUE, modulation.getRepeats()) / (double)Modulation.MAX_REPEAT_VALUE); }
-                    finally { lock.unlock(); }
-                    }
-                    
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { modulation.setRepeats((int)(val * Modulation.MAX_REPEAT_VALUE)); }
-                    finally { lock.unlock(); }
-                    modulationui.updateText();
-                    }
-
-                public void setDefault(int val) 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    // We add 2 to skip PARAMETER_UNBOUND
-                    try { if (val != SmallDial.NO_DEFAULT) modulation.setRepeats(-(val + 1)); }
-                    finally { lock.unlock(); }
-                    modulationui.updateText();
-                    }
-    
-                public int getDefault()
-                    {
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    // We add 2 to skip PARAMETER_UNBOUND
-                    try { double val = modulation.getRepeats(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                    finally { lock.unlock(); }
-                    }
-                };
-            repeats.setToolTipText(INITIAL_REPEATS_TOOLTIP);
-
-            rate = new SmallDial(modulation.getRate() / MAX_RATE, defaults)
-                {
-                public String map(double d)
-                    {
-                    return super.map(d * 16.0);
-                    }
-                public double getValue() 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { return modulation.getRate() / MAX_RATE; }
-                    finally { lock.unlock(); }
-                    }
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { modulation.setRate(val * MAX_RATE);}
-                    finally { lock.unlock(); }
-                    }
-                public void setDefault(int val) 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { if (val != SmallDial.NO_DEFAULT) modulation.setRate(-(val + 1)); }
-                    finally { lock.unlock(); }
-                    }
-    
-                public int getDefault()
-                    {
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { double val = modulation.getRate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                    finally { lock.unlock(); }
-                    }
-                };
-            rate.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
-
-            ratePresets = new PushButton("Presets...", RATE_OPTIONS)
-                {
-                public void perform(int val)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { modulation.setRate(ParallelChildInspector.getRate(ModulationInspector.this, val));}
-                    finally { lock.unlock(); }
-                    rate.redraw();
-                    }
-                };
-            ratePresets.setToolTipText(MIDI_CHANGES_RATE_PRESETS_TOOLTIP);
-
-            transpose = new SmallDial(modulation.getTranspose() / (double)Modulation.MAX_TRANSPOSE / 2.0, defaults)
-                {
-                protected String map(double val) { return String.valueOf((int)(val * 2 * Modulation.MAX_TRANSPOSE) - Modulation.MAX_TRANSPOSE); }
-                public double getValue() 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { double d = modulation.getTranspose();  if (d < 0) return 0;  else return d / (double)Modulation.MAX_TRANSPOSE / 2.0; }
-                    finally { lock.unlock(); }
-                    }
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { modulation.setTranspose((int)(val * 2 * Modulation.MAX_TRANSPOSE)); }
-                    finally { lock.unlock(); }
-                    }
-                public void setDefault(int val) 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { if (val != SmallDial.NO_DEFAULT) modulation.setTranspose(-(val + 1)); }
-                    finally { lock.unlock(); }
-//                    seriesui.updateText();                  // FIXME: is this needed?
-                    }
-    
-                public int getDefault()
-                    {
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { double val = modulation.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                    finally { lock.unlock(); }
-                    }
-                };
-            transpose.setToolTipText(MIDI_CHANGES_TRANSPOSE_TOOLTIP);
-
-            gain = new SmallDial(modulation.getGain() / Modulation.MAX_GAIN, defaults)
-                {
-                protected String map(double val) { return super.map(val * Modulation.MAX_GAIN); }
-                public double getValue() 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { return modulation.getGain() / Modulation.MAX_GAIN; }
-                    finally { lock.unlock(); }
-                    }
-                public void setValue(double val) 
-                    { 
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { modulation.setGain(val * Modulation.MAX_GAIN); }
-                    finally { lock.unlock(); }
-                    }
-                public void setDefault(int val) 
-                    { 
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { if (val != SmallDial.NO_DEFAULT) modulation.setGain(-(val + 1)); }
-                    finally { lock.unlock(); }
-//                    seriesui.updateText();                  // FIXME: is this needed?
-                    }
-                public int getDefault()
-                    {
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { double val = modulation.getGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-                    finally { lock.unlock(); }
-                    }
-                };
-            gain.setToolTipText(MIDI_CHANGES_GAIN_TOOLTIP);
-
-            Out[] seqOuts = seq.getOuts();
-            String[] outs = new String[seqOuts.length + 1];
-            outs[0] = "<html><i>Don't Change</i></html>";
-            for(int i = 0; i < seqOuts.length; i++)
-                {
-                // We have to make these strings unique, or else the combo box doesn't give the right selected index, Java bug
-                outs[i+1] = "" + (i+1) + ": " + seqOuts[i].toString();
+        repeats = new SmallDial(-1, defaults)
+            {
+            protected String map(double val) { return String.valueOf((int)(val * Modulation.MAX_REPEAT_VALUE)); }
+            public double getValue() 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { return (Math.min(Modulation.MAX_REPEAT_VALUE, modulation.getRepeats()) / (double)Modulation.MAX_REPEAT_VALUE); }
+                finally { lock.unlock(); }
                 }
-                
-            out = new JComboBox(outs);
-            out.setMaximumRowCount(outs.length);
-            out.setSelectedIndex(modulation.getOut() + 1);
-            out.addActionListener(new ActionListener()
+                    
+            public void setValue(double val) 
+                { 
+                if (seq == null) return;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { modulation.setRepeats((int)(val * Modulation.MAX_REPEAT_VALUE)); }
+                finally { lock.unlock(); }
+                modulationui.updateText();
+                }
+
+            public void setDefault(int val) 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                // We add 2 to skip PARAMETER_UNBOUND
+                try { if (val != SmallDial.NO_DEFAULT) modulation.setRepeats(-(val + 1)); }
+                finally { lock.unlock(); }
+                modulationui.updateText();
+                }
+    
+            public int getDefault()
                 {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { modulation.setOut(out.getSelectedIndex() - 1); }              // -1 is DISABLED
-                    finally { lock.unlock(); }                              
-                    }
-                });            
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                // We add 2 to skip PARAMETER_UNBOUND
+                try { double val = modulation.getRepeats(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                finally { lock.unlock(); }
+                }
+            };
+        repeats.setToolTipText(INITIAL_REPEATS_TOOLTIP);
+
+        rate = new SmallDial(modulation.getRate() / MAX_RATE, defaults)
+            {
+            public String map(double d)
+                {
+                return super.map(d * 16.0);
+                }
+            public double getValue() 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { return modulation.getRate() / MAX_RATE; }
+                finally { lock.unlock(); }
+                }
+            public void setValue(double val) 
+                { 
+                if (seq == null) return;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { modulation.setRate(val * MAX_RATE);}
+                finally { lock.unlock(); }
+                }
+            public void setDefault(int val) 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { if (val != SmallDial.NO_DEFAULT) modulation.setRate(-(val + 1)); }
+                finally { lock.unlock(); }
+                }
+    
+            public int getDefault()
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { double val = modulation.getRate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                finally { lock.unlock(); }
+                }
+            };
+        rate.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
+
+        ratePresets = new PushButton("Presets...", RATE_OPTIONS)
+            {
+            public void perform(int val)
+                {
+                if (seq == null) return;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { modulation.setRate(ParallelChildInspector.getRate(ModulationInspector.this, val));}
+                finally { lock.unlock(); }
+                rate.redraw();
+                }
+            };
+        ratePresets.setToolTipText(MIDI_CHANGES_RATE_PRESETS_TOOLTIP);
+
+        transpose = new SmallDial(modulation.getTranspose() / (double)Modulation.MAX_TRANSPOSE / 2.0, defaults)
+            {
+            protected String map(double val) { return String.valueOf((int)(val * 2 * Modulation.MAX_TRANSPOSE) - Modulation.MAX_TRANSPOSE); }
+            public double getValue() 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { double d = modulation.getTranspose();  if (d < 0) return 0;  else return d / (double)Modulation.MAX_TRANSPOSE / 2.0; }
+                finally { lock.unlock(); }
+                }
+            public void setValue(double val) 
+                { 
+                if (seq == null) return;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { modulation.setTranspose((int)(val * 2 * Modulation.MAX_TRANSPOSE)); }
+                finally { lock.unlock(); }
+                }
+            public void setDefault(int val) 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { if (val != SmallDial.NO_DEFAULT) modulation.setTranspose(-(val + 1)); }
+                finally { lock.unlock(); }
+//                    seriesui.updateText();                  // FIXME: is this needed?
+                }
+    
+            public int getDefault()
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { double val = modulation.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                finally { lock.unlock(); }
+                }
+            };
+        transpose.setToolTipText(MIDI_CHANGES_TRANSPOSE_TOOLTIP);
+
+        gain = new SmallDial(modulation.getGain() / Modulation.MAX_GAIN, defaults)
+            {
+            protected String map(double val) { return super.map(val * Modulation.MAX_GAIN); }
+            public double getValue() 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { return modulation.getGain() / Modulation.MAX_GAIN; }
+                finally { lock.unlock(); }
+                }
+            public void setValue(double val) 
+                { 
+                if (seq == null) return;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { modulation.setGain(val * Modulation.MAX_GAIN); }
+                finally { lock.unlock(); }
+                }
+            public void setDefault(int val) 
+                { 
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { if (val != SmallDial.NO_DEFAULT) modulation.setGain(-(val + 1)); }
+                finally { lock.unlock(); }
+//                    seriesui.updateText();                  // FIXME: is this needed?
+                }
+            public int getDefault()
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { double val = modulation.getGain(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                finally { lock.unlock(); }
+                }
+            };
+        gain.setToolTipText(MIDI_CHANGES_GAIN_TOOLTIP);
+
+        Out[] seqOuts = seq.getOuts();
+        String[] outs = new String[seqOuts.length + 1];
+        outs[0] = "<html><i>Don't Change</i></html>";
+        for(int i = 0; i < seqOuts.length; i++)
+            {
+            // We have to make these strings unique, or else the combo box doesn't give the right selected index, Java bug
+            outs[i+1] = "" + (i+1) + ": " + seqOuts[i].toString();
+            }
+                
+        out = new JComboBox(outs);
+        out.setMaximumRowCount(outs.length);
+        out.setSelectedIndex(modulation.getOut() + 1);
+        out.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent e)
+                {
+                if (seq == null) return;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try { modulation.setOut(out.getSelectedIndex() - 1); }              // -1 is DISABLED
+                finally { lock.unlock(); }                              
+                }
+            });            
 
 
         JPanel ratePanel = new JPanel();
