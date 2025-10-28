@@ -485,7 +485,7 @@ public class FunctionInspector extends JPanel
             length.setToolTipText(NOTE_LENGTH_TOOLTIP);
             changeLength.setToolTipText(NOTE_CHANGE_LENGTH_TOOLTIP);
                                                                         
-            build(new String[] { "", "Out", "Non-Note Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Change Length", "Length", "Add to Length"}, 
+            build(new String[] { "", "Out", "Non-Note Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Change Length", "Length", "Adds to Length"}, 
                 new JComponent[] 
                     {
                     null,
