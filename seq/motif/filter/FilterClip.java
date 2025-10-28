@@ -275,6 +275,7 @@ public class FilterClip extends Clip
             {
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
+            boolean addLength = func.getAdd();
             int _out = func.getOut();
             int transpose = getCorrectedValueInt(func.getTranspose(), Filter.MAX_TRANSPOSE * 2);
             double transposeV = getCorrectedValueDouble(func.getTransposeVariance(), 1.0);
@@ -297,8 +298,13 @@ public class FilterClip extends Clip
                 }
             super.noteOn(out, note, vel, id, index);
                         
-            if (changeLength)
+            if (changeLength && addLength)
                 {
+                map.put(id, note);
+                outs.put(id, out);
+                }
+            else if (changeLength)
+            	{
                 super.scheduleNoteOff(out, note, (double)0x40, length, id, index);
                 mapScheduled.put(id, note);                                     // WARNING this could create a memory leak, better that than stuck notes?
                 }
@@ -313,6 +319,8 @@ public class FilterClip extends Clip
             {
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
+            boolean addLength = func.getAdd();
+            boolean changeLength = func.getChangeLength();
                         
             double releaseGain = getCorrectedValueDouble(func.getReleaseGain(), Filter.MAX_GAIN);
             double releaseGainV = getCorrectedValueDouble(func.getReleaseGainVariance(), 1.0);
@@ -330,14 +338,22 @@ public class FilterClip extends Clip
             if (newNote != null)                                                // revise note pitch?
                 {
                 note = newNote.intValue();
-                super.noteOff(out, note, vel, id, index);
+				if (changeLength && addLength)
+					{
+					super.scheduleNoteOff(out, note, vel, func.getLength(), id, index);
+					}
+                else super.noteOff(out, note, vel, id, index);
                 }
             else
                 {
                 Integer scheduledNote = mapScheduled.remove(id);
                 if (scheduledNote == null)                      // not scheduled already
                     {
-                    super.noteOff(out, note, vel, id, index);              // hope for the best
+                    if (changeLength && addLength)
+						{
+						super.scheduleNoteOff(out, note, vel, func.getLength(), id, index);
+						}
+					else super.noteOff(out, note, vel, id, index);              // hope for the best
                     }
                 }
             }
@@ -346,6 +362,8 @@ public class FilterClip extends Clip
             {
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
+
+            boolean addLength = func.getAdd();
             int _out = func.getOut();
             int transpose = getCorrectedValueInt(func.getTranspose(), Filter.MAX_TRANSPOSE * 2);
             double transposeV = getCorrectedValueDouble(func.getTransposeVariance(), 1.0);
@@ -368,7 +386,12 @@ public class FilterClip extends Clip
                 }
             super.scheduleNoteOn(out, note, vel, time, id, index);
                         
-            if (changeLength)
+			if (changeLength && addLength)
+                {
+                map.put(id, note);
+                outs.put(id, out);
+                }
+			else if (changeLength)
                 {
                 super.scheduleNoteOff(out, note, (double)0x40, time + length, id, index);
                 mapScheduled.put(id, note);                                     // WARNING this could create a memory leak, better that than stuck notes?
@@ -385,6 +408,8 @@ public class FilterClip extends Clip
             {
             Filter filter = (Filter)getMotif();
             Filter.ChangeNote func = (Filter.ChangeNote)(filter.getFunction(index));
+            boolean addLength = func.getAdd();
+            boolean changeLength = func.getChangeLength();
                         
             double releaseGain = getCorrectedValueDouble(func.getReleaseGain(), Filter.MAX_GAIN);
             double releaseGainV = getCorrectedValueDouble(func.getReleaseGainVariance(), 1.0);
@@ -395,14 +420,22 @@ public class FilterClip extends Clip
             if (newNote != null)                            // revise note pitch?
                 {
                 note = newNote.intValue();
-                super.scheduleNoteOff(out, note, vel, time, id, index);
+                if (changeLength && addLength)
+                	{
+					super.scheduleNoteOff(out, note, vel, time + func.getLength(), id, index);
+                	}
+                else super.scheduleNoteOff(out, note, vel, time, id, index);
                 }
             else
                 {
                 Integer scheduledNote = mapScheduled.remove(id);
                 if (scheduledNote == null)                      // not scheduled already
                     {
-                    super.scheduleNoteOff(out, note, vel, time, id, index); // hope for the best
+                    if (changeLength && addLength)
+						{
+						super.scheduleNoteOff(out, note, vel, time + func.getLength(), id, index); // hope for the best
+						}
+					else super.scheduleNoteOff(out, note, vel, time, id, index); // hope for the best
                     }
                 }
             }
@@ -1312,17 +1345,17 @@ public class FilterClip extends Clip
 
     public void noteOn(int out, int note, double vel, int id)    
         {
-        if (active())
-            {
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).noteOn(out, note, vel, id, 0);
-            }
         else
             super.noteOn(out, note, vel, id);
         }
         
     public void noteOff(int out, int note, double vel, int id)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).noteOff(out, note, vel, id, 0);
         else
             super.noteOff(out, note, vel, id);
@@ -1330,7 +1363,8 @@ public class FilterClip extends Clip
         
     public void scheduleNoteOff(int out, int note, double vel, int time, int id)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).scheduleNoteOff(out, note, vel, time, id, 0);
         else 
             super.scheduleNoteOff(out, note, vel, time, id);
@@ -1338,7 +1372,8 @@ public class FilterClip extends Clip
 
     public void scheduleNoteOn(int out, int note, double vel, int time, int id)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).scheduleNoteOn(out, note, vel, time, id, 0);
         else 
             super.scheduleNoteOn(out, note, vel, time, id);
@@ -1346,7 +1381,8 @@ public class FilterClip extends Clip
 
     public void sysex(int out, byte[] sysex)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).sysex(out, sysex, 0);
         else 
             super.sysex(out, sysex);
@@ -1354,7 +1390,8 @@ public class FilterClip extends Clip
         
     public void bend(int out, int val)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).bend(out, val, 0);
         else 
             super.bend(out, val);
@@ -1362,7 +1399,8 @@ public class FilterClip extends Clip
         
     public void cc(int out, int cc, int val)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).cc(out, cc, val, 0);
         else
             super.cc(out, cc, val);
@@ -1370,7 +1408,8 @@ public class FilterClip extends Clip
         
     public void pc(int out, int val)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).pc(out, val, 0);
         else
             super.pc(out, val);
@@ -1378,7 +1417,8 @@ public class FilterClip extends Clip
         
     public void aftertouch(int out, int note, int val)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).aftertouch(out, note, val, 0);
         else 
             super.aftertouch(out, note, val);
@@ -1386,7 +1426,8 @@ public class FilterClip extends Clip
         
     public void nrpn(int out, int nrpn, int val)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).nrpn(out, nrpn, val, 0);
         else
             super.nrpn(out, nrpn, val);
@@ -1394,7 +1435,8 @@ public class FilterClip extends Clip
         
     public void nrpnCoarse(int out, int nrpn, int msb)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).nrpnCoarse(out, nrpn, msb, 0);
         else
             super.nrpn(out, nrpn, msb);
@@ -1402,7 +1444,8 @@ public class FilterClip extends Clip
         
     public void rpn(int out, int rpn, int val)
         {
-        if (active())
+        Filter filter = (Filter)getMotif();
+        if (active() && (filter.getOutRestriction() == Filter.ALL || filter.getOutRestriction() == out))
             nodes.get(0).rpn(out, rpn, val, 0);
         else
             super.rpn(out, rpn, val);

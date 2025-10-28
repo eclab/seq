@@ -171,6 +171,7 @@ public class FunctionInspector extends JPanel
         SmallDial releaseGainVariance;
         TimeDisplay length;
         JCheckBox changeLength;
+        JCheckBox add;
                 
         public ChangeNoteInspector()
             {
@@ -450,6 +451,21 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 length.setDisplaysTime(false);
+
+                add = new JCheckBox();
+                add.setSelected(func.getAdd());
+                add.addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { func.setAdd(add.isSelected()); }
+                        finally { lock.unlock(); }                              
+                        }
+                    });
+
                 }
             finally 
                 {
@@ -457,6 +473,7 @@ public class FunctionInspector extends JPanel
                 }
 
             
+            add.setToolTipText(NOTE_ADD_LENGTH_TOOLTIP);
             out.setToolTipText(NOTE_OUT_TOOLTIP);
             allOut.setToolTipText(NOTE_ALL_OUT_TOOLTIP);
             transpose.setToolTipText(NOTE_TRANSPOSE_TOOLTIP);
@@ -468,7 +485,7 @@ public class FunctionInspector extends JPanel
             length.setToolTipText(NOTE_LENGTH_TOOLTIP);
             changeLength.setToolTipText(NOTE_CHANGE_LENGTH_TOOLTIP);
                                                                         
-            build(new String[] { "", "Out", "Non-Note Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Change Length", "Length"}, 
+            build(new String[] { "", "Out", "Non-Note Out", "Transpose", "Trans Var", "Gain", "Gain Var", "Release", "Rel Var", "Change Length", "Length", "Add to Length"}, 
                 new JComponent[] 
                     {
                     null,
@@ -481,7 +498,8 @@ public class FunctionInspector extends JPanel
                     releaseGain.getLabelledDial("0.0000"),
                     releaseGainVariance.getLabelledDial("0.0000"),
                     changeLength,
-                    length
+                    length,
+                    add
                     });
 
             }
@@ -498,6 +516,7 @@ public class FunctionInspector extends JPanel
 
                 out.setSelectedIndex(func.getOut() + 1); 
                 allOut.setSelected(func.isAllOut());
+                add.setSelected(func.getAdd());
                 }
             finally { lock.unlock(); }                              
             seq = old;
@@ -1620,6 +1639,10 @@ public class FunctionInspector extends JPanel
 
     static final String NOTE_CHANGE_LENGTH_TOOLTIP = "<html><b>Change Length</b><br>" +
         "Sets the whether the length of notes will be changed by <b>Length</b>.</html>";
+
+    static final String NOTE_ADD_LENGTH_TOOLTIP = "<html><b>Add to Length</b><br>" +
+        "Sets the whether notes are <i>set</i> to the length provided, or if the length</br>" +
+        "provided is <i>added</i> to their length.</html>";
 
     static final String DELAY_ORIGINAL_TOOLTIP = "<html><b>Original</b><br>" +
         "When checked, the original MIDI note will be played (along with possible delayed versions).</html>";

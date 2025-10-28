@@ -270,6 +270,7 @@ public class Filter extends Motif
         int length;                                     // length = 0 means as fast as possible, but it will be length 1 because Seq.java processes note-offs BEFORE the next step 
         boolean changeLength = false;
         boolean allOut = true;
+        boolean add = false;
                 
         public boolean isAllOut() { return allOut; }
         public void setAllOut(boolean val) { allOut = val; }
@@ -291,6 +292,8 @@ public class Filter extends Motif
         public void setReleaseGainVariance(double val) { releaseGainVariance = val; }
         public boolean getChangeLength() { return changeLength; }
         public void setChangeLength(boolean val) { changeLength = val; }
+        public boolean getAdd() { return add; }
+        public void setAdd(boolean val) { add = val; }
 
         public ChangeNote() { }
         public String getType() { return CHANGE_NOTE; }
@@ -305,6 +308,7 @@ public class Filter extends Motif
             releaseGainVariance = obj.optDouble("rv", 0);
             length = obj.optInt("l", 0);
             changeLength = obj.optBoolean("c", false);
+            add = obj.optBoolean("d", false);
             }
         public JSONObject save() throws JSONException
             {
@@ -318,6 +322,7 @@ public class Filter extends Motif
             obj.put("rv", releaseGainVariance);
             obj.put("l", length);
             obj.put("c", changeLength);
+            obj.put("d", add);
             return obj;
             }
         }
@@ -716,10 +721,16 @@ public class Filter extends Motif
         } 
 
         
+    public static int ALL = -1;
+    
     Function[] functions = new Function[NUM_TRANSFORMERS];
     int from = 0;
     int to = 0;
     boolean always = true;
+    int outRestriction = ALL;
+    
+    public int getOutRestriction() { return outRestriction; }
+    public void setOutRestriction(int val) { outRestriction = val; }
     
     public int getFrom()
         {
@@ -794,6 +805,7 @@ public class Filter extends Motif
         setFrom(obj.optInt("from", 0));
         setTo(obj.optInt("to", 0));
         setAlways(obj.optBoolean("always", false));
+        setOutRestriction(obj.optInt("out", ALL));
         }
                         
     public void save(JSONObject obj) throws JSONException
@@ -807,6 +819,7 @@ public class Filter extends Motif
         obj.put("from", getFrom());
         obj.put("to", getTo());
         obj.put("always", isAlways());
+        obj.put("out", getOutRestriction());
         }
 
     public String getParameterName(int param) 

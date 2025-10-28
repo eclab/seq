@@ -23,6 +23,7 @@ public class FilterInspector extends WidgetList
     TimeDisplay activeFrom;
     TimeDisplay activeTo;
     JCheckBox activeAlways;
+    JComboBox out;
 
     public FilterInspector(Seq seq, Filter filter, FilterUI filterui)
         {
@@ -98,6 +99,31 @@ public class FilterInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+
+            Out[] seqOuts = seq.getOuts();
+            String[] outs = new String[seqOuts.length + 1];
+            outs[0] = "<html><i>All</i></html>";
+            for(int i = 0; i < seqOuts.length; i++)
+                {
+                // We have to make these strings unique, or else the combo box doesn't give the right selected index, Java bug
+                outs[i+1] = "" + (i+1) + ": " + seqOuts[i].toString();
+                }
+                
+            out = new JComboBox(outs);
+            out.setMaximumRowCount(outs.length);
+            out.setSelectedIndex(filter.getOutRestriction() + 1);
+            out.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { filter.setOutRestriction(out.getSelectedIndex() - 1); }              // -1 is DISABLED
+                    finally { lock.unlock(); }                              
+                    }
+                }); 
+            out.setToolTipText(OUT_TOOLTIP);           
             }
         finally { lock.unlock(); }
 
@@ -105,14 +131,16 @@ public class FilterInspector extends WidgetList
         activeAlways.setToolTipText(ALWAYS_TOOLTIP);
         activeFrom.setToolTipText(FROM_TOOLTIP);
         activeTo.setToolTipText(FROM_TOOLTIP);
+        out.setToolTipText(OUT_TOOLTIP);           
 
-        build(new String[] { "Name", "Always", "From", "To" }, 
+        build(new String[] { "Name", "Always", "From", "To", "Only" }, 
             new JComponent[] 
                 {
                 name,
                 activeAlways,
                 activeFrom,
-                activeTo
+                activeTo, 
+                out
                 });
 
         add(new DefaultParameterList(seq, filterui), BorderLayout.SOUTH);
@@ -126,6 +154,7 @@ public class FilterInspector extends WidgetList
         lock.lock();
         try 
             {
+            out.setSelectedIndex(filter.getOutRestriction() + 1); 
             activeAlways.setSelected(filter.isAlways());
             }
         finally { lock.unlock(); }                              
@@ -154,4 +183,7 @@ public class FilterInspector extends WidgetList
         "If To &lt; From, then the active range is from <i>before</i> To, then <i>after</i> From.<br><br>" +
         "If <b>Active<b> is checked, then From and To are ignored, and the filters are always active.</html>";
 
+    static final String OUT_TOOLTIP = "<html><b>Only</b><br>" +
+        "Restricts filtering to only be done to a specific Output device.<br>" +
+        "MIDI to other devices passes through unmodified.</html>";
     }

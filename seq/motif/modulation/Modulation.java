@@ -29,6 +29,8 @@ public class Modulation extends Motif
         public static final double MAX_RATE = 16.0;
         public static final double DEFAULT_RATE = 1.0;
         public static final int MAX_REPEAT_VALUE = 127;                // values go 0..127 inclusive
+        public static final int DISABLED = -1;
+
 
     // this index order is just the order of the combo box in ModulationChildInspector
     public static int typeIndex(String type)
@@ -157,6 +159,7 @@ public class Modulation extends Motif
             }
         public Function(JSONObject obj)
             {
+            // NOTE: No type read in.  That's read in elsewhere
             mapHigh = obj.optDouble("hi", 1.0);
             mapLow = obj.optDouble("lo", 0.0);
             mapBy = obj.optInt("hi", BY_LINEAR);
@@ -491,8 +494,6 @@ public class Modulation extends Motif
         }
     
     
-        public static final int DISABLED = -1;
-
         double rate = DEFAULT_RATE;
     	double gain = 1.0;
         int transpose = MAX_TRANSPOSE;                                        // ranges 0 ... MAX_TRANSPOSE * 2 inclusive, representing -MAX_TRANSPOSE ... MAX_TRANSPOSE
