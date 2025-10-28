@@ -38,6 +38,8 @@ public class Midi
     public static int numInDevices = 1;                         // don't like these being static
     public static final int OMNI = 0;                   // for input channels
         
+    static final boolean DEBUG = false;
+    
     public Midi(int numOutDevices, int numInDevices)
         {
         this.numOutDevices = numOutDevices;
@@ -64,7 +66,10 @@ public class Midi
             for(int i = 0; i < receivers.size(); i++)
                 {
                 try { ((Receiver)(receivers.get(i))).send(message, timeStamp); }
-                catch (Exception ex) { System.err.println(ex); }
+                catch (Exception ex)
+                 { 
+            	if (DEBUG) ex.printStackTrace();
+            	}
                 }
             }
                         
