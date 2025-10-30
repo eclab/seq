@@ -808,8 +808,16 @@ public class StepSequence extends Motif
         return last;
         }
                 
+    public void randomizeOn(int track, double density)
+    	{
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for(int i = 0; i < on.length; i++)
+        	{
+        	on[track][i] = (random.nextDouble() < density);
+        	}
+    	}
         
-    public void mutate(int track, double playWeight, double velocityWeight, double flamWeight, double noteWeight, int[] scale)
+    public void mutate(int track, double playWeight, double velocityWeight, double flamWeight /*, double noteWeight, int[] scale */)
         {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int[] velocities = this.velocities[track];
@@ -822,16 +830,7 @@ public class StepSequence extends Motif
                 {
                 if (random.nextDouble() < playWeight)
                     {
-                    if (velocities[i] == 0) 
-                        {
-                        velocities[i] = trackVelocity;
-                        notes[i] = getTrackNote(track);
-                        flams[i] = getTrackFlam(track);
-                        }
-                    else
-                        {
-                        velocities[i] = 0;
-                        }
+                    on[track][i] = !on[track][i];
                     }
                 }
             }
@@ -857,7 +856,7 @@ public class StepSequence extends Motif
                     }
                 }
             }
-        
+        /*
         if (noteWeight > 0)
             {
             if (scale == null) scale = CHROMATIC_SCALE;
@@ -883,6 +882,7 @@ public class StepSequence extends Motif
                     }
                 }
             }
+        */
         }
         
         

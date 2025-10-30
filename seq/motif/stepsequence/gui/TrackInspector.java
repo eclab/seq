@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.concurrent.locks.*;
+import java.util.concurrent.*;
 
 public class TrackInspector extends WidgetList
     {
@@ -47,6 +48,7 @@ public class TrackInspector extends WidgetList
     SmallDial euclidRotate;
     double euclidRotateVal = 0.0;
     PushButton doEuclid;
+    PushButton randomEuclid;
 
     static final String[] WHEN_STRINGS =
         { "Always", "0.1 Probability", "0.2 Probability", "0.3 Probability", "0.4 Probability", "0.5 Probability", "0.6 Probability", "0.7 Probability", "0.8 Probability", "0.9 Probability",
@@ -604,7 +606,7 @@ public class TrackInspector extends WidgetList
                     lock.lock();
                     try 
                         { 
-                        return String.valueOf((int)(val * ss.getNumSteps(trackNum)));
+                        return String.valueOf((int)(val * (ss.getNumSteps(trackNum))));
                         }
                     finally
                         {
@@ -621,7 +623,7 @@ public class TrackInspector extends WidgetList
                     }
                 };
 
-            doEuclid = new PushButton("Set")
+            doEuclid = new PushButton("S")
                 {
                 public void perform()
                     {
@@ -633,6 +635,34 @@ public class TrackInspector extends WidgetList
                         ss.applyEuclideanRhythm(trackNum, euclidKVal, euclidRotateVal);
                         }
                     finally { lock.unlock(); }
+                    ssui.getTrack(trackNum).repaint();          // is this sufficient?
+                    }
+                };
+
+            randomEuclid = new PushButton("R")
+                {
+                public void perform()
+                    {
+                    if (seq == null) return;
+                    double euclid = 0;
+                    double rotate = 0;
+                    ThreadLocalRandom random = ThreadLocalRandom.current();
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try 
+                        {
+                        // only allow 1 through N-1, disallow 0 and N which aren't interesting
+						euclid = (random.nextInt(ss.getNumSteps(trackNum) - 2) + 1) / 
+										(double)ss.getNumSteps(trackNum);
+						// only allow 0 through N-1, disallow N, which isn't interesting
+						rotate = random.nextDouble();	
+						ss.applyEuclideanRhythm(trackNum, euclid, rotate);
+                        }
+                    finally { lock.unlock(); }
+                    euclidRotate.setValue(rotate);
+                    euclidK.setValue(euclid);
+                    euclidRotate.redraw();
+                    euclidK.redraw();
                     ssui.getTrack(trackNum).repaint();          // is this sufficient?
                     }
                 };
@@ -694,9 +724,12 @@ public class TrackInspector extends WidgetList
         Box euclidBox = new Box(BoxLayout.X_AXIS);
         euclidBox.add(euclidK.getLabelledDial("128"));
         euclidBox.add(new JLabel("  Rotate  "));
-        euclidBox.add(euclidRotate.getLabelledDial("128"));
+        euclidBox.add(euclidRotate.getLabelledDial("128 "));
+        Box randBox = new Box(BoxLayout.X_AXIS);
+        randBox.add(doEuclid);
+        randBox.add(randomEuclid);
         euclidPanel.add(euclidBox, BorderLayout.WEST);
-        euclidPanel.add(doEuclid, BorderLayout.EAST);
+       	euclidPanel.add(randBox, BorderLayout.EAST);
         
         boolean note = (type == StepSequence.TYPE_NOTE);
         

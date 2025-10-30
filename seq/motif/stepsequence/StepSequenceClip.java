@@ -68,6 +68,8 @@ public class StepSequenceClip extends Clip
             {
             if (dSeq.getType() == StepSequence.TYPE_NOTE)
                 {
+                //if (playingStep[track] == 15) 
+                System.err.println("Note off 16 at " + getPosition());
                 noteOff(dSeq.getFinalOut(track), trackNoteOn[track], 0x40, trackNoteID[track]);
                 }
             trackNoteOn[track] = OFF;
@@ -100,22 +102,26 @@ public class StepSequenceClip extends Clip
             int stepLen = len / numStepsInTrack;
             int step = pos * numStepsInTrack / len;
             int remainder = (pos - step * stepLen);     // compute remainder without swing
+            System.err.println("remainder " + remainder);
             int releaseTime = /*seq.getTime() +*/ remainder;        // absolute time, not relative
             
-            for(int i = 0; i < numStepsInTrack; i++)
-                {
-                int s = i + step + 1;
-                while (s >= numStepsInTrack) s -= numStepsInTrack;      // it's possible to do it twice
-                
-                /*
-                  if (dSeq.getFinalNote(track, s) != StepSequence.TIE) break;
-                  else 
-                */
-                releaseTime += stepLen;
-                }
+            
+            //for(int i = 0; i < numStepsInTrack; i++)
+            //    {
+            //    int s = i + step + 1;
+            //    while (s >= numStepsInTrack) s -= numStepsInTrack;      // it's possible to do it twice
+            //    
+            //    /*
+            //      if (dSeq.getFinalNote(track, s) != StepSequence.TIE) break;
+            //      else 
+            //    */
+            //    releaseTime += stepLen;
+            //    }
             
             if (dSeq.getType() == StepSequence.TYPE_NOTE)
                 {
+                //if (playingStep[track] == 15) 
+                System.err.println("Schedule Note off on 16 at " + getPosition() + " for " + releaseTime);
                 scheduleNoteOff(dSeq.getFinalOut(track), trackNoteOn[track], 0x40, releaseTime, trackNoteID[track]);
                 }
             trackNoteOn[track] = OFF;                                                                       // not sure if we should do this...
@@ -406,6 +412,8 @@ return;
                             {
                             case(StepSequence.TYPE_NOTE):        
                                 if (velocity == 0) velocity = 1;                        
+                				//if (playingStep[track] == 15) 
+                				System.err.println("Note on 16 at " + getPosition());
                                 id = noteOn(dSeq.getFinalOut(track), note, velocity);
                                 notes = true;
                                 break;

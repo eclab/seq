@@ -51,7 +51,15 @@ public class StepSequenceUI extends MotifUI
     boolean allDirty = false;
     public void setAllDirty(boolean val) { allDirty = val; }
     public boolean isAllDirty() { return allDirty; }
-    public void setDirty(int track, int step, boolean val) { getTrack(track).getStep(step).setDirty(true); }
+    public void setDirty(int track, int step, boolean val) 
+    	{ 
+    	TrackUI trackui = getTrack(track);
+    	if (trackui != null)
+    		{
+    		StepUI stepui = trackui.getStep(step);
+    		if (stepui != null) stepui.setDirty(true); 
+    		}
+    	}
     
     int[] lastSteps = null;
     int[] currentSteps = null;
@@ -723,6 +731,28 @@ public class StepSequenceUI extends MotifUI
             setStepInspector(getStepInspector());
         }
                 
+    public void doRandom(boolean all, double density)
+        {
+        seq.getLock().lock();
+        try
+            {
+            if (all) 
+            	{
+            	for(int i = 0; i < ss.getNumTracks(); i++)
+            	ss.randomizeOn(i, density);
+            	}
+            else
+            	{
+            	ss.randomizeOn(selectedTrackNum, density);
+            	}
+            }
+        finally
+            {
+            seq.getLock().unlock();
+            }
+		redraw(false);
+        }
+
     /** Returns the NotesUI menu */
     public JMenu getMenu()
         {
@@ -808,6 +838,77 @@ public class StepSequenceUI extends MotifUI
             });
         rotateRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menu.add(rotateRight);
+        
+    	menu.addSeparator();
+
+		JMenu randomize = new JMenu("Randomize");
+		menu.add(randomize);
+		
+        JMenuItem rand1 = new JMenuItem("Selected Track Sparse");
+        rand1.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRandom(false, 0.1666);
+                }
+            });
+        rand1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.ALT_DOWN_MASK));
+        randomize.add(rand1);
+
+        JMenuItem rand2 = new JMenuItem("Selected Track Medium");
+        rand2.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRandom(false, 0.3333);
+                }
+            });
+        rand2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        randomize.add(rand2);
+
+        JMenuItem rand3 = new JMenuItem("Selected Track Dense");
+        rand3.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRandom(false, 0.5);
+                }
+            });
+        rand3.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        randomize.add(rand3);
+
+         rand1 = new JMenuItem("All Tracks Sparse");
+        rand1.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRandom(true, 0.1666);
+                }
+            });
+        rand1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        randomize.add(rand1);
+
+         rand2 = new JMenuItem("All Tracks Medium");
+        rand2.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRandom(true, 0.3333);
+                }
+            });
+        rand2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        randomize.add(rand2);
+
+         rand3 = new JMenuItem("All Tracks Dense");
+        rand3.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRandom(true, 0.5);
+                }
+            });
+        rand3.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.CTRL_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        randomize.add(rand3);
         }
 
 /*
