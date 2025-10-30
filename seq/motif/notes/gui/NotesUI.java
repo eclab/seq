@@ -18,6 +18,7 @@ import java.util.concurrent.locks.*;
 import java.util.*;
 import com.formdev.flatlaf.*;
 import java.io.*;
+import java.util.concurrent.*;
 
 // For Drag and Drop
 import java.awt.dnd.*;
@@ -989,7 +990,7 @@ public class NotesUI extends MotifUI
             try
                 {
                 sequi.push();
-                notes.randomizeTime(events, _variance, _lengths, _nonNotes, seq.getDeterministicRandom());
+                notes.randomizeTime(events, _variance, _lengths, _nonNotes, ThreadLocalRandom.current());
                 }
             finally
                 {
@@ -1061,7 +1062,7 @@ public class NotesUI extends MotifUI
             try
                 {
                 sequi.push();
-                notes.randomizeVelocity(events, _variance, _releases, seq.getDeterministicRandom());
+                notes.randomizeVelocity(events, _variance, _releases, ThreadLocalRandom.current());
                 }
             finally
                 {
