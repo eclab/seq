@@ -692,9 +692,11 @@ Several Notes features (note velocities, release velocities, event values) can b
 
 Step Sequence is one of the most complex motifs, as it is a reasonably full-featured multitrack step sequencer.  Step Sequence defines a single multitrack pattern, which is played once and then declares it is finished.  The Step Sequence can have any number of Tracks, and each Track can have any number of Steps (and that number can vary from Track to Track).  By default the Step Sequence presents itself with 16 Tracks of 16 Steps.  
 
-You select a Step by clicking on it.  This also selects the Step's Track.  You can also select a different Track (and its equivalent Step) by clicking on the Track Header (see below).  When you select a Step and Track, they will show their respective Inspectors at right below the primary Step Sequence Inspector.
+You select a Step by Command- or Alt- (or Option-)clicking on it.  This also selects the Step's Track.  You can also select a different Track (and its equivalent Step) by clicking on the Track Header (see below).  When you select a Step and Track, they will show their respective Inspectors at right below the primary Step Sequence Inspector.
 
-If you triple-click on a Step, you will deselect all the Steps in its Track.
+You can toggle a Step on or off, by clicking on the step. This also selects it.  Thus another way to select a Step (but not toggle it) is to double-click on the Step, which effectively toggles it twice and selects it.
+
+If you triple-click on a Step, you will clear all the Steps in its Track.
 
 \paragraph{Defaults and Parameterization}
 
@@ -734,7 +736,7 @@ Finally, a track has a {\bf Length}, that is, the number of steps.  This is not 
 
 In 2004 Godfried Toussaint published a paper suggesting that large numbers of common rhythms worldwide could be automatically generated using Bjorklund's Algorithm, which is somewhat related to Euclid's Algorithm.  He called these {\bf Euclidean Rhythms}.  Bjorklund's Algorithm takes a track \(K\) steps long and attempts to fill it with \(N\) steps that are statistically evenly spaced from one another.  So there are two parameters, \(0 < N < K\).  Euclidean rhythms have since become all the rage.
 
-Seq can fill a track with a Euclidean Rhythm with {\bf Euclid}.  You specify \(N\), the number of steps you want on (the rest will be off.  \(K\) is just the length of the track.  You can also {\bf Rotate} your Euclidean Rhythm to a new starting point  The Rhythm is generated when you press {\bf Set}.
+Seq can fill a track with a Euclidean Rhythm with {\bf Euclid}.  You specify \(N\), the number of steps you want on (the rest will be off.  \(K\) is just the length of the track.  You can also {\bf Rotate} your Euclidean Rhythm to a new starting point  The Rhythm is generated when you press {\bf S} (for Set).  You can also generate a totally random Rhythm by pressing {\bf R} (for Random).
 
 \paragraph{The Step Sequence Inspector}
 
@@ -760,6 +762,8 @@ The Step Sequence inspector also has an option called {\bf Type}.  By default, t
 \paragraph{The Menu}
 
 The {\bf Step Sequence} menu allows you to use keystrokes make your away around the sequence ({\bf Up, Down, Left, Right}).  You can also {\bf Toggle} the selected step to be on or off.  And you can {\bf Rotate} all the steps in the selected track {\bf Left} or {\bf Right} by one step.
+
+Under the {\bf Randomize} submenu are six options for randomizing the pattern of the current selected track or of all tracks.  They're set up so you can easily select them with keystrokes.
 
 \ignore{
 \paragraph{Recording a Step Sequence}
