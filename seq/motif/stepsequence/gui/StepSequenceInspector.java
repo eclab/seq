@@ -455,8 +455,8 @@ public class StepSequenceInspector extends WidgetList
         finally { lock.unlock(); }
 
         midiList = new WidgetList(
-            new String[] { "Out", "Learn In", "Grid Out", "Grid In", "Grid Device" },
-            new JComponent[] { defaultOut, in, controlOut, controlIn, controlDevice });
+            new String[] { "Out", "Learn In", /* "Grid Out", "Grid In", "Grid Device"*/ },
+            new JComponent[] { defaultOut, in, /*controlOut, controlIn, controlDevice*/ });
         midiList.setBorder(BorderFactory.createTitledBorder("<html><i>MIDI</i></html>"));
         DisclosurePanel midiPanel = new DisclosurePanel("MIDI", midiList);
 
