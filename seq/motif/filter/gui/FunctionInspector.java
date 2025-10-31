@@ -667,6 +667,7 @@ public class FunctionInspector extends JPanel
             delayInterval.setToolTipText(DELAY_INTERVAL_TOOLTIP);
             cut.setToolTipText(DELAY_CUT_TOOLTIP);
             numTimes.setToolTipText(DELAY_NUM_DELAYS_TOOLTIP);
+            random.setToolTipText(DELAY_RANDOM_TOOLTIP);
                                                                         
             build(new String[] { "", "Original", /*"Initial",*/ "Interval", "Cut", "Num Delays", "Random"}, 
                 new JComponent[] 
@@ -1657,6 +1658,10 @@ public class FunctionInspector extends JPanel
     static final String DELAY_NUM_DELAYS_TOOLTIP = "<html><b>Num Delays</b><br>" +
         "Sets the number of delayed versions of a note to play.</html>";
         
+    static final String DELAY_RANDOM_TOOLTIP = "<html><b>Random</b><br>" +
+        "When checked, delay lengths no longer the Delay Interval, but rather are chosen randomly<br>" +
+        "from between 0 to the Delay Interval.</html>";
+
     static final String DROP_CUT_TOOLTIP = "<html><b>Delete All</b><br>" +
         "If checked, then all events (note and non-note) will be deleted entirely.</html>";
         
