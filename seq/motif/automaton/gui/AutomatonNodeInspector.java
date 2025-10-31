@@ -67,6 +67,7 @@ public class AutomatonNodeInspector extends WidgetList
     SmallDial rate;
     PushButton ratePresets;
     JComboBox out;
+    JLabel typeName;
                 
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
     public void buildDefaults(Motif parent)
@@ -85,6 +86,16 @@ public class AutomatonNodeInspector extends WidgetList
                 }
             }
         }
+        
+    public void updateTypeName()
+    	{
+    	if (node instanceof Automaton.MotifNode && typeName != null)
+    		{
+            Automaton.MotifNode motifnode = (Automaton.MotifNode)node;
+    		typeName.setText(motifnode.getMotif().getName());
+    		}
+    	}
+    
 
     public AutomatonNodeInspector(Seq seq, final Automaton automaton, final MotifButton button, AutomatonUI owner, Automaton.Node node)
         {
@@ -733,7 +744,9 @@ public class AutomatonNodeInspector extends WidgetList
                 else if (node instanceof Automaton.MotifNode)
                     {
                     final Automaton.MotifNode motifnode = (Automaton.MotifNode)node;
-                    
+
+                    typeName = new JLabel(motifnode.getMotif().getName());
+
                     repeats = new SmallDial(motifnode.getRepeats() / (double)Automaton.MotifNode.MAX_REPEATS, defaults)
                         {
                         protected String map(double val) { return "" + (int)(val * Automaton.MotifNode.MAX_REPEATS); }
@@ -1049,7 +1062,7 @@ public class AutomatonNodeInspector extends WidgetList
                     strs = new String[] { "Type", "Nickname", "Initial Repeats", "Repeat Probability", "Quantization", "MIDI Changes", "Rate", "Transpose",  "Gain", "Out" };
                     comps = new JComponent[] 
                         {
-                        new JLabel(motifnode.getMotif().getName()),
+                        typeName,
                         name,
                         repeatPanel,
                         //repeats.getLabelledDial("88"),
@@ -1082,7 +1095,7 @@ public class AutomatonNodeInspector extends WidgetList
                 {
                 remove(result);
                 add(result, BorderLayout.CENTER);
-                add(new ArgumentList(seq, ((Automaton.MotifNode)node).getChild(), owner.getMotif()), BorderLayout.NORTH);
+                add(new ArgumentList(seq, ((Automaton.MotifNode)node).getChild(), owner.getMotif()), BorderLayout.SOUTH);
                 }
             }
         }

@@ -321,7 +321,7 @@ public class SelectChildInspector extends WidgetList
         remove(result);
         add(result, BorderLayout.CENTER);
 
-        add(new ArgumentList(seq, child, selectui.getMotif()), BorderLayout.NORTH);
+        add(new ArgumentList(seq, child, selectui.getMotif()), BorderLayout.SOUTH);
         }
                 
     public int getChildNum()

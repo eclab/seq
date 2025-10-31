@@ -550,15 +550,15 @@ public class SeriesChildInspector extends WidgetList
 
         // the widgetlist is added NORTH -- we need to change that to CENTER
         remove(result);
-        add(result, BorderLayout.CENTER);
+        add(result, BorderLayout.NORTH);
                 
         // Now we add the markov weights
         weights.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(8, 8, 0, 8),
                 BorderFactory.createTitledBorder("<html><i>&nbsp;Markov Weights&nbsp;</i></html")));
-        add(weights, BorderLayout.SOUTH);
+        add(weights, BorderLayout.CENTER);
         
-        add(new ArgumentList(seq, child, seriesui.getMotif()), BorderLayout.NORTH);
+        add(new ArgumentList(seq, child, seriesui.getMotif()), BorderLayout.SOUTH);
         }
                 
     public int getChildNum()

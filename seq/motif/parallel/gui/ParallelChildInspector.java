@@ -615,7 +615,7 @@ public class ParallelChildInspector extends WidgetList
         remove(result);
         add(result, BorderLayout.CENTER);
 
-        add(new ArgumentList(seq, child, parallelui.getMotif()), BorderLayout.NORTH);
+        add(new ArgumentList(seq, child, parallelui.getMotif()), BorderLayout.SOUTH);
         }
                 
     public int getChildNum()
