@@ -283,6 +283,7 @@ public class SelectUI extends MotifUI
                     finally { lock.unlock(); }
                     }
                 };
+            dials[i].setToolTipText(DIAL_TOOLTIP);
                 
             boolean enabled = false;
             ReentrantLock lock = seq.getLock();
@@ -929,4 +930,7 @@ public class SelectUI extends MotifUI
         //seq.waitUntilStopped();
         }
 
+
+	public static final String DIAL_TOOLTIP = "<html><b>Parameter Dial</b><br>" +
+        "Sets the value of the given parameter of the playing child or children.</html>";
     }
