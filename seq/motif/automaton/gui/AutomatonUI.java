@@ -440,7 +440,7 @@ public class AutomatonUI extends MotifUI
             if (num < 0) // uh oh
                 {
                 childBorder.setTitle("Child [Error]");
-                System.err.println("SetChildInspector error: childNum is -1, probably button.getAuxilliary returned null.");
+                System.err.println("AutomatonUI.setNodeInspector error: childNum is -1, probably button.getAuxilliary returned null.");
                 }
             else
                 {
@@ -455,7 +455,26 @@ public class AutomatonUI extends MotifUI
         childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
         childOuter.setBorder(childBorder);
         if (inspector!=null) inspector.revise();
+        revalidate();
+        repaint();
         }
+
+	public void uiWasSet()
+		{
+		super.uiWasSet();
+		// We may have changed the name of a motif button
+        if (nodeInspector!=null) nodeInspector.updateTypeName();
+        for(MotifButton button : getButtons())
+        	{
+        	AutomatonButton automatonbutton = (AutomatonButton)button;
+        	if (automatonbutton.getNode() instanceof Automaton.MotifNode)
+        		{
+        		automatonbutton.updateText();
+        		}
+        	}
+        revalidate();
+        repaint();
+		}
 
     public void revise()
         {
