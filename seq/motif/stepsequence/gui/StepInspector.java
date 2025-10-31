@@ -176,6 +176,7 @@ public class StepInspector extends WidgetList
                     }
                 };
             setupFirstDefault(stepNoteLSB);
+            stepNoteLSB.setToolTipText(PARAMETER_LSB_TOOLTIP);
 
             stepFlam = new JComboBox(FLAM_STRINGS);
             stepFlam.setSelectedIndex(ss.getFlam(trackNum, stepNum) + 1);
@@ -286,32 +287,42 @@ public class StepInspector extends WidgetList
                     }
                 };
             setupFirstDefault(stepVelocityLSB);
+            stepVelocityLSB.setToolTipText(VALUE_LSB_TOOLTIP);
+            
             }
         finally { lock.unlock(); }
         
         
         JPanel notePanel = new JPanel();
+		notePanel.setToolTipText(NOTE_TOOLTIP);
         JPanel innerPanel = new JPanel();
+		innerPanel.setToolTipText(NOTE_TOOLTIP);
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
         innerPanel.add(stepNote.getLabelledDial("Param 8"));
         if (type == StepSequence.TYPE_NRPN ||
             type == StepSequence.TYPE_RPN)
             {
-            innerPanel.add(new JLabel(" LSB "));
+            JLabel label = new JLabel(" LSB ");
+            label.setToolTipText(PARAMETER_LSB_TOOLTIP);
+            innerPanel.add(label);
             innerPanel.add(stepNoteLSB.getLabelledDial("Param 8"));
             }
         notePanel.setLayout(new BorderLayout());
         notePanel.add(innerPanel, BorderLayout.WEST);
 
         JPanel velocityPanel = new JPanel();
+		velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
         innerPanel = new JPanel();
+		innerPanel.setToolTipText(VELOCITY_TOOLTIP);
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
         innerPanel.add(stepVelocity.getLabelledDial("Param 8"));                // so it lines up with the notes
         if (type == StepSequence.TYPE_NRPN ||
             type == StepSequence.TYPE_RPN ||
             type == StepSequence.TYPE_PITCH_BEND)
             {
-            innerPanel.add(new JLabel(" LSB "));
+            JLabel label = new JLabel(" LSB ");
+            label.setToolTipText(VALUE_LSB_TOOLTIP);
+            innerPanel.add(label);
             innerPanel.add(stepVelocityLSB.getLabelledDial("Param 8"));
             }
         velocityPanel.setLayout(new BorderLayout());
@@ -348,9 +359,12 @@ public class StepInspector extends WidgetList
         }
 
 
-    static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
-        "Sets the MIDI note output for this track.  This overrides the <b>Note</b> setting<br>" + 
-        "in the track inspector.  To return to the default, double-click the dial.</html>";
+    static final String NOTE_TOOLTIP = "<html><b>Note / Param</b><br>" +
+        "Sets the MIDI note output or Parameter for this track, depending on the Sequence type.<br>" +
+        "This overrides the <b>Note /Param </b> setting in the track inspector.  To return to the<br>" +
+        "default, double-click the dial.<br><br>" + 
+        "For some parameters types, the Note/Param dial is the MSB of the parameter, while<br>" +
+        "the <b>LSB</b> dial is the LSB of the parameter.</html>";
                         
     static final String FLAM_TOOLTIP = "<html><b>Flams</b><br>" +
         "Sets the number of <i>flams</i> (or <i>ratchets</i>) for this step.  This<br>" +
@@ -369,7 +383,16 @@ public class StepInspector extends WidgetList
         "</ul>" +
         "Regardless of the pattern, a step doesn't play if it hasn't been enabled in the sequencer grid.</html>";
                         
-    static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
-        "Sets the velocity value for this step.  This overridesthe <b>Velocity</b> setting<br>" +
-        "in the track inspector.  To return to the default, double-click the dial.</html>";
+    static final String VELOCITY_TOOLTIP = "<html><b>Velocity / Value</b><br>" +
+        "Sets the velocity or parameter value for this step, depending on the Sequence type.<br>" +
+        "This overridesthe <b>Velocity / Value</b> setting in the track inspector.  To return<br>" + 
+        "to the default, double-click the dial.<br><br>" + 
+        "For some parameters types, the velocity/value dial is the MSB of the value, while<br>" +
+        "the <b>LSB</b> dial is the LSB of the value.</html>";
+
+    static final String VALUE_LSB_TOOLTIP = "<html><b>Value LSB</b><br>" +
+        "Sets the LSB of the value for this step.</html>";
+
+    static final String PARAMETER_LSB_TOOLTIP = "<html><b>Parameter LSB</b><br>" +
+        "Sets the LSB of the parameter for this step.</html>";
     }

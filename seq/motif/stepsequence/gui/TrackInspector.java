@@ -597,6 +597,7 @@ public class TrackInspector extends WidgetList
                     euclidKVal = val;
                     }
                 };
+            euclidK.setToolTipText(EUCLID_TOOLTIP);
                 
             euclidRotate = new SmallDial(euclidRotateVal)
                 {
@@ -622,6 +623,7 @@ public class TrackInspector extends WidgetList
                     euclidRotateVal = val;
                     }
                 };
+            euclidRotate.setToolTipText(ROTATE_TOOLTIP);
 
             doEuclid = new PushButton("S")
                 {
@@ -638,6 +640,7 @@ public class TrackInspector extends WidgetList
                     ssui.getTrack(trackNum).repaint();          // is this sufficient?
                     }
                 };
+            doEuclid.setToolTipText(S_TOOLTIP);
 
             randomEuclid = new PushButton("R")
                 {
@@ -666,6 +669,7 @@ public class TrackInspector extends WidgetList
                     ssui.getTrack(trackNum).repaint();          // is this sufficient?
                     }
                 };
+            randomEuclid.setToolTipText(R_TOOLTIP);
             }
         finally { lock.unlock(); }
                 
@@ -682,7 +686,9 @@ public class TrackInspector extends WidgetList
         if (type == StepSequence.TYPE_NRPN ||
             type == StepSequence.TYPE_RPN)
             {
-            innerPanel.add(new JLabel(" LSB "));
+            JLabel label = new JLabel(" LSB ");
+            label.setToolTipText(PARAMETER_LSB_TOOLTIP);
+            innerPanel.add(label);
             innerPanel.add(trackNoteLSB.getLabelledDial("Param 8"));
             }
         notePanel.setLayout(new BorderLayout());
@@ -699,7 +705,9 @@ public class TrackInspector extends WidgetList
             type == StepSequence.TYPE_RPN ||
             type == StepSequence.TYPE_PITCH_BEND)
             {
-            innerPanel.add(new JLabel(" LSB "));
+            JLabel label = new JLabel(" LSB ");
+            label.setToolTipText(VALUE_LSB_TOOLTIP);
+            innerPanel.add(label);
             innerPanel.add(trackVelocityLSB.getLabelledDial("Param 8"));
             }
         velocityPanel.setLayout(new BorderLayout());
@@ -723,14 +731,17 @@ public class TrackInspector extends WidgetList
         euclidPanel.setLayout(new BorderLayout());
         Box euclidBox = new Box(BoxLayout.X_AXIS);
         euclidBox.add(euclidK.getLabelledDial("128"));
-        euclidBox.add(new JLabel("  Rotate  "));
+        JLabel label = new JLabel("  Rotate  ");
+        label.setToolTipText(ROTATE_TOOLTIP);
+        euclidBox.add(label);
         euclidBox.add(euclidRotate.getLabelledDial("128 "));
         Box randBox = new Box(BoxLayout.X_AXIS);
         randBox.add(doEuclid);
         randBox.add(randomEuclid);
         euclidPanel.add(euclidBox, BorderLayout.WEST);
        	euclidPanel.add(randBox, BorderLayout.EAST);
-        
+        euclidPanel.setToolTipText(EUCLID_TOOLTIP);
+
         boolean note = (type == StepSequence.TYPE_NOTE);
         
         build(new String[] { "Name", "Gain", (note ? "Note" : "Param"), (note ? "Velocity" : "Value"), "Flams", "When", "Choke", "Swing", "Ex. Rand.", "Out", "Length", "Euclid" }, 
@@ -784,12 +795,14 @@ public class TrackInspector extends WidgetList
         "Only one track in the exclusive random group is played each iteration.<br>" +
         "The others are muted.</html>";
         
-    static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
-        "Sets the <i>default</i> MIDI note output for all steps in the track.<br>" +
-        "You can override this value in the individual step's inspector.</html>";
+    static final String NOTE_TOOLTIP = "<html><b>Note / Param</b><br>" +
+        "Sets the <i>default</i> MIDI note output or Parameter for all steps in the track.<br>" +
+        "You can override this value in the individual step's inspector.<br><br>" + 
+        "For some parameters types, the Note/Param dial is the MSB of the parameter, while<br>" +
+        "the <b>LSB</b> dial is the LSB of the parameter.</html>";
                         
-    static final String SET_NOTE_TOOLTIP = "<html><b>Set All Note</b><br>" +
-        "Resets all steps to use the MIDI output note as shown at left.</html>";
+    static final String SET_NOTE_TOOLTIP = "<html><b>Set All Note / Param</b><br>" +
+        "Resets all steps to use the MIDI output note or Parameter as shown at left.</html>";
         
     static final String LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
         "Sets the number of steps in the track.  This doesn't take effect until the <b>Set</b><br>" +
@@ -835,15 +848,17 @@ public class TrackInspector extends WidgetList
         "Sets the swing value for the track.  This overrides the default setting<br>" +
         "in the Step Sequence inspector.  To return to the default, double-click the dial.</html>";
         
-    static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
-        "Sets the <i>default</i> velocity value for all steps in the track.  This overrides<br>" +
+    static final String VELOCITY_TOOLTIP = "<html><b>Velocity / Value</b><br>" +
+        "Sets the <i>default</i> velocity or parameter value for all steps in the track.  This overrides<br>" +
         "the default setting in the Step Sequence inspector.  To return to the default,<br>"+ 
         "double-click the dial.<br><br>" + 
         "You can override both the step sequence default and the track default in the<br>"+
-        "individual step's inspector.</html>";
+        "individual step's inspector.<br><br>" + 
+        "For some parameters types, the velocity/value dial is the MSB of the value, while<br>" +
+        "the <b>LSB</b> dial is the LSB of the value.</html>";
         
-    static final String SET_VELOCITY_TOOLTIP = "<html><b>Set All Velocity</b><br>" +
-        "Resets all steps in the track to use the default velocity value shown at left<br>" + 
+    static final String SET_VELOCITY_TOOLTIP = "<html><b>Set All Velocity / Value</b><br>" +
+        "Resets all steps in the track to use the default velocity or value shown at left<br>" + 
         "instead of custom per-step velocity values.</html>";
 
     static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
@@ -853,4 +868,24 @@ public class TrackInspector extends WidgetList
         
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
         "Sets the name of the Track.  This will appear in the <b>Track Header</b>.</html>";
+
+    static final String VALUE_LSB_TOOLTIP = "<html><b>Value LSB</b><br>" +
+        "Sets the LSB of the default value for all notes in this track.</html>";
+
+    static final String PARAMETER_LSB_TOOLTIP = "<html><b>Parameter LSB</b><br>" +
+        "Sets the LSB of the default parameter for all notes in this track.</html>";
+
+    static final String EUCLID_TOOLTIP = "<html><b>Euclid</b><br>" +
+        "Defines the Euclidean Sequence value for the track.  To set the track to this<br>" +
+        "value, and to the rotation, press the <b>S</b> button.</html>";
+
+    static final String ROTATE_TOOLTIP = "<html><b>Rotate</b><br>" +
+        "Defines the Euclidean Sequence value for the track.  To set the track to this<br>" +
+        "rotation, and to the given Euclidean Sequence value, press the <b>S</b> button.</html>";
+
+    static final String S_TOOLTIP = "<html><b>Set Euclid Sequence</b><br>" +
+        "Sets the the track to the given Euclidean Sequence.</html>";
+
+    static final String R_TOOLTIP = "<html><b>Random Euclid Sequence</b><br>" +
+        "Sets the the track to a random Euclidean Sequence.</html>";
     }

@@ -449,6 +449,7 @@ public class StepSequenceInspector extends WidgetList
                     ssui.revalidate();  // force a resizing of the inspectors
                     }
                 });
+            type.setToolTipText(TYPE_TOOLTIP);
 
             }
         finally { lock.unlock(); }
@@ -573,4 +574,19 @@ public class StepSequenceInspector extends WidgetList
         
     static final String IN_TOOLTIP = "<html><b>Zoom Out</b><br>" +
         "Sets the sequencer's MIDI input, used for a track's <b>Learn</b> functionality.</html>";
+
+    static final String TYPE_TOOLTIP = "<html><b>Type</b><br>" +
+        "Sets the sequencer's type.  Types include:" +
+        "<ul>" + 
+        "<li>Notes with pitch an <b>Velocity</b> (the default)" + 
+        "<li>Control Change (CC) messages of a certain <b>Parameter Number</b> and <b>Value<b>" + 
+        "<li>Polyphonic Aftertouch messages with a pitch and <b>Value</b>" + 
+        "<li>Channel Aftertouch with a <b>Value</b>" + 
+        "<li>Pitch Bend with a value in <b>MSB</b> and <b>LSB</b><br>" +
+        "(the value is MSB x 128 + LSB - 8192)" + 
+        "<li>Program Change with a <b>Value</b>" +
+        "<li>NRPN with a parameter and value, both in <b>MSB</b> and <b>LSB</b><br>" + 
+        "(both are defined as MSB x 128 + LSB - 8192)" + 
+        "<li>RPN with a parameter and value, both in <b>MSB</b> and <b>LSB</b><br>" + 
+        "(both are defined as MSB x 128 + LSB - 8192).</html>";
     }

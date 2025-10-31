@@ -412,6 +412,7 @@ public class ParameterUI extends JComponent
         double scale = eventsui.getScale();
         int beatsPerBar = 0;
         int endTime = 0;
+        int startTime = 0;        
         Seq seq = getSeq();
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -419,6 +420,7 @@ public class ParameterUI extends JComponent
             {
             beatsPerBar = seq.getBar();
             endTime = notes.getEnd();
+            startTime = notes.getStart();
             }
         finally
             {
@@ -447,6 +449,15 @@ public class ParameterUI extends JComponent
         // draw bars
         drawVerticalBars(startWhen, endWhen, Seq.PPQ * beatsPerBar, PitchUI.BAR_COLOR, scale, g);
 
+
+        // draw start
+        int startX = gridui.getPixels(startTime);
+        if (startX > 0)
+            {
+            g.setColor(PitchUI.START_COLOR);
+            vertical.setLine(startX, 0, startX, eventsui.getParameterHeight());
+            g.draw(vertical);
+            }
 
         // draw end
         int endX = gridui.getPixels(endTime);

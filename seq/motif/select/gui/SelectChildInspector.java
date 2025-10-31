@@ -187,7 +187,7 @@ public class SelectChildInspector extends WidgetList
                 };
             rate.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
                 
-            ratePresets = new PushButton("Presets...", RATE_OPTIONS)
+            ratePresets = new PushButton("...", RATE_OPTIONS)
                 {
                 public void perform(int val)
                     {
@@ -302,7 +302,7 @@ public class SelectChildInspector extends WidgetList
 
         JPanel ratePanel = new JPanel();
         ratePanel.setLayout(new BorderLayout());
-        ratePanel.add(rate.getLabelledDial("0.0000"), BorderLayout.CENTER);   // so it stretches
+        ratePanel.add(rate.getLabelledDial("0.0000 "), BorderLayout.CENTER);   // so it stretches
         ratePanel.add(ratePresets, BorderLayout.EAST);       
         ratePanel.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
 

@@ -61,14 +61,16 @@ public class DefaultParameterList extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
-                names[i].setToolTipText("<html><b>Name of Parameter " + (i + 1) + "</b><br>" +
+                String text = "<html><b>Name of Parameter " + (i + 1) + "</b><br>" +
                     "Here you can customize the name for Parameter " + (i + 1) + ".<br>" +
                     "This name will appear in the pop-up menus of dials you can bind to this Parameter.<br>" +
-                    "It will also appear as the <b>Arguments List</b> for assigning values to arguments passed in.</html>");                  
+                    "It will also appear as the <b>Arguments List</b> for assigning values to arguments passed in.</html>";    
+                names[i].setToolTipText(text);              
                 names[i].setColumns(MotifUI.PARAMETER_LIST_NAME_DEFAULT_SIZE);
                 JPanel panel = new JPanel();
                 panel.setLayout(new BorderLayout());
                 panel.add(names[i], BorderLayout.CENTER);
+                panel.setToolTipText(text);
                 comp[i] = panel;
                 }
             }
@@ -83,6 +85,7 @@ public class DefaultParameterList extends JPanel
         //new javax.swing.border.TitledBorder("<html><i>Parameter Names</i></html>"));
         setLayout(new BorderLayout());
         DisclosurePanel disclosure = new DisclosurePanel("Parameter Names", list);
+        disclosure.setToolTipText(PARAMETER_TOOLTIP);
         disclosure.setParentComponent(sequi);
         add(disclosure, BorderLayout.CENTER);
         if (reopen)
@@ -106,4 +109,8 @@ public class DefaultParameterList extends JPanel
       }
       }
     */
+
+    static final String PARAMETER_TOOLTIP = "<html><b>Parameter Names</b><br>" +
+        "Names for each of the Motif's parameters.  If no name is set here, the name<br>" +
+        "is simply Param 2, Param 7, etc.</html>";
     }

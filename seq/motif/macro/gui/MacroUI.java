@@ -125,8 +125,8 @@ public class MacroUI extends MotifUI
         // Build the series child inspector holder
         childOuter = new JPanel();
         childOuter.setLayout(new BorderLayout());
-        childBorder = BorderFactory.createTitledBorder(null, "Child");
-        childOuter.setBorder(childBorder);
+        //childBorder = BorderFactory.createTitledBorder(null, "Child");
+        //childOuter.setBorder(childBorder);
                 
         // Build the macro inspector holder
         macroOuter = new JPanel();

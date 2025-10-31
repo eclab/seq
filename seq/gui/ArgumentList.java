@@ -292,7 +292,9 @@ public class ArgumentList extends JPanel
         WidgetList list = new WidgetList(args, comp);
         list.setBorder(new javax.swing.border.TitledBorder("<html><i>Arguments</i></html>"));
         setLayout(new BorderLayout());
-        add(new DisclosurePanel("Arguments", list), BorderLayout.CENTER);
+        DisclosurePanel disclosure = new DisclosurePanel("Arguments", list);
+        disclosure.setToolTipText(ARGUMENT_LIST_TOOLTIP);
+        add(disclosure, BorderLayout.CENTER);
         }
  
     static final String RAND_MIN_TOOLTIP = "<html><b>Rand Min</b><br>" +
@@ -300,6 +302,9 @@ public class ArgumentList extends JPanel
    
     static final String RAND_MAX_TOOLTIP = "<html><b>Rand Max</b><br>" +
         "Set this to specify the uper bound for the random parameter value.</html>";
+   
+    static final String ARGUMENT_LIST_TOOLTIP = "<html><b>Argument List</b><br>" +
+        "Settings of the arguments passed to this child.</html>";
    
 /*
   public void revise()

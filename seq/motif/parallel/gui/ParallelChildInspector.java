@@ -376,7 +376,7 @@ public class ParallelChildInspector extends WidgetList
                 };
             rate.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
                 
-            ratePresets = new PushButton("Presets...", RATE_OPTIONS)
+            ratePresets = new PushButton("...", RATE_OPTIONS)
                 {
                 public void perform(int val)
                     {
@@ -485,7 +485,7 @@ public class ParallelChildInspector extends WidgetList
 
             gainPanel = new JPanel();
             gainPanel.setLayout(new BorderLayout());
-            gainPanel.add(gain.getLabelledDial("0.0000"), BorderLayout.CENTER);
+            gainPanel.add(gain.getLabelledDial("0.0000 "), BorderLayout.CENTER);
             gainPanel.add(mute, BorderLayout.EAST);
             gainPanel.setToolTipText(MIDI_CHANGES_GAIN_TOOLTIP);
 

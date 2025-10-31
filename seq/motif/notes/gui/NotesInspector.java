@@ -665,7 +665,7 @@ public class NotesInspector extends WidgetList
   finally { lock.unlock(); }                              
   }
   });
-  polyAftertouchPitch.setToolTipText(POLY_AFTERTOUCH_PITCH);
+  polyAftertouchPitch.setToolTipText(POLY_AFTERTOUCH_PITCH_TOOLTIP);
 */
             parameterHeight = new JComboBox(PARAMETER_HEIGHT_STRINGS);
             parameterHeight.addActionListener(new ActionListener()
@@ -690,6 +690,7 @@ public class NotesInspector extends WidgetList
         startPanel.setLayout(new BorderLayout());
         startPanel.add(start, BorderLayout.CENTER);
         startPanel.add(new JLabel("     "), BorderLayout.EAST);
+        startPanel.setToolTipText(START_TOOLTIP);
 
         name.setToolTipText(NAME_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
@@ -714,6 +715,7 @@ public class NotesInspector extends WidgetList
         for(int i = 0; i < 4; i++)
             {
             eventParameterType[i].setToolTipText(NON_NOTE_TYPE_TOOLTIP);
+            eventParameterPanel[i].setToolTipText(NON_NOTE_TYPE_TOOLTIP);
             eventParameterLSB[i].setToolTipText(LSB_TOOLTIP);
             eventParameterMSB[i].setToolTipText(MSB_TOOLTIP);
             }
@@ -738,12 +740,14 @@ public class NotesInspector extends WidgetList
         
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
         DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
+        recordDisclosure.setToolTipText(RECORDING_TOOLTIP);
 
         noteDisplayList = new WidgetList(new String[] { "Initial Velocity", "Initial Release Velocity" },  
             new JComponent[] { defaultNoteVelocity.getLabelledDial("127"), defaultNoteReleaseVelocity.getLabelledDial("127") });
 
         noteDisplayList.setBorder(BorderFactory.createTitledBorder("<html><i>Note Editing</i></html>"));
         DisclosurePanel noteDisplayDisclosure = new DisclosurePanel("Note Editing", noteDisplayList);
+        noteDisplayDisclosure.setToolTipText(NOTE_EDITING_TOOLTIP);
 
         WidgetList widgetList2 = new WidgetList();
         widgetList2.build(new String[] { "1", "2", "3", "4" },
@@ -758,6 +762,7 @@ public class NotesInspector extends WidgetList
         messagePanel.add(widgetList1, BorderLayout.SOUTH);
         messagePanel.setBorder(BorderFactory.createTitledBorder("<html><i>Non-Note Display</i></html>"));
         DisclosurePanel parameterDisclosure = new DisclosurePanel("Non-Note Display", messagePanel);
+        parameterDisclosure.setToolTipText(NON_NOTE_DISPLAY_TOOLTIP);
 
         JPanel finalPanel = new JPanel();
         finalPanel.setLayout(new BorderLayout());
@@ -1138,7 +1143,17 @@ public class NotesInspector extends WidgetList
     static final String DEFAULT_NOTE_RELEASE_VELOCITY_TOOLTIP = "<html><b>Initial Note Release Velocity</b><br>" +
         "Sets the release velocity of notes drawn on-screen with the mouse (not recorded ones).</html>";
 
-    static final String POLY_AFTERTOUCH_PITCH = "<html><b>Pitch Determines Color</b><br>" +
+    static final String POLY_AFTERTOUCH_PITCH_TOOLTIP = "<html><b>Pitch Determines Color</b><br>" +
         "Sets whether the color of a polyphonic aftertouch even is based on its color," +
         "rather than based on its aftertouch value.</html>";
+
+    static final String RECORDING_TOOLTIP = "<html><b>Recording</b><br>" +
+        "Various settings which control how notes are recorded into the Notes over MIDI.</html>";
+
+    static final String NOTE_EDITING_TOOLTIP = "<html><b>Note Editing</b><br>" +
+        "Settings which control how notes are edited.</html>";
+
+    static final String NON_NOTE_DISPLAY_TOOLTIP = "<html><b>Non-Note Display</b><br>" +
+        "Settings which control which non-note events (CC, NRPN, RPN, Pitch Bend, Aftertouch, PC)<br>" +
+        "are displayed, and how they are displayed.</html>";
     }

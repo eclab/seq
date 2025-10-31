@@ -179,8 +179,10 @@ public class SeriesInspector extends WidgetList
                             }
                         }
                     };              //.getLabelledDial("127");
+            	params[_i].setToolTipText(PARAM_TOOLTIP);
                 paramsL[_i] = params[_i].getLabelledDial("127");
-                        
+            	paramsL[_i].setToolTipText(PARAM_TOOLTIP);
+
                 initialVal = series.getMIDIType(_i) == Series.NRPN || series.getMIDIType(_i) == Series.NRPN_COARSE || series.getMIDIType(_i) == Series.RPN ? 
                     (series.getMIDIParameter(i) / 128 ) / 127.0 : 0;
                 paramsMSB[_i] = new SmallDial(initialVal)
@@ -241,7 +243,9 @@ public class SeriesInspector extends WidgetList
                         return "";
                         }
                     };      //.getLabelledDial("Yo");
+            	paramsMSB[_i].setToolTipText(MSB_TOOLTIP);
                 paramsMSBL[_i] = paramsMSB[_i].getLabelledDial("");
+                paramsMSBL[_i].setToolTipText(MSB_TOOLTIP);
 
 
                 initialVal = series.getMIDIType(_i) == Series.NRPN || series.getMIDIType(_i) == Series.NRPN_COARSE || series.getMIDIType(_i) == Series.RPN ? 
@@ -315,7 +319,9 @@ public class SeriesInspector extends WidgetList
                             }
                         }
                     };              //.getLabelledDial("00000");
+            	paramsLSB[_i].setToolTipText(LSB_TOOLTIP);
                 paramsLSBL[_i] = paramsLSB[_i].getLabelledDial("00000");
+            	paramsLSBL[_i].setToolTipText(LSB_TOOLTIP);
                         
                 types[i] = new JComboBox(TYPE_STRINGS);
                 types[i].setSelectedIndex(series.getMIDIType(i));
@@ -348,7 +354,7 @@ public class SeriesInspector extends WidgetList
                         seriesui.revalidate();                            
                         }
                     });
-                types[i].setToolTipText(PARAM_TOOLTIP);
+                types[i].setToolTipText(PARAM_TYPE_TOOLTIP);
                 
                 paramsBox[_i] = new Box(BoxLayout.X_AXIS);
                 paramsBox[_i].add(new JLabel(" "));                                 // spacer
@@ -361,6 +367,7 @@ public class SeriesInspector extends WidgetList
                     paramsBox[_i].add(paramsLSBL[_i]);  
                     if (paramsLSB[_i] != null) paramsLSB[_i].redraw(); 
                     }
+                paramsBox[_i].setToolTipText(PARAM_TYPE_TOOLTIP);
                 }
 
             rate = new TimeDisplay(series.getMIDIParameterRate(), seq)
@@ -376,7 +383,7 @@ public class SeriesInspector extends WidgetList
                     }
                 };
             rate.setDisplaysTime(false);
-            mode.setToolTipText(RATE_TOOLTIP);
+            rate.setToolTipText(RATE_TOOLTIP);
             }
         finally { lock.unlock(); }
 
@@ -415,6 +422,7 @@ public class SeriesInspector extends WidgetList
             {
             labels[i] = "Param " + String.valueOf(i - 1);
             JPanel comp2 = new JPanel();
+            comp2.setToolTipText(PARAM_TYPE_TOOLTIP);
             comp2.setLayout(new BorderLayout());
             JPanel comp = new JPanel();
             comp.setLayout(new BorderLayout());
@@ -428,6 +436,7 @@ public class SeriesInspector extends WidgetList
         WidgetList cc = new WidgetList(labels, components);
         cc.makeBorder("MIDI Parameters");
         DisclosurePanel midiParameters = new DisclosurePanel("MIDI Parameters", cc);
+        midiParameters.setToolTipText(MIDI_PARAMETERS_TOOLTIP);
         midiParameters.setParentComponent(seriesui);
         add(midiParameters, BorderLayout.CENTER);
         add(new DefaultParameterList(seq, seriesui), BorderLayout.SOUTH);
@@ -481,11 +490,23 @@ public class SeriesInspector extends WidgetList
         "Note that regardless of the rate, a MIDI parameter will not be emitted<br>" +
         "if the underlying Series parameter hasn't changed since last time.</html>";
 
+    static final String MIDI_PARAMETERS_TOOLTIP = "<html><b>MIDI Parameters</b><br>" +
+        "Various options for outputting the Series' own Parameter values as MIDI Parameters.</html>";
+
     static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
         "Sets the device to be used to emit MIDI parameters being generated from Series's<br>" +
         "own parameters.</html>";
 
-    static final String PARAM_TOOLTIP = "<html><b>MIDI Parameter Type</b><br>" +
+    static final String PARAM_TOOLTIP = "<html><b>Parameter</b><br>" +
+        "Sets the parameter.</html>";
+
+    static final String MSB_TOOLTIP = "<html><b>MSB</b><br>" +
+        "Sets the MSB of the given parameter.</html>";
+
+    static final String LSB_TOOLTIP = "<html><b>LSB</b><br>" +
+        "Sets the LSB of the given parameter.</html>";
+
+    static final String PARAM_TYPE_TOOLTIP = "<html><b>MIDI Parameter Type</b><br>" +
         "Sets the type of MIDI parameter to be generated from a given Series parameter and emitted.<br>" +
         "Options are:" +
         "<ul>" +
