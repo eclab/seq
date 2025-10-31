@@ -168,6 +168,7 @@ public class SelectInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+            dialIn.setToolTipText(CC_IN_TOOLTIP);
 
             device = new JComboBox(Pad.DEVICE_NAMES);
             device.setSelectedIndex(select.getGridDevice());
@@ -241,6 +242,7 @@ public class SelectInspector extends WidgetList
                         finally { lock.unlock(); }
                         }
                     };
+                dials[i].setToolTipText(DIAL_CC_TOOLTIP);
                                 
                 uses[i] = new JCheckBox();
                 uses[i].setSelected(select.getOverrideParameters(i));
@@ -257,6 +259,7 @@ public class SelectInspector extends WidgetList
                         selectui.updateDials();
                         }
                     });
+                uses[i].setToolTipText(DIAL_SELECT_TOOLTIP);
 
                 xJoy[i] = new JRadioButton("  Y");
                 if (i == select.getJoyX()) xJoy[i].setSelected(true);
@@ -273,6 +276,7 @@ public class SelectInspector extends WidgetList
                         }
                     });
                 xGroup.add(xJoy[i]);
+                xJoy[i].setToolTipText(DIAL_X_TOOLTIP);
                                         
                 yJoy[i] = new JRadioButton("");
                 if (i == select.getJoyY()) yJoy[i].setSelected(true);
@@ -289,15 +293,21 @@ public class SelectInspector extends WidgetList
                         }
                     });
                 yGroup.add(yJoy[i]);
+                yJoy[i].setToolTipText(DIAL_Y_TOOLTIP);
                    
                 ccUse[i] = new JPanel();
+                ccUse[i].setToolTipText(DIAL_SELECT_TOOLTIP);
                 ccUse[i].setLayout(new BorderLayout());
                 JPanel box = new JPanel();
                 box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
                 box.add(uses[i]);
-                box.add(new JLabel("   CC  "));
+                JLabel label = new JLabel("   CC  ");
+                label.setToolTipText(CC_IN_TOOLTIP);
+                box.add(label);
                 box.add(dials[i].getLabelledDial("None"));
-                box.add(new JLabel("   Joy X "));
+                label = new JLabel("   Joy X ");
+                label.setToolTipText(DIAL_X_TOOLTIP);
+                box.add(label);
                 box.add(xJoy[i]);
                 box.add(yJoy[i]);
                 ccUse[i].add(box, BorderLayout.WEST);
@@ -333,7 +343,7 @@ public class SelectInspector extends WidgetList
         dialList.setBorder(BorderFactory.createTitledBorder("<html><i>Dial Parameters</i></html>"));
         DisclosurePanel dialDisclosure = new DisclosurePanel("Dial Parameters", dialList);
         dialDisclosure.setParentComponent(selectui);
-
+        dialDisclosure.setToolTipText(DIAL_PARAMETERS_TOOLTIP);
 
         finish = new JButton("Finish");
         finish.addActionListener(new ActionListener()
@@ -501,6 +511,7 @@ public class SelectInspector extends WidgetList
         panel.add(joystick, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createTitledBorder("<html><i>Joystick</i></html>"));
         DisclosurePanel disclosure = new DisclosurePanel("Joystick", panel);
+        disclosure.setToolTipText(JOYSTICK_TOOLTIP);
         return disclosure;
         }            
             
@@ -579,4 +590,26 @@ public class SelectInspector extends WidgetList
     static final String CUT_NOTES_TOOLTIP = "<html><b>Cut Notes</b><br>" +
         "If selected, then when a node is terminated early, it stops playing notes immediately<br>" +
         "instead of letting them finish for their normal length.</html>";
+
+    static final String DIAL_PARAMETERS_TOOLTIP = "<html><b>Dial Parameters</b><br>" +
+        "Various options for displaying and controlling the dials that appear to the left of the grid.</html>";
+
+    static final String JOYSTICK_TOOLTIP = "<html><b>Joystick</b><br>" +
+        "The Joystick can be tied to control two Dials (see <b>Dial Parameters</b>).</html>";
+
+    static final String CC_IN_TOOLTIP = "<html><b>Control Change (CC) In</b><br>" +
+        "The Input Device fron which Select receives CC (Control Change) messages<br>" +
+        "to control the Dial Parameters.</html>";
+
+    static final String DIAL_SELECT_TOOLTIP = "<html><b>Dial Select</b><br>" +
+        "When selected, this Dial will appear to the left of the Grid and available to control.</html>";
+
+    static final String DIAL_CC_TOOLTIP = "<html><b>Dial Control Change (CC)</b><br>" +
+        "This specifies the Control Change parameter which, when received, will control this dial.</html>";
+        
+    static final String DIAL_X_TOOLTIP = "<html><b>Dial Joystick X</b><br>" +
+        "This sets whether this Dial will be tied to the X direction on the <b>Joystick</b>.</html>";
+        
+    static final String DIAL_Y_TOOLTIP = "<html><b>Dial Joystick Y</b><br>" +
+        "This sets whether this Dial will be tied to the Y direction on the <b>Joystick</b>.</html>";
     }
