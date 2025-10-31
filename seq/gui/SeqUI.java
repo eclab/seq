@@ -337,7 +337,18 @@ public class SeqUI extends JPanel
         // We want a nice Mac environment
         System.setProperty("apple.laf.useScreenMenuBar", "true");
         System.setProperty("apple.awt.application.name", "Seq");
-        FlatLightLaf.setup();
+        
+        if (Theme.isDark())
+        	{
+        	FlatDarkLaf.setup();
+        	}
+        else
+        	{
+        	FlatLightLaf.setup();
+        	}
+        
+        // NOTE: this method is called to determine if 
+        //com.formdev.flatlaf.FlatLaf.isDark();
         }
         
     /** Returns a string which guarantees that the given filename ends with the given ending. */   
