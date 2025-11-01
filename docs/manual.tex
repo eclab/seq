@@ -238,9 +238,9 @@ George Mason University\\
 sean@cs.gmu.edu}\\
 \\
 \\
-\large\rm {\bf Seq Version 8}\\
-\large\rm {\bf Manual Version 8.1}\\
-\large\rm  October 2025\\
+\large\rm {\bf Seq Version 9}\\
+\large\rm {\bf Manual Version 9.0}\\
+\large\rm  November 2025\\
 
 \vspace{5in}
 \noindent\Large\bf Where to Obtain Seq\\
@@ -295,8 +295,13 @@ Music made with Seq tends to be composed bottom-up: you start with some basic bu
 
 Seq was largely written from 2023--2025 by Sean Luke with help from Filippo Carnovalini.
 
+\paragraph{Who is Seq For?}
 
-\paragraph{Hierarchical}
+Seq was developed for research purposes: a major goal is to provide an environment where we could insert modules that automatically generate music or automatically filter and modify it.  We also wanted an architecture that was easily modified, so for example an AI optimizer might rip apart an entire song and restructure it into a different form.  Seq doesn't have those kinds of extensions in its public distribution, but stay tuned.
+
+So if you're not an academic, while use Seq?  Seq's approach to building songs is very unusual.  It has disadvantages to be sure: compared to a linear arranger in a DAW, it doesn't at present show clips side-by-side in a timeline, so you have to do some math in your head.  But Seq makes it easy to reuse and modify pieces of music in unusual ways to form a whole composition: and Seq has significant performance facilities.  We think Seq would be of particular interest to modular synthesizer composers and musicians, to composers and producers of ambient music, EDM, IDM, electronica, long-form music, minimalist music, and other music involving high degrees of experimentation, or reuse and remixing.  Though it's computer software, Seq might be of significant interest to DAWless setups.  But in fact we use Seq for all sorts of music.
+
+\paragraph{Seq is Hierarchical}
 By {\bf hierarchical} we mean that a Seq sequence is composed of a {\it hierarchy} of sequence objects, each of which are groupings of other sequence objects (which themselves can be groupings of sequence objects, and so on).  You start playing one object, and as it runs, it starts playing its child objects according to some rules.  They in turn start playing their children, and so on.
 
 An example of a trivial hierarchical sequencer is {\bf song mode}, commonly found in drum machines and grooveboxes.  The earliest music sequencers just output a simple looped pattern of perhaps of eight or sixteen notes, voltages, or drum triggers.  But with the advent of Roger Linn's {\bf LM-1} drum machine he introduced the notion of what he called a {\bf chain} of patterns.  In the LM-1, you programmed multiple patterns, then defined a set of instructions (the chain) that said, for example, ``First play pattern A three times. Then Play Pattern B once.  Then play Pattern A twice.  Then play pattern C once.''   A pattern could be played on its own, or you could play the chain.  The patterns were basic sequence objects, and the chain was was their parent in a simple two-level hierarchy.   Chains eventually became known as {\bf songs}, and playing a chain eventually became popularized in drum machines as putting the machine in so-called ``song mode.''
@@ -309,7 +314,7 @@ The children at the very bottom don't have to be just simple patterns either.  T
 
 Furthermore, when in the course of playing a child generates MIDI, the MIDI is sent to its parents (and their parents, and so on), and they have a chance to modify it before it is finally emitted.
 
-\paragraph{Modular} By modularity we mean that not only can a parent object in the hierarchy have multiple children, but a given object in the hierarchy can also be shared by multiple parents.  Modularity enables {\bf reuse} of objects, and perhaps transforming them or creating variations.   Modularity also allows sequence hierarchies to be {\bf compact}.
+\paragraph{Seq is Modular} By modularity we mean that not only can a parent object in the hierarchy have multiple children, but a given object in the hierarchy can also be shared by multiple parents.  Modularity enables {\bf reuse} of objects, and perhaps transforming them or creating variations.   Modularity also allows sequence hierarchies to be {\bf compact}.
 
 As a simple example, imagine if Chain X had Chain Y as a child as well as Pattern A.  But Chain Y {\it also} had Pattern A as a child, along with Pattern B.  Both Chain X and Chain Y use Pattern A, though perhaps at different times and in different ways.  You could also imagine a Chain Z which used by Chain X and Chain Y, and thus Chain Y was also being used twice, in different ways.
 
@@ -324,7 +329,7 @@ Figure~\ref{dag} at right shows this very arrangement of these chains and patter
 
 You don't have to start playing at Chain Z.  You could instead choose to start playing at (say) Chain Y, and so Z and X would both just be ignored.  Seq calls the node that you're starting playing at the {\bf Root} of the current sequence (even if it itself has parents).
 
-\paragraph{Seq Terminology}
+\paragraph{Some Terminology}
 
 Seq's sequences are DAGs built out of basic musical building blocks (step sequences, chunks of MIDI, etc.), and objects which group other building blocks into subsequences (including grouping other subsequences together).  All these objects, both basic and grouping, are know as {\bf motifs}.  Thus (to use the LM-1's terminology) both individual step sequence patterns and pattern chains are represented as kinds of motifs.  One motif is designated the {\bf root motif}, and is the start point when playing.  Motifs which group other motifs are known as the {\bf parents} of those {\bf children}.  
 
@@ -338,9 +343,13 @@ First, you can encapsulate an entire sequence into a single motif called a {\bf 
 
 Second, a great many of the features in motifs are {\bf parameterizable}.  This means you can attach them to {\bf parameters} in the motif itself, which can in turn be changed by the motif's parents or ancestors.  This allows a parent to automatically change a variety of features in its children or descendants.  For example, a parent could use a low-frequency envelope to change the pitch of certain notes in one of its children.  Parameters can also be changed with Control Change (CC) messages from external controllers, and parameters can also be used to send out many different kinds of MIDI messages, including CC, NRPN, and so on.  Parameterization is a complex  subject: for more information, see Section~\ref{parameters}.
 
-\paragraph{Where We're Going with Seq}
+\subsection{Where We're Going with Seq}
 
-Seq's sequence structure is very amenable to customization and automated modification.  Our ultimate goal is to ask what kinds of machine learning, optimization, or search techniques we could add to Seq to convert it into a {\bf co-creative tool} for the composer, that is, a tool that works with the composer, bouncing ideas back and forth, to produce a song.  We have previous experience in tools of this sort (see Sean Luke's {\bf Edisyn} for example).  But before we get to doing stuff like that, we have to get Seq finished.
+Seq's sequence structure is very amenable to customization and automated modification.  Our ultimate goal is to ask what kinds of machine learning, optimization, or search techniques we could add to Seq to convert it into a {\bf co-creative tool} for the composer, that is, a tool that works with the composer, bouncing ideas back and forth, to produce a song.  We have previous experience in tools of this sort (see Sean Luke's {\bf Edisyn} for example).  To this end, we'll be adding motifs which use AI or other tools to generate automated music, and also motifs which take music and modify it automatically in interesting ways.
+
+We'd also like to see a Live Coding module for Seq, though there are some challenges due to the poor options among Live Coding programming languages.
+
+In the immediate future, we'll be adding external sync, a dark mode, interface improvements, and more MIDI file generation.
 
 \clearpage\section{The User Interface}
 
@@ -1472,16 +1481,6 @@ Like a number of other motifs, Modulation lets you modulate the rate, transpose,
 
 
 
-
-\clearpage\subsection{Motifs Planned for the Future}
-
-At present we have a few motifs planned:
-
-\begin{itemize}
-\item A Motif for individual notes, or chords
-\item Recorded automated modulation changes via a CC.
-\item Possibly a Motif which does Live Coding using some programming language
-\end{itemize}
 
 \clearpage
 
