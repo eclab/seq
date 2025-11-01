@@ -156,7 +156,7 @@ public class ModulationClip extends Clip
                             newTarget = lastTarget - p;
                             }
                         lastTarget = target;
-                        target = newTarget ;     
+                        target = newTarget;     
                         }
                                                 
                     val = lastTarget + (type == Modulation.TYPE_RANDOM ? (target - lastTarget) * x : 0);

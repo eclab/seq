@@ -284,7 +284,8 @@ public class ModulationInspector extends WidgetList
                 try { modulation.setOut(out.getSelectedIndex() - 1); }              // -1 is DISABLED
                 finally { lock.unlock(); }                              
                 }
-            });            
+            });
+        out.setToolTipText(MIDI_CHANGES_OUT_TOOLTIP);           
 
 
         JPanel ratePanel = new JPanel();

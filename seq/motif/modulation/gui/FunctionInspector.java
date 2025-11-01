@@ -16,7 +16,7 @@ import java.util.concurrent.locks.*;
 public class FunctionInspector extends JPanel
     {
     public static final String[] INSPECTOR_NAMES = { "None", "LFO", "Envelope", "Step Sequence", "Constant", "Same As", "<html><i>Copy From...</i></html>" };
-    public static final int COPY_FROM = 5;
+    public static final int COPY_FROM = 6;
     public static final String[] MAP_FUNCTIONS = {"None (X)", "X^2", "X^4", "1-(1-X)^2", "1-(1-X)^4" };
     public static final String[] LFO_TYPES = {"Saw Up", "Saw Down", "Square", "Triangle", "Sine", "Random", "S&H" };
         
@@ -196,6 +196,7 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 };
+            mapLow.setToolTipText(MAP_LOW_TOOLTIP);
 
             mapHigh = new SmallDial(func.getMapHigh(), defaults)
                 {
@@ -245,6 +246,7 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 };
+			mapHigh.setToolTipText(MAP_HIGH_TOOLTIP);
 
             mapBy = new JComboBox(MAP_FUNCTIONS);
             mapBy.setSelectedIndex(func.getMapBy());
@@ -262,17 +264,18 @@ public class FunctionInspector extends JPanel
                         }
                     finally { lock.unlock(); }
                     }
-                });      
+                }); 
+            mapBy.setToolTipText(MAP_BY_TOOLTIP);
+            
             }
         finally 
             {
             lock.unlock(); 
             }
 
-        WidgetList map = new WidgetList(new String[] { "", "Low", "High", "By", },
+        WidgetList map = new WidgetList(new String[] {"Low", "High", "By", },
             new JComponent[] 
                 {
-                null,
                 mapLow.getLabelledDial("0.0000"),
                 mapHigh.getLabelledDial("0.0000"),
                 mapBy,
@@ -345,7 +348,8 @@ public class FunctionInspector extends JPanel
                         try { func.setLFOType(lfoType.getSelectedIndex()); }
                         finally { lock.unlock(); }
                         }
-                    });      
+                    });
+                lfoType.setToolTipText(LFO_TYPE_TOOLTIP);   
 
                 period = new TimeDisplay(func.getPeriod(), seq)              // default is one quarter note
                     {
@@ -360,6 +364,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 period.setDisplaysTime(false);
+                period.setToolTipText(LFO_PERIOD_TOOLTIP);
 
                 start = new TimeDisplay(func.getStart(), seq)
                     {
@@ -374,6 +379,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 start.setDisplaysTime(true);
+                start.setToolTipText(LFO_START_TOOLTIP);
 
                 length = new TimeDisplay(func.getLength(), seq)             // default is really long
                     {
@@ -388,6 +394,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 length.setDisplaysTime(false);
+                length.setToolTipText(LFO_LENGTH_TOOLTIP);
 
                 fadeIn = new TimeDisplay(func.getFadeIn(), seq)
                     {
@@ -402,6 +409,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 fadeIn.setDisplaysTime(false);
+                fadeIn.setToolTipText(LFO_FADE_IN_TOOLTIP);
 
                 fadeOut = new TimeDisplay(func.getFadeOut(), seq)
                     {
@@ -416,7 +424,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 fadeOut.setDisplaysTime(false);
-
+				fadeOut.setToolTipText(LFO_FADE_OUT_TOOLTIP);
 
                 phase = new SmallDial(func.getPhase(), defaults)
                     {
@@ -450,6 +458,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                phase.setToolTipText(LFO_PHASE_VAR_TOOLTIP);
 
                 initial = new SmallDial(func.getInitial(), defaults)
                     {
@@ -483,6 +492,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                initial.setToolTipText(LFO_INTIAL_TOOLTIP);
                 }
             finally 
                 {
@@ -566,6 +576,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 start.setDisplaysTime(true);
+                start.setToolTipText(ENVELOPE_START_TOOLTIP);
 
                 initial = new SmallDial(func.getInitial(), defaults)
                     {
@@ -599,6 +610,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                initial.setToolTipText(ENVELOPE_INITIAL_TOOLTIP);
 
                 repeat = new JCheckBox();
                 repeat.setSelected(func.getRepeat());
@@ -613,6 +625,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }                              
                         }
                     });
+                repeat.setToolTipText(ENVELOPE_REPEAT_TOOLTIP);
 
                 hold = new JCheckBox();
                 hold.setSelected(func.getHold());
@@ -627,6 +640,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }                              
                         }
                     });
+				hold.setToolTipText(ENVELOPE_HOLD_TOOLTIP);
 
                 numStages = new SmallDial(func.getNumStages() / (double) Modulation.MAX_STAGES, defaults)
                     {
@@ -664,6 +678,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                numStages.setToolTipText(ENVELOPE_STAGES_TOOLTIP);
                 
                 for(int i = 0; i < Modulation.MAX_STAGES; i++)
                     {
@@ -681,6 +696,7 @@ public class FunctionInspector extends JPanel
                             }
                         };
                     time[i].setDisplaysTime(false);
+                    time[i].setToolTipText(ENVELOPE_TIME_TOOLTIP);
 
                     target[i] = new SmallDial(func.getTarget(i), defaults)
                         {
@@ -714,6 +730,7 @@ public class FunctionInspector extends JPanel
                             finally { lock.unlock(); }
                             }
                         };
+                    target[i].setToolTipText(ENVELOPE_TARGET_TOOLTIP);
                     }
                 
                 
@@ -817,6 +834,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 start.setDisplaysTime(true);
+                start.setToolTipText(STEP_SEQUENCE_START_TOOLTIP);
 
                 period = new TimeDisplay(func.getPeriod(), seq)
                     {
@@ -831,6 +849,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 period.setDisplaysTime(false);
+                period.setToolTipText(STEP_SEQUENCE_STEP_LENGTH_TOOLTIP);
 
                 initial = new SmallDial(func.getInitial(), defaults)
                     {
@@ -864,6 +883,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                initial.setToolTipText(STEP_SEQUENCE_INITIAL_TOOLTIP);
 
                 repeat = new JCheckBox();
                 repeat.setSelected(func.getRepeat());
@@ -878,6 +898,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }                              
                         }
                     });
+                repeat.setToolTipText(STEP_SEQUENCE_REPEAT_TOOLTIP);
 
                 trigger = new JCheckBox();
                 trigger.setSelected(func.getTrigger());
@@ -892,6 +913,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }                              
                         }
                     });
+                trigger.setToolTipText(STEP_SEQUENCE_TRIGGER_TOOLTIP);
 
                 numSteps = new SmallDial(func.getNumSteps() / (double) Modulation.MAX_STEPS, defaults)
                     {
@@ -929,6 +951,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }
                         }
                     };
+                numSteps.setToolTipText(STEP_SEQUENCE_NUM_STEPS_TOOLTIP);
                 
                 for(int i = 0; i < Modulation.MAX_STEPS; i++)
                     {
@@ -965,6 +988,7 @@ public class FunctionInspector extends JPanel
                             finally { lock.unlock(); }
                             }
                         };
+                    step[i].setToolTipText(STEP_SEQUENCE_STEP_TOOLTIP);
                     }
                 
                 
@@ -1090,7 +1114,8 @@ public class FunctionInspector extends JPanel
                         try { double val = func.getAs(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
                         finally { lock.unlock(); }
                         }
-                    };                
+                    };   
+                as.setToolTipText(SAME_AS_TOOLTIP);           
                 }
             finally 
                 {
@@ -1170,7 +1195,8 @@ public class FunctionInspector extends JPanel
                         try { double val = func.getValue(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
                         finally { lock.unlock(); }
                         }
-                    };                
+                    };
+                value.setToolTipText(CONSTANT_VALUE_TOOLTIP);       
                 }
             finally 
                 {
@@ -1266,85 +1292,261 @@ public class FunctionInspector extends JPanel
         "<li><b><i>Copy From</i></b>&nbsp;&nbsp;Copy from another argument." +
         "</ul></html>";
 
-    static final String NOTE_OUT_TOOLTIP = "<html><b>Out</b><br>" +
-        "Changes the output device of the incoming MIDI notes.</html>";
+    static final String MAP_LOW_TOOLTIP = "<html><b>Map Low</b><br>" +
+        "The low boundary of the mapping function range.<br><br>" + 
+        "After the modulation function has produced a value, in the range from 0.0 to 1.0,<br>" +
+        "it is then mapped into the range from <b>Low</b> to <b>High</b>.  0.0 is mapped to Low, 1.0 is<br>" +
+        "mapped to High, and the in-between values are interpolated between Low and High<br>" +
+        "accordingly.  Thus if Low is higher than High, the modulation function will be<br>" +
+        "inverted.  Furthermore, the mapping function is also warped by <b>By</b>, which<br>" +
+        "keeps it as-is or warps it into a curve.</html>";
 
-    static final String NOTE_ALL_OUT_TOOLTIP = "<html><b>All Out</b><br>" +
-        "Sets whether <b>Out</b> sets the output device for all incoming events, not just MIDI notes.</html>";
+    static final String MAP_HIGH_TOOLTIP = "<html><b>Map High</b><br>" +
+        "The high boundary of the mapping function range.<br><br>" + 
+        "After the modulation function has produced a value, in the range from 0.0 to 1.0,<br>" +
+        "it is then mapped into the range from <b>Low</b> to <b>High</b>.  0.0 is mapped to Low, 1.0 is<br>" +
+        "mapped to High, and the in-between values are interpolated between Low and High<br>" +
+        "accordingly.  Thus if Low is higher than High, the modulation function will be<br>" +
+        "inverted.  Furthermore, the mapping function is also warped by <b>By</b>, which<br>" +
+        "keeps it as-is or warps it into a curve.</html>";
+
+    static final String MAP_BY_TOOLTIP = "<html><b>Map By</b><br>" +
+        "The warping of the mapping function, one of:" +
+        "<ul>" + 
+        "<li><b>None (X)</b>&nbsp;&nbsp;The function is not warped." +
+        "<li><b>X^2</b>&nbsp;&nbsp;The modulation value X, from 0.0 to 1.0, is squared." +
+        "<li><b>X^4</b>&nbsp;&nbsp;The modulation value X, from 0.0 to 1.0, is raised to the fourth power.<br>This is similar to an exponential dropoff." +
+        "<li><b>1-(1-X)^2</b>&nbsp;&nbsp;The modulation value X, from 0.0 to 1.0, is inverted, then squared,<br>then inverted again. This is a bulging-outward curve, as opposed to X^2, which bulges inward." +
+        "<li><b>1-(1-X)^4</b>&nbsp;&nbsp;The modulation value X, from 0.0 to 1.0, is inverted, then squared,<br>then inverted again. This is a bulging-outward curve, as opposed to X^4, which bulges inward.<br>It is similar to an exponential rise." +
+        "</ul>" + 
+        "After the modulation function has produced a value, in the range from 0.0 to 1.0,<br>" +
+        "it is then mapped into the range from <b>Low</b> to <b>High</b>.  0.0 is mapped to Low, 1.0 is<br>" +
+        "mapped to High, and the in-between values are interpolated between Low and High<br>" +
+        "accordingly.  Thus if Low is higher than High, the modulation function will be<br>" +
+        "inverted.  Furthermore, the mapping function is also warped by <b>By</b>, which<br>" +
+        "keeps it as-is or warps it into a curve.</html>";
+
+    static final String LFO_TYPE_TOOLTIP = "<html><b>Type</b><br>" +
+        "Sets the LFO waveshape, one of: Sawtooth Rising (Ramp), Sawtooth Falling, Square, Triangle, Sine,<br>" +
+        "Random, and Random Sample and Hold (S&H).<br><br>" +
+        "A Random LFO selects a new random target value each period, then during the period slowly moves<br>" +
+        "towards that target value until it reaches it at the end of the period.<br><br>" +
+        "A Random Sample and Hold LFO selects a new random target value each period, but during the period<br>" +
+        "holds its existing value, never changing, until it reaches the end of the period, at which time<br>" +
+        "it jumps to the new target value and starts holding there.</html>";
+
+    static final String LFO_PERIOD_TOOLTIP = "<html><b>Period</b><br>" +
+        "Sets the period (the wave length) of the LFO wave.</html>";
         
-    static final String NOTE_TRANSPOSE_TOOLTIP = "<html><b>Transpose</b><br>" +
-        "Transposes the pitch of the incoming MIDI notes.</html>";
+    static final String LFO_PHASE_VAR_TOOLTIP = "<html><b>Phase / Variance</b><br>" +
+        "Sets the <i>phase</i> of the LFO wave -- how offset it is in time -- or if the wave shape is Random<br>" +
+        "or Random Sample and Hold, sets the <i>variance</i> -- how far the random target value is permitted to<br>" +
+        "deviate from 0.5.</html>";
 
-    static final String NOTE_TRANSPOSE_VARIANCE_TOOLTIP = "<html><b>Transpose Variance</b><br>" +
-        "Sets the variance of random noise with which to transpose the pitch of the incoming MIDI notes.</html>";
+    static final String LFO_INTIAL_TOOLTIP = "<html><b>Initial</b><br>" +
+        "Sets the initial value of the LFO.<br><br>" +
+        "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
+        "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
+        "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
+        "<b>Length</b> timesteps.  It then fades back out to the Initial value over the course of " +
+        "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
-    static final String NOTE_GAIN_TOOLTIP = "<html><b>Gain</b><br>" +
-        "Sets the gain to be multipled against the velocity (volume) of the incoming MIDI notes.</html>";
+    static final String LFO_START_TOOLTIP = "<html><b>Start</b><br>" +
+    	"Sets the start time of the LFO.<br><br>" +
+        "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
+        "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
+        "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
+        "<b>Length</b> timesteps.  It then fades back out to the Initial value over the course of " +
+        "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
-    static final String NOTE_GAIN_VARIANCE_TOOLTIP = "<html><b>Gain Variance</b><br>" +
-        "Sets the variance of random noise to be multipled against the velocity (volume) of<br>" +
-        "the incoming MIDI notes.</html>";
+    static final String LFO_FADE_IN_TOOLTIP = "<html><b>Fade In</b><br>" +
+    	"Sets the Fade In interval length of the LFO.<br><br>" +
+        "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
+        "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
+        "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
+        "<b>Length</b> timesteps.  It then fades back out to the Initial value over the course of " +
+        "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
-    static final String NOTE_RELEASE_TOOLTIP = "<html><b>Release</b><br>" +
-        "Sets the gain to be multipled against the release velocity of the incoming MIDI notes.</html>";
+    static final String LFO_LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
+    	"Sets the Length of the LFO.<br><br>" +
+        "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
+        "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
+        "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
+        "<b>Length</b> timesteps.  It then fades back out to the Initial value over the course of " +
+        "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
-    static final String NOTE_RELEASE_VARIANCE_TOOLTIP = "<html><b>Release Variance</b><br>" +
-        "Sets the variance of random noise to be multipled against the release velocity of<br>" +
-        "the incoming MIDI notes.</html>";
+    static final String LFO_FADE_OUT_TOOLTIP = "<html><b>Fade Out</b><br>" +
+    	"Sets the Fade Out interval length of the LFO.<br><br>" +
+        "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
+        "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
+        "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
+        "<b>Length</b> timesteps.  It then fades back out to the Initial value over the course of " +
+        "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
-    static final String NOTE_LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
-        "Sets the length of all incoming MIDI notes, if <br>Change Length<b> is checked.<br><br>" +
-        "Note that MIDI notes cannot realistically have zero length: it will be essentially<br>" +
-        "1 Part per Quarter Note.</html>";
-
-    static final String NOTE_CHANGE_LENGTH_TOOLTIP = "<html><b>Change Length</b><br>" +
-        "Sets the whether the length of notes will be changed by <b>Length</b>.</html>";
-
-    static final String DELAY_ORIGINAL_TOOLTIP = "<html><b>Original</b><br>" +
-        "When checked, the original MIDI note will be played (along with possible delayed versions).</html>";
-
-    static final String DELAY_INTERVAL_TOOLTIP = "<html><b>Interval</b><br>" +
-        "Sets the time interval between successive delayed, repeated notes.</html>";
-
-    static final String DELAY_CUT_TOOLTIP = "<html><b>Cut</b><br>" +
-        "Sets the amount of reduction in velocity (volume) of the next delayed note relative to<br>" +
-        "the current one.</html>";
+    static final String ENVELOPE_INITIAL_TOOLTIP = "<html><b>Initial</b><br>" +
+        "Sets the Initial value of the Envelope.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it moves towards the first <b>Target</b> over the course of the<br>" +
+        "first <b>Time</b> interval.  When at the end of that interval, it has reached the target: this is<br>" +
+        "one <b>Stage</b>.  It then begins to move towards the second target over the second time interval,<br>" +
+        "and so on, thus finishing the second <b>Stage</b>.  It continues like this until it has finished all<br>" +
+        "the <b>Stages</b> specified.  If <b>Repeat</b> is turned on, then when it has finished all its<br>" +
+        "stages, it will loop back and continue with the first stage again, and so on.  If <b>Hold</b> is<br>" +
+        "turned on, instead of gradually moving towards its chosen target, it will hold at its current value<br>" +
+        "until it reaches the Time, and then jump immediately to the chosen target, similar to a Sample and Hold.</html>";
         
-    static final String DELAY_NUM_DELAYS_TOOLTIP = "<html><b>Num Delays</b><br>" +
-        "Sets the number of delayed versions of a note to play.</html>";
-        
-    static final String DROP_CUT_TOOLTIP = "<html><b>Delete All</b><br>" +
-        "If checked, then all events (note and non-note) will be deleted entirely.</html>";
-        
-    static final String DROP_PROBABILITY_TOOLTIP = "<html><b>Note Probability</b><br>" +
-        "Sets the probability that notes (not non-note events) will be deleted.<br><br>" +
-        "If <b>Cut</b> is checked, then Probability does nothing.</html>";
-        
-    static final String PARAMETER_TYPE_TOOLTIP = "<html><b>Type</b><br>" +
-        "Specifies the type of parameter to be modified.</html>";
+    static final String ENVELOPE_START_TOOLTIP = "<html><b>Start</b><br>" +
+        "Sets the Start time of the Envelope.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it moves towards the first <b>Target</b> over the course of the<br>" +
+        "first <b>Time</b> interval.  When at the end of that interval, it has reached the target: this is<br>" +
+        "one <b>Stage</b>.  It then begins to move towards the second target over the second time interval,<br>" +
+        "and so on, thus finishing the second <b>Stage</b>.  It continues like this until it has finished all<br>" +
+        "the <b>Stages</b> specified.  If <b>Repeat</b> is turned on, then when it has finished all its<br>" +
+        "stages, it will loop back and continue with the first stage again, and so on.  If <b>Hold</b> is<br>" +
+        "turned on, instead of gradually moving towards its chosen target, it will hold at its current value<br>" +
+        "until it reaches the Time, and then jump immediately to the chosen target, similar to a Sample and Hold.</html>";
 
-    static final String PARAMETER_PARAM_MSB_TOOLTIP = "<html><b>Param/MSB</b><br>" +
-        "Sets the parameter number of the parameter to be modified:" +
-        "<ul>" +
-        "<li><b>Control Change (CC)</b>&nbsp;&nbsp; Sets the CC parameter number (0-127)." +
-        "<li><b>Non-Registered Parameter Numbers (NRPN)</b>&nbsp;&nbsp; Sets the Most Significant Byte<br>" +
-        "(MSB) of the parameter number." +
-        "<li><b>Registered Parameter Numbers (RPN)</b>&nbsp;&nbsp; Sets the Most Significant Byte<br>" +
-        "(MSB) of the parameter number." +
-        "<li><b>All Others</b>&nbsp;&nbsp; Has no effect (there is no parameter number)." +
-        "</ul>" +
-        "</html>";
+    static final String ENVELOPE_REPEAT_TOOLTIP = "<html><b>Repeat</b><br>" +
+        "Turns on the the Repeat feature of the Envelope.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it moves towards the first <b>Target</b> over the course of the<br>" +
+        "first <b>Time</b> interval.  When at the end of that interval, it has reached the target: this is<br>" +
+        "one <b>Stage</b>.  It then begins to move towards the second target over the second time interval,<br>" +
+        "and so on, thus finishing the second <b>Stage</b>.  It continues like this until it has finished all<br>" +
+        "the <b>Stages</b> specified.  If <b>Repeat</b> is turned on, then when it has finished all its<br>" +
+        "stages, it will loop back and continue with the first stage again, and so on.  If <b>Hold</b> is<br>" +
+        "turned on, instead of gradually moving towards its chosen target, it will hold at its current value<br>" +
+        "until it reaches the Time, and then jump immediately to the chosen target, similar to a Sample and Hold.</html>";
 
-    static final String PARAMETER_PARAM_LSB_TOOLTIP = "<html><b>LSB</b><br>" +
-        "Sets the Least Significant Byte (LSB) of the parameter number to be modified. This is only<br>" +
-        "relevant for <b>Non-Registered Parameter Numbers (NRPN)</b> and <b>Registered Parameter Numbers (RPN)</b></html>";
+    static final String ENVELOPE_HOLD_TOOLTIP = "<html><b>Hold</b><br>" +
+        "Turns on the the Hold feature of the Envelope.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it moves towards the first <b>Target</b> over the course of the<br>" +
+        "first <b>Time</b> interval.  When at the end of that interval, it has reached the target: this is<br>" +
+        "one <b>Stage</b>.  It then begins to move towards the second target over the second time interval,<br>" +
+        "and so on, thus finishing the second <b>Stage</b>.  It continues like this until it has finished all<br>" +
+        "the <b>Stages</b> specified.  If <b>Repeat</b> is turned on, then when it has finished all its<br>" +
+        "stages, it will loop back and continue with the first stage again, and so on.  If <b>Hold</b> is<br>" +
+        "turned on, instead of gradually moving towards its chosen target, it will hold at its current value<br>" +
+        "until it reaches the Time, and then jump immediately to the chosen target, similar to a Sample and Hold.</html>";
+
+    static final String ENVELOPE_STAGES_TOOLTIP = "<html><b>Stages</b><br>" +
+        "Set the number of Stages of the Envelope.  Later stages are ignored.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it moves towards the first <b>Target</b> over the course of the<br>" +
+        "first <b>Time</b> interval.  When at the end of that interval, it has reached the target: this is<br>" +
+        "one <b>Stage</b>.  It then begins to move towards the second target over the second time interval,<br>" +
+        "and so on, thus finishing the second <b>Stage</b>.  It continues like this until it has finished all<br>" +
+        "the <b>Stages</b> specified.  If <b>Repeat</b> is turned on, then when it has finished all its<br>" +
+        "stages, it will loop back and continue with the first stage again, and so on.  If <b>Hold</b> is<br>" +
+        "turned on, instead of gradually moving towards its chosen target, it will hold at its current value<br>" +
+        "until it reaches the Time, and then jump immediately to the chosen target, similar to a Sample and Hold.</html>";
         
-    static final String PARAMETER_VARIANCE_TOOLTIP = "<html><b>Variance</b><br>" +
-        "Sets the variance of random noise to be added to the parameter value for incoming events.<br><br>" + 
-        "Though random noise is added to all values, it only changes every once in a while, according to the <b>Rate</b>.</html>";
+    static final String ENVELOPE_TIME_TOOLTIP = "<html><b>Time</b><br>" +
+        "Sets the Time Interval (length) of this stage.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it moves towards the first <b>Target</b> over the course of the<br>" +
+        "first <b>Time</b> interval.  When at the end of that interval, it has reached the target: this is<br>" +
+        "one <b>Stage</b>.  It then begins to move towards the second target over the second time interval,<br>" +
+        "and so on, thus finishing the second <b>Stage</b>.  It continues like this until it has finished all<br>" +
+        "the <b>Stages</b> specified.  If <b>Repeat</b> is turned on, then when it has finished all its<br>" +
+        "stages, it will loop back and continue with the first stage again, and so on.  If <b>Hold</b> is<br>" +
+        "turned on, instead of gradually moving towards its chosen target, it will hold at its current value<br>" +
+        "until it reaches the Time, and then jump immediately to the chosen target, similar to a Sample and Hold.</html>";
         
-    static final String PARAMETER_RATE_TOOLTIP = "<html><b>Rate</b><br>" +
-        "Sets how often a new random value is chosen to be added to the parameter value for incoming events.<br><br>" + 
-        "Though random noise is added to all values, it only changes every once in a while, according to the <b>Rate</b>.</html>";
+    static final String ENVELOPE_TARGET_TOOLTIP = "<html><b>Target</b><br>" +
+        "Sets the Target Value of this stage.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it moves towards the first <b>Target</b> over the course of the<br>" +
+        "first <b>Time</b> interval.  When at the end of that interval, it has reached the target: this is<br>" +
+        "one <b>Stage</b>.  It then begins to move towards the second target over the second time interval,<br>" +
+        "and so on, thus finishing the second <b>Stage</b>.  It continues like this until it has finished all<br>" +
+        "the <b>Stages</b> specified.  If <b>Repeat</b> is turned on, then when it has finished all its<br>" +
+        "stages, it will loop back and continue with the first stage again, and so on.  If <b>Hold</b> is<br>" +
+        "turned on, instead of gradually moving towards its chosen target, it will hold at its current value<br>" +
+        "until it reaches the Time, and then jump immediately to the chosen target, similar to a Sample and Hold.</html>";
+        
+    static final String STEP_SEQUENCE_INITIAL_TOOLTIP = "<html><b>Initial</b><br>" +
+        "Sets the Initial value of the Step Sequence.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it starts outputting each step value in turn, each for<br>" +
+        "<b>Step Length</b> timesteps, until it has consumed the stated number of <b>Steps</b>.<br>" +
+        "It then resumes outputting the Initial Value.</b>  If <b>Repeat</b> is checked, then<br>" +
+        "when it finishes all the Steps, it loops back to the first step and continues through the<br>" +
+        "steps again.  If <b>Trigger</b> is true, then instead of outputting values for each step,<br>" +
+        "it outputs triggers when the values are non-zero.</html>";
+        
+    static final String STEP_SEQUENCE_START_TOOLTIP = "<html><b>Start</b><br>" +
+        "Sets the Start time of the Step Sequence.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it starts outputting each step value in turn, each for<br>" +
+        "<b>Step Length</b> timesteps, until it has consumed the stated number of <b>Steps</b>.<br>" +
+        "It then resumes outputting the Initial Value.</b>  If <b>Repeat</b> is checked, then<br>" +
+        "when it finishes all the Steps, it loops back to the first step and continues through the<br>" +
+        "steps again.  If <b>Trigger</b> is true, then instead of outputting values for each step,<br>" +
+        "it outputs triggers when the values are non-zero.</html>";
+
+    static final String STEP_SEQUENCE_STEP_LENGTH_TOOLTIP = "<html><b>Step Length</b><br>" +
+        "Sets the length of each Step in the Step Sequence.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it starts outputting each step value in turn, each for<br>" +
+        "<b>Step Length</b> timesteps, until it has consumed the stated number of <b>Steps</b>.<br>" +
+        "It then resumes outputting the Initial Value.</b>  If <b>Repeat</b> is checked, then<br>" +
+        "when it finishes all the Steps, it loops back to the first step and continues through the<br>" +
+        "steps again.  If <b>Trigger</b> is true, then instead of outputting values for each step,<br>" +
+        "it outputs triggers when the values are non-zero.</html>";
+
+    static final String STEP_SEQUENCE_REPEAT_TOOLTIP = "<html><b>Repeat</b><br>" +
+        "Sets whether the Step Sequence repeats (loops) when it finishes its steps.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it starts outputting each step value in turn, each for<br>" +
+        "<b>Step Length</b> timesteps, until it has consumed the stated number of <b>Steps</b>.<br>" +
+        "It then resumes outputting the Initial Value.</b>  If <b>Repeat</b> is checked, then<br>" +
+        "when it finishes all the Steps, it loops back to the first step and continues through the<br>" +
+        "steps again.  If <b>Trigger</b> is true, then instead of outputting values for each step,<br>" +
+        "it outputs triggers when the values are non-zero.</html>";
+
+    static final String STEP_SEQUENCE_TRIGGER_TOOLTIP = "<html><b>Trigger</b><br>" +
+        "Sets whether the Step Sequence outputs triggers instead of values.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it starts outputting each step value in turn, each for<br>" +
+        "<b>Step Length</b> timesteps, until it has consumed the stated number of <b>Steps</b>.<br>" +
+        "It then resumes outputting the Initial Value.</b>  If <b>Repeat</b> is checked, then<br>" +
+        "when it finishes all the Steps, it loops back to the first step and continues through the<br>" +
+        "steps again.  If <b>Trigger</b> is true, then instead of outputting values for each step,<br>" +
+        "it outputs triggers when the values are non-zero.</html>";
+        
+    static final String STEP_SEQUENCE_NUM_STEPS_TOOLTIP = "<html><b>Step Length</b><br>" +
+        "Sets the number of Steps in the Step Sequence.  Steps beyond this number will be ignored.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it starts outputting each step value in turn, each for<br>" +
+        "<b>Step Length</b> timesteps, until it has consumed the stated number of <b>Steps</b>.<br>" +
+        "It then resumes outputting the Initial Value.</b>  If <b>Repeat</b> is checked, then<br>" +
+        "when it finishes all the Steps, it loops back to the first step and continues through the<br>" +
+        "steps again.  If <b>Trigger</b> is true, then instead of outputting values for each step,<br>" +
+        "it outputs triggers when the values are non-zero.</html>";
+        
+    static final String STEP_SEQUENCE_STEP_TOOLTIP = "<html><b>Rate</b><br>" +
+        "Sets the value output during this Step.<br><br>" + 
+        "The Envelope function begins by just outputting the <b>Initial</b> value, until it reaches<br>" +
+        "the <b>Start</b> time. Then it starts outputting each step value in turn, each for<br>" +
+        "<b>Step Length</b> timesteps, until it has consumed the stated number of <b>Steps</b>.<br>" +
+        "It then resumes outputting the Initial Value.</b>  If <b>Repeat</b> is checked, then<br>" +
+        "when it finishes all the Steps, it loops back to the first step and continues through the<br>" +
+        "steps again.  If <b>Trigger</b> is true, then instead of outputting values for each step,<br>" +
+        "it outputs triggers when the values are non-zero.</html>";
+
+    static final String CONSTANT_VALUE_TOOLTIP = "<html><b>Value</b><br>" +
+        "Sets the value output for this Argument.<br><br>" + 
+        "Though this value is put through the Map, it's not very useful for it to so.</html>";
+
+    static final String SAME_AS_TOOLTIP = "<html><b>Same As</b><br>" +
+        "Specifies that this Argument is the same as an <b>Earlier Argument</b>.<br><br>" + 
+        "For example, we might state that Argument 1's modulation is identical to Argument's modulation.<br>" +
+        "Note that arguments cannot be identical to <b>Later Arguments</b> or to themselves.  If you set<br>" +
+        "an Argument to be identical to a later argument, it will be declared to be <b>Invalid</b> and will<br>" +
+        "treated just like <b>None</b> (no modulation).</html>";
+
 
     }
