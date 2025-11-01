@@ -179,9 +179,9 @@ public class SeriesInspector extends WidgetList
                             }
                         }
                     };              //.getLabelledDial("127");
-            	params[_i].setToolTipText(PARAM_TOOLTIP);
+                params[_i].setToolTipText(PARAM_TOOLTIP);
                 paramsL[_i] = params[_i].getLabelledDial("127");
-            	paramsL[_i].setToolTipText(PARAM_TOOLTIP);
+                paramsL[_i].setToolTipText(PARAM_TOOLTIP);
 
                 initialVal = series.getMIDIType(_i) == Series.NRPN || series.getMIDIType(_i) == Series.NRPN_COARSE || series.getMIDIType(_i) == Series.RPN ? 
                     (series.getMIDIParameter(i) / 128 ) / 127.0 : 0;
@@ -243,7 +243,7 @@ public class SeriesInspector extends WidgetList
                         return "";
                         }
                     };      //.getLabelledDial("Yo");
-            	paramsMSB[_i].setToolTipText(MSB_TOOLTIP);
+                paramsMSB[_i].setToolTipText(MSB_TOOLTIP);
                 paramsMSBL[_i] = paramsMSB[_i].getLabelledDial("");
                 paramsMSBL[_i].setToolTipText(MSB_TOOLTIP);
 
@@ -319,9 +319,9 @@ public class SeriesInspector extends WidgetList
                             }
                         }
                     };              //.getLabelledDial("00000");
-            	paramsLSB[_i].setToolTipText(LSB_TOOLTIP);
+                paramsLSB[_i].setToolTipText(LSB_TOOLTIP);
                 paramsLSBL[_i] = paramsLSB[_i].getLabelledDial("00000");
-            	paramsLSBL[_i].setToolTipText(LSB_TOOLTIP);
+                paramsLSBL[_i].setToolTipText(LSB_TOOLTIP);
                         
                 types[i] = new JComboBox(TYPE_STRINGS);
                 types[i].setSelectedIndex(series.getMIDIType(i));

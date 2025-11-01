@@ -931,6 +931,6 @@ public class SelectUI extends MotifUI
         }
 
 
-	public static final String DIAL_TOOLTIP = "<html><b>Parameter Dial</b><br>" +
+    public static final String DIAL_TOOLTIP = "<html><b>Parameter Dial</b><br>" +
         "Sets the value of the given parameter of the playing child or children.</html>";
     }

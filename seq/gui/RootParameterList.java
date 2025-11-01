@@ -148,8 +148,8 @@ public class RootParameterList extends JPanel
                     };
                 
                 String dialText = "<html><b>Value of Parameter " + (i + 1) + "</b><br>" +
-                "The value for <b>parameter " + (i + 1) + "</b> passed into the <b>root motif</b>.</html>";
-            	dials[i].setToolTipText(dialText);                  
+                    "The value for <b>parameter " + (i + 1) + "</b> passed into the <b>root motif</b>.</html>";
+                dials[i].setToolTipText(dialText);                  
 
                 ccDials[i] = new SmallDial(seq.getParameterCC(i) / 128.0)
                     {
@@ -170,11 +170,11 @@ public class RootParameterList extends JPanel
                         }
                     };
 
-				String ccText = "<html><b>Control Change for Parameter " + (i + 1) + "</b><br>" +
-					"Setting this to something other than <b>None</b> will cause Seq to listen for<br>" +
-					"incoming CC messages and modify the <b>Value</b> for Parameter " + (i + 1) + ".<br><br>" +
-					"Note that you must also enable <b>CC In</b></html>";
-				ccDials[i].setToolTipText(ccText);
+                String ccText = "<html><b>Control Change for Parameter " + (i + 1) + "</b><br>" +
+                    "Setting this to something other than <b>None</b> will cause Seq to listen for<br>" +
+                    "incoming CC messages and modify the <b>Value</b> for Parameter " + (i + 1) + ".<br><br>" +
+                    "Note that you must also enable <b>CC In</b></html>";
+                ccDials[i].setToolTipText(ccText);
 
                 JPanel combined = new JPanel();
                 combined.setLayout(new BorderLayout());
@@ -184,7 +184,7 @@ public class RootParameterList extends JPanel
                 combined.add(label, BorderLayout.CENTER);
                 combined.add(ccDials[i].getLabelledDial("0.0000  "), BorderLayout.EAST);
                 comp[i + 3] = combined;
-        		comp[i + 3].setToolTipText(dialText);
+                comp[i + 3].setToolTipText(dialText);
                 }
             }
         finally { lock.unlock(); }
@@ -196,7 +196,7 @@ public class RootParameterList extends JPanel
         comp[0].setToolTipText(RAND_SEED_TOOLTIP);
         comp[1].setToolTipText(RAND_MIN_TOOLTIP);
         comp[2].setToolTipText(RAND_MAX_TOOLTIP);
-		
+                
         String[] strs = new String[Motif.NUM_PARAMETERS + 4];
         strs[0] = "Rand Seed";
         strs[1] = "Rand Min";

@@ -52,14 +52,14 @@ public class StepSequenceUI extends MotifUI
     public void setAllDirty(boolean val) { allDirty = val; }
     public boolean isAllDirty() { return allDirty; }
     public void setDirty(int track, int step, boolean val) 
-    	{ 
-    	TrackUI trackui = getTrack(track);
-    	if (trackui != null)
-    		{
-    		StepUI stepui = trackui.getStep(step);
-    		if (stepui != null) stepui.setDirty(true); 
-    		}
-    	}
+        { 
+        TrackUI trackui = getTrack(track);
+        if (trackui != null)
+            {
+            StepUI stepui = trackui.getStep(step);
+            if (stepui != null) stepui.setDirty(true); 
+            }
+        }
     
     int[] lastSteps = null;
     int[] currentSteps = null;
@@ -737,20 +737,20 @@ public class StepSequenceUI extends MotifUI
         try
             {
             if (all) 
-            	{
-            	for(int i = 0; i < ss.getNumTracks(); i++)
-            	ss.randomizeOn(i, density);
-            	}
+                {
+                for(int i = 0; i < ss.getNumTracks(); i++)
+                    ss.randomizeOn(i, density);
+                }
             else
-            	{
-            	ss.randomizeOn(selectedTrackNum, density);
-            	}
+                {
+                ss.randomizeOn(selectedTrackNum, density);
+                }
             }
         finally
             {
             seq.getLock().unlock();
             }
-		redraw(false);
+        redraw(false);
         }
 
     /** Returns the NotesUI menu */
@@ -839,11 +839,11 @@ public class StepSequenceUI extends MotifUI
         rotateRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menu.add(rotateRight);
         
-    	menu.addSeparator();
+        menu.addSeparator();
 
-		JMenu randomize = new JMenu("Randomize");
-		menu.add(randomize);
-		
+        JMenu randomize = new JMenu("Randomize");
+        menu.add(randomize);
+                
         JMenuItem rand1 = new JMenuItem("Selected Track Sparse");
         rand1.addActionListener(new ActionListener()
             {
@@ -877,7 +877,7 @@ public class StepSequenceUI extends MotifUI
         rand3.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.CTRL_DOWN_MASK));
         randomize.add(rand3);
 
-         rand1 = new JMenuItem("All Tracks Sparse");
+        rand1 = new JMenuItem("All Tracks Sparse");
         rand1.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent event)
@@ -888,7 +888,7 @@ public class StepSequenceUI extends MotifUI
         rand1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         randomize.add(rand1);
 
-         rand2 = new JMenuItem("All Tracks Medium");
+        rand2 = new JMenuItem("All Tracks Medium");
         rand2.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent event)
@@ -899,7 +899,7 @@ public class StepSequenceUI extends MotifUI
         rand2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         randomize.add(rand2);
 
-         rand3 = new JMenuItem("All Tracks Dense");
+        rand3 = new JMenuItem("All Tracks Dense");
         rand3.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent event)

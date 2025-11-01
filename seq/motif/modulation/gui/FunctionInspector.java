@@ -246,7 +246,7 @@ public class FunctionInspector extends JPanel
                     finally { lock.unlock(); }
                     }
                 };
-			mapHigh.setToolTipText(MAP_HIGH_TOOLTIP);
+            mapHigh.setToolTipText(MAP_HIGH_TOOLTIP);
 
             mapBy = new JComboBox(MAP_FUNCTIONS);
             mapBy.setSelectedIndex(func.getMapBy());
@@ -424,7 +424,7 @@ public class FunctionInspector extends JPanel
                         }
                     };
                 fadeOut.setDisplaysTime(false);
-				fadeOut.setToolTipText(LFO_FADE_OUT_TOOLTIP);
+                fadeOut.setToolTipText(LFO_FADE_OUT_TOOLTIP);
 
                 phase = new SmallDial(func.getPhase(), defaults)
                     {
@@ -640,7 +640,7 @@ public class FunctionInspector extends JPanel
                         finally { lock.unlock(); }                              
                         }
                     });
-				hold.setToolTipText(ENVELOPE_HOLD_TOOLTIP);
+                hold.setToolTipText(ENVELOPE_HOLD_TOOLTIP);
 
                 numStages = new SmallDial(func.getNumStages() / (double) Modulation.MAX_STAGES, defaults)
                     {
@@ -1352,7 +1352,7 @@ public class FunctionInspector extends JPanel
         "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
     static final String LFO_START_TOOLTIP = "<html><b>Start</b><br>" +
-    	"Sets the start time of the LFO.<br><br>" +
+        "Sets the start time of the LFO.<br><br>" +
         "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
         "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
         "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
@@ -1360,7 +1360,7 @@ public class FunctionInspector extends JPanel
         "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
     static final String LFO_FADE_IN_TOOLTIP = "<html><b>Fade In</b><br>" +
-    	"Sets the Fade In interval length of the LFO.<br><br>" +
+        "Sets the Fade In interval length of the LFO.<br><br>" +
         "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
         "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
         "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
@@ -1368,7 +1368,7 @@ public class FunctionInspector extends JPanel
         "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
     static final String LFO_LENGTH_TOOLTIP = "<html><b>Length</b><br>" +
-    	"Sets the Length of the LFO.<br><br>" +
+        "Sets the Length of the LFO.<br><br>" +
         "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
         "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
         "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +
@@ -1376,7 +1376,7 @@ public class FunctionInspector extends JPanel
         "<b>Fade Out</b><br> timesteps, then stays at the Initial value thereafter.</html>";
 
     static final String LFO_FADE_OUT_TOOLTIP = "<html><b>Fade Out</b><br>" +
-    	"Sets the Fade Out interval length of the LFO.<br><br>" +
+        "Sets the Fade Out interval length of the LFO.<br><br>" +
         "The LFO wave function begins by just outputting the <b>Initial</b> value, with no oscillation.<br>" +
         "Then at the <b>Start</b> time it begins to slowly grow until it reaches full size<br>" +
         "(from 0.0 to 1.0) after <b>Fade In</b> timesteps.  It then continues at full size for<br>" +

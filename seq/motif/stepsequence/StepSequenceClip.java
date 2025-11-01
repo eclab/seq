@@ -412,8 +412,8 @@ return;
                             {
                             case(StepSequence.TYPE_NOTE):        
                                 if (velocity == 0) velocity = 1;                        
-                				//if (playingStep[track] == 15) 
-                				System.err.println("Note on 16 at " + getPosition());
+                                //if (playingStep[track] == 15) 
+                                System.err.println("Note on 16 at " + getPosition());
                                 id = noteOn(dSeq.getFinalOut(track), note, velocity);
                                 notes = true;
                                 break;

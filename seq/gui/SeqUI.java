@@ -339,13 +339,13 @@ public class SeqUI extends JPanel
         System.setProperty("apple.awt.application.name", "Seq");
         
         if (Theme.isDark())
-        	{
-        	FlatDarkLaf.setup();
-        	}
+            {
+            FlatDarkLaf.setup();
+            }
         else
-        	{
-        	FlatLightLaf.setup();
-        	}
+            {
+            FlatLightLaf.setup();
+            }
         
         // NOTE: this method is called to determine if 
         //com.formdev.flatlaf.FlatLaf.isDark();

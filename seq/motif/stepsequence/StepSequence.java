@@ -809,13 +809,13 @@ public class StepSequence extends Motif
         }
                 
     public void randomizeOn(int track, double density)
-    	{
+        {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for(int i = 0; i < on.length; i++)
-        	{
-        	on[track][i] = (random.nextDouble() < density);
-        	}
-    	}
+            {
+            on[track][i] = (random.nextDouble() < density);
+            }
+        }
         
     public void mutate(int track, double playWeight, double velocityWeight, double flamWeight /*, double noteWeight, int[] scale */)
         {
@@ -857,31 +857,31 @@ public class StepSequence extends Motif
                 }
             }
         /*
-        if (noteWeight > 0)
-            {
-            if (scale == null) scale = CHROMATIC_SCALE;
-            scale = expandScale(scale);
+          if (noteWeight > 0)
+          {
+          if (scale == null) scale = CHROMATIC_SCALE;
+          scale = expandScale(scale);
                 
-            for(int i = 0; i < velocities.length; i++)
-                {
-                if (velocities[i] > 0)          // note velocities, not notes
-                    {
-                    /// FIXME: this can be done better with a binary search
+          for(int i = 0; i < velocities.length; i++)
+          {
+          if (velocities[i] > 0)          // note velocities, not notes
+          {
+          /// FIXME: this can be done better with a binary search
                     
-                    // Find the closest note in the scale
-                    int baseNote = notes[i] % 12;
-                    int closestIndex = 0;
-                    for(int index = 1; index < scale.length; index++)
-                        {
-                        if (Math.abs(scale[index] - baseNote) < Math.abs(scale[closestIndex] - baseNote)) // found something closer
-                            closestIndex = index;
-                        }
+          // Find the closest note in the scale
+          int baseNote = notes[i] % 12;
+          int closestIndex = 0;
+          for(int index = 1; index < scale.length; index++)
+          {
+          if (Math.abs(scale[index] - baseNote) < Math.abs(scale[closestIndex] - baseNote)) // found something closer
+          closestIndex = index;
+          }
                                         
-                    closestIndex = randomWalk(closestIndex, 0, scale.length - 1, noteWeight, random);
-                    notes[i] = scale[closestIndex];
-                    }
-                }
-            }
+          closestIndex = randomWalk(closestIndex, 0, scale.length - 1, noteWeight, random);
+          notes[i] = scale[closestIndex];
+          }
+          }
+          }
         */
         }
         

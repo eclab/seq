@@ -655,11 +655,11 @@ public class TrackInspector extends WidgetList
                     try 
                         {
                         // only allow 1 through N-1, disallow 0 and N which aren't interesting
-						euclid = (random.nextInt(ss.getNumSteps(trackNum) - 2) + 1) / 
-										(double)ss.getNumSteps(trackNum);
-						// only allow 0 through N-1, disallow N, which isn't interesting
-						rotate = random.nextDouble();	
-						ss.applyEuclideanRhythm(trackNum, euclid, rotate);
+                        euclid = (random.nextInt(ss.getNumSteps(trackNum) - 2) + 1) / 
+                            (double)ss.getNumSteps(trackNum);
+                        // only allow 0 through N-1, disallow N, which isn't interesting
+                        rotate = random.nextDouble();   
+                        ss.applyEuclideanRhythm(trackNum, euclid, rotate);
                         }
                     finally { lock.unlock(); }
                     euclidRotate.setValue(rotate);
@@ -739,7 +739,7 @@ public class TrackInspector extends WidgetList
         randBox.add(doEuclid);
         randBox.add(randomEuclid);
         euclidPanel.add(euclidBox, BorderLayout.WEST);
-       	euclidPanel.add(randBox, BorderLayout.EAST);
+        euclidPanel.add(randBox, BorderLayout.EAST);
         euclidPanel.setToolTipText(EUCLID_TOOLTIP);
 
         boolean note = (type == StepSequence.TYPE_NOTE);

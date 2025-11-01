@@ -67,9 +67,9 @@ public class Midi
                 {
                 try { ((Receiver)(receivers.get(i))).send(message, timeStamp); }
                 catch (Exception ex)
-                 { 
-            	if (DEBUG) ex.printStackTrace();
-            	}
+                    { 
+                    if (DEBUG) ex.printStackTrace();
+                    }
                 }
             }
                         

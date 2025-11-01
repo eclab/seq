@@ -88,13 +88,13 @@ public class AutomatonNodeInspector extends WidgetList
         }
         
     public void updateTypeName()
-    	{
-    	if (node instanceof Automaton.MotifNode && typeName != null)
-    		{
+        {
+        if (node instanceof Automaton.MotifNode && typeName != null)
+            {
             Automaton.MotifNode motifnode = (Automaton.MotifNode)node;
-    		typeName.setText(motifnode.getMotif().getName());
-    		}
-    	}
+            typeName.setText(motifnode.getMotif().getName());
+            }
+        }
     
 
     public AutomatonNodeInspector(Seq seq, final Automaton automaton, final MotifButton button, AutomatonUI owner, Automaton.Node node)

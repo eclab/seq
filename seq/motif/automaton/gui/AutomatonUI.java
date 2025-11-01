@@ -459,22 +459,22 @@ public class AutomatonUI extends MotifUI
         repaint();
         }
 
-	public void uiWasSet()
-		{
-		super.uiWasSet();
-		// We may have changed the name of a motif button
+    public void uiWasSet()
+        {
+        super.uiWasSet();
+        // We may have changed the name of a motif button
         if (nodeInspector!=null) nodeInspector.updateTypeName();
         for(MotifButton button : getButtons())
-        	{
-        	AutomatonButton automatonbutton = (AutomatonButton)button;
-        	if (automatonbutton.getNode() instanceof Automaton.MotifNode)
-        		{
-        		automatonbutton.updateText();
-        		}
-        	}
+            {
+            AutomatonButton automatonbutton = (AutomatonButton)button;
+            if (automatonbutton.getNode() instanceof Automaton.MotifNode)
+                {
+                automatonbutton.updateText();
+                }
+            }
         revalidate();
         repaint();
-		}
+        }
 
     public void revise()
         {

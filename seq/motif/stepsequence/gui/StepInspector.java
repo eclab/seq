@@ -294,9 +294,9 @@ public class StepInspector extends WidgetList
         
         
         JPanel notePanel = new JPanel();
-		notePanel.setToolTipText(NOTE_TOOLTIP);
+        notePanel.setToolTipText(NOTE_TOOLTIP);
         JPanel innerPanel = new JPanel();
-		innerPanel.setToolTipText(NOTE_TOOLTIP);
+        innerPanel.setToolTipText(NOTE_TOOLTIP);
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
         innerPanel.add(stepNote.getLabelledDial("Param 8"));
         if (type == StepSequence.TYPE_NRPN ||
@@ -311,9 +311,9 @@ public class StepInspector extends WidgetList
         notePanel.add(innerPanel, BorderLayout.WEST);
 
         JPanel velocityPanel = new JPanel();
-		velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
+        velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
         innerPanel = new JPanel();
-		innerPanel.setToolTipText(VELOCITY_TOOLTIP);
+        innerPanel.setToolTipText(VELOCITY_TOOLTIP);
         innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.X_AXIS));
         innerPanel.add(stepVelocity.getLabelledDial("Param 8"));                // so it lines up with the notes
         if (type == StepSequence.TYPE_NRPN ||
