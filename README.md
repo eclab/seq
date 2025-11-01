@@ -1,7 +1,7 @@
 ![Seq Splash Banner](docs/web/seq.png)
 
 # Seq  
-A Modular, Hierarchical Music Sequencer (Version 8)
+A Modular, Hierarchical Music Sequencer (Version 9)
 
 By Sean Luke (sean@cs.gmu.edu)  
 With Help from Filippo Carnovalini (filippo.carnovalini@vub.be)  
