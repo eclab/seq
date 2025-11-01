@@ -1778,7 +1778,7 @@ public class NotesUI extends MotifUI
                 doScrollToAny();
                 }
             };
-        scrollButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        //scrollButton.getButton().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
         scrollButton.getButton().setPreferredSize(new Dimension(24, 24));
         scrollButton.setToolTipText(SCROLL_BUTTON_TOOLTIP);
 
@@ -1844,9 +1844,9 @@ public class NotesUI extends MotifUI
         otherBox.add(maxBox);
         otherBox.add(snapBox);
         otherBox.add(pitchBox);
+        otherBox.add(scrollButton);
         otherBox.add(zoomInButton);
         otherBox.add(zoomOutButton);
-        otherBox.add(scrollButton);
         console.add(otherBox, BorderLayout.EAST);
                 
         return console; 
@@ -2291,7 +2291,7 @@ public class NotesUI extends MotifUI
     static final String ZOOM_OUT_BUTTON_TOOLTIP = "<html><b>Zoom Out</b><br>" +
         "Demagnifies the view of the Notes timeline.</html>";
 
-    static final String SCROLL_BUTTON_TOOLTIP = "<html><b>Scroll To Sequence</b><br>" +
+    static final String SCROLL_BUTTON_TOOLTIP = "<html><b>Find Sequence</b><br>" +
         "Scrolls the Notes grid to show selected notes or the first unselected notes.</html>";
 
     static final String LENGTH_COMBO_TOOLTIP = "<html><b>Sequence Display Length</b><br>" +
