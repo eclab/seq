@@ -60,8 +60,13 @@ public class PushButton extends JPanel
     
     public AWTEventListener releaseListener = null;
 	
-	ImageIcon prepare(ImageIcon icon)
+	ImageIcon prepare(ImageIcon icon, boolean stretch)
 		{
+		if (icon == null) return null;
+
+		icon = new ImageIcon(Theme.invertImage(icon.getImage()));
+
+		if (stretch) icon = new StretchIcon(icon.getImage());
 		return icon;
 		}
 		
@@ -70,11 +75,18 @@ public class PushButton extends JPanel
 
     public PushButton(final ImageIcon icon, boolean stretch) 
     	{ 
-    	this((String)null, stretch ? new StretchIcon(icon.getImage()) : icon); 
+    	this((String)null, icon, stretch); 
     	}
     
     public PushButton(final String text, final ImageIcon icon)
+    	{
+    	this(text, icon, false);
+    	}
+    	
+    PushButton(final String text, ImageIcon icon, boolean stretch)
         {
+        icon = prepare(icon, stretch);
+        
         if (icon == null) button = new JButton(text);
         else if (text == null) button = new JButton(icon);
         else button = new JButton(text, icon);
@@ -144,7 +156,7 @@ public class PushButton extends JPanel
 
     public PushButton(ImageIcon icon, String[] options, boolean stretch)
         {
-        this(null, stretch ? new StretchIcon(icon.getImage()) : icon, options, null);
+        this(null, icon, options, null);
         }
 
     public PushButton(ImageIcon icon, String[] options)
@@ -218,8 +230,13 @@ public class PushButton extends JPanel
         }
 
     public PushButton(ImageIcon icon, String[] options, boolean[] enabled)
+    	{
+    	this(icon, options, enabled, false);
+    	}
+
+    public PushButton(ImageIcon icon, String[] options, boolean[] enabled, boolean stretch)
         {
-        this(icon);
+        this(icon, stretch);
         pop = new JPopupMenu();
         setOptions(options, enabled);
         }
@@ -241,7 +258,7 @@ public class PushButton extends JPanel
     
     public PushButton(ImageIcon icon, JMenuItem[] menuItems, boolean stretch)
         {
-        this(stretch ? new StretchIcon(icon.getImage()) : icon);
+        this(icon, stretch);
         pop = new JPopupMenu();
         setOptions(menuItems);
         }
