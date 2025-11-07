@@ -59,9 +59,19 @@ public class PushButton extends JPanel
     public void setPopsUpAbove(boolean val) { popsUpAbove = val; }
     
     public AWTEventListener releaseListener = null;
-        
+	
+	ImageIcon prepare(ImageIcon icon)
+		{
+		return icon;
+		}
+		
     public PushButton(final String text) { this(text, (ImageIcon)null); }
     public PushButton(final ImageIcon icon) { this((String)null, icon); }
+
+    public PushButton(final ImageIcon icon, boolean stretch) 
+    	{ 
+    	this((String)null, stretch ? new StretchIcon(icon.getImage()) : icon); 
+    	}
     
     public PushButton(final String text, final ImageIcon icon)
         {
@@ -130,6 +140,11 @@ public class PushButton extends JPanel
     public PushButton(String text, String[] options)
         {
         this(text, null, options, null);
+        }
+
+    public PushButton(ImageIcon icon, String[] options, boolean stretch)
+        {
+        this(null, stretch ? new StretchIcon(icon.getImage()) : icon, options, null);
         }
 
     public PushButton(ImageIcon icon, String[] options)
@@ -224,9 +239,9 @@ public class PushButton extends JPanel
         setOptions(menuItems);
         }
     
-    public PushButton(ImageIcon icon, JMenuItem[] menuItems)
+    public PushButton(ImageIcon icon, JMenuItem[] menuItems, boolean stretch)
         {
-        this(icon);
+        this(stretch ? new StretchIcon(icon.getImage()) : icon);
         pop = new JPopupMenu();
         setOptions(menuItems);
         }

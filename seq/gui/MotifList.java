@@ -300,11 +300,11 @@ public class MotifList extends JPanel
         add(console, BorderLayout.SOUTH);
 
         JMenuItem[] items = buildAddMenu();
-        addButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/plus.png")), items);
+        addButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/plus.png")), items, true);
         addButton.setPopsUpAbove(true);
         addButton.getButton().setPreferredSize(new Dimension(24, 24));
 
-        removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
+        removeButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/minus.png")), true)
             {
             public void perform()
                 {
@@ -313,7 +313,7 @@ public class MotifList extends JPanel
             };
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
 
-        backButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/backward.png")))
+        backButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/backward.png")), true)
             {
             public void perform()
                 {
@@ -322,7 +322,7 @@ public class MotifList extends JPanel
             };
         backButton.getButton().setPreferredSize(new Dimension(24, 24));
 
-        forwardButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/forward.png")))
+        forwardButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/forward.png")), true)
             {
             public void perform()
                 {
@@ -331,7 +331,7 @@ public class MotifList extends JPanel
             };
         forwardButton.getButton().setPreferredSize(new Dimension(24, 24));
 
-        copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
+        copyButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/copy.png")), true)
             {
             public void perform()
                 {
