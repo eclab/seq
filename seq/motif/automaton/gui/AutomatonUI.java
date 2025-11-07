@@ -347,7 +347,7 @@ public class AutomatonUI extends MotifUI
                 
     public JPanel buildConsole()
         {
-        PushButton removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
+        PushButton removeButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/minus.png")), true)
             {
             public void perform()
                 {
@@ -357,7 +357,7 @@ public class AutomatonUI extends MotifUI
         removeButton.getButton().setPreferredSize(new Dimension(24, 24));
         removeButton.setToolTipText(REMOVE_BUTTON_TOOLTIP);
 
-        PushButton copyButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/copy.png")))
+        PushButton copyButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/copy.png")), true)
             {
             public void perform()
                 {

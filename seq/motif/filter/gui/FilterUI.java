@@ -195,7 +195,7 @@ public class FilterUI extends MotifUI
         
     public JPanel buildConsole()
         {
-        PushButton removeButton = new PushButton(new StretchIcon(PushButton.class.getResource("icons/minus.png")))
+        PushButton removeButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/minus.png")), true)
             {
             public void perform()
                 {
