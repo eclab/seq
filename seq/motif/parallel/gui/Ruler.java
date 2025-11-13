@@ -20,19 +20,23 @@ public class Ruler extends JComponent
     // The ruler height
     public static final int RULER_HEIGHT = 16;
     // The color of the lower border of the ruler
-    public static final Color BORDER_COLOR = Color.BLACK;
+    public static final Color BORDER_COLOR = Theme.isDark() ? Theme.BLACK : Color.BLACK;
     // The ruler's background color
-    public static final Color BACKGROUND_COLOR = Color.WHITE;
+    public static final Color BACKGROUND_COLOR = Theme.isDark()? Theme.GRAY_40 : Color.WHITE;
     // The color of the play marker on the ruler
-    public static final Color PLAY_COLOR = Color.BLACK;
+    public static final Color PLAY_COLOR = Theme.isDark() ? Theme.RED : Color.BLACK; 
     // The color for the End marker
-    public static final Color END_COLOR = new Color(180, 0, 180);
+    public static final Color END_COLOR = Theme.isDark() ? Theme.RED : new Color(180, 0, 180);
     // The color of the play marker on the ruler
-    public static final Color BAR_COLOR = Color.BLUE;
+    public static final Color BAR_COLOR = Theme.isDark() ? Theme.SOFT_BLUE_30 : Color.BLUE;
     // The stroke of the play marker on the ruler
     public static final BasicStroke PLAY_STROKE = new BasicStroke(3.0f);
     // The stroke of the End marker
     public static final BasicStroke END_STROKE = new BasicStroke(3.0f);
+    // The color of the text on the bar
+    public static final Color TEXT_COLOR = Theme.isDark() ? Theme.WHITE_190 : Color.BLACK;
+    // The color of the marks on the bar
+    public static final Color MARK_COLOR = Theme.isDark() ? Theme.SOFT_BLUE_25: Color.BLACK;
 
     // The owner ParallelUI
     ParallelUI parallelui;
@@ -99,12 +103,12 @@ public class Ruler extends JComponent
                 else if ((i / Seq.PPQ) * Seq.PPQ == i)
                     {
                     starty = 8;
-                    g.setPaint(Color.BLACK);                        
+                    g.setPaint(MARK_COLOR);                        
                     }
                 else
                     {
                     starty = 12;
-                    g.setPaint(Color.BLACK);
+                    g.setPaint(MARK_COLOR);
                     }
                 vertical.setLine(_i, starty, _i, RULER_HEIGHT);
                 g.draw(vertical);
@@ -122,7 +126,7 @@ public class Ruler extends JComponent
 
                             (scale > 4 && ((i / (Seq.PPQ * beatsPerBar * 1)) * (Seq.PPQ * beatsPerBar * 1) == i)))))   // every 4 measures if zoomed out
                     {
-                    g.setPaint(Color.BLACK);
+                    g.setPaint(TEXT_COLOR);
                     int bar = (i / (Seq.PPQ * beatsPerBar)) + 1;
                     g.drawString("" + bar, (float)_i + 1, RULER_HEIGHT - 6);
                     g.setPaint(color);

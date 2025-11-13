@@ -20,6 +20,11 @@ import com.formdev.flatlaf.*;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 
+// For images
+import seq.gui.Theme;
+import java.awt.image.BufferedImage;
+import java.awt.Image;
+import javax.imageio.ImageIO;
 
 public class AutomatonNodeButton extends JButton implements Transferable
     {
@@ -35,8 +40,11 @@ public class AutomatonNodeButton extends JButton implements Transferable
     
     public static ImageIcon buildIcon(String file)
         {
+        //ImageIcon original = new ImageIcon(seq.gui.Transport.class.getResource(file));
+        //return new ImageIcon(original.getImage().getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH));
         ImageIcon original = new ImageIcon(seq.gui.Transport.class.getResource(file));
-        return new ImageIcon(original.getImage().getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH));
+        Image image = Theme.invertImage(original.getImage());
+        return new ImageIcon(image.getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH));
         }
         
     static final ImageIcon delayIcon = buildIcon("icons/delay.png");

@@ -18,7 +18,7 @@ import java.util.*;
 public class Ruler extends JPanel
     {
     public static final int RULER_HEIGHT = 16;
-    public static final Color PLAY_COLOR = Color.BLACK;
+    public static final Color PLAY_COLOR = Theme.isDark() ? Theme.WHITE_190 : Color.BLACK;
     public static final BasicStroke PLAY_STROKE = new BasicStroke(3.0f);
     public static final Dimension minSize = new Dimension(0, RULER_HEIGHT);
     Seq seq;

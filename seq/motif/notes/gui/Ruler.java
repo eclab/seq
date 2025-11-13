@@ -22,13 +22,15 @@ public class Ruler extends JComponent
     // The color of the lower border of the ruler
     public static final Color BORDER_COLOR = Color.BLACK;
     // The ruler's background color
-    public static final Color BACKGROUND_COLOR = Color.WHITE;
+    public static final Color BACKGROUND_COLOR = Theme.isDark()? Theme.GRAY_40 : Color.WHITE;
     // The color of the play marker on the ruler
-    public static final Color PLAY_COLOR = Color.BLACK;
+    public static final Color PLAY_COLOR = Theme.isDark()? Theme.RED : Color.BLACK;
     // The range color
-    public static final Color RANGE_COLOR = new Color(200, 200, 230);
+    public static final Color RANGE_COLOR = Theme.isDark()? Theme.MUTED_RED : new Color(200, 200, 230);
     // The stroke of the play marker on the ruler
     public static final BasicStroke PLAY_STROKE = new BasicStroke(3.0f);
+    // The color for the bar text
+    public static final Color BAR_TEXT_COLOR = Theme.isDark()? Theme.WHITE_190: Color.BLACK;
 
     // Ruler Header
     JLabel rulerSpace;
@@ -248,6 +250,7 @@ public class Ruler extends JComponent
                     {
                     g.setPaint(Color.BLACK);
                     int bar = (i / (Seq.PPQ * beatsPerBar)) + 1;
+                    g.setColor(BAR_TEXT_COLOR);
                     g.drawString("" + bar, (float)_i + 1, RULER_HEIGHT - 2);
                     g.setPaint(color);
                     }

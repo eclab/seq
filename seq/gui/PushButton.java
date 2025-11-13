@@ -13,6 +13,14 @@ import javax.swing.*;
 import java.awt.event.*;
 import javax.accessibility.*;
 
+
+
+// For images
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.Image;
+import javax.swing.*;
+
 /**
    A simple button with some useful features.  
    
@@ -68,7 +76,7 @@ public class PushButton extends JPanel
 
 		if (stretch) icon = new StretchIcon(icon.getImage());
 		return icon;
-		}
+        }
 		
     public PushButton(final String text) { this(text, (ImageIcon)null); }
     public PushButton(final ImageIcon icon) { this((String)null, icon); }
@@ -89,6 +97,10 @@ public class PushButton extends JPanel
         
         if (icon == null) button = new JButton(text);
         else if (text == null) button = new JButton(icon);
+            //{
+            //ImageIcon icon2 = new ImageIcon(Theme.invertImage(icon.getImage()));
+            //button = new JButton(icon2);
+            //}
         else button = new JButton(text, icon);
         /*
           {

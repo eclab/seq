@@ -50,7 +50,12 @@ public class SelectUI extends MotifUI
     JPanel horizontalHeader = new JPanel();
     JPanel verticalHeader = new JPanel();
                 
-    public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/select.png")); }        // don't ask
+    //public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/select.png")); }        // don't ask
+    public static ImageIcon getStaticIcon() 
+        { 
+        Image img = new ImageIcon(MotifUI.class.getResource("icons/select.png")).getImage();
+        return new ImageIcon(Theme.invertBG(img)); 
+        }  // don't ask
     public ImageIcon getIcon() { return getStaticIcon(); }
     public static String getType() { return "Select"; }
     

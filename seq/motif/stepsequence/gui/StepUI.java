@@ -18,9 +18,11 @@ public class StepUI extends JComponent
     {
     public static final Stroke BEAT_STROKE = new BasicStroke(3.0f);
     public static final Stroke OFF_STROKE = new BasicStroke(1.0f);
-    public static final Color STROKE_COLOR = new Color(64, 64, 64); 
-    public static final Color STEP_COLOR = Color.BLUE;       // for the moment
-    public static final Color OFF_COLOR = Color.GRAY;        // for the moment
+    public static final Color STROKE_COLOR = Theme.isDark() ? Theme.GRAY_50 : new Color(64, 64, 64); 
+    public static final Color STEP_COLOR = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.BLUE;       // for the moment
+    public static final Color OFF_COLOR = Theme.isDark() ? Theme.GRAY_70 : Color.GRAY;        // for the moment
+    public static final Color ON_STROKE_COLOR = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.BLUE;
+    public static final Color ON_SELECTED_STROKE_COLOR = Theme.isDark() ? Theme.NEON_GREEN : Color.GREEN;
 
     // Fill color for my velocity if set to a parameter default
     public static final Color DEFAULT_COLOR = new Color(128, 128, 255); 
@@ -196,7 +198,7 @@ public class StepUI extends JComponent
         Rectangle2D.Double rect = new Rectangle2D.Double(2 + inset, 2 + inset, getBounds().width - 4 - (inset * 2), getBounds().height - 4 - (inset * 2));
         //RoundRectangle2D.Double rect = new RoundRectangle2D.Double(2, 2, getBounds().width - 4, getBounds().height - 4, 8, 8);
         g.fill(rect);
-        g.setPaint(selected ? Color.BLUE : (mouseOver ? Color.GREEN : STROKE_COLOR));
+        g.setPaint(selected ? ON_STROKE_COLOR : (mouseOver ? ON_SELECTED_STROKE_COLOR : STROKE_COLOR));
         g.setStroke(beat ? BEAT_STROKE : OFF_STROKE);
         g.draw(rect);
                 
