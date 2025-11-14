@@ -362,7 +362,7 @@ public class ParallelUI extends MotifUI
             }
         else System.err.println("ParallelUI.doRemove: button not in list");
         parallelBox.revalidate();
-        parallelBox.repaint();                  // FIXME This has to be forced when it's th only one in the list -- a bug in Java?
+        parallelBox.repaint();                  // FIXME This has to be forced when it's the only one in the list -- a bug in Java?
         updateIndexes();
         }
               
