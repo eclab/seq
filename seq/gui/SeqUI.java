@@ -340,16 +340,13 @@ public class SeqUI extends JPanel
         if (Theme.isDark())
         	{
             // NOTE: This allows the window to use the mac 'dark' titlebar
-            System.setProperty( "apple.awt.application.appearance", "system" );
+            // System.setProperty( "apple.awt.application.appearance", "system" );			// doesn't seem to be working
         	FlatDarkLaf.setup();
         	}
         else
             {
             FlatLightLaf.setup();
             }
-        
-        // NOTE: this method is called to determine if 
-        //com.formdev.flatlaf.FlatLaf.isDark();
         }
         
     /** Returns a string which guarantees that the given filename ends with the given ending. */   
@@ -1244,6 +1241,18 @@ public class SeqUI extends JPanel
                 Prefs.setLastBoolean("ShowToolTips", showToolTips);
                 }
             });
+
+        JCheckBoxMenuItem darkThemeItem = new JCheckBoxMenuItem("Dark Theme");
+        optionsMenu.add(darkThemeItem);
+        darkThemeItem.setSelected(Theme.isDark());
+        darkThemeItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                showSimpleMessage("Theme", "Changes to the dark/light theme will take effect next time you launch Seq.");
+                Theme.setDarkNextTime(darkThemeItem.isSelected());
+                }
+            });
         }
         
     public boolean getSmallButtons() { return smallButtons; }
@@ -1565,6 +1574,27 @@ public class SeqUI extends JPanel
         }
 
     boolean inSimpleError;
+
+    /** Display a simple message. */
+    public void showSimpleMessage(String title, String message)
+        {
+        showSimpleMessage(this, title, message);
+        }
+
+    /** Display a simple message. */
+    public void showSimpleMessage(JComponent parent, String title, String message)
+        {
+        // A Bug in OS X (perhaps others?) Java causes multiple copies of the same Menu event to be issued
+        // if we're popping up a dialog box in response, and if the Menu event is caused by command-key which includes
+        // a modifier such as shift.  To get around it, we're just blocking multiple recursive message dialogs here.
+        
+        if (inSimpleError) return;
+        inSimpleError = true;
+        disableMenuBar();
+        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.INFORMATION_MESSAGE);
+        enableMenuBar();
+        inSimpleError = false;
+        }
 
     /** Display a simple error message. */
     public void showSimpleError(String title, String message)

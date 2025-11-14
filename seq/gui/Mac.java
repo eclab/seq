@@ -19,6 +19,7 @@ public class Mac
         {
         if (System.getProperty("os.name").contains("Mac")) 
             {
+			// System.setProperty("apple.awt.application.appearance", "system" );		// not working?  The point was to change the window title bar
             System.setProperty("apple.awt.graphics.EnableQ2DX", "true");
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             try

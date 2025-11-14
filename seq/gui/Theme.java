@@ -68,9 +68,13 @@ public class Theme {
         return dark;
     }
 
+    public static void setDarkNextTime(boolean val) {
+        Prefs.setLastBoolean("Theme.dark", val);
+    }
+    
     public static void setDark(boolean val) {
         dark = val;
-        Prefs.setLastBoolean("Theme.dark", val);
+        setDarkNextTime(val);
     }
     
 
