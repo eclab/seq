@@ -45,7 +45,7 @@ public class SelectButton extends MotifButton
         this.sequi = sequi;
         this.owner = owner;
         this.at = at;
-
+        
         setEnabled(false);
         setDropTarget(new DropTarget(this, owner.buildDropTargetListener()));
         }

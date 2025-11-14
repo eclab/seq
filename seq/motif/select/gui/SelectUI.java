@@ -530,6 +530,7 @@ public class SelectUI extends MotifUI
                         
             // We'll swap in a blank SelectButton
             selectGrid.remove(at);
+
             SelectButton blankButton = new SelectButton(sequi, this, at);
             selectGrid.add(blankButton, at);
             deselectAll();
