@@ -28,14 +28,26 @@ public class EventUI extends JComponent
     // Stroke color for drawing me normally
     public static final Color STROKE_COLOR = new Color(64, 64, 64); 
     // Stroke color for drawing me while selected
-    public static final Color SELECTED_COLOR = Color.BLUE; 
+    public static final Color SELECTED_COLOR = Theme.isDark()? Theme.LIGHTEN : Color.BLUE; 
     // Fill color for my velocity if set to a parameter default
     public static final Color DEFAULT_COLOR = new Color(128, 128, 255); 
     // Mapping of value to color
+    //public static final SimpleColorMap VALUE_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
+    //    new SimpleColorMap(0, 127, 64, 
+    //        new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
+    //        new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
+    // Color of Velocity start
+    public static final Color VELOCITY_START_COLOR = Theme.isDark() ? Theme.GRAY_70 : Color.GRAY;
+    // Color of Velocity midpoint
+    public static final Color VELOCITY_MID_COLOR = Theme.isDark() ? Theme.ORANGE : Color.RED;
+    // Color of Velocity end
+    public static final Color VELOCITY_END_COLOR = Theme.isDark() ? Theme.RED : Color.YELLOW;
+
+    // Mapping of velocity to color
     public static final SimpleColorMap VALUE_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
         new SimpleColorMap(0, 127, 64, 
-            new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
-            new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
+            new SimpleColorMap(0, 64, VELOCITY_START_COLOR, VELOCITY_MID_COLOR),
+            new SimpleColorMap(64, 127, VELOCITY_MID_COLOR, VELOCITY_END_COLOR));
                         
     // The parameterui owner
     ParameterUI parameterui;

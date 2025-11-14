@@ -25,11 +25,19 @@ public class NoteUI extends EventUI implements Comparable
     public static final Color RECORDED_COLOR = Color.WHITE; 
     // Region at the far right of me where clicking in that region results in me trying to be resized
     public static final int RESIZE_REGION_WIDTH = 6;
+
+    // Color of Velocity start
+    public static final Color VELOCITY_START_COLOR = Theme.isDark() ? Theme.GRAY_70 : Color.GRAY;
+    // Color of Velocity midpoint
+    public static final Color VELOCITY_MID_COLOR = Theme.isDark() ? Theme.ORANGE : Color.RED;
+    // Color of Velocity end
+    public static final Color VELOCITY_END_COLOR = Theme.isDark() ? Theme.RED : Color.YELLOW;
+
     // Mapping of velocity to color
     public static final SimpleColorMap VELOCITY_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
         new SimpleColorMap(0, 127, 64, 
-            new SimpleColorMap(0, 64, Color.GRAY, Color.RED),
-            new SimpleColorMap(64, 127, Color.RED, Color.YELLOW));
+            new SimpleColorMap(0, 64, VELOCITY_START_COLOR, VELOCITY_MID_COLOR),
+            new SimpleColorMap(64, 127, VELOCITY_MID_COLOR, VELOCITY_END_COLOR));
                
     // backpointer to the owner PitchUI
     PitchUI pitchui;

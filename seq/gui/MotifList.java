@@ -50,8 +50,8 @@ public class MotifList extends JPanel
     Seq seq;
     SeqUI sequi;
     
-    public static final Color PARENT_COLOR = new Color(0xE0, 0xE0, 0xF0);
-    public static final Color CHILD_COLOR = new Color(0xF0, 0xE0, 0xE0);
+    public static final Color PARENT_COLOR = Theme.isDark()? Theme.RED_ACCENT : new Color(0xE0, 0xE0, 0xF0);
+    public static final Color CHILD_COLOR = Theme.isDark()? Theme.BLUE_ACCENT : new Color(0xF0, 0xE0, 0xE0);
     // public static final Color ANCESTOR_COLOR = new Color(0xD4, 0xDF, 0xE9);
     // public static final Color DESCENDANT_COLOR = new Color(0xED, 0xDA, 0xDA);
     
@@ -264,7 +264,8 @@ public class MotifList extends JPanel
                 final int _i = i;
                                 
                 ImageIcon icon = (ImageIcon)(MOTIF_UIS[i].getMethod("getStaticIcon").invoke(null));
-                Image image = icon.getImage().getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); 
+                //Image image = icon.getImage().getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); 
+                Image image = Theme.invertImage(icon.getImage()).getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH);
 
                 items[i] = new JMenuItem((String)(MOTIF_UIS[i].getMethod("getType").invoke(null)), new ImageIcon(image));
                 items[i].setHorizontalAlignment(SwingConstants.LEADING);

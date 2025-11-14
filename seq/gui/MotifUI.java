@@ -21,7 +21,7 @@ public abstract class MotifUI extends JPanel
     {
     public static final int PARAMETER_LIST_NAME_DEFAULT_SIZE = 8;
     public static final int INSPECTOR_NAME_DEFAULT_SIZE = 8;
-    public static final Color BACKGROUND = new Color(128, 128, 128);
+    public static final Color BACKGROUND = new Color(26, 26, 34);
     public static final double MINIMUM_DIVIDER_LOCATION_WITH_TEXT = 0.3;
     
     protected Seq seq; 

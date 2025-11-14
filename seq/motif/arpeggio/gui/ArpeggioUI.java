@@ -28,20 +28,20 @@ import java.awt.datatransfer.*;
 public class ArpeggioUI extends MotifUI
     {
     public static final int MIN_HEADER_SPACE = 16;
-    public static final Color HEADER_LINE_COLOR = new Color(200, 200, 200);
+    public static final Color HEADER_LINE_COLOR = Theme.isDark() ? new Color(60,60,60) : new Color(200, 200, 200);
     public static final int LABEL_PADDING = 4;
     
-    public static final Color PATTERN_ON_COLOR = Color.RED;
-    public static final Color PATTERN_ON_DISABLED_COLOR = new Color(220, 160, 160);
-    public static final Color PATTERN_ON_TIE_COLOR = Color.BLUE;
-    public static final Color PATTERN_ON_TIE_DISABLED_COLOR = new Color(160, 160, 220);
-    public static final Color PATTERN_OFF_COLOR = new Color(220, 220, 220);
-    public static final Color PATTERN_BORDER_COLOR = Color.GRAY;
+    public static final Color PATTERN_ON_COLOR = Theme.isDark() ? Theme.ORANGE : Color.RED;
+    public static final Color PATTERN_ON_DISABLED_COLOR = Theme.isDark() ? Theme.DARK_ORANGE : new Color(220, 160, 160);
+    public static final Color PATTERN_ON_TIE_COLOR = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.BLUE;
+    public static final Color PATTERN_ON_TIE_DISABLED_COLOR = Theme.isDark() ? Theme.GRAY_70: new Color(160, 160, 220);
+    public static final Color PATTERN_OFF_COLOR = Theme.isDark() ? Theme.GRAY_50 :new Color(220, 220, 220);
+    public static final Color PATTERN_BORDER_COLOR = Theme.isDark() ? Theme.GRAY_80 : Color.GRAY;
     public static final Stroke PATTERN_STROKE = new BasicStroke(1.0f);
     public static final Stroke DIVIDER_STROKE = new BasicStroke(2.0f);
     public static final int OUTER_BORDER_THICKNESS = 1;
-    public static final Color PATTERN_DIVIDER_COLOR = Color.BLUE;
-    public static final Color PATTERN_END_COLOR = new Color(180, 0, 180);
+    public static final Color PATTERN_DIVIDER_COLOR = Theme.isDark() ? Theme.BLUE : Color.BLUE;
+    public static final Color PATTERN_END_COLOR = Theme.isDark() ? Theme.RED : new Color(180, 0, 180);
     public static final int PATTERN_WIDTH = 24;
 
     Arpeggio arpeggio;

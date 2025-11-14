@@ -9,6 +9,7 @@ import seq.engine.*;
 import seq.gui.*;
 import seq.motif.notes.*;
 import seq.util.*;
+import seq.gui.Theme;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -21,23 +22,23 @@ public class PitchUI extends JLayeredPane
     // Which pitches in the octave are black notes?
     public static final boolean BLACK_KEYS[] = { false, true, false, true, false, false, true, false, true, false, true, false };
     // My background color if I am a black note pitch
-    public static final Color BLACK_KEY_BACKGROUND_COLOR = new Color(210, 210, 210);
+    public static final Color BLACK_KEY_BACKGROUND_COLOR = Theme.isDark()? Theme.GRAY_40 : new Color(210, 210, 210);
     // My background color if I am a white note pitch
-    public static final Color WHITE_KEY_BACKGROUND_COLOR = new Color(220, 220, 220);
+    public static final Color WHITE_KEY_BACKGROUND_COLOR = Theme.isDark()? Theme.GRAY_50 : new Color(220, 220, 220);
     // The color for vertical lines representing 16th notes
-    public static final Color SIXTEENTH_NOTE_COLOR = new Color(200, 200, 200);
+    public static final Color SIXTEENTH_NOTE_COLOR = Theme.isDark()? Theme.SOFT_BLUE_25 :new Color(200, 200, 200);
     // The color for vertical lines representing beats
-    public static final Color BEAT_COLOR = new Color(180, 180, 180); // new Color(128, 128, 128);
+    public static final Color BEAT_COLOR = Theme.isDark()? Theme.SOFT_BLUE_30 : new Color(180, 180, 180); // new Color(128, 128, 128);
     // The color for vertical lines representing bars
-    public static final Color BAR_COLOR = new Color(64, 64, 220);
+    public static final Color BAR_COLOR = Theme.isDark()? Theme.SOFT_BLUE : new Color(64, 64, 220);
     // The color for the rubber band
-    public static final Color RUBBER_BAND_COLOR = new Color(32, 64, 32);
+    public static final Color RUBBER_BAND_COLOR = Theme.isDark()? Theme.NEON_GREEN : new Color(32, 64, 32);
     // The Stroke for the rubber band
     public static final Stroke RUBBER_BAND_STROKE = new BasicStroke(3.0f);
     // The color for the Start marker
-    public static final Color START_COLOR = new Color(0, 160, 160);
+    public static final Color START_COLOR = Theme.isDark()? Theme.RED : new Color(0, 160, 160);
     // The color for the End marker
-    public static final Color END_COLOR = new Color(180, 0, 180);
+    public static final Color END_COLOR = Theme.isDark()? Theme.RED : new Color(180, 0, 180);
  
     // The parent GridUI of this PitchUI
     GridUI gridui;

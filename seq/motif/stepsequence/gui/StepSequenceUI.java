@@ -45,6 +45,8 @@ public class StepSequenceUI extends MotifUI
     public final static int MIN_ZOOM = 12;
     public final static int MAX_ZOOM = 315;
     int zoom = 27;
+
+    public static final Color MATTE_BORDER_COLOR = Theme.isDark() ? Theme.GRAY_40 : Color.BLACK;
     
     public int getZoom() { return zoom; }
 
@@ -125,12 +127,16 @@ public class StepSequenceUI extends MotifUI
                 }
             }
         }
-        
-    public static final SimpleColorMap stepVelocityMap = new SimpleColorMap(0, 127, new Color(0, 0, 0, 0), Color.RED);
+    public static final Color VELOCITY_START_COLOR = Theme.isDark() ?  Theme.GRAY_70 : new Color(0,0,0,0); 
+    public static final Color VELOCITY_MID_COLOR = Theme.isDark() ?  Theme.ORANGE : Color.RED; 
+    public static final Color VELOCITY_END_COLOR = Theme.isDark() ?  Theme.RED : Color.YELLOW; 
+    public static final SimpleColorMap stepVelocityMap = new SimpleColorMap(0, 127, 64,
+        new SimpleColorMap(0,64, VELOCITY_START_COLOR, VELOCITY_MID_COLOR),
+        new SimpleColorMap(64,127, VELOCITY_MID_COLOR, VELOCITY_END_COLOR));
 
-    public static final Border matte = BorderFactory.createMatteBorder(0,0,1,0, Color.BLACK);
-
-    public static final Border matteSelected = BorderFactory.createMatteBorder(0,0,1,0, Color.RED);
+    public static final Border matte = BorderFactory.createMatteBorder(0,0,1,0, MATTE_BORDER_COLOR);
+    public static final Color selectedColor = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.RED;
+    public static final Border matteSelected = BorderFactory.createMatteBorder(0,0,1,0, selectedColor);
         
     ArrayList<TrackUI> tracks = new ArrayList<>();
     Box trackBox;
@@ -289,7 +295,13 @@ public class StepSequenceUI extends MotifUI
         //build();
         }
         
-    public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/stepsequence.png")); }  // don't ask
+    //public static ImageIcon getStaticIcon() { return new ImageIcon(MotifUI.class.getResource("icons/stepsequence.png")); }  // don't ask
+    public static ImageIcon getStaticIcon() 
+        { 
+        //This is to invert the background in darkmode instead of the foreground
+        Image img = new ImageIcon(MotifUI.class.getResource("icons/stepsequence.png")).getImage();
+        return new ImageIcon(Theme.invertBG(img)); 
+        }  // don't ask
     public ImageIcon getIcon() { return getStaticIcon(); }
     public static String getType() { return "Step Sequence"; }
         

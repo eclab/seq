@@ -35,6 +35,10 @@ public class TrackHeader extends JPanel implements Transferable
     boolean selected = false;
         
     int MAX_WIDTH = 128;
+
+    public static final String SELECTED_TRACK_COLOR = Theme.isDark() ? "#E13C41" : "red";
+    public static final Color REGULAR_BORDER_COLOR = Theme.isDark() ? new Color(40,40,40) : Color.BLACK;
+    public static final Color SELECTED_BORDER_COLOR = Theme.isDark() ? new Color(255,65,65) : Color.RED;
         
     public JCheckBox getTrackLearn() { return trackLearn; }
         
@@ -42,17 +46,17 @@ public class TrackHeader extends JPanel implements Transferable
         
     public static final Border matte = BorderFactory.createCompoundBorder(
         BorderFactory.createEmptyBorder(0,0,0,4),
-        BorderFactory.createMatteBorder(1,0,0,0, Color.BLACK));
+        BorderFactory.createMatteBorder(1,0,0,0, REGULAR_BORDER_COLOR));
 
     public static final Border matteSelected = BorderFactory.createCompoundBorder(
         BorderFactory.createEmptyBorder(0,0,0,4),
-        BorderFactory.createMatteBorder(1,0,0,0, Color.RED));
+        BorderFactory.createMatteBorder(1,0,0,0, SELECTED_BORDER_COLOR));
 
     public static final Border matteTopSelected = BorderFactory.createCompoundBorder(
         BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(0,0,0,4),
-            BorderFactory.createMatteBorder(0,0,1,0, Color.RED)),
-        BorderFactory.createMatteBorder(1,0,0,0, Color.BLACK));
+            BorderFactory.createMatteBorder(0,0,1,0, SELECTED_BORDER_COLOR)),
+        BorderFactory.createMatteBorder(1,0,0,0, REGULAR_BORDER_COLOR));
         
     public void setSelected(boolean val) { selected = val; updateHandle(); }
         
@@ -60,7 +64,7 @@ public class TrackHeader extends JPanel implements Transferable
         {
         if (!selected)
             handle.setText("  " + (track.getTrackNum() + 1));
-        else handle.setText("<html><font color=red>&nbsp;&nbsp;" + (track.getTrackNum() + 1) + "</font></html>"); 
+        else handle.setText("<html><font color=" + SELECTED_TRACK_COLOR + ">&nbsp;&nbsp;" + (track.getTrackNum() + 1) + "</font></html>"); 
         
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -224,7 +228,7 @@ public class TrackHeader extends JPanel implements Transferable
         if (name == null) name = "";
         else name = name.trim();
         if (name == "") name = "Track " + trackNum;
-        if (selected) return "<html><font color=red>"+name+"</font></html>";
+        if (selected) return "<html><font color=" + SELECTED_TRACK_COLOR +">"+name+"</font></html>";
         else return "<html>"+name+"</html>";
         }
         

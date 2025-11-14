@@ -6,6 +6,7 @@
 package seq.gui;
 
 import seq.engine.*;
+import seq.gui.Theme;
 import seq.util.*;
 import java.awt.*;
 import javax.swing.border.*;
@@ -20,6 +21,9 @@ import com.formdev.flatlaf.*;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 
+// For images
+import java.awt.image.BufferedImage;
+import java.awt.Image;
 
 public class MotifButton extends JToggleButton implements Transferable
     {
@@ -29,14 +33,14 @@ public class MotifButton extends JToggleButton implements Transferable
     protected MotifUI owner;
     protected Object auxiliary;
     
-    public static final String PLAYING_TEXT_COLOR = "red";
-    public static final String PREHIGHLIGHT_TEXT_COLOR = "blue";
-    public static final String DEFAULT_TEXT_COLOR = "black";
-    public static final String MULTIPLE_PLAYING_TEXT_COLOR = "green";
-    public static final String WARNING_TEXT_COLOR = "orange";
-    public static final Color PLAYING_COLOR = Color.RED;
-    public static final Color NEXT_COLOR = Color.BLUE;
-    public static final Color REMOVE_COLOR = Color.MAGENTA;
+    public static final String PLAYING_TEXT_COLOR = Theme.isDark()? "#E13C41" : "red";
+    public static final String PREHIGHLIGHT_TEXT_COLOR = Theme.isDark()? "#00C2EE" : "blue";
+    public static final String DEFAULT_TEXT_COLOR = Theme.isDark()? "#EFEFEF" : "white";
+    public static final String MULTIPLE_PLAYING_TEXT_COLOR = Theme.isDark()? "#BDE300" : "green";
+    public static final String WARNING_TEXT_COLOR = Theme.isDark()? "#FFA92E" : "orange";
+    public static final Color PLAYING_COLOR = Theme.isDark()? Theme.RED : Color.RED;
+    public static final Color NEXT_COLOR = Theme.isDark()? Theme.ELECTRIC_BLUE : Color.BLUE;
+    public static final Color REMOVE_COLOR = Theme.isDark()? new Color(255,110,169) : Color.MAGENTA;
 
     protected String lastText = null;
 
@@ -116,7 +120,15 @@ public class MotifButton extends JToggleButton implements Transferable
     public void buildIconAndText()
         {
         setMargin(new Insets(12, 12, 12, 12));                                  /// FIXME: Root Buttons still are a little taller than others
-        Image image = ((ImageIcon)motifui.getIcon()).getImage().getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH); 
+        //Image image = ((ImageIcon)motifui.getIcon()).getImage().getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH); 
+        Image image = Theme.invertImage(((ImageIcon)motifui.getIcon()).getImage());
+        image = image.getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH); 
+
+
+        //BufferedImage bufferedImage = makeBufferedImage(image);
+        //invertForeground(bufferedImage);
+        //image = bufferedImage;
+
         setIcon(new ImageIcon(image));
         setIconTextGap(12);
         updateText();
@@ -130,7 +142,8 @@ public class MotifButton extends JToggleButton implements Transferable
         this.owner = owner;
         setHorizontalAlignment(SwingConstants.LEFT);
         if (owner != null) owner.addButton(this);
-        setFocusPainted(false);
+        //setFocusPainted(false);
+        setFocusPainted(true);
         buildIconAndText();
                 
         addMouseListener(new MouseAdapter()

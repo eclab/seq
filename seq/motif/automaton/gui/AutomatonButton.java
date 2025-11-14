@@ -9,6 +9,7 @@ import seq.engine.*;
 import seq.gui.*;
 import seq.motif.automaton.*;
 import seq.util.*;
+import seq.gui.Theme;
 import java.awt.*;
 import javax.swing.border.*;
 import java.awt.event.*;
@@ -25,7 +26,7 @@ import java.awt.datatransfer.*;
 
 public class AutomatonButton extends MotifButton
     {
-    public static final Color START_COLOR = new Color(128, 200, 128); // new Color(0x20, 0xFF, 0x20);
+    public static final Color START_COLOR = Theme.isDark()? new Color(50,107,36) : new Color(128, 200, 128); // new Color(0x20, 0xFF, 0x20);
     public static final int MINIMUM_SIZE = 80;
     int at = -1;                // default
     

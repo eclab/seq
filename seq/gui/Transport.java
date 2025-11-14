@@ -67,8 +67,33 @@ public class Transport extends JPanel implements SeqListener
 
     public static ImageIcon buildIcon(String file)
         {
+        //ImageIcon original = new ImageIcon(Transport.class.getResource(file));
+        //ImageIcon original = new ImageIcon(Transport.class.getResource(file));
+        //return new ImageIcon(Theme.invertImage(original.getImage()).getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH));
         ImageIcon original = new ImageIcon(Transport.class.getResource(file));
-        return new ImageIcon(original.getImage().getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH));
+        Image img = original.getImage();
+        //This is to overwrite colors for darkmode
+        if (Theme.isDark())
+            {
+            switch(file)
+                {
+                case "icons/playing2.png":
+                    img = Theme.paintImage(img,67,164,32);           //deep-green
+                    break;
+                case "icons/paused2.png":
+                    img = Theme.paintImage(img,0,194,238);          //electric blue
+                    break;
+                case "icons/loopon.png":
+                case "icons/releasing.png":
+                case "icons/stopped2.png":
+                case "icons/recording2.png":
+                    img = Theme.paintImage(img,210,60,65);          //red
+                    break;
+                default:                                            //invert
+                    img = Theme.paintImage(img,200,200,200);
+                }
+            }
+        return new ImageIcon(img.getScaledInstance(ICON_WIDTH, ICON_WIDTH, java.awt.Image.SCALE_SMOOTH));
         }
         
     public Transport(Seq seq, SeqUI sequi)
