@@ -115,9 +115,9 @@ public class SeriesButton extends MotifButton
                 repeats = clip.getCorrectedValueInt(data.getRepeatAtLeast(), Series.Data.MAX_REPEAT_VALUE);
                 probability = clip.getCorrectedValueDouble(data.getRepeatProbability());
                 if (clip.getPlayingIndex() == at)
-                    {
-                    currentRepeat = clip.getPlayingRepeat() + 1;
-                    }
+                	{
+	                currentRepeat = clip.getPlayingRepeat() + 1;
+	                }
                 }
                 
             start = data.getStart();
