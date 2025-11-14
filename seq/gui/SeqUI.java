@@ -340,7 +340,7 @@ public class SeqUI extends JPanel
         if (Theme.isDark())
         	{
             // NOTE: This allows the window to use the mac 'dark' titlebar
-            // System.setProperty( "apple.awt.application.appearance", "system" );			// doesn't seem to be working
+            System.setProperty( "apple.awt.application.appearance", "NSAppearanceNameDarkAqua" );
         	FlatDarkLaf.setup();
         	}
         else
