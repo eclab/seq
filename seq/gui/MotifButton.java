@@ -35,7 +35,7 @@ public class MotifButton extends JToggleButton implements Transferable
     
     public static final String PLAYING_TEXT_COLOR = Theme.isDark()? "#E13C41" : "red";
     public static final String PREHIGHLIGHT_TEXT_COLOR = Theme.isDark()? "#00C2EE" : "blue";
-    public static final String DEFAULT_TEXT_COLOR = Theme.isDark()? "#EFEFEF" : "white";
+    public static final String DEFAULT_TEXT_COLOR = Theme.isDark()? "#EFEFEF" : "black";
     public static final String MULTIPLE_PLAYING_TEXT_COLOR = Theme.isDark()? "#BDE300" : "green";
     public static final String WARNING_TEXT_COLOR = Theme.isDark()? "#FFA92E" : "orange";
     public static final Color PLAYING_COLOR = Theme.isDark()? Theme.RED : Color.RED;

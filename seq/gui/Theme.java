@@ -57,7 +57,7 @@ public class Theme {
     public static final Color WHITE_240 = new Color(240,240,240);
 
 
-    static boolean dark;
+    private static boolean dark;
 
     static {
         dark = Prefs.getLastBoolean("Theme.dark", false);
