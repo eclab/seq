@@ -1,0 +1,51 @@
+Korg Wavestation SR
+
+# NOTE: There are 7 Drum Kits on the SR.  They are all Performances.
+#       They are each Patch #30 of Banks 4 through 10
+
+36 Kick
+38 AmibKick
+39 Crack Snare
+40 Crack Snare Low
+41 Snare
+42 Snare High
+43 Sidestick
+44 Sidestick High
+45 Tenny Hit
+46 Tenny Hit High
+47 Tom Low
+48 Tom Low-Mid
+50 Tom Mid
+52 Tom High
+53 High Hat Closed
+54 High Hat Closed Low
+55 High Hat Open
+56 High Hat Open Low
+57 Conga Low
+59 Conga Mid
+60 Conga High
+62 Claves
+63 Claves High
+64 Tick Hit
+65 Pot Hit
+67 Hammer
+69 Thonk
+71 Noise Vibe
+72 Piano Hit
+74 "Tuunn"
+76 "Pehh"
+77 "Thuum"
+79 "Kaahh"
+81 "Tchh"
+83 "Pan"
+84 "Ti"
+86 "Cap"
+88 "Chhl"
+89 "Tinn"
+91 "Haaa"
+93 Crickets
+94 Noise 2 Mid
+95 Noise 2 Low
+96 Noise 2 High
+
+## Note: 97-108 are ALSO Noise 2 High
