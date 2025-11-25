@@ -1,4 +1,4 @@
-Novation D-Station
+Novation D-Station 909
 24	808 Bass Drum
 25	808 Rim Shot
 26	808 Snare Drum
@@ -14,18 +14,18 @@ Novation D-Station
 36	909 Rim Shot
 37	909 Snare Drum
 38	909 Hand Clap
-39	909 Snare Drum
+# 39	909 Snare Drum
 40	909 Low Tom
 41	909 Closed HiHat
-42	909 Low Tom
-43	909 Closed HiHat
+# 42	909 Low Tom
+# 43	909 Closed HiHat
 44	909 Mid Tom
-45	909 Open HiHat
-46	909 Mid Tom
+# 45	909 Open HiHat
+# 46	909 Mid Tom
 47	909 High Tom
 48	909 Crash Cymbal
-49	909 High Tom
-50	909 Ride Cymbal
+# 49	909 High Tom
+# 50	909 Ride Cymbal
 51	808 Cowbell
 52	808 High Conga
 53	808 Mid Conga

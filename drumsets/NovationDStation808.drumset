@@ -1,0 +1,42 @@
+Novation D-Station 808
+
+# There are duplicates in the standard layout.
+# They have been commented out below.
+
+# Note that the Novation D-Station 909 layout is missing
+# two drum sounds that appear in the Novation D-Station 808 layout.
+# they are:  808 Open High Hat   and    808 Ride Cymbal
+
+24	909 Bass Drum
+25	909 Rim Shot
+26	909 Snare Drum
+27	909 Hand Clap
+28	909 Low Tom
+29	909 Mid Tom
+30	909 Closed HiHat
+31	909 High Tom
+32	909 Crash Cymbal
+33	909 Ride Cymbal
+34	909 Open HiHat
+35	808 Bass Drum
+36	808 Rim Shot
+37	808 Snare Drum
+38	808 Hand Clap
+# 39	808 Snare Drum
+40	808 Low Tom
+41	808 Closed HiHat
+# 42	808 Low Tom
+# 43	808 Closed HiHat
+44	808 Mid Tom
+45	808 Open HiHat
+# 46	808 Mid Tom
+47	808 High Tom
+48	808 Crash Cymbal
+# 49	808 High Tom
+50	808 Ride Cymbal
+51	808 Cowbell
+52	808 High Conga
+53	808 Mid Conga
+54	808 Low Conga
+55	808 Maracas
+56	808 Claves
