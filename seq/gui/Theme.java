@@ -97,20 +97,18 @@ public class Theme {
 
         int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 
-        // Overwrites the background of the image to invert the background
+        // Inverts the alpha channel of the image
              for(int i = 0; i < pixels.length; i++)
                 {
                 int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
                 int a = (p >>> 24) & 255;
-                int r = (p >>> 16) & 255;
-                int g = (p >>> 8) & 255;
-                int b = (p >>> 0) & 255;
-                
-                if(r>=240) r = 250;
-                if(g>=240) r = 250;
-                if(b>=240) r = 250;
+                //int r = (p >>> 16) & 255;
+                //int g = (p >>> 8) & 255;
+                //int b = (p >>> 0) & 255;
+                int rgb = p & 0xffffff;
 
-                pixels[i] = ((255-a) << 24) | ((250-r) << 16) | ((250-g) << 8) | ((250-b) << 0);
+                //pixels[i] = ((255-a) << 24) | ((r) << 16) | ((g) << 8) | ((b) << 0);
+                pixels[i] = ((255-a) << 24) | rgb;
                 }
 
         image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
@@ -121,7 +119,8 @@ public class Theme {
 
         int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
         
-        //This inverts the image
+        //This inverts the color of the image
+        int max = 200;
         for(int i = 0; i < pixels.length; i++)
                 {
                 int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
@@ -130,11 +129,11 @@ public class Theme {
                 int g = (p >>> 8) & 255;
                 int b = (p >>> 0) & 255;
 
-                if(r>=250) r = 230;
-                if(g>=250) r = 230;
-                if(b>=250) r = 230;
+                if(r>max) r = max;
+                if(g>max) g = max;
+                if(b>max) b = max;
 
-                pixels[i] = (a << 24) | ((230 - r) << 16) | ((230 - g) << 8) | ((230 - b) << 0);
+                pixels[i] = (a << 24) | ((max - r) << 16) | ((max - g) << 8) | ((max - b) << 0);
                 }
 
         image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());

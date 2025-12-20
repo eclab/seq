@@ -28,7 +28,9 @@ public class MotifListButton extends MotifButton
         if (sequi.getMotifList().isCompressed())
             {
             setMargin(new Insets(6, 6, 6, 6));                                  /// FIXME: Root Buttons still are a little taller than others
-            Image image = ((ImageIcon)motifui.getIcon()).getImage().getScaledInstance(ICON_WIDTH / 2, ICON_WIDTH / 2, java.awt.Image.SCALE_SMOOTH); 
+            //Image image = ((ImageIcon)motifui.getIcon()).getImage().getScaledInstance(ICON_WIDTH / 2, ICON_WIDTH / 2, java.awt.Image.SCALE_SMOOTH); 
+            Image image = Theme.invertImage(((ImageIcon) motifui.getIcon()).getImage());
+            image = image.getScaledInstance(ICON_WIDTH / 2, ICON_WIDTH / 2, java.awt.Image.SCALE_SMOOTH); 
             setIcon(new ImageIcon(image));
             setIconTextGap(12);
             updateText();
