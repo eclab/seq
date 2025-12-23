@@ -5,6 +5,7 @@
 
 package seq.motif.automaton.gui;
 
+import seq.gui.Theme;
 import seq.motif.automaton.*;
 import java.awt.*;
 import java.awt.geom.*;
@@ -51,7 +52,7 @@ public class InputJack extends InputOutput
             }
         }
 
-
+    Color JACK_HIGHLIGHT_COLOR = Theme.isDark() ? Theme.RED : Color.RED;
     /** Constructor, given an owning unit and ModPanel, plus which unit input number we are in our owner. 
         If number is ConstraintsChooser.INDEX, then we draw somewhat differently.  */
     public InputJack(int number, JComponent paintComponent, AutomatonButton button)
@@ -66,7 +67,7 @@ public class InputJack extends InputOutput
                 {
                 if (highlight)
                     {
-                    return Color.RED;
+                    return JACK_HIGHLIGHT_COLOR;
                     }
                 else if (true)                  // testing
                     {

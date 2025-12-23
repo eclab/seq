@@ -44,7 +44,7 @@ public class SelectUI extends MotifUI
     public static final int GRID_WIDTH = 8;
     public static final int GRID_SIZE = GRID_WIDTH * GRID_WIDTH;
     public static final int MIN_HEADER_SPACE = 16;
-    public static final Color HEADER_LINE_COLOR = new Color(200, 200, 200);
+    public static final Color HEADER_LINE_COLOR = Theme.isDark() ? Theme.GRAY_40 :  new Color(200, 200, 200);
         
     JPanel selectGrid = new JPanel();
     JPanel horizontalHeader = new JPanel();

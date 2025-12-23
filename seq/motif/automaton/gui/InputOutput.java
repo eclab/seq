@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.*;
 import java.awt.font.*;
+import seq.gui.Theme;
 
 public abstract class InputOutput extends JPanel
     {
@@ -26,7 +27,7 @@ public abstract class InputOutput extends JPanel
     public static BasicStroke DIAL_THIN_STROKE() { return new BasicStroke(DIAL_STROKE_WIDTH() / 2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL); }
     /** The stroke for the unset region in Dials etc. */
     public static BasicStroke DIAL_THICK_STROKE() { return new BasicStroke(DIAL_STROKE_WIDTH(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL); }
-    public static Color DEFAULT_DYNAMIC_COLOR = Color.RED;
+    public static Color DEFAULT_DYNAMIC_COLOR = Theme.isDark()? Theme.RED : Color.RED;
     static Color DYNAMIC_COLOR = DEFAULT_DYNAMIC_COLOR;
     public static Color DYNAMIC_COLOR() { return DYNAMIC_COLOR; }
     /** Small font, primarily for labels, button and combo box text. */
