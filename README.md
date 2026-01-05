@@ -11,9 +11,9 @@ Related projects:
 
 * [Edisyn](https://github.com/eclab/edisyn), a patch editor toolkit with sophisticated exploration tools.
 * [Flow](https://github.com/eclab/flow), a fully-modular, polyphonic, additive software synthesizer.
-* [Gizmo](https://cs.gmu.edu/~sean/projects/gizmo/), an Arduino-based MIDI Swiss Army knife.
+* [Gizmo](https://people.cs.gmu.edu/~sean/projects/gizmo/), an Arduino-based MIDI Swiss Army knife.
 * [Arduino Firmware](https://github.com/eclab/grains) (oscillators, modulators, etc.) for the AE Modular Grains module.  Includes an ultralight but full-featured [MIDI library for small microcontrollers](https://github.com/eclab/grains/tree/main/midi).
-* [*Computational Music Synthesis*](https://cs.gmu.edu/~sean/book/synthesis/), an open-content book on building software synthesizers.
+* [*Computational Music Synthesis*](https://people.cs.gmu.edu/~sean/book/synthesis/), an open-content book on building software synthesizers.
 
 ## Donations
 
@@ -27,12 +27,12 @@ Seq is written in pure Java.  It runs on MacOS, Linux, and Windows.
 
 ## Publications on Seq 
 
-[A Hierarchical, Modular Sequencer](https://cs.gmu.edu/~sean/papers/audiomostly24.pdf).  With Filippo Carnovalini. Presented at Audio Mostly 2024.
+[A Hierarchical, Modular Sequencer](https://people.cs.gmu.edu/~sean/papers/audiomostly24.pdf).  With Filippo Carnovalini. Presented at Audio Mostly 2024.
 
 
 ## Manual
 
-* Seq has an [initial manual](https://cs.gmu.edu/~eclab/projects/seq/seq.pdf) which explains the basics of using it.
+* Seq has an [initial manual](https://people.cs.gmu.edu/~eclab/projects/seq/seq.pdf) which explains the basics of using it.
 
 * Interested in helping out on Seq?  Get ahold of us! Sean's email address is on the front page of the manual.
 
@@ -43,7 +43,7 @@ Seq is cross-platform and will run on a variety of platforms (Windows, Linux) bu
 
 ### Installation and Running on MacOS
 
-First install Seq from this link: [Seq.dmg](https://cs.gmu.edu/~eclab/projects/seq/Seq.dmg). 
+First install Seq from this link: [Seq.dmg](https://people.cs.gmu.edu/~eclab/projects/seq/Seq.dmg). 
 Sadly, it's a whopping 60MB because it includes the Java VM.  :-(
 
 MacOS has lately locked down the ability to run an application that's not from a commercial, paying Apple Developer.  And GMU is not one.  So you will have to instruct Sierra to permit Seq to run.
@@ -82,7 +82,7 @@ The following should work (but has not been tested):
 
 1. [Download and install at least Java 20](https://www.oracle.com/technetwork/java/javase/downloads).  The JRE should work fine.  Earlier versions of Java have a bug which causes Java apps (like Seq) to make teeny tiny windows on the latest high-resolution screens.
 
-2. Download Seq's jar file, called [seq.jar](https://cs.gmu.edu/~eclab/projects/seq/seq.jar).
+2. Download Seq's jar file, called [seq.jar](https://people.cs.gmu.edu/~eclab/projects/seq/seq.jar).
 
 3. Double-click on seq.jar to launch Seq.
 
@@ -104,7 +104,7 @@ Seq should work fine if you have installed at least *Java 20*.
 
 1. Install at least Java 20 (openjdk).
 
-2. Download Seq's jar file, called [seq.jar](https://cs.gmu.edu/~eclab/projects/seq/seq.jar).
+2. Download Seq's jar file, called [seq.jar](https://people.cs.gmu.edu/~eclab/projects/seq/seq.jar).
 
 3. You'll need to figure out how to make it so that double-clicking on the jar file launches it in java.  In Ubuntu, here's what you do: right-click on the jar file icon and choose "Properties".  Then select the "Open With" tab, and select your Java VM (for example "Open JDK Java 8 Runtime").  The press "Set as Default".  This makes the Java VM the default application to launch jar files.
 
@@ -119,7 +119,7 @@ Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq
 
 1. Make sure Java 20 or later installed.
 
-2. Download Seq's jar file, called [seq.jar](https://cs.gmu.edu/~eclab/projects/seq/seq.jar).
+2. Download Seq's jar file, called [seq.jar](https://people.cs.gmu.edu/~eclab/projects/seq/seq.jar).
 
 3. Run Seq as:   `java -jar seq.jar`
 
