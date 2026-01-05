@@ -33,13 +33,14 @@ public class ParallelButton extends MotifButton
     
     Border originalBorder;
     Color originalBackground;
+    Color BORDER_COLOR = Theme.isDark()? Theme.GRAY_60 : Color.GRAY;
     
     public void updateDelay()
         {
         updateText();
         int slide = ((ParallelUI)owner).timeToPixels(delay);
         setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0,slide,0,0, /*originalBackground*/ Color.GRAY),
+                BorderFactory.createMatteBorder(0,slide,0,0, /*originalBackground*/ BORDER_COLOR),
                 originalBorder));
         }
         

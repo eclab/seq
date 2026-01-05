@@ -19,7 +19,7 @@ public class StringField extends JComponent
     protected String currentValue;
 
     Color defaultColor;
-    Color editedColor = new Color(225,225,255);
+    Color editedColor = Theme.isDark()? Theme.GRAY_40 : new Color(225,225,255);
         
     public void setEditedColor(Color c) { editedColor = c; }
     public Color getEditedColor() { return editedColor; }

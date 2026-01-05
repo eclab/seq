@@ -29,10 +29,10 @@ public class Joystick extends JComponent
     boolean drawsUnpressedCursor = true;
     public String[] strings = null;
 
-    public Color gridlineColor = Color.GRAY;
-    public Color unsetColor = Color.BLUE;
-    public Color backgroundColor = Color.WHITE;
-    public Color dynamicColor = Color.RED;
+    public Color gridlineColor = Theme.isDark()? Theme.GRAY_60 : Color.GRAY;
+    public Color unsetColor = Theme.isDark()? Theme.ELECTRIC_BLUE : Color.BLUE;
+    public Color backgroundColor = Theme.isDark()? Theme.GRAY_40 : Color.WHITE;
+    public Color dynamicColor = Theme.isDark()? Theme.RED :Color.RED;
     public static final float JOYSTICK_WIDTH = 16;
     public static final float STROKE_WIDTH = 2;
     public static final float STROKE_THIN_WIDTH = 1;

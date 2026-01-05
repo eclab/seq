@@ -27,7 +27,7 @@ import java.awt.datatransfer.*;
 public class MacroUI extends MotifUI
     {
     public static final int MIN_HEADER_SPACE = 16;
-    public static final Color HEADER_LINE_COLOR = new Color(200, 200, 200);
+    public static final Color HEADER_LINE_COLOR = Theme.isDark()? Theme.GRAY_40 : new Color(200, 200, 200);
     public static final int LABEL_PADDING = 4;
 
     Macro macro;

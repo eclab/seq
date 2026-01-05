@@ -20,7 +20,7 @@ public class Ruler extends JComponent
     // The ruler height
     public static final int RULER_HEIGHT = 16;
     // The color of the lower border of the ruler
-    public static final Color BORDER_COLOR = Color.BLACK;
+    public static final Color BORDER_COLOR = Theme.isDark()? Theme.BLACK : Color.BLACK;
     // The ruler's background color
     public static final Color BACKGROUND_COLOR = Theme.isDark()? Theme.GRAY_40 : Color.WHITE;
     // The color of the play marker on the ruler

@@ -22,9 +22,10 @@ import java.awt.event.*;
 public class KeyDisplay extends JPanel
     {
     /////// KEYBOARD CONSTANTS
+    public static Color DYNAMIC_COLOR = Theme.isDark()? Theme.RED : Color.RED;
     public static Color KEYBOARD_WHITE_COLOR() { return Color.WHITE; }
     public static Color KEYBOARD_BLACK_COLOR() { return Color.BLACK; }
-    public static Color KEYBOARD_DYNAMIC_COLOR() { return Color.RED; }
+    public static Color KEYBOARD_DYNAMIC_COLOR() { return DYNAMIC_COLOR; }
     public static int KEYBOARD_DEFAULT_WHITE_KEY_WIDTH() { return 12; }
     public static int KEYBOARD_DEFAULT_WHITE_KEY_HEIGHT() { return 48; }
 
