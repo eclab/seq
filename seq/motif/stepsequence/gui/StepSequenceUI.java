@@ -16,9 +16,12 @@ import javax.swing.table.*;
 import java.util.concurrent.locks.*;
 import java.util.*;
 import com.formdev.flatlaf.*;
+import java.io.*;
 
 public class StepSequenceUI extends MotifUI
     {
+    public static final String DRUMSET_EXTENSION = ".drumset";
+    
     StepSequence ss;
     StepSequenceInspector ssInspector;
     TrackInspector trackInspector;
@@ -434,6 +437,7 @@ public class StepSequenceUI extends MotifUI
         trackHeaders = new Box(BoxLayout.Y_AXIS);
         trackHeaders.setBorder(matte);
 
+		tracks.clear();
         for(int i = 0; i < ss.getNumTracks(); i++)
             {
             TrackUI track = new TrackUI(seq, ss, this, i);
@@ -569,6 +573,7 @@ public class StepSequenceUI extends MotifUI
         
     public void rebuildTracks()
         {
+        // Do we have the right number of tracks?
         // Revise TrackBox and Track Headers
         trackBox.removeAll();
         trackHeaders.removeAll();
@@ -921,6 +926,18 @@ public class StepSequenceUI extends MotifUI
             });
         rand3.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.CTRL_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         randomize.add(rand3);
+
+		menu.addSeparator();
+		
+        JMenuItem loadDrumset = new JMenuItem("Load Drumset...");
+        loadDrumset.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doLoadDrumset();
+                }
+            });
+        menu.add(loadDrumset);
         }
 
 /*
@@ -1107,6 +1124,96 @@ public class StepSequenceUI extends MotifUI
 
 
 
+	boolean parseDrumset(Reader reader) throws IOException
+		{
+		BufferedReader buf = new BufferedReader(reader);
+		String name = null;
+		ArrayList<Integer> notes = new ArrayList<>();
+		ArrayList<String> drums = new ArrayList<>();
+				
+		while(true)
+			{
+			String line = buf.readLine();
+			if (line == null) break;
+			line = line.trim();
+			if (line.length() == 0) continue;
+			if (line.startsWith("#")) continue;
+			
+			if (name == null)
+				{
+				name = line;
+				}
+			else
+				{
+				Scanner scan = new Scanner(line);
+				if (!scan.hasNextInt())	 return false;		// we failed
+				notes.add(scan.nextInt());
+				
+				String drum = scan.nextLine();
+				if (drum == null) return false;				// we failed
+				drum = drum.trim();
+				if (drum.length() == 0) return false;		// we failed
+				drums.add(drum);
+				}
+			}
+
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            ss.setNumTracks(notes.size());
+            for(int i = 0; i < notes.size(); i++)
+            	{
+            	ss.setTrackNote(i, notes.get(i));
+            	ss.setTrackName(i, drums.get(i));
+            	}
+            ss.setName(name);
+            }
+        finally { lock.unlock(); }
+        return true;
+		}
+
+	public void doLoadDrumset()
+		{
+        FileDialog fd = new FileDialog((JFrame)sequi.getFrame(), "Load Drumset...", FileDialog.LOAD);
+        fd.setFilenameFilter(new FilenameFilter()
+            {
+            public boolean accept(File dir, String name)
+                {
+                return sequi.ensureFileEndsWith(name, DRUMSET_EXTENSION).equals(name);
+                }
+            });
+
+        sequi.disableMenuBar();
+        fd.setVisible(true);
+        sequi.enableMenuBar();
+                
+        if (fd.getFile() != null)
+            {
+            try
+                {
+                File file = new File(fd.getDirectory(), fd.getFile());
+                boolean result = parseDrumset(new FileReader(file));
+                if (!result)
+                	{
+                    sequi.showSimpleError("Cannot Read Drumset", "There was an error on reading this drumset.");
+                	}
+                }
+            catch (IOException ex) 
+                { 
+                sequi.showSimpleError("Cannot Read Drumset", "There was an error on reading this drumset.");
+                ex.printStackTrace();
+                }
+            }
+        buildPrimary();		// completely rebuild
+
+        setTrackInspector(null);
+        setStepInspector(null);
+        
+        setSelectedTrackNum(Math.max(getSelectedTrackNum() - 1, 0));
+		}
+		
+	
 
 
 
