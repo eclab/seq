@@ -338,11 +338,11 @@ public class SeqUI extends JPanel
         System.setProperty("apple.laf.useScreenMenuBar", "true");
         System.setProperty("apple.awt.application.name", "Seq");
         if (Theme.isDark())
-        	{
+            {
             // NOTE: This allows the window to use the mac 'dark' titlebar
             System.setProperty( "apple.awt.application.appearance", "NSAppearanceNameDarkAqua" );
-        	FlatDarkLaf.setup();
-        	}
+            FlatDarkLaf.setup();
+            }
         else
             {
             FlatLightLaf.setup();

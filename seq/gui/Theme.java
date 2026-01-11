@@ -61,21 +61,21 @@ public class Theme {
 
     static {
         dark = Prefs.getLastBoolean("Theme.dark", false);
-    }
+        }
 
     public static boolean isDark() {
         // You could override this to just return TRUE
         return dark;
-    }
+        }
 
     public static void setDarkNextTime(boolean val) {
         Prefs.setLastBoolean("Theme.dark", val);
-    }
+        }
     
     public static void setDark(boolean val) {
         dark = val;
         setDarkNextTime(val);
-    }
+        }
     
 
     public static BufferedImage makeBufferedImage(Image image)
@@ -83,8 +83,8 @@ public class Theme {
         image = new ImageIcon(image).getImage(); 
         BufferedImage buffered = new BufferedImage(
             image.getWidth(null),
-                image.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB);
+            image.getHeight(null),
+            BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D graphics = buffered.createGraphics();
         graphics.drawImage(image, 0, 0, null);
@@ -98,18 +98,18 @@ public class Theme {
         int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 
         // Inverts the alpha channel of the image
-             for(int i = 0; i < pixels.length; i++)
-                {
-                int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
-                int a = (p >>> 24) & 255;
-                //int r = (p >>> 16) & 255;
-                //int g = (p >>> 8) & 255;
-                //int b = (p >>> 0) & 255;
-                int rgb = p & 0xffffff;
+        for(int i = 0; i < pixels.length; i++)
+            {
+            int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
+            int a = (p >>> 24) & 255;
+            //int r = (p >>> 16) & 255;
+            //int g = (p >>> 8) & 255;
+            //int b = (p >>> 0) & 255;
+            int rgb = p & 0xffffff;
 
-                //pixels[i] = ((255-a) << 24) | ((r) << 16) | ((g) << 8) | ((b) << 0);
-                pixels[i] = ((255-a) << 24) | rgb;
-                }
+            //pixels[i] = ((255-a) << 24) | ((r) << 16) | ((g) << 8) | ((b) << 0);
+            pixels[i] = ((255-a) << 24) | rgb;
+            }
 
         image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
         }
@@ -122,19 +122,19 @@ public class Theme {
         //This inverts the color of the image
         int max = 200;
         for(int i = 0; i < pixels.length; i++)
-                {
-                int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
-                int a = (p >>> 24) & 255;
-                int r = (p >>> 16) & 255;
-                int g = (p >>> 8) & 255;
-                int b = (p >>> 0) & 255;
+            {
+            int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
+            int a = (p >>> 24) & 255;
+            int r = (p >>> 16) & 255;
+            int g = (p >>> 8) & 255;
+            int b = (p >>> 0) & 255;
 
-                if(r>max) r = max;
-                if(g>max) g = max;
-                if(b>max) b = max;
+            if(r>max) r = max;
+            if(g>max) g = max;
+            if(b>max) b = max;
 
-                pixels[i] = (a << 24) | ((max - r) << 16) | ((max - g) << 8) | ((max - b) << 0);
-                }
+            pixels[i] = (a << 24) | ((max - r) << 16) | ((max - g) << 8) | ((max - b) << 0);
+            }
 
         image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
         }
@@ -145,11 +145,11 @@ public class Theme {
 
         //This keeps the alpha values but overwrites the color of the image to a flat color
         for(int i = 0; i < pixels.length; i++)
-                {
-                int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
-                int a = (p >>> 24) & 255;
-                pixels[i] = (a << 24) | (r << 16) | (g << 8) | (b << 0);
-                }
+            {
+            int p = pixels[i];              // This is in the form ARGB, where A (Alpha) is the high bits
+            int a = (p >>> 24) & 255;
+            pixels[i] = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+            }
 
         image.setRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
         }
@@ -187,4 +187,4 @@ public class Theme {
         return image;
         }
 
-}
+    }

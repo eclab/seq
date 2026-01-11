@@ -67,40 +67,40 @@ public class PushButton extends JPanel
     public void setPopsUpAbove(boolean val) { popsUpAbove = val; }
     
     public AWTEventListener releaseListener = null;
-	
-	ImageIcon prepare(ImageIcon icon, boolean stretch)
-		{
-		if (icon == null) return null;
+        
+    ImageIcon prepare(ImageIcon icon, boolean stretch)
+        {
+        if (icon == null) return null;
 
-		icon = new ImageIcon(Theme.invertImage(icon.getImage()));
+        icon = new ImageIcon(Theme.invertImage(icon.getImage()));
 
-		if (stretch) icon = new StretchIcon(icon.getImage());
-		return icon;
+        if (stretch) icon = new StretchIcon(icon.getImage());
+        return icon;
         }
-		
+                
     public PushButton(final String text) { this(text, (ImageIcon)null); }
     public PushButton(final ImageIcon icon) { this((String)null, icon); }
 
     public PushButton(final ImageIcon icon, boolean stretch) 
-    	{ 
-    	this((String)null, icon, stretch); 
-    	}
+        { 
+        this((String)null, icon, stretch); 
+        }
     
     public PushButton(final String text, final ImageIcon icon)
-    	{
-    	this(text, icon, false);
-    	}
-    	
+        {
+        this(text, icon, false);
+        }
+        
     PushButton(final String text, ImageIcon icon, boolean stretch)
         {
         icon = prepare(icon, stretch);
         
         if (icon == null) button = new JButton(text);
         else if (text == null) button = new JButton(icon);
-            //{
-            //ImageIcon icon2 = new ImageIcon(Theme.invertImage(icon.getImage()));
-            //button = new JButton(icon2);
-            //}
+        //{
+        //ImageIcon icon2 = new ImageIcon(Theme.invertImage(icon.getImage()));
+        //button = new JButton(icon2);
+        //}
         else button = new JButton(text, icon);
         /*
           {
@@ -242,9 +242,9 @@ public class PushButton extends JPanel
         }
 
     public PushButton(ImageIcon icon, String[] options, boolean[] enabled)
-    	{
-    	this(icon, options, enabled, false);
-    	}
+        {
+        this(icon, options, enabled, false);
+        }
 
     public PushButton(ImageIcon icon, String[] options, boolean[] enabled, boolean stretch)
         {

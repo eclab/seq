@@ -52,14 +52,14 @@ public class Seq
     /** The smallest possible maximum time, with subparts rounded to 0. */
     public static final int MIN_MAX_TIME = PPQ * 1 * NUM_BARS_PER_PART * NUM_PARTS;
     /** How many times should we call step() before we update the GUI? step() is notionally called once per ms. */
-    public static final int UPDATE_GUI_RATE = 16;		// 60 FPS
+    public static final int UPDATE_GUI_RATE = 16;               // 60 FPS
     // Current BPM
     int bpm = DEFAULT_BPM;
     // The timer, pulses at the approporiate amount to do 192 PPQ at the current BPM
     //HighResolutionTimer timer;                        // park uses too much CPU  :-(
     java.util.Timer timer;
-   	ScheduledExecutorService scheduler;
-   	     // The timer lock.  This lock must be acquired in order to manipulate the data stored in clip or clip.motif
+    ScheduledExecutorService scheduler;
+    // The timer lock.  This lock must be acquired in order to manipulate the data stored in clip or clip.motif
         
     Track[] tracks = null;
     boolean[] validTracks = null;
@@ -364,16 +364,16 @@ public class Seq
         
     // Destroys the timer task if any (but NOT the timer)
     /*
-    void killTimerTask()
-        {
-        if (timertask != null)
-            {
-            timertask.cancel();
-            timer.purge();
-            timer.cancel();
-            }
-        timertask = null;               // let it (and the Seq instance!) GC
-        }
+      void killTimerTask()
+      {
+      if (timertask != null)
+      {
+      timertask.cancel();
+      timer.purge();
+      timer.cancel();
+      }
+      timertask = null;               // let it (and the Seq instance!) GC
+      }
     */
 
     void killTimerTask()
@@ -382,72 +382,72 @@ public class Seq
             {
             scheduleHandle.cancel(true);
             scheduler.shutdownNow();
-	        scheduleHandle = null;               // let it (and the Seq instance!) GC
+            scheduleHandle = null;               // let it (and the Seq instance!) GC
             }
         }
         
     /*
     // Creates the timer task using the existing tick value and bpm, and with the given warmup time
     void startTimerTask(int warmup)
-        {
-        guiUpdated = true;	// just in case
+    {
+    guiUpdated = true;      // just in case
                 
-        killTimerTask();  // just in case
+    killTimerTask();  // just in case
         
-        timertask = new java.util.TimerTask()
-            {
-            public void run()
-                {
-		        testJitter();
-                // how many ppqticks have transpired?
-                while(tick * PPQ * bpm / 1000 / 60 >= ppqtick)
-                    {
-                    try
-                        {
-                        step();
-                        }
-                    catch (Exception ex)
-                        {
-                        System.err.println("Exception thrown during step: " + ex);
-                        ex.printStackTrace();
-                        }
-                    ppqtick++;
-                    }
-                tick++;
-                }
-            };
+    timertask = new java.util.TimerTask()
+    {
+    public void run()
+    {
+    testJitter();
+    // how many ppqticks have transpired?
+    while(tick * PPQ * bpm / 1000 / 60 >= ppqtick)
+    {
+    try
+    {
+    step();
+    }
+    catch (Exception ex)
+    {
+    System.err.println("Exception thrown during step: " + ex);
+    ex.printStackTrace();
+    }
+    ppqtick++;
+    }
+    tick++;
+    }
+    };
         
-        // Pushes the ppqtick of the timer to just in front of current timer tick.
-        // We need to do this when changing the bpm so that the ppqtick is computed
-        // properly with respect to the new bpm
+    // Pushes the ppqtick of the timer to just in front of current timer tick.
+    // We need to do this when changing the bpm so that the ppqtick is computed
+    // properly with respect to the new bpm
 
-        ppqtick = (int) Math.ceil(tick * PPQ * bpm / 1000 / 60.0);
+    ppqtick = (int) Math.ceil(tick * PPQ * bpm / 1000 / 60.0);
         
         
-        // If we have an exception for some reason, or for some other weird internal Java thing,
-        // the timertask will CANCEL the timer, but we
-        // cannot determine if the timer has been cancelled.  That is frustrating.  So here we
-        // catch an exception and rebuild the timer if need be.
+    // If we have an exception for some reason, or for some other weird internal Java thing,
+    // the timertask will CANCEL the timer, but we
+    // cannot determine if the timer has been cancelled.  That is frustrating.  So here we
+    // catch an exception and rebuild the timer if need be.
 
-        try
-            {
-            timer.scheduleAtFixedRate(timertask, warmup, 1);                       // as fast as we can go
-            }
-        catch (IllegalStateException ex)
-            {
-            timer.cancel();
-            timer.purge();
-            timer = new java.util.Timer("Seq Sequencer Thread", true);                          // run as daemon
-            timer.scheduleAtFixedRate(timertask, warmup, 1);                       // as fast as we can go
-            }
-        }
+    try
+    {
+    timer.scheduleAtFixedRate(timertask, warmup, 1);                       // as fast as we can go
+    }
+    catch (IllegalStateException ex)
+    {
+    timer.cancel();
+    timer.purge();
+    timer = new java.util.Timer("Seq Sequencer Thread", true);                          // run as daemon
+    timer.scheduleAtFixedRate(timertask, warmup, 1);                       // as fast as we can go
+    }
+    }
     */
 
 
     // Creates the timer task using the existing tick value and bpm, and with the given warmup time
     void startTimerTask(int warmup)
         {
-        guiUpdated = true;	// just in case
+        guiUpdated = true;      // just in case
                 
         killTimerTask();  // just in case
         
@@ -456,12 +456,12 @@ public class Seq
             public void run()
                 {
                 if (!Thread.currentThread().getName().equals("Seq Sequencer Thread"))
-                	{
-                	Thread.currentThread().setName("Seq Sequencer Thread");
-                	//System.err.println("Setting Name");
-                	}
+                    {
+                    Thread.currentThread().setName("Seq Sequencer Thread");
+                    //System.err.println("Setting Name");
+                    }
                 
-		        //testJitter();
+                //testJitter();
                 // how many ppqticks have transpired?
                 while(tick * PPQ * bpm / 1000 / 60 >= ppqtick)
                     {
@@ -491,8 +491,8 @@ public class Seq
         // cannot determine if the timer has been cancelled.  That is frustrating.  So here we
         // catch an exception and rebuild the timer if need be.
 
-		scheduler = Executors.newScheduledThreadPool(1);
-		scheduleHandle = scheduler.scheduleAtFixedRate(scheduleTask, 1, 1, TimeUnit.MILLISECONDS);
+        scheduler = Executors.newScheduledThreadPool(1);
+        scheduleHandle = scheduler.scheduleAtFixedRate(scheduleTask, 1, 1, TimeUnit.MILLISECONDS);
         }
 
      
@@ -1377,13 +1377,13 @@ public class Seq
             lock.unlock();
             }
 
-		// Update the GUI?
-		long currentTime = System.currentTimeMillis();
-		if (guiUpdated && currentTime - lastGUIUpdateTime >= UPDATE_GUI_RATE)
-			{
-        	lastGUIUpdateTime = currentTime;
-	        updateGUI(true);
-	        }
+        // Update the GUI?
+        long currentTime = System.currentTimeMillis();
+        if (guiUpdated && currentTime - lastGUIUpdateTime >= UPDATE_GUI_RATE)
+            {
+            lastGUIUpdateTime = currentTime;
+            updateGUI(true);
+            }
 
 //        long totalTime = System.currentTimeMillis() - stepTime;
 //        if (totalTime > 8) System.err.println("Total Time is " + totalTime);
