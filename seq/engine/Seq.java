@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.*;
 import javax.sound.midi.*;
 import java.util.concurrent.locks.*;
+import java.util.concurrent.*;
 import org.json.*;
 
 /**
@@ -50,12 +51,15 @@ public class Seq
     public static final int MAX_BPM = 480;
     /** The smallest possible maximum time, with subparts rounded to 0. */
     public static final int MIN_MAX_TIME = PPQ * 1 * NUM_BARS_PER_PART * NUM_PARTS;
+    /** How many times should we call step() before we update the GUI? step() is notionally called once per ms. */
+    public static final int UPDATE_GUI_RATE = 16;		// 60 FPS
     // Current BPM
     int bpm = DEFAULT_BPM;
     // The timer, pulses at the approporiate amount to do 192 PPQ at the current BPM
     //HighResolutionTimer timer;                        // park uses too much CPU  :-(
     java.util.Timer timer;
-    // The timer lock.  This lock must be acquired in order to manipulate the data stored in clip or clip.motif
+   	ScheduledExecutorService scheduler;
+   	     // The timer lock.  This lock must be acquired in order to manipulate the data stored in clip or clip.motif
         
     Track[] tracks = null;
     boolean[] validTracks = null;
@@ -313,6 +317,9 @@ public class Seq
     
     static final int TIMER_WARM_UP = 1000;          // we need some time before the timer is stable
     TimerTask timertask;
+    Runnable scheduleTask;
+    ScheduledFuture<?> scheduleHandle;
+    
     int ppqtick = 0;
     long tick = 0;
     
@@ -347,7 +354,8 @@ public class Seq
         {
         beep.setAmplitude(0);
         }
-                
+    
+    
     /** Prepares Seq to be thrown away. */
     public void shutdown()
         {
@@ -355,6 +363,7 @@ public class Seq
         }
         
     // Destroys the timer task if any (but NOT the timer)
+    /*
     void killTimerTask()
         {
         if (timertask != null)
@@ -365,16 +374,31 @@ public class Seq
             }
         timertask = null;               // let it (and the Seq instance!) GC
         }
-    
+    */
+
+    void killTimerTask()
+        {
+        if (scheduleHandle != null)
+            {
+            scheduleHandle.cancel(true);
+            scheduler.shutdownNow();
+	        scheduleHandle = null;               // let it (and the Seq instance!) GC
+            }
+        }
+        
+    /*
     // Creates the timer task using the existing tick value and bpm, and with the given warmup time
     void startTimerTask(int warmup)
         {
+        guiUpdated = true;	// just in case
+                
         killTimerTask();  // just in case
         
         timertask = new java.util.TimerTask()
             {
             public void run()
                 {
+		        testJitter();
                 // how many ppqticks have transpired?
                 while(tick * PPQ * bpm / 1000 / 60 >= ppqtick)
                     {
@@ -417,7 +441,61 @@ public class Seq
             timer.scheduleAtFixedRate(timertask, warmup, 1);                       // as fast as we can go
             }
         }
+    */
+
+
+    // Creates the timer task using the existing tick value and bpm, and with the given warmup time
+    void startTimerTask(int warmup)
+        {
+        guiUpdated = true;	// just in case
+                
+        killTimerTask();  // just in case
         
+        scheduleTask = new Runnable()
+            {
+            public void run()
+                {
+                if (!Thread.currentThread().getName().equals("Seq Sequencer Thread"))
+                	{
+                	Thread.currentThread().setName("Seq Sequencer Thread");
+                	//System.err.println("Setting Name");
+                	}
+                
+		        //testJitter();
+                // how many ppqticks have transpired?
+                while(tick * PPQ * bpm / 1000 / 60 >= ppqtick)
+                    {
+                    try
+                        {
+                        step();
+                        }
+                    catch (Exception ex)
+                        {
+                        System.err.println("Exception thrown during step: " + ex);
+                        ex.printStackTrace();
+                        }
+                    ppqtick++;
+                    }
+                tick++;
+                }
+            };
+        
+        // Pushes the ppqtick of the timer to just in front of current timer tick.
+        // We need to do this when changing the bpm so that the ppqtick is computed
+        // properly with respect to the new bpm
+
+        ppqtick = (int) Math.ceil(tick * PPQ * bpm / 1000 / 60.0);
+        
+        // If we have an exception for some reason, or for some other weird internal Java thing,
+        // the timertask will CANCEL the timer, but we
+        // cannot determine if the timer has been cancelled.  That is frustrating.  So here we
+        // catch an exception and rebuild the timer if need be.
+
+		scheduler = Executors.newScheduledThreadPool(1);
+		scheduleHandle = scheduler.scheduleAtFixedRate(scheduleTask, 1, 1, TimeUnit.MILLISECONDS);
+        }
+
+     
     public int nextMacroChildCounter() { return macroChildCounter++; }
         
         
@@ -734,6 +812,7 @@ public class Seq
                     {
                     listener.stateChanged(Seq.this);
                     }
+                guiUpdated = true;
                 }
             });
         }
@@ -1108,6 +1187,7 @@ public class Seq
         }
     
     static final int MAX_JITTER = 8; 
+    static final int MIN_JITTER = 1; 
     long lastTime = -1;
     void testJitter()
         {
@@ -1122,6 +1202,9 @@ public class Seq
     int ccount = 0;
     long lastCCTime = 0;
     
+    long lastGUIUpdateTime = 0;
+    boolean guiUpdated = true;
+    
     boolean firstCountInBeep = true;
     boolean firstMetronomeBeep = true;
     
@@ -1130,7 +1213,7 @@ public class Seq
     // this step, that is, its NEXT step would exceed its length
     void step()
         {
-        //testJitter();
+//        long stepTime = System.currentTimeMillis();
         lock.lock();
         try
             {
@@ -1293,7 +1376,17 @@ public class Seq
             {
             lock.unlock();
             }
-        updateGUI(true);                            // should we do this at this rate?
+
+		// Update the GUI?
+		long currentTime = System.currentTimeMillis();
+		if (guiUpdated && currentTime - lastGUIUpdateTime >= UPDATE_GUI_RATE)
+			{
+        	lastGUIUpdateTime = currentTime;
+	        updateGUI(true);
+	        }
+
+//        long totalTime = System.currentTimeMillis() - stepTime;
+//        if (totalTime > 8) System.err.println("Total Time is " + totalTime);
         }
     
     // called when we're finished because we ran out of time -- this is a rare situation
