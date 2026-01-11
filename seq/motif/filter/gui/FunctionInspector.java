@@ -85,7 +85,7 @@ public class FunctionInspector extends JPanel
                         double value;
                         public double getValue() { return value; }
                         public void setValue(double val) { value = val; }
-                        public String map(double val) { return "" + (int)((val * Motif.NUM_PARAMETERS) + 1); }
+                        public String map(double val) { return "" + (int)((val * (Filter.NUM_TRANSFORMERS - 1)) + 1); }
                         };
                     JComponent[] components = new JComponent[] { from.getLabelledDial("8") };
                     int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Copy", "Cancel" }, 0, "Copy Stage", "Enter the Stage to copy from.");
@@ -93,7 +93,7 @@ public class FunctionInspector extends JPanel
                     int _from = index;  // copy myself
                     if (result == 0)
                         {
-                        _from = (int)(from.getValue() * Motif.NUM_PARAMETERS);
+                        _from = (int)(from.getValue() * (Filter.NUM_TRANSFORMERS - 1));
                         subcombo.setSelectedIndex(filter.typeIndex(filter.getFunction(_from).getType()));
                         }       
                     else
