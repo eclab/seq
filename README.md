@@ -1,11 +1,12 @@
 ![Seq Splash Banner](docs/web/seq.png)
 
 # Seq  
-A Modular, Hierarchical Music Sequencer (Version 9)
+A Modular, Hierarchical Music Sequencer (Version 10)
 
 By Sean Luke (sean@cs.gmu.edu)  
 With Help from Filippo Carnovalini (filippo.carnovalini@vub.be)  
-Copyright 2024, 2025 by Sean Luke and George Mason University
+and Cesar Liendo (cliendo@gmu.edu)  
+Copyright 2024-2026 by Sean Luke and George Mason University
 
 Related projects:  
 
