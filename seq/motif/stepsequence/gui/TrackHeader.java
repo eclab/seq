@@ -8,6 +8,7 @@ package seq.motif.stepsequence.gui;
 import seq.motif.stepsequence.*;
 import seq.engine.*;
 import seq.gui.*;
+import seq.util.*;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
@@ -224,12 +225,12 @@ public class TrackHeader extends JPanel implements Transferable
     // Assumes we already have a lock
     String trackName(int trackNum)
         {
-        String name = ss.getTrackName(trackNum);
+        String name = StringUtility.sanitize(ss.getTrackName(trackNum));
         if (name == null) name = "";
         else name = name.trim();
         if (name == "") name = "Track " + trackNum;
-        if (selected) return "<html><font color=" + SELECTED_TRACK_COLOR +">"+name+"</font></html>";
-        else return "<html>"+name+"</html>";
+        if (selected) return "<html><font color=" + SELECTED_TRACK_COLOR + ">" + name + "</font></html>";
+        else return "<html>" + name + "</html>";
         }
         
     public void revise()
