@@ -27,7 +27,7 @@ public class StepSequence extends Motif
     // public static final int TIE = 128;
     public static final int DEFAULT_TRACK_NOTE = 60;            // Middle C
     public static final int[] FLAMS = { 48, 24, 16, 12, 8, 6, 4, 3, 2, 1 };
-    public static final int MAX_NUM_TRACKS = 32;
+    public static final int MAX_NUM_TRACKS = 64;
         
     // This value signifies that the default should be used rather than a numerical value
     public static final int DEFAULT = 0 - (Motif.NUM_PARAMETERS + 2);           // low enough to avoid the corrected parameter stuff
@@ -449,7 +449,7 @@ public class StepSequence extends Motif
         }
                 
     public int getNumTracks() { return velocities.length; }
-    void setNumTracks(int numTracks)
+    public void setNumTracks(int numTracks)
         {
         numTracks = Math.min(numTracks, MAX_NUM_TRACKS);
         int oldNumTracks = velocities.length;
