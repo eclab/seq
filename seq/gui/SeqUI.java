@@ -2157,6 +2157,6 @@ public class SeqUI extends JPanel
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 
         "With Help from Filippo Carnovalini<br>" + 
-        "<b><font color='#3498db'>Version 9</font></b>, November 2025<br>" + 
+        "<b><font color='#3498db'>Version 10</font></b>, January 2026<br>" + 
         "https://github.com/eclab/seq</html>";
     }
