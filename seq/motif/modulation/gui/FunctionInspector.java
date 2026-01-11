@@ -87,7 +87,7 @@ public class FunctionInspector extends JPanel
                         double value;
                         public double getValue() { return value; }
                         public void setValue(double val) { value = val; }
-                        public String map(double val) { return "" + (int)((val * Motif.NUM_PARAMETERS) + 1); }
+                        public String map(double val) { return "" + (int)((val * (Motif.NUM_PARAMETERS - 1)) + 1); }
                         };
                     JComponent[] components = new JComponent[] { from.getLabelledDial("8") };
                     int result = Dialogs.showMultiOption(sequi, names, components, new String[] { "Copy", "Cancel" }, 0, "Copy Argument", "Enter the Argument to copy from.");
@@ -95,7 +95,7 @@ public class FunctionInspector extends JPanel
                     int _from = index;  // copy myself
                     if (result == 0)
                         {
-                        _from = (int)(from.getValue() * Motif.NUM_PARAMETERS);
+                        _from = (int)(from.getValue() * (Motif.NUM_PARAMETERS - 1));
                         subcombo.setSelectedIndex(modulation.typeIndex(modulation.getFunction(_from).getType()));
                         }       
                     else
@@ -1543,10 +1543,11 @@ public class FunctionInspector extends JPanel
 
     static final String SAME_AS_TOOLTIP = "<html><b>Same As</b><br>" +
         "Specifies that this Argument is the same as an <b>Earlier Argument</b>.<br><br>" + 
-        "For example, we might state that Argument 1's modulation is identical to Argument's modulation.<br>" +
-        "Note that arguments cannot be identical to <b>Later Arguments</b> or to themselves.  If you set<br>" +
-        "an Argument to be identical to a later argument, it will be declared to be <b>Invalid</b> and will<br>" +
-        "treated just like <b>None</b> (no modulation).</html>";
+        "For example, we might state that Argument 4's modulation is identical to Argument 2's modulation.<br>" +
+        "You cannot state that an Argument is the same as itself, or a <b>Later Argument</b>.<br>" +
+        "Such options will be declared to be <b>Invalid</b> and will treated just like <b>None</b><br>" +
+        "(no modulation). This means (for example) that <i>all</i> of Argument 1's Same As options are<br>" +
+        "invalid, since every Argument is later than Argument 1.</html>";
 
 
     }
