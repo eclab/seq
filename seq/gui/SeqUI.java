@@ -985,9 +985,17 @@ public class SeqUI extends JPanel
                         }
                     }
 
-                Midi midi = seq.getMIDI();
-                Midi.Tuple old = seq.getMIDITuple();
-                Midi.Tuple tuple = midi.getNewTuple(old, SeqUI.this, seq, "Set MIDI Devices", seq.getIns());
+				Midi.Tuple tuple = Midi.CANCELLED;
+                lock.lock();
+                try
+                	{
+					Midi midi = seq.getMIDI();
+					Midi.Tuple old = seq.getMIDITuple();
+					String[] outNicks = seq.getOutNicknames();
+					String[] inNicks = seq.getInNicknames();
+					tuple = midi.getNewTuple(old, SeqUI.this, seq, "Set MIDI Devices", seq.getIns(), outNicks, inNicks);
+					}
+				finally { lock.unlock(); }
                 if (tuple != Midi.CANCELLED)
                     {
                     lock.lock();

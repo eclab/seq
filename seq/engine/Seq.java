@@ -112,9 +112,9 @@ public class Seq
     // The In objects for each input device in the tuple
     In[] ins;
     // The names for each output device in the tuple
-    String[] outNames;
+    //String[] outNames;
     // The In objects for each input device in the tuple
-    String[] inNames;
+    //String[] inNames;
     // Routing
     int routeIn;
     int routeOut;
@@ -308,7 +308,6 @@ public class Seq
     ///// SHUTDOWN HOOK
     Thread shutdownHook = null;
     
-    
     ///// MACRO CHILDREN
     int macroChildCounter = 1;          // Macro children need a unique namecounter that is ideally stored with the Seq so it can be saved
     
@@ -330,6 +329,30 @@ public class Seq
     public File getFile() { return file; }
     /** Sets the file associated with this Seq.  Can be set to null. */
     public void setFile(File file) { this.file = file; }
+    
+    public String[] getOutNicknames() 
+    	{
+    	String[] outNicknames = new String[NUM_OUTS];
+    	if (outs == null || outs[0] == null) return outNicknames;		// this is a hack
+    	
+    	for(int i = 0; i < outNicknames.length; i++)
+    		{
+    		outNicknames[i] = getOut(i).getName();
+    		}
+    	return outNicknames;
+    	}
+
+    public String[] getInNicknames() 
+		{
+		String[] inNicknames = new String[NUM_INS];
+    	if (ins == null || ins[0] == null) return inNicknames;		// this is a hack
+
+		for(int i = 0; i < inNicknames.length; i++)
+			{
+			inNicknames[i] = getIn(i).getName();
+			}
+    	return inNicknames;
+    	}
     
     public int getBeepPitch()
         {
@@ -555,8 +578,16 @@ public class Seq
         this();
         outs = old.outs;
         ins = old.ins;
-        outNames = old.outNames;
-        inNames = old.inNames;
+        for(int i = 0; i < outs.length; i++)
+        	{
+        	outs[i].setName(Prefs.getLastTupleOutName(i));
+        	}
+        for(int i = 0; i < ins.length; i++)
+        	{
+        	ins[i].setName(Prefs.getLastTupleInName(i));
+        	}
+        //outNames = old.outNames;
+        //inNames = old.inNames;
         sequi = old.sequi;
         listeners.addAll(old.listeners);
         this.tuple = old.tuple;
@@ -632,16 +663,16 @@ public class Seq
     // OUT
     public Out getOut(int out) { return outs[out]; }
     public Out[] getOuts() { return outs; }
-    public String[] getOutNames() { return outNames; }
+    //public String[] getOutNames() { return outNames; }
     public void setOut(int out, Out val) { outs[out] = val; }
-    public String getOutName(int out) { return outNames[out]; }
-    public void setOutName(int out, String name) { outNames[out] = name; }
+    //public String getOutName(int out) { return outNames[out]; }
+    //public void setOutName(int out, String name) { outNames[out] = name; }
     public int getNumOuts() { return outs.length; }
 
     // IN
     public In getIn(int in) { return ins[in]; }
     public In[] getIns() { return ins; }
-    public String[] getInNames() { return inNames; }
+   // public String[] getInNames() { return inNames; }
     public void setIn(int in, In val) { ins[in] = val; }
     public int getNumIns() { return ins.length; }
 
@@ -1718,6 +1749,20 @@ public class Seq
         obj.put("rmax", randomMax);
         obj.put("rmin", randomMin);
         obj.put("seed", getDeterministicRandomSeed());
+        
+        JSONArray outNicks = new JSONArray();
+    	for(int i = 0; i < NUM_OUTS; i++)
+    		{
+    		outNicks.put(i, getOut(i).getName());
+    		}
+    	obj.put("outnicks", outNicks);
+
+        JSONArray inNicks = new JSONArray();
+    	for(int i = 0; i < NUM_INS; i++)
+    		{
+    		inNicks.put(i, getIn(i).getName());
+    		}
+    	obj.put("innicks", inNicks);
                 
         // Set the display order
         int order = 0;
@@ -1795,6 +1840,18 @@ public class Seq
         seq.randomMax = obj.optDouble("rmax", 0.0);
         seq.randomMin = obj.optDouble("rmin", 1.0);
         
+        JSONArray outNicks = obj.optJSONArray("outnicks");
+        for(int i = 0; i < NUM_OUTS; i++)
+    		{
+    		seq.getOut(i).setName(outNicks.optString(i, null));
+    		}
+
+        JSONArray inNicks = obj.optJSONArray("innicks");
+        for(int i = 0; i < NUM_INS; i++)
+    		{
+    		seq.getIn(i).setName(inNicks.optString(i, null));
+    		}
+
         // seed
         int seed = obj.optInt("seed", 0);
         if (seed == -1)
@@ -2059,11 +2116,11 @@ public class Seq
             int[] outChannels = new int[NUM_OUTS];
             int[] inChannels = new int[NUM_INS];
             Midi.MidiDeviceWrapper[] inWrappers = new Midi.MidiDeviceWrapper[NUM_INS];
-            String[] inNames = new String[NUM_INS];
-            String[] outNames = new String[NUM_OUTS];
+            //String[] inNames = new String[NUM_INS];
+            //String[] outNames = new String[NUM_OUTS];
             
-            // Initially all NULL.  We gotta set this up with something smarter
-            tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, inNames, outNames);
+             // Initially all NULL.  We gotta set this up with something smarter
+            tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, getOutNicknames(), getInNicknames());
 
             for(int i = 0; i < NUM_OUTS; i++)
                 {
@@ -2075,7 +2132,8 @@ public class Seq
                 inChannels[i] = 0;
                 ins[i] = new In(this, i);
                 }
-                
+ 
+
             tuple = Midi.loadTupleFromPreferences(this, ins);
             }
         finally
@@ -2175,10 +2233,10 @@ public class Seq
                     System.err.println("In MIDI " + i + ": " + inWrappers[i] + "Channel: " + inChannels[i]);
                     }
                         
-                String[] inNames = new String[NUM_INS];
-                String[] outNames = new String[NUM_OUTS];
+                //String[] inNames = new String[NUM_INS];
+                //String[] outNames = new String[NUM_OUTS];
 
-                tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, inNames, outNames);
+                tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, getOutNicknames(), getInNicknames());
                 // ins have to be set up after the tuple
                 for(int i = 0; i < numMIDIInput; i++)
                     {

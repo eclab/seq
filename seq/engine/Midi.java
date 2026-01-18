@@ -37,6 +37,7 @@ public class Midi
     public static int numOutDevices = 1;                // don't like these being static
     public static int numInDevices = 1;                         // don't like these being static
     public static final int OMNI = 0;                   // for input channels
+    public static final int DEVICE_NAME_COLUMNS = 10;
         
     static final boolean DEBUG = false;
     
@@ -726,8 +727,12 @@ public class Midi
         new receivers are attached, the old ones are eliminated.  However if old Tuple is from another
         active synthesizer editor, and so is just being used to provide defaults, then you should set
         removeReceiversFromOldTuple to FALSE so it doesn't muck with the previous synthesizer.
+        
+        If outNick and inNick contain non-null, non-empty Strings, then these strings are used as the nicknames, and are
+        also saved to preferences if the user presses OKAY.  Otherwise the current nicknames in the preferences
+        are used instead.  In either case, outNick and inNick are then set to the user's chosen nicknames Strings.
     */ 
-    public static Tuple getNewTuple(Tuple old, JComponent parent, Seq seq, String message, In[] inReceiver)
+    public static Tuple getNewTuple(Tuple old, JComponent parent, Seq seq, String message, In[] inReceiver, String[] outNick, String[] inNick)
         {
         updateDevices();
         
@@ -849,11 +854,13 @@ public class Midi
                     {
                     public String newValue(String val) { changed[0] = (!getValue().equals(val)); return val; }
                     };
+                outNicknames[i].setColumns(DEVICE_NAME_COLUMNS);
                 String nick = null;
                 if (old != null) nick = old.outName[i];
                 if (nick == null || nick.trim().length() == 0)
                     {
-                    String str = Prefs.getLastTupleOutName(i);
+                    String str = outNick[i];
+                    if (str == null || str.trim().length() == 0) str = Prefs.getLastTupleOutName(i);
                     if (str != null && str.trim().length() > 0)
                         {
                         outNicknames[i].setValue(str.trim());
@@ -872,11 +879,13 @@ public class Midi
                     {
                     public String newValue(String val) { changed[0] = (!getValue().equals(val)); return val; }
                     };
+                inNicknames[i].setColumns(DEVICE_NAME_COLUMNS);
                 String nick = null;
                 if (old != null) nick = old.inName[i];
                 if (nick == null || nick.trim().length() == 0)
                     {
-                    String str = Prefs.getLastTupleInName(i);
+                    String str = inNick[i];
+                    if (str == null || str.trim().length() == 0) str = Prefs.getLastTupleInName(i);
                     if (str != null && str.trim().length() > 0)
                         {
                         inNicknames[i].setValue(str.trim());
@@ -924,7 +933,7 @@ public class Midi
                                         
             if (result == 1)                        // "Reload"
                 {
-                Tuple tup = getNewTuple(old, parent, seq, message, inReceiver);
+                Tuple tup = getNewTuple(old, parent, seq, message, inReceiver, outNick, inNick);
                 Dialogs.enableMenuBar();
                 return tup;
                 }         
@@ -1011,7 +1020,8 @@ public class Midi
                     else
                         Prefs.setLastTupleOut(i, tuple.outWrap[i].toString());
                     Prefs.setLastTupleOutChannel(i, tuple.outChannel[i]);
-                    Prefs.setLastTupleOutName(i, tuple.outName[i] == null ? "" : tuple.outName[i].trim());
+                    outNick[i] = (tuple.outName[i] == null ? "" : tuple.outName[i].trim());
+                    Prefs.setLastTupleOutName(i, outNick[i]);
                     }
                                                 
                 for(int i = 0; i < numInDevices; i++)
@@ -1021,7 +1031,8 @@ public class Midi
                     else
                         Prefs.setLastTupleIn(i, tuple.inWrap[i].toString());
                     Prefs.setLastTupleInChannel(i, tuple.inChannel[i]);
-                    Prefs.setLastTupleInName(i, tuple.inName[i] == null ? "" : tuple.inName[i].trim());
+                    inNick[i] = (tuple.inName[i] == null ? "" : tuple.inName[i].trim());
+                    Prefs.setLastTupleInName(i, inNick[i]);
                     }
 
                 Dialogs.enableMenuBar();
