@@ -1841,16 +1841,22 @@ public class Seq
         seq.randomMin = obj.optDouble("rmin", 1.0);
         
         JSONArray outNicks = obj.optJSONArray("outnicks");
-        for(int i = 0; i < NUM_OUTS; i++)
-    		{
-    		seq.getOut(i).setName(outNicks.optString(i, null));
-    		}
+        if (outNicks != null)
+        	{
+			for(int i = 0; i < NUM_OUTS; i++)
+				{
+				seq.getOut(i).setName(outNicks.optString(i, null));
+				}
+			}
 
         JSONArray inNicks = obj.optJSONArray("innicks");
-        for(int i = 0; i < NUM_INS; i++)
-    		{
-    		seq.getIn(i).setName(inNicks.optString(i, null));
-    		}
+        if (inNicks != null)
+        	{
+			for(int i = 0; i < NUM_INS; i++)
+				{
+				seq.getIn(i).setName(inNicks.optString(i, null));
+				}
+			}
 
         // seed
         int seed = obj.optInt("seed", 0);
