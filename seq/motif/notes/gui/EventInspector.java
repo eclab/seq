@@ -134,6 +134,8 @@ public class EventInspector extends WidgetList
 						}
 					});
 
+                out.setToolTipText(OUT_TOOLTIP);
+
                 when = new TimeDisplay(event.when, seq)
                     {
                     public int getTime()
@@ -943,7 +945,7 @@ public class EventInspector extends WidgetList
         lock.lock();
         try 
             { 
-            //nothing for now
+            out.setSelectedIndex(event.getOut()); 
             }
         finally { lock.unlock(); }                              
         seq = old;
@@ -963,6 +965,9 @@ public class EventInspector extends WidgetList
         }
  
  
+    static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
+        "Customizes the output device for this event.</html>";
+        
     static final String WHEN_TOOLTIP = "<html><b>When</b><br>" +
         "Adjusts when this event occurs.  To set it, press <b>Set</b>.</html>";
 
