@@ -489,6 +489,7 @@ public class NotesInspector extends WidgetList
  
             quantizeBias = new SmallDial(Prefs.getLastDouble("QuantizeBiasOnRecord", 0.5))
                 {
+                public String map(double val) { return String.valueOf(val - 0.5); }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();

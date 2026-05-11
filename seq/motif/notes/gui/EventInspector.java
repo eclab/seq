@@ -22,6 +22,7 @@ public class EventInspector extends WidgetList
     
     Notes.Event event;
     
+    JComboBox out;
     TimeDisplay when;
     TimeDisplay length;
     SmallDial pitch;
@@ -109,6 +110,30 @@ public class EventInspector extends WidgetList
             lock.lock();
             try
                 {
+				Out[] seqOuts = seq.getOuts();
+				String[] outs = new String[seqOuts.length + 1];
+				outs[0] = "<html><i>Default</i></html>";
+				for(int i = 1; i < seqOuts.length; i++)
+					{
+					outs[i] = "" + i + ": " + seqOuts[i].toString();
+					}
+
+				out = new JComboBox(outs);
+				out.setSelectedIndex(event.getOut() + 1);		// note:  +1
+				out.setMaximumRowCount(outs.length);
+				out.addActionListener(new ActionListener()
+					{
+					public void actionPerformed(ActionEvent e)
+						{
+						if (seq == null) return;
+						ReentrantLock lock = seq.getLock();
+						lock.lock();
+						try { event.setOut(out.getSelectedIndex() - 1); }	// note:  -1
+						finally { lock.unlock(); }     
+						notesui.reload();
+						}
+					});
+
                 when = new TimeDisplay(event.when, seq)
                     {
                     public int getTime()
@@ -298,10 +323,11 @@ public class EventInspector extends WidgetList
                         };
                     release.setToolTipText(RELEASE_VELOCITY_TOOLTIP);
 
-                    strs = new String[] { /*"Type",*/ "When", "Length", "Pitch", "Velocity", "Release" };
+                    strs = new String[] { /*"Type",*/ "Out", "When", "Length", "Pitch", "Velocity", "Release" };
                     comps = new JComponent[] 
                         {
                         //new JLabel("Note"),
+                    	out,
                         when,
                         length,
                         pitch.getLabelledDial("A#"),
@@ -377,9 +403,10 @@ public class EventInspector extends WidgetList
                     valuePanel.add(valuePresets, BorderLayout.EAST); 
                     valuePanel.setToolTipText(VALUE_TOOLTIP);
         
-                    strs = new String[] { /*"Type",*/ "When", "Bend" };
+                    strs = new String[] { /*"Type",*/ "Out", "When", "Bend" };
                     comps = new JComponent[] 
                         {
+                    	out,
                         //new JLabel("Bend"),
                         when,
                         valuePanel,
@@ -454,9 +481,10 @@ public class EventInspector extends WidgetList
                         };
                     value.setToolTipText(VALUE_TOOLTIP);
 
-                    strs = new String[] { /*"Type",*/ "When", /*"Parameter",*/ "Value" };
+                    strs = new String[] { /*"Type",*/ "Out", "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
+                    	out,
                         //new JLabel("CC"),
                         when,
                         //parameter.getLabelledDial("127"),
@@ -597,9 +625,10 @@ public class EventInspector extends WidgetList
                     pan3.add(pan4, BorderLayout.CENTER);
                     pan3.setToolTipText(VALUE_RESULT_TOOLTIP);
 
-                    strs = new String[] { /*"Type",*/ "When", /*"Parameter",*/ "Value" };
+                    strs = new String[] { /*"Type",*/ "Out", "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
+                    	out,
                         //new JLabel("NRPN"),
                         when,
                         //pan1,
@@ -740,9 +769,10 @@ public class EventInspector extends WidgetList
                     pan3.add(pan4, BorderLayout.CENTER);
                     pan3.setToolTipText(VALUE_RESULT_TOOLTIP);
 
-                    strs = new String[] { /*"Type",*/ "When", /*"Parameter",*/ "Value" };
+                    strs = new String[] { /*"Type",*/ "Out", "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
+                    	out,
                         //new JLabel("RPN"),
                         when,
                         //pan1,
@@ -826,9 +856,10 @@ public class EventInspector extends WidgetList
 
                     if (aftertouch.pitch == Out.CHANNEL_AFTERTOUCH)
                         {
-                        strs = new String[] { /*"Type",*/ "When", "Value" };
+                        strs = new String[] { /*"Type",*/ "Out", "When", "Value" };
                         comps = new JComponent[] 
                             {
+                    	out,
                             //new JLabel("Aftertouch"),
                             when,
                             value.getLabelledDial("127")
@@ -836,9 +867,10 @@ public class EventInspector extends WidgetList
                         }
                     else
                         {
-                        strs = new String[] { /*"Type",*/ "When", "Pitch", "Value" };
+                        strs = new String[] { /*"Type",*/ "Out", "When", "Pitch", "Value" };
                         comps = new JComponent[] 
                             {
+                    	out,
                             //new JLabel("Aftertouch"),
                             when,
                             pitch.getLabelledDial("A#"),
@@ -890,9 +922,10 @@ public class EventInspector extends WidgetList
                         };
                     value.setToolTipText(VALUE_TOOLTIP);
 
-                    strs = new String[] {  "Value" };
+                    strs = new String[] {  "Out", "Value" };
                     comps = new JComponent[] 
                         {
+                    	out,
                         value.getLabelledDial("127")
                         };
                     }

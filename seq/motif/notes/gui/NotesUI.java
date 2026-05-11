@@ -1906,7 +1906,8 @@ public class NotesUI extends MotifUI
         }
 
     /** Updates the child inspector. */
-    public void revise()
+   /*
+   public void revise()
         {
         if (childInspector != null) 
             {
@@ -1920,6 +1921,7 @@ public class NotesUI extends MotifUI
             childBorder.setBorder(null);
             }
         }
+    */
         
     /** Updates the NotesUI and repaints it. */
     public void redraw(boolean inResponseToStep) 

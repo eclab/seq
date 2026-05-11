@@ -32,12 +32,25 @@ public class NoteUI extends EventUI implements Comparable
     public static final Color VELOCITY_MID_COLOR = Theme.isDark() ? Theme.ORANGE : Color.RED;
     // Color of Velocity end
     public static final Color VELOCITY_END_COLOR = Theme.isDark() ? Theme.RED : Color.YELLOW;
+    // Color of Velocity start
+    public static final Color ALT_VELOCITY_START_COLOR = Theme.isDark() ? Color.GREEN : Color.GREEN;
+    // Color of Velocity midpoint
+    public static final Color ALT_VELOCITY_MID_COLOR = Theme.isDark() ? Color.BLUE : Color.BLUE;
+    // Color of Velocity end
+    public static final Color ALT_VELOCITY_END_COLOR = Theme.isDark() ? Color.MAGENTA : Color.MAGENTA;
+
 
     // Mapping of velocity to color
     public static final SimpleColorMap VELOCITY_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
         new SimpleColorMap(0, 127, 64, 
             new SimpleColorMap(0, 64, VELOCITY_START_COLOR, VELOCITY_MID_COLOR),
             new SimpleColorMap(64, 127, VELOCITY_MID_COLOR, VELOCITY_END_COLOR));
+               
+    // Mapping of velocity to color
+    public static final SimpleColorMap ALT_VELOCITY_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
+        new SimpleColorMap(0, 127, 64, 
+            new SimpleColorMap(0, 64, ALT_VELOCITY_START_COLOR, ALT_VELOCITY_MID_COLOR),
+            new SimpleColorMap(64, 127, ALT_VELOCITY_MID_COLOR, ALT_VELOCITY_END_COLOR));
                
     // backpointer to the owner PitchUI
     PitchUI pitchui;
@@ -107,6 +120,7 @@ public class NoteUI extends EventUI implements Comparable
             when = note.when;
             length = note.length;
             value = note.velocity;
+            altOut = (note.out != Notes.DEFAULT_OUT);
             selected = note.selected;
             }
         finally
@@ -377,6 +391,10 @@ public class NoteUI extends EventUI implements Comparable
             {
             g.setPaint(DEFAULT_COLOR);
             }
+        else if (altOut)
+			{
+			g.setPaint(ALT_VELOCITY_MAP.getColor((int)value));
+			}
         else
             {
             g.setPaint(VELOCITY_MAP.getColor((int)value));

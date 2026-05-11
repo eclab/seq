@@ -42,13 +42,25 @@ public class EventUI extends JComponent
     public static final Color VELOCITY_MID_COLOR = Theme.isDark() ? Theme.ORANGE : Color.RED;
     // Color of Velocity end
     public static final Color VELOCITY_END_COLOR = Theme.isDark() ? Theme.RED : Color.YELLOW;
+    // Color of Velocity start
+    public static final Color ALT_VELOCITY_START_COLOR = Theme.isDark() ? Color.GREEN : Color.GREEN;
+    // Color of Velocity midpoint
+    public static final Color ALT_VELOCITY_MID_COLOR = Theme.isDark() ? Color.BLUE : Color.BLUE;
+    // Color of Velocity end
+    public static final Color ALT_VELOCITY_END_COLOR = Theme.isDark() ? Color.MAGENTA : Color.MAGENTA;
 
     // Mapping of velocity to color
     public static final SimpleColorMap VALUE_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
         new SimpleColorMap(0, 127, 64, 
             new SimpleColorMap(0, 64, VELOCITY_START_COLOR, VELOCITY_MID_COLOR),
             new SimpleColorMap(64, 127, VELOCITY_MID_COLOR, VELOCITY_END_COLOR));
-                        
+
+    // Mapping of velocity to color
+    public static final SimpleColorMap ALT_VALUE_MAP = //new SimpleColorMap(0, 127, Color.GRAY, Color.RED);
+        new SimpleColorMap(0, 127, 64, 
+            new SimpleColorMap(0, 64, ALT_VELOCITY_START_COLOR, ALT_VELOCITY_MID_COLOR),
+            new SimpleColorMap(64, 127, ALT_VELOCITY_MID_COLOR, ALT_VELOCITY_END_COLOR));
+               
     // The parameterui owner
     ParameterUI parameterui;
     // The event
@@ -64,6 +76,7 @@ public class EventUI extends JComponent
     // Am I selected?
     boolean selected;
     boolean boundsSet = false;
+    boolean altOut;
 
     // These are carefully chosen to be static variables so we can save some memory
     
@@ -160,6 +173,7 @@ public class EventUI extends JComponent
                 {
                 value = event.getNormalizedValue();
                 }
+            altOut = (event.out != Notes.DEFAULT_OUT);
             selected = event.selected; 
             }
         finally
@@ -491,12 +505,23 @@ public class EventUI extends JComponent
         
         if (polyATPitch >= 0)
             {
-            g.setPaint(VALUE_MAP.getColor(polyATPitch));
+			 if (altOut)
+					{
+					g.setPaint(ALT_VALUE_MAP.getColor((int)value));
+					}
+            else
+            	{
+            	g.setPaint(VALUE_MAP.getColor(polyATPitch));
+            	}
             }
         else if (value < 0)
             {
             g.setPaint(DEFAULT_COLOR);
             }
+        else if (altOut)
+            	{
+            g.setPaint(ALT_VALUE_MAP.getColor((int)value));
+            	}
         else
             {
             g.setPaint(VALUE_MAP.getColor(value * 127.0));

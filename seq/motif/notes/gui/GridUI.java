@@ -30,6 +30,10 @@ public class GridUI extends JComponent
     public static final int KEYBOARD_WIDTH = 40;                // Enough to draw the text for the EventUI Headers
     // This is the size of new notes when snap is turned off
     public static final int DEFAULT_NO_SNAP_NEW_NOTE = Seq.PPQ;
+    // My background color if I am a black note pitch
+    public static final Color BLACK_KEY_BACKGROUND_COLOR = Theme.isDark() ? Color.BLACK : Color.BLACK;
+    // My background color if I am a white note pitch
+    public static final Color WHITE_KEY_BACKGROUND_COLOR = Theme.isDark() ? Theme.GRAY_140 : Color.WHITE;
         
     // The parent NotesUI
     NotesUI notesui;
@@ -425,7 +429,7 @@ public class GridUI extends JComponent
                 panel.add(label, BorderLayout.WEST);
                 }
                                 
-            panel.setBackground(pitchui.isBlack() ? Color.BLACK : Color.WHITE);
+            panel.setBackground(pitchui.isBlack() ? BLACK_KEY_BACKGROUND_COLOR : WHITE_KEY_BACKGROUND_COLOR);
             box.add(panel);
             }
         return box;

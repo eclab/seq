@@ -30,7 +30,7 @@ public class Notes extends Motif
     /** A list of note strings */
     public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-
+	public static final int DEFAULT_OUT = -1;
 
 
 
@@ -174,6 +174,7 @@ public class Notes extends Motif
         // because the NoteUI etc. objects where it would more naturally be stored can get
         // destroyed and rebuilt from the Event at any time and need to recover this information.
         public boolean selected;
+        public int out = DEFAULT_OUT;
         
         public Event(int when)
             {
@@ -183,7 +184,8 @@ public class Notes extends Motif
         public Event(JSONObject obj)
             {
             when = obj.optInt("w", 0);
-            }
+            out = obj.optInt("o", DEFAULT_OUT);
+			}
         
         /** Loads the Event from JSON */
         public static Event load(JSONObject obj) throws JSONException
@@ -217,6 +219,7 @@ public class Notes extends Motif
             {
             JSONObject obj = new JSONObject();
             obj.put("w", when);
+            obj.put("o", out);
             return obj;
             }
         
@@ -235,6 +238,10 @@ public class Notes extends Motif
         public abstract int getType();
         /** Returns the event's length in time. */
         public int getLength() { return 0; }
+        /** Sets the out value, which by default is DEFAULT_OUT */
+        public void setOut(int val) { out = val; }
+        /** Returns the out value, which by edefault is DEFAULT_OUT */
+        public int getOut() { return out; }
         }
 
     public static class Note extends Event

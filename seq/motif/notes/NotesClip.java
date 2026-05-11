@@ -181,7 +181,7 @@ public class NotesClip extends Clip
     public void clear()
         {
         Notes notes = (Notes) getMotif();
-        int out = notes.getOut();
+        //int out = notes.getOut();
         for(int pitch = 0; pitch < recordedNoteOn.length; pitch++)
             {
             Notes.Note noteOn = recordedNoteOn[pitch];
@@ -197,7 +197,7 @@ public class NotesClip extends Clip
     public void release()
         {
         Notes notes = (Notes) getMotif();
-        int out = notes.getOut();
+        //int out = notes.getOut();
         for(int pitch = 0; pitch < recordedNoteOn.length; pitch++)
             {
             Notes.Note noteOn = recordedNoteOn[pitch];
@@ -251,6 +251,12 @@ public class NotesClip extends Clip
                 }
             });
         }
+        
+    public int determineOut(int noteOut, int notesOut)
+    	{
+    	if (noteOut == -1) return notesOut;
+    	else return noteOut;
+    	}
     
     public boolean process()
         {
@@ -379,44 +385,44 @@ public class NotesClip extends Clip
                     // at present we're also not doing the length for the same reason
                     if (velocity > 0)
                         {
-                        int id = noteOn(out, note.pitch, velocity);
+                        int id = noteOn(determineOut(note.out, out), note.pitch, velocity);
                         // NOTE: We have to schedule the note off, rather than turn it off at a later time,
                         // because the musician could change the transpose before the note was turned off
                         // and then the note to turn off would be a different note and we'd be in a whole,
                         // um, HEAP of trouble
                         
-                        if (id >= 0) scheduleNoteOff(out, note.pitch, release, note.length, id);
+                        if (id >= 0) scheduleNoteOff(determineOut(note.out, out), note.pitch, release, note.length, id);
                         }
                     }
                 else if (event instanceof Notes.Bend)
                     {
                     Notes.Bend bend = (Notes.Bend)event;
-                    bend(out, bend.value);
+                    bend(determineOut(bend.out, out), bend.value);
                     }
                 else if (event instanceof Notes.CC)
                     {
                     Notes.CC cc = (Notes.CC)event;
-                    cc(out, cc.parameter, cc.value);
+                    cc(determineOut(cc.out, out), cc.parameter, cc.value);
                     }
                 else if (event instanceof Notes.PC)
                     {
                     Notes.PC pc = (Notes.PC)event;
-                    pc(out, pc.value);
+                    pc(determineOut(pc.out, out), pc.value);
                     }
                 else if (event instanceof Notes.Aftertouch)
                     {
                     Notes.Aftertouch aftertouch = (Notes.Aftertouch)event;
-                    aftertouch(out, aftertouch.pitch, aftertouch.value);
+                    aftertouch(determineOut(aftertouch.out, out), aftertouch.pitch, aftertouch.value);
                     }
                 else if (event instanceof Notes.NRPN)
                     {
                     Notes.NRPN nrpn = (Notes.NRPN)event;
-                    nrpn(out, nrpn.parameter, nrpn.value);
+                    nrpn(determineOut(nrpn.out, out), nrpn.parameter, nrpn.value);
                     }
                 else if (event instanceof Notes.RPN)
                     {
                     Notes.RPN rpn = (Notes.RPN)event;
-                    rpn(out, rpn.parameter, rpn.value);
+                    rpn(determineOut(rpn.out, out), rpn.parameter, rpn.value);
                     }
                 }
                                  
