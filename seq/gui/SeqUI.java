@@ -36,7 +36,9 @@ public class SeqUI extends JPanel
     static
         {
         ToolTipManager.sharedInstance().setDismissDelay(1000000);                       // Our tooltips are long. We don't want an auto-dismiss unless the user navigates away
-        }
+
+		if (Theme.isDark()) UIManager.put("ToolTip.background", Theme.GRAY_80);
+         }
         
     /*  
         private static class MyEventQueue extends EventQueue {
@@ -943,7 +945,7 @@ public class SeqUI extends JPanel
             });
         
         JMenu addMenu = new JMenu("Add");
-        JMenuItem[] items = getMotifList().buildAddMenu();
+        JMenuItem[] items = getMotifList().buildAddMenu(false);
         for(int i = 0; i < items.length; i++)
             {
             if (i < 10)
