@@ -121,6 +121,10 @@ public class Seq
     
     public void routeMIDI(int in, MidiMessage message, long timestamp)
         {
+        // It is critical to create a NEW MESSAGE -- we can't reuse the
+        // existing message and submit it, it causes Java MIDI to create 
+        // a long latency delay
+        
         ReentrantLock lock = getLock();
         lock.lock();
         try     
@@ -129,22 +133,21 @@ public class Seq
                 {
                 if (Clip.isVoiceMessage(message))
                     {
-                    ShortMessage sm = (ShortMessage) message;
-                    try
-                        {
-                        // we need to modify the channel
-                        sm.setMessage(
-                            sm.getCommand(), 
+                    // we need to modify the channel
+                    ShortMessage original = (ShortMessage)message;
+                    ShortMessage sm = new ShortMessage(original.getCommand(), 
                             tuple.outChannel[routeOut], 
-                            sm.getData1(), 
-                            sm.getData2());
-                        }
-                    catch (InvalidMidiDataException ex) { ex.printStackTrace(); }
+                            original.getData1(), 
+                            original.getData2());
+		                outs[routeOut].sendMIDI(sm, timestamp);
                     }
-                        
-                outs[routeOut].sendMIDI(message, timestamp);
+                else
+                	{
+		            outs[routeOut].sendMIDI((MidiMessage)(message.clone()), timestamp);
+                	}     
                 }
             }
+        catch (InvalidMidiDataException ex) { ex.printStackTrace(); }
         finally
             {
             lock.unlock();

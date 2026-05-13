@@ -67,11 +67,11 @@ public class In implements Receiver
     /** Receives the given message and adds it to the mailbox. */
     public void send(MidiMessage message, long timestamp)
         {
+        seq.routeMIDI(index, message, timestamp);
         synchronized(this)
             {
             messages.add(message);
             }
-        seq.routeMIDI(index, message, timestamp);
         if (!Clip.isNoteOff(message)) seq.fireMIDIIn();
         }
         

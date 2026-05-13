@@ -784,7 +784,7 @@ public abstract class Clip
         This is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
-    protected int sendNoteOn(int out, int note, double vel) 
+    public int sendNoteOn(int out, int note, double vel) 
         {
         int id = noteID++;
         sendNoteOn(out, note, vel, id);
@@ -793,7 +793,7 @@ public abstract class Clip
         
     /** Sends a note on to the given Out, with the provided ID.  This version of the method
         should only be called if you are overriding it and calling super. Otherwise, call noteOn(out, note, vel) */
-    protected void sendNoteOn(int out, int note, double vel, int id) 
+    public void sendNoteOn(int out, int note, double vel, int id) 
         {
         if (seq.root == this) seq.noteOn(out, note, vel);
         else parent.noteOn(out, note, vel, id); 
@@ -803,7 +803,7 @@ public abstract class Clip
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int.  Returns true if the message was successfully sent.  */
-    protected void sendNoteOff(int out, int note, double vel, int id) 
+    public void sendNoteOff(int out, int note, double vel, int id) 
         {
         if (seq.root == this) seq.noteOff(out, note, vel);
         else parent.noteOff(out, note, vel, id); 
@@ -814,7 +814,7 @@ public abstract class Clip
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int. NOTE: this is rarely called, at present only by Filter's Delay function to delay notes even beyond the end of the clip. */
-    protected int sendScheduleNoteOn(int out, int note, double vel, int time) 
+    public int sendScheduleNoteOn(int out, int note, double vel, int time) 
         {
         int id = noteID++;
         sendScheduleNoteOn(out, note, vel, time, id);
@@ -826,7 +826,7 @@ public abstract class Clip
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int. NOTE: this is rarely called, at present only by Filter's Delay function to delay notes even beyond the end of the clip. */
-    protected void sendScheduleNoteOn(int out, int note, double vel, int time, int id) 
+    public void sendScheduleNoteOn(int out, int note, double vel, int time, int id) 
         {
         if (seq.root == this) seq.scheduleNoteOn(out, note, vel, time);
         else parent.scheduleNoteOn(out, note, vel, time, id); 
@@ -837,7 +837,7 @@ public abstract class Clip
         this is because it can go above 127 or between 0.0 and 1.0 if multiplied by various 
         gains, and then returned to reasonable values.  Ultimately it will be floored 
         to an int. */
-    protected void sendScheduleNoteOff(int out, int note, double vel, int time, int id) 
+    public void sendScheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         if (seq.root == this) seq.scheduleNoteOff(out, note, vel, time);
         else parent.scheduleNoteOff(out, note, vel, time, id); 
