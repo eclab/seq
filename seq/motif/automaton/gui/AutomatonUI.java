@@ -476,6 +476,7 @@ public class AutomatonUI extends MotifUI
         repaint();
         }
 
+/*
     public void revise()
         {
         if (nodeInspector != null) 
@@ -495,7 +496,7 @@ public class AutomatonUI extends MotifUI
             nodeInspector.revise();
             }
         }
-    
+*/ 
     
     /// AutomatonUI is VERY COSTLY to redraw.  Doing a full-speed redraw
     /// costs about 200% CPU.  So we cut it to one redraw every 4 steps here.
@@ -984,7 +985,7 @@ public class AutomatonUI extends MotifUI
                 
                 
                 
-        
+/*        
     // TESTING
     public static void main(String[] args) throws Exception
         {
@@ -1086,6 +1087,7 @@ public class AutomatonUI extends MotifUI
 
         //seq.waitUntilStopped();
         }
+*/
 
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Node</b><br>" +
         "Removes the selected node.</html>";

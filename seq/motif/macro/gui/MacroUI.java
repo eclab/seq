@@ -508,6 +508,7 @@ public class MacroUI extends MotifUI
         revalidate();
         }
 
+/*
     public void revise()
         {
         if (childInspector != null) 
@@ -518,7 +519,7 @@ public class MacroUI extends MotifUI
             childInspector.revise();
             }
         }
-        
+*/     
 
 
     //// DRAG AND DROP

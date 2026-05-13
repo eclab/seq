@@ -303,7 +303,7 @@ public class StepSequenceUI extends MotifUI
         { 
         //This is to invert the background in darkmode instead of the foreground
         Image img = new ImageIcon(MotifUI.class.getResource("icons/stepsequence.png")).getImage();
-        return new ImageIcon(Theme.invertBG(img)); 
+        return new ImageIcon(img); // new ImageIcon(Theme.invertBG(img)); 
         }  // don't ask
     public ImageIcon getIcon() { return getStaticIcon(); }
     public static String getType() { return "Step Sequence"; }
@@ -1041,6 +1041,7 @@ public class StepSequenceUI extends MotifUI
         if (inspector!=null) inspector.revise();
         }
 
+    /*
     public void revise()
         {
         getInspector().revise();
@@ -1059,7 +1060,9 @@ public class StepSequenceUI extends MotifUI
             stepInspector.revise();
             }
         }
+    */
         
+    /*
     public static void main(String[] args) throws Exception
         {
         // Set up FlatLaf
@@ -1121,7 +1124,7 @@ public class StepSequenceUI extends MotifUI
         
         seq.waitUntilStopped();         // we're looping so this will never exit
         }
-
+	*/
 
 
     boolean parseDrumset(Reader reader) throws IOException

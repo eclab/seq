@@ -46,7 +46,7 @@ public abstract class SmallDial extends JPanel
     // Ths thickness of the thicker dial stroke.
     public static final BasicStroke THICK_STROKE = new BasicStroke(STROKE_WIDTH, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
     // The color of the thin portion of the dial when using defaults
-    public static final Color USES_DEFAULTS_THIN_COLOR = Theme.isDark()? Theme.GRAY_60 : Color.GRAY;
+    public static final Color USES_DEFAULTS_THIN_COLOR = Theme.isDark()? Theme.GRAY_40 : Color.GRAY;
     // The color of the thin portion of the dial
     public static final Color DISABLED_COLOR = Theme.isDark()? Theme.GRAY_60 : Color.GRAY;
     // The color of the thin portion of the dial

@@ -54,7 +54,7 @@ public class SelectUI extends MotifUI
     public static ImageIcon getStaticIcon() 
         { 
         Image img = new ImageIcon(MotifUI.class.getResource("icons/select.png")).getImage();
-        return new ImageIcon(Theme.invertBG(img)); 
+        return new ImageIcon(img); // new ImageIcon(Theme.invertBG(img)); 
         }  // don't ask
     public ImageIcon getIcon() { return getStaticIcon(); }
     public static String getType() { return "Select"; }
@@ -404,6 +404,7 @@ public class SelectUI extends MotifUI
         revalidate();
         }
 
+    /*
     public void revise()
         {
         if (childInspector != null) 
@@ -423,6 +424,7 @@ public class SelectUI extends MotifUI
             childInspector.revise();
             }
         }
+    */
         
     public void redraw(boolean inResponseToStep) 
         {
@@ -833,7 +835,7 @@ public class SelectUI extends MotifUI
                 
                 
                 
-                
+               /*
         
     // TESTING
     public static void main(String[] args) throws Exception
@@ -935,6 +937,7 @@ public class SelectUI extends MotifUI
 
         //seq.waitUntilStopped();
         }
+    */
 
 
     public static final String DIAL_TOOLTIP = "<html><b>Parameter Dial</b><br>" +

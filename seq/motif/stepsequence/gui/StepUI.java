@@ -18,7 +18,7 @@ public class StepUI extends JComponent
     {
     public static final Stroke BEAT_STROKE = new BasicStroke(3.0f);
     public static final Stroke OFF_STROKE = new BasicStroke(1.0f);
-    public static final Color STROKE_COLOR = Theme.isDark() ? Theme.GRAY_50 : new Color(64, 64, 64); 
+    public static final Color STROKE_COLOR = Theme.isDark() ? Theme.GRAY_120 : new Color(64, 64, 64); 
     public static final Color STEP_COLOR = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.BLUE;       // for the moment
     public static final Color OFF_COLOR = Theme.isDark() ? Theme.GRAY_70 : Color.GRAY;        // for the moment
     public static final Color ON_STROKE_COLOR = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.BLUE;

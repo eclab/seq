@@ -130,7 +130,7 @@ public class EventInspector extends WidgetList
 						lock.lock();
 						try { event.setOut(out.getSelectedIndex() - 1); }	// note:  -1
 						finally { lock.unlock(); }     
-						notesui.reload();
+						if (!revising) notesui.reload();		// we break the recursion here.  We don't break in reload() because that's always with a NEW EventInspector
 						}
 					});
 
@@ -937,17 +937,28 @@ public class EventInspector extends WidgetList
             }
         }
                 
+    
+    // updating the selected index will also force a reload of the NotesUI
+    // in order to get notes to change their colors.  This in turn will
+    // call revise() again recursively.  So we need to fix this by breaking
+    // the recursive call here.
+    boolean revising = false; 
+    
     public void revise()
         {
+        if (revising) return;		// probably moot since we check for this earlier
+        revising = true;
+
         Seq old = seq;
         seq = null;
         ReentrantLock lock = old.getLock();
         lock.lock();
+        
         try 
             { 
-            out.setSelectedIndex(event.getOut()); 
+            out.setSelectedIndex(event.getOut() + 1); 
             }
-        finally { lock.unlock(); }                              
+        finally { lock.unlock(); revising = false; }                              
         seq = old;
         if (when != null) when.revise();
         if (length != null) length.revise();

@@ -172,6 +172,7 @@ public class SeriesUI extends MotifUI
         revalidate();
         }
 
+/*
     public void revise()
         {
         if (childInspector != null) 
@@ -182,7 +183,8 @@ public class SeriesUI extends MotifUI
             childInspector.revise();
             }
         }
-        
+*/
+  
     public void redraw(boolean inResponseToStep) 
         {
         updateText();
@@ -564,7 +566,7 @@ public class SeriesUI extends MotifUI
                 
                 
                 
-        
+        /*
     // TESTING
     public static void main(String[] args) throws Exception
         {
@@ -666,6 +668,7 @@ public class SeriesUI extends MotifUI
 
         //seq.waitUntilStopped();
         }
+    */
 
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
         "Removes the selected motif from the Series.</html>";

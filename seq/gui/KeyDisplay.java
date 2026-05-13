@@ -23,7 +23,7 @@ public class KeyDisplay extends JPanel
     {
     /////// KEYBOARD CONSTANTS
     public static Color DYNAMIC_COLOR = Theme.isDark()? Theme.RED : Color.RED;
-    public static Color KEYBOARD_WHITE_COLOR() { return Color.WHITE; }
+    public static Color KEYBOARD_WHITE_COLOR() { return Theme.isDark() ? Color.BLUE /*Theme.GRAY_60*/ : Color.WHITE; }
     public static Color KEYBOARD_BLACK_COLOR() { return Color.BLACK; }
     public static Color KEYBOARD_DYNAMIC_COLOR() { return DYNAMIC_COLOR; }
     public static int KEYBOARD_DEFAULT_WHITE_KEY_WIDTH() { return 12; }

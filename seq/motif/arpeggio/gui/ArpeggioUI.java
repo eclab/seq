@@ -31,8 +31,8 @@ public class ArpeggioUI extends MotifUI
     public static final Color HEADER_LINE_COLOR = Theme.isDark() ? new Color(60,60,60) : new Color(200, 200, 200);
     public static final int LABEL_PADDING = 4;
     
-    public static final Color PATTERN_ON_COLOR = Theme.isDark() ? Theme.ORANGE : Color.RED;
-    public static final Color PATTERN_ON_DISABLED_COLOR = Theme.isDark() ? Theme.DARK_ORANGE : new Color(220, 160, 160);
+    public static final Color PATTERN_ON_COLOR = Theme.isDark() ? Theme.RED : Color.RED;
+    public static final Color PATTERN_ON_DISABLED_COLOR = Theme.isDark() ? Theme.MUTED_RED : new Color(220, 160, 160);
     public static final Color PATTERN_ON_TIE_COLOR = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.BLUE;
     public static final Color PATTERN_ON_TIE_DISABLED_COLOR = Theme.isDark() ? Theme.GRAY_70: new Color(160, 160, 220);
     public static final Color PATTERN_OFF_COLOR = Theme.isDark() ? Theme.GRAY_50 :new Color(220, 220, 220);

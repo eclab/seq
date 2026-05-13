@@ -138,6 +138,7 @@ public class NotesUI extends MotifUI
     /** Returns the Ruler */
     public Ruler getRuler() { return ruler; }
      
+     
     public NotesUI(Seq seq, SeqUI sequi, Notes notes)
         {
         super(seq, sequi, notes);
@@ -353,6 +354,34 @@ public class NotesUI extends MotifUI
         menu.add(filter);
 
         menu.addSeparator();
+		JMenu outmenu = new JMenu("Set Out...");
+        menu.add(outmenu);
+
+        JMenuItem outs = new JMenuItem("Default");
+        outs.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                setNoteOut(Notes.DEFAULT_OUT);
+                }
+            });
+        outmenu.add(outs);
+        
+        for(int i = 0; i < 16; i++)
+        	{
+        	final int _i = i;
+			outs = new JMenuItem(String.valueOf(i + 1));
+			outs.addActionListener(new ActionListener()
+				{
+				public void actionPerformed(ActionEvent event)
+					{
+					setNoteOut(_i);
+					}
+				});
+			outmenu.add(outs);
+        	}
+
+        menu.addSeparator();
 
         JMenu move = new JMenu("Move");
         menu.add(move);
@@ -435,6 +464,31 @@ public class NotesUI extends MotifUI
             });
         }
     
+    // Change the output device of the selected events or notes
+    void setNoteOut(int out)
+    	{
+        ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
+
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try
+            {
+            for(Notes.Event event : selected)
+                {
+                event.setOut(out);
+                }
+            }
+        finally 
+            {
+            lock.unlock();
+            }
+                        
+        gridui.reload();
+        eventsui.reload();
+        gridui.repaint();
+        eventsui.repaint();
+    	}
+    	
     /** Re-caches the NoteUI or EventUI objects for all Notes and all non-Note Events, and repaints the GridUI, EventsUI, and ruler. */
     public void reload()
         {
