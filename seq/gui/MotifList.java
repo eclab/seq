@@ -137,6 +137,7 @@ public class MotifList extends JPanel
         seq.motif.arpeggio.gui.ArpeggioUI.class,
         seq.motif.filter.gui.FilterUI.class,
         seq.motif.modulation.gui.ModulationUI.class,
+        seq.motif.generator.gui.GeneratorUI.class,
         seq.motif.macro.gui.MacroChildUI.class,
         seq.motif.macro.gui.MacroUI.class,
         };
@@ -153,6 +154,7 @@ public class MotifList extends JPanel
         seq.motif.arpeggio.Arpeggio.class,
         seq.motif.filter.Filter.class,
         seq.motif.modulation.Modulation.class,
+        seq.motif.generator.Generator.class,
         seq.motif.macro.MacroChild.class,
         seq.motif.macro.Macro.class,
         };
@@ -254,7 +256,7 @@ public class MotifList extends JPanel
         return null;
         }
         
-    public JMenuItem[] buildAddMenu()
+    public JMenuItem[] buildAddMenu(boolean allowInvert)
         {
         JMenuItem[] items = new JMenuItem[MOTIF_UIS.length];
         try
@@ -264,8 +266,13 @@ public class MotifList extends JPanel
                 final int _i = i;
                                 
                 ImageIcon icon = (ImageIcon)(MOTIF_UIS[i].getMethod("getStaticIcon").invoke(null));
-                //Image image = icon.getImage().getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); 
-                Image image = Theme.invertImage(icon.getImage()).getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH);
+                Image image = icon.getImage().getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); 
+                if (allowInvert)
+                	{
+                	image = Theme.invertImage(image);
+                	}
+                image = image.getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH);
+                	
 
                 items[i] = new JMenuItem((String)(MOTIF_UIS[i].getMethod("getType").invoke(null)), new ImageIcon(image));
                 items[i].setHorizontalAlignment(SwingConstants.LEADING);
@@ -300,7 +307,7 @@ public class MotifList extends JPanel
         console.setLayout(new BorderLayout());
         add(console, BorderLayout.SOUTH);
 
-        JMenuItem[] items = buildAddMenu();
+        JMenuItem[] items = buildAddMenu(true);
         addButton = new PushButton(new ImageIcon(PushButton.class.getResource("icons/plus.png")), items, true);
         addButton.setPopsUpAbove(true);
         addButton.getButton().setPreferredSize(new Dimension(24, 24));
