@@ -9,6 +9,7 @@ import seq.engine.*;
 import seq.util.*;
 import java.util.*;
 import java.util.concurrent.*;
+import javax.sound.midi.*;
 
 public class ModulationClip extends Clip
     {
@@ -25,7 +26,7 @@ public class ModulationClip extends Clip
 
     public class Node
         {
-        // This is the lat value BEFORE mapping.  It's used by Same to extract the value from other nodes
+        // This is the last value BEFORE mapping.  It's used by Same to extract the value from other nodes
         double lastValue;
         
         // Informs the Node that we have been reset
@@ -60,6 +61,42 @@ public class ModulationClip extends Clip
         }
         
         
+    public class CC extends Node
+        {
+        public void reset(int index) 
+        	{ 
+            Modulation modulation = (Modulation)getMotif();
+            Modulation.CC func = (Modulation.CC)(modulation.getFunction(index));
+        	lastValue = func.getDefault() / 127.0;				// FIXME: should we allow CC settings to survive start/stop?  Right now no.
+        	}
+        	
+        public double update(int index, int position) 
+            {
+            Modulation modulation = (Modulation)getMotif();
+            Modulation.CC func = (Modulation.CC)(modulation.getFunction(index));
+            int funcCC = func.getCC();
+
+			int in = func.getIn() - 1;
+			if (in >= 0)
+				{
+				MidiMessage[] messages = seq.getIn(in).getMessages();
+				for(int i = messages.length - 1; i >= 0; i--)
+					{
+					if (isCC(messages[i]))
+						{
+						int cc = ((ShortMessage)messages[i]).getData1();
+						if (cc == funcCC)		// got it
+							{
+							lastValue = ((ShortMessage)messages[i]).getData2() / 127.0;
+							}
+						}
+					}
+				}
+			return lastValue;
+            }
+        }
+        
+
     public class Constant extends Node
         {
         public double update(int index, int position) 
