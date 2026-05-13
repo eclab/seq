@@ -607,7 +607,7 @@ You can delete your selection with the {\bf Delete Button} (the minus sign) at t
 
 When Notes is played, it plays through and emits all its events in order exactly once, then stops.  You can optionally set a {\bf Start} point and an {\bf End} point in the Inspector.  Play will commence at the Start point, and will end after the End point, or after the last note or event in the sequence, whichever is later.  Start can obviously be equal to or after End: in this case, play commences at start and ends as soon as the last note or event is over.
 
-All notes and events are emitted out the same MIDI output specified by the {\bf Out} in the Notes Inspector.
+All notes and events are by default emitted out the same MIDI output specified by the {\bf Out} in the Notes Inspector.  However you can customize the {\bf Out} value on a per-note or per-event basis.  If you do this, the color of the note or event will change to indicate that it is not the default value.
 
 \paragraph{Recording Notes (and other Events)}
 
@@ -1393,7 +1393,8 @@ At present, Modulation has five automated modulation functions available:
 \item {\bf None}\qquad No automation.
 \item {\bf LFO}\qquad The argument is modulated over time using a {\bf low-frequency oscillator}, which produces a repeating function.
 \item {\bf Envelope}\qquad The argument is modulated over time using an {\bf envelope} with up to eight stages.
-\item {\bf Step}\qquad The argument is modulated over time using a {\bf parameter step sequencer} with up to eight stages.
+\item {\bf Step Seq}\qquad The argument is modulated over time using a {\bf parameter step sequencer} with up to eight stages.
+\item {\bf MIDI CC}\qquad The argument is modulated over time using external MIDI CC parameter data.
 \item {\bf Constant}\qquad The argument is fixed to a constant value.
 \item {\bf Same}\qquad The argument is set to the same value as some earlier modulation function.
 \end{itemize}
@@ -1414,7 +1415,7 @@ The value of argument \(X\) is set to the output of an LFO.  The LFO has the fol
 \begin{itemize}
 \item {\bf Type}\qquad The LFO wave.  This can be Saw Up, Saw Down, Square, Triangle, Sine, Random, and S\&H (Random Sample and Hold).  Random works by selecting a random target position from 0.0 to 1.0 and slowly moving linearly to reach that position by the end of the period, at which it picks a new random target position and repeats.  S\&H works similarly, but it doesn't move: it just holds at its previous target position until the period is completed, at which point it jumps to the new target position.
 \item {\bf Period}\qquad The length of one repetition of the wave, in time steps.
-\item {\bf Phase / Var}\qquad For the {\bf Random} and {\bf Sample and Hold (S\&H)} wave types, this defines the {\bf Variance}, that is, how wide a swing in randomness is used when computing the next target location.  For all other wavetypes, this defines the {\bf initial phase} of the wave, ranging from 0.0 to 1.0.
+\item {\bf Phase / Var}\qquad For the {\bf Random} and {\bf Sample and Hold (S\&H)} wave types, this defines the {\bf Variance}, that is, how wide a swing in randomness is used when computing the next target location.  For all other wave types, this defines the {\bf initial phase} of the wave, ranging from 0.0 to 1.0.
 \item {\bf Initial}\qquad The initial value of the LFO.   The LFO outputs this until it reaches its {\bf Start} time.
 \item {\bf Start}\qquad The LFO's start time.  The LFO doesn't begin operating until this time: instead it sets the argument to {\bf Initial}.
 \item {\bf Fade In}\qquad After the LFO's start time, the LFO gradually fades in from the initial value to the full range from 0.0 to 10.  This is done over the Fade In period: this is a time interval, not a specific time step.
@@ -1438,9 +1439,9 @@ The value of argument \(X\) is set to the output of an up to eight stage envelop
 \item {\bf Hold \textit{n}}\qquad When checked, the envelope will act like a {\bf Sample and Hold}: it will not gradually move towards its target value, but rather will stay at its previous target value (or at the initial value) until the stage is completed, at which time it will suddenly jump to the new target value..
 \end{itemize}
 
-\paragraph{Step Sequence}
+\paragraph{Step Seq}
 
-This is much like a simplified Envelope with Hold: where each stage has the same duration.   We call these stages {\bf steps}.
+This is a step sequence.  It's much like a simplified Envelope with Hold: where each stage has the same duration.   We call these stages {\bf steps}.
 
 \begin{itemize}
 \item {\bf Initial}\qquad The initial value of the step sequencer.   The step sequencer outputs this until it reaches its {\bf Start} time.
@@ -1451,6 +1452,18 @@ This is much like a simplified Envelope with Hold: where each stage has the same
 \item {\bf Repeat \textit{n}}\qquad When checked, the step sequencer will loop: when it finishes its last step, it will go back to its first step and continue from there.
 \item {\bf Trigger \textit{n}}\qquad When checked, the step sequence will not output the given when it reaches Step \(n\).  Rather, if the value is non-zero it will issue a short one-time-step burst of 1.0, then output 0.0 for the rest of the step time.  If the value is zero, it will always output 0.0 for the step time.  This is a {\bf trigger}: a short burst of 1.0 to indicate a trigger has occurred along the argument.  See the {\bf Series} motif for an example use of a trigger.
 \end{itemize}
+
+\paragraph{MIDI CC}
+
+This takes incoming MIDI CC data and outputs it as the parameter value.  There are 128 possible CC parameters, and each can be set to one of 128 values.  The MIDI CC modulation function receives MIDI messages of one CC parameter, which you specify, and maps its values (0...127) into parameter values from 0.0 to 1.0 inclusive.  To do this, you'll need to specify the device from which the MIDI CC messages are received, the specific CC message parameter of interest, and a {\it default value}.  The default value is what's output by the MIDI CC modulation function when it has not yet received a CC message of the given parameter since the start of the sequence.
+
+\begin{itemize}
+\item {\bf In}\qquad The MIDI Input Device, or {\it None} (meaning that incoming MIDI CC data is ignored). 
+\item {\bf CC}\qquad The CC parameter, one of 0...127.  Only data arriving on this MIDI CC parameter will be mapped.
+\item {\bf Default}\qquad The value to map if we have not received any data on the MIDI CC parameter since the sequence began playing.
+\end{itemize}
+
+Note that this isn't the only way you can map incoming MIDI CC data to a Seq parameter.  You can also do it via the {\bf Dial Parameters} in the {\bf Select} motif.  However, the Dial Parameters override the Select's {\it own parameters}, whereas the MIDI CC Modulation Function here will override only the parameters of the child motif to the Modulation.
 
 \paragraph{Constant}
 
@@ -1680,6 +1693,11 @@ Third, for each Dial you'd like controlled by the Controller, in the Dial Parame
 
 And you're done!  Changing knobs on the controller will change the Dial, which in turn will update the parameters of the Children you bound to it.
 
+\paragraph{CC Control via the Modulation Motif}
+Note that this isn't the only way you can map incoming MIDI CC data to a Seq parameter.  You can also do it via the {\bf MIDI CC} modulation function in the {\bf Modulation} motif.  However, unlike the Select motif, where the CC messages override the Select's own parameters, in the Modulation motif the CC messages override the parameters of the Modulation mofit's child.
+
+
+\clearpage
 \section{Developing for Seq}
 
 Seq is written in pure Java, and is designed to have a simple model, even if the graphical interface code is relatively elaborate.  The reason for this was that, ultimately, we hope Seq's model can be rearranged and customized by optimization and machine learning tools.  For now, it's just an unusual sequencer.
@@ -1703,6 +1721,8 @@ Seq runs the MIDI subsystem, both sending and receiving.  The MIDI subsystem its
 Each of these graph structures contains an entry point where the sequence begins when you press play.  For the DAG, it's a {\sf seq.engine.Motif} object called {\bf data}.  For the Clip Tree, it's a corresponding {\sf seq.engine.Clip} called {\bf root}.  This is called the root simply because it's the entry point for the sequence: though for the Clip Tree, it {\it is} the root of the tree, the corresponding {\bf data} object isn't necessarily the root of the DAG at all (and there could be multiple roots).
 
 The Motif DAG consists, at the bottom, of note-generating Motif objects such as Step Sequence or Notes.  Every Motif may have multiple parent Motifs which indicate how to group their children together to play them, such as in series or in parallel.  This DAG is loaded from and saved to a JSON structure using the {\sf seq.load()} and {\sf seq.save()} methods, which in turn call similar methods on each of the Motifs.
+
+\bump
 
 When the sequence is played, the {\sf seq.engine.Seq} prepares and resets playing data, then starts the clock (a {\sf java.util.Timer}\footnote{{\sf java.util.Timer} only has a resolution of 1ms.  That's pretty bad, but it's what we have to work with.  I can build a custom Timer using nanoTime rather than currentTimeMillis, but it only increases the resolution by about \(1.5\times\).  It's possible to build a timer using park and unpark, but it doesn't improve things much and is very computationally costly.  The fundamental issue is the typical multitasking time-slice of the operating system.}.  The clock calls {\sf Seq.step()} 192 times per beat (that is, 192 Parts Per Quarter-note, or PPQ) at the current BPM. {\sf step()} acquires the lock, then calls {\sf advance()} on the {\bf root}, which in turn calls {\sf process} on the root.  This kicks off the series of recursive calls to {\sf advance} and {\sf process} throughout the root's Clip Tree, which gives each {\sf sim.engine.Clip} in the tree a chance to advance itself forward one tick (1/192 PPQ).  When this process is done, Seq lets go of the lock.
 
