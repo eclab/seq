@@ -31,7 +31,10 @@ seq/motif/arpeggio/gui/*.java \
 seq/motif/filter/*.java \
 seq/motif/filter/gui/*java \
 seq/motif/modulation/*.java \
-seq/motif/modulation/gui/*.java 
+seq/motif/modulation/gui/*.java \
+seq/motif/generator/*.java \
+seq/motif/generator/gui/*.java
+
 
 # Make the main Seq code
 all:
@@ -63,8 +66,7 @@ jar: all
 	echo "Main-Class: seq.gui.SeqUI" > /tmp/manifest.add
 	cd libraries ; jar -xvf coremidi4j-1.6.jar ; jar -xvf json.jar ; jar -xvf flatlaf-3.4.1.jar
 	mv libraries/META-INF . ; mv libraries/uk . ; mv libraries/com . ; mv libraries/org . 
-	jar -cvfm install/seq.jar /tmp/manifest.add `find seq -name "*.class"` `find seq -name "*.html"` `find seq -name "*.png"` `find seq -name "*.jpg"` uk/ META-INF/ org/ com/ 
-	echo jar -cvfm install/seq.jar `find seq -name "*.class"` `find seq -name "*.html"` `find seq -name "*.png"` `find seq -name "*.jpg"` uk/ META-INF/ org/ com/ 
+	jar -cvfm install/seq.jar /tmp/manifest.add `find seq -name "*.class"` `find seq -name "*.html"` `find seq -name "*.png"` `find seq -name "*.jpg"` `find "algorithms.txt"` uk/ META-INF/ org/ com/ 
 	rm -rf uk META-INF com org module-info.class
 
 install8: jar
