@@ -15,7 +15,7 @@ import java.util.concurrent.locks.*;
 
 public class FunctionInspector extends JPanel
     {
-    public static final String[] INSPECTOR_NAMES = { "None", "LFO", "Envelope", "Step Sequence", "Constant", "Same As", "<html><i>Copy From...</i></html>" };
+    public static final String[] INSPECTOR_NAMES = { Modulation.IDENTITY, Modulation.LFO, Modulation.ENVELOPE, Modulation.STEP, Modulation.CC, Modulation.SAME, Modulation.CONSTANT, "<html><i>Copy From...</i></html>" };
     public static final int COPY_FROM = 6;
     public static final String[] MAP_FUNCTIONS = {"None (X)", "X^2", "X^4", "1-(1-X)^2", "1-(1-X)^4" };
     public static final String[] LFO_TYPES = {"Saw Up", "Saw Down", "Square", "Triangle", "Sine", "Random", "S&H" };
@@ -1232,6 +1232,156 @@ public class FunctionInspector extends JPanel
         }
 
 
+    public class CCInspector extends SubInspector
+        {
+        SmallDial defaultValue;
+        SmallDial cc;
+        JComboBox in;
+    
+        public CCInspector()
+            {
+            ReentrantLock lock = seq.getLock();
+            lock.lock();
+            
+            try 
+                {
+                Modulation.CC func = (Modulation.CC)(modulation.getFunction(index));
+
+            In[] seqIns = seq.getIns();
+            String[] ins = new String[seqIns.length + 1];
+            ins[0] = "<html><i>None</i></html>";
+            for(int i = 0; i < seqIns.length; i++)
+                {
+                ins[i + 1] = "" + (i + 1) + ": " + seqIns[i].toString();
+                }
+
+            	in = new JComboBox(ins);
+            	in.setSelectedIndex(func.getIn());
+            in.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { func.setIn(in.getSelectedIndex()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+            // in.setToolTipText(CC_IN_TOOLTIP);
+                        
+                cc = new SmallDial(func.getCC() / 127.0, defaults)
+                    {
+                    protected String map(double val) 
+                    	{ 
+                    	return String.valueOf((int)(val * 127.0)); 
+                    	}
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return func.getCC() / 127.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { func.setCC((int)(val * 127.0)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) func.setCC(-(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = func.getCC(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
+                //value.setToolTipText(CONSTANT_VALUE_TOOLTIP);       
+                        
+                defaultValue = new SmallDial(func.getDefault() / 127.0, defaults)
+                    {
+                    protected String map(double val) 
+                    	{ 
+                    	return String.valueOf((int)(val * 127.0)); 
+                    	}
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return func.getDefault() / 127.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { func.setDefault((int)(val * 127.0)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) func.setDefault(-(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = func.getDefault(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
+                //value.setToolTipText(CONSTANT_VALUE_TOOLTIP);                       
+                }
+            finally 
+                {
+                lock.unlock(); 
+                }
+
+
+            build(new String[] { "", "In", "CC", "Default"}, 
+                new JComponent[] 
+                    {
+                    null,
+                    in,
+                    cc.getLabelledDial("127"),
+                    defaultValue.getLabelledDial("127"),
+                    });
+            }
+
+        public void revise() 
+            {
+            Seq old = seq;
+            seq = null;
+            ReentrantLock lock = old.getLock();
+            lock.lock();
+            try 
+                { 
+                Modulation.CC func = (Modulation.CC)(modulation.getFunction(index));
+                in.setSelectedIndex(func.getIn());
+                }
+            finally { lock.unlock(); }                              
+            seq = old;
+            if (cc != null) cc.redraw();                        
+            if (defaultValue != null) defaultValue.redraw();                        
+            }
+
+        public String getName() { return "MIDI CC"; }
+        }
+
 
 
 
@@ -1253,6 +1403,10 @@ public class FunctionInspector extends JPanel
             {
             return new StepInspector();
             }
+        else if (type.equals(Modulation.CC))
+        	{
+        	return new CCInspector();
+        	}
         else if (type.equals(Modulation.CONSTANT))
             {
             return new ConstantInspector();
@@ -1287,6 +1441,7 @@ public class FunctionInspector extends JPanel
         "<li><b>LFO</b>&nbsp;&nbsp;A low-frequency oscillator." +
         "<li><b>Envelope</b>&nbsp;&nbsp;An up to eight-stage envelope generator with repeats." +
         "<li><b>Step Sequence</b>&nbsp;&nbsp;An up to 16-stage step sequence with repeats." +
+        "<li><b>MIDI CC</b>&nbsp;&nbsp;Values arriving via a MIDI CC message." +
         "<li><b>Constant</b>&nbsp;&nbsp;A constant value (the parmaeter is still mapped, though that's useless)." +
         "<li><b>Same As</b>&nbsp;&nbsp;The same as another modulation argument, but with possibly different mapping." +
         "<li><b><i>Copy From</i></b>&nbsp;&nbsp;Copy from another argument." +
@@ -1548,6 +1703,17 @@ public class FunctionInspector extends JPanel
         "Such options will be declared to be <b>Invalid</b> and will treated just like <b>None</b><br>" +
         "(no modulation). This means (for example) that <i>all</i> of Argument 1's Same As options are<br>" +
         "invalid, since every Argument is later than Argument 1.</html>";
+
+    static final String CC_IN_TOOLTIP = "<html><b>In</b><br>" +
+        "Sets the input device for incoming MIDI CC messages.</html>";
+        
+    static final String CC_CC_TOOLTIP = "<html><b>CC</b><br>" +
+        "Sets the CC parameter number.  When a MIDI CC message of this number arrives, the argument will<br>" + 
+        "be set to the value of the CC message.</html>";
+
+    static final String CC_DEFAULT_TOOLTIP = "<html><b>Default</b><br>" +
+        "Sets the default value for the argument.  After the sequence is started, the argument will be set<br>" +
+        "to this value until a MIDI CC message arrives to change it.</html>";
 
 
     }

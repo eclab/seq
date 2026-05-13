@@ -17,10 +17,11 @@ public class Modulation extends Motif
     {
     private static final long serialVersionUID = 1;
     
-    public static final String IDENTITY = "Identity";
+    public static final String IDENTITY = "None";
     public static final String LFO = "LFO";
     public static final String ENVELOPE = "Envelope";
-    public static final String STEP = "Step";                           // Repeating Step Sequence
+    public static final String STEP = "Step Seq";                           // Repeating Step Sequence
+    public static final String CC = "MIDI CC";
     public static final String SAME = "Same";
     public static final String CONSTANT = "Constant";
 
@@ -51,13 +52,17 @@ public class Modulation extends Motif
             {
             return 3;
             }
-        else if (CONSTANT.equals(type))
+        else if (CC.equals(type))
             {
             return 4;
             }
-        else if (SAME.equals(type))
+        else if (CONSTANT.equals(type))
             {
             return 5;
+            }
+        else if (SAME.equals(type))
+            {
+            return 6;
             }
         else
             {
@@ -86,10 +91,14 @@ public class Modulation extends Motif
             return new Step();
             }
         else if (index == 4)
+        	{
+        	return new CC();
+        	}
+        else if (index == 5)
             {
             return new Constant();
             }
-        else if (index == 5)
+        else if (index == 6)
             {
             return new Same();
             }
@@ -118,6 +127,10 @@ public class Modulation extends Motif
         else if (STEP.equals(type))
             {
             return new Step(obj);
+            }
+        else if (CC.equals(type))
+            {
+            return new CC(obj);
             }
         else if (CONSTANT.equals(type))
             {
@@ -202,6 +215,36 @@ public class Modulation extends Motif
                     break;
                 }
             return mapLow + (mapHigh - mapLow) * val;
+            }
+        }
+
+    public class CC extends Function
+        {
+        int in;
+        int cc;
+        int _default;
+        public int getIn() { return in; }
+        public void setIn(int val) { in = val; }
+        public int getCC() { return cc; }
+        public void setCC(int val) { cc = val; }
+        public int getDefault() { return _default; }
+        public void setDefault(int val) { _default = val; }
+        
+        public String getType() { return CC; }
+        public CC()
+            {
+            }
+        public CC(JSONObject obj)
+            {
+            cc = obj.optInt("cc", 0);
+            _default = obj.optInt("def", 0);
+            }
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            obj.put("cc", getCC());
+            obj.put("def", getDefault());
+            return obj;
             }
         }
 
