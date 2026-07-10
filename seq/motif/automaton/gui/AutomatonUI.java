@@ -217,6 +217,7 @@ public class AutomatonUI extends MotifUI
         nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_RANDOM, finished));
         nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_FORK, finished));
         nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_JOIN, finished));
+        nodeGrid.add(new AutomatonNodeButton(AutomatonNodeButton.TYPE_TRIGGER, finished));
         left.add(nodeGrid, BorderLayout.WEST);
         return left;
         }
@@ -739,6 +740,7 @@ public class AutomatonUI extends MotifUI
             else if (type == AutomatonNodeButton.TYPE_RANDOM) node = automaton.addRandom();
             else if (type == AutomatonNodeButton.TYPE_FORK) node = automaton.addFork();
             else if (type == AutomatonNodeButton.TYPE_JOIN) node = automaton.addJoin();
+            else if (type == AutomatonNodeButton.TYPE_TRIGGER) node = automaton.addTrigger();
             else
                 {
                 System.err.println("AutomatonUI.doAdd: unknown type " + type);

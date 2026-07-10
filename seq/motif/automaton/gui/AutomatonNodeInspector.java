@@ -35,6 +35,7 @@ public class AutomatonNodeInspector extends WidgetList
     // ALL              Nickname, isStart [radio button]
     // FORK
     // JOIN
+    // TRIGGER
     // DELAY        Delay Amount
     // CHORD            4 Pitches, Velocity, Release, Length, % Time On, 
     // RANDOM       Weight 1 .. 4
@@ -52,6 +53,8 @@ public class AutomatonNodeInspector extends WidgetList
     JCheckBox loop;
     JCheckBox local;
     SmallDial join;
+    SmallDial parameter;
+    JCheckBox onlyTrigger;
     StringField name;
     JComboBox  quantization;
     JButton launch;
@@ -741,6 +744,56 @@ public class AutomatonNodeInspector extends WidgetList
                         join.getLabelledDial("8"),
                         };
                     }
+                else if (node instanceof Automaton.Trigger)
+                    {
+                    final Automaton.Trigger ntrigger = (Automaton.Trigger)node;
+                    
+                    parameter = new SmallDial(ntrigger.getParameter() / (double)(Motif.NUM_PARAMETERS - 1))
+                        {
+                        protected String map(double val) { return "" + (1 + (int)(val * (Motif.NUM_PARAMETERS - 1))); }
+                        public double getValue() 
+                            { 
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return (ntrigger.getAux(0) / (double)(Motif.NUM_PARAMETERS - 1)); }
+                            finally { lock.unlock(); }
+                            }
+                        public void setValue(double val) 
+                            { 
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { ntrigger.setAux(0, (int)(val * (Motif.NUM_PARAMETERS - 1)));  }
+                            finally { lock.unlock(); }
+                            }
+                        };
+                    parameter.setToolTipText(TRIGGER_PARAMETER_TOOLTIP);
+
+                    onlyTrigger = new JCheckBox("");
+                    onlyTrigger.setSelected(!ntrigger.getOnlyTrigger());
+                    onlyTrigger.addActionListener(new ActionListener()
+                        {
+                        public void actionPerformed(ActionEvent e)
+                            {
+                            if (seq == null) return;
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { ntrigger.setOnlyTrigger(!onlyTrigger.isSelected()); }
+                            finally { lock.unlock(); }                              
+                            }
+                        });
+                    onlyTrigger.setToolTipText(ONLY_TRIGGER_TOOLTIP);
+
+
+                    strs = new String[] { "Type", "Nickname", "Parameter", "Wait For Thread" };
+                    comps = new JComponent[] 
+                        {
+                        new JLabel("Trigger"),
+                        name,
+                        parameter.getLabelledDial("7"),
+                        onlyTrigger
+                        };
+                    }
                 else if (node instanceof Automaton.MotifNode)
                     {
                     final Automaton.MotifNode motifnode = (Automaton.MotifNode)node;
@@ -1333,6 +1386,14 @@ public class AutomatonNodeInspector extends WidgetList
         "all treated as equal probability.  Then we select an output at random according to the probabilities<br>" +
         "and transition to that output.  If no outputs are connected, we don't transition at all.</html>";
 
-    static final String JOIN_THREADS_TOOLTIP = "<html><b>Join</b><br>" +
+    static final String JOIN_THREADS_TOOLTIP = "<html><b>Threads</b><br>" +
         "Sets the number of playing threads that must transition to the Join before it transitions.</html>";
+
+    static final String TRIGGER_PARAMETER_TOOLTIP = "<html><b>Parameter</b><br>" +
+        "Sets which parameter number will cause the Trigger to transition when we receive a trigger<br>" +
+        "on that parameter.</html>";
+
+    static final String ONLY_TRIGGER_TOOLTIP = "<html><b>Only Trigger</b><br>" +
+        "If selected, then the Trigger will create a new thread whenever it receives a trigger on the<br>" +
+        "parameter regardless of whether it has received an incoming thread.  Incoming threads are ignored.</html>";
     }

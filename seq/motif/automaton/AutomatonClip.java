@@ -199,6 +199,38 @@ public class AutomatonClip extends Clip
         }
 
 
+    // NOTIFICATIONS AND TRIGGER COUNTS
+    // At present only a single node need to be notified that a thread has
+    // entered it: Trigger.  So we'll make this a Trigger-oriented thing here for now.
+    // Triggers need to know how many times they have been entered. We keep
+    // track of that here.
+    static class Trigger
+        {
+        int count = 0;
+        }
+        
+    HashMap<Automaton.Trigger, Trigger> triggers = null;
+        
+    Trigger getTriggerFor(Automaton.Trigger atrigger)
+        {
+        if (triggers == null) triggers = new HashMap<>();
+        Trigger trigger = triggers.get(atrigger);
+        if (trigger == null)
+            {
+            trigger = new Trigger();
+            triggers.put(atrigger, trigger);
+            }
+        return trigger;
+        }
+        
+    public int getCurrentTriggerCount(Automaton.Trigger atrigger)
+        {
+        Trigger trigger = getTriggerFor(atrigger);
+        if (trigger == null) return -1;
+        else return trigger.count;
+        }
+    
+
 
 
     // THREADS
@@ -244,6 +276,10 @@ public class AutomatonClip extends Clip
             if (currentNode instanceof Automaton.Join)
                 {
                 getJoinFor((Automaton.Join)currentNode).count++;
+                }
+            else if (currentNode instanceof Automaton.Trigger)
+                {
+                getTriggerFor((Automaton.Trigger)currentNode).count++;
                 }
             }
 
@@ -527,6 +563,20 @@ public class AutomatonClip extends Clip
                     return EMPTY_AUTOMATON_NODE;            // we're dead
                     }
                 }
+            else if (node instanceof Automaton.Trigger)
+                {
+                Automaton.Trigger atrig = (Automaton.Trigger)node;
+                Trigger trigger = getTriggerFor(atrig);
+                if ((trigger.count >= 1 || atrig.getOnlyTrigger()) && isTriggered(atrig.getParameter()))			// we received a trigger
+                    {
+                    trigger.count--;
+                    return node.selectOut();
+                    }
+                else
+                    {
+                    return EMPTY_AUTOMATON_NODE;            // we're dead
+                    }
+                }
             else // Must be UNFINISHED, which cannot be right
                 {
                 System.err.println("INTERNAL ERROR: in AutomatonThread.processThread(), node is " + node + " which should not happen.");
@@ -641,6 +691,7 @@ public class AutomatonClip extends Clip
         processed.clear();
         unprocessed.clear();
         joins = null;
+        triggers = null;
         Automaton.Node start = automaton.getStart();
         if (start == null)
             {

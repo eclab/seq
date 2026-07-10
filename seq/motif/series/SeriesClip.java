@@ -205,8 +205,6 @@ public class SeriesClip extends Clip
 
     public void rebuild()
         {
-        System.err.println("--rebuild");
-        new Throwable().printStackTrace();
         release();
         terminate();
 

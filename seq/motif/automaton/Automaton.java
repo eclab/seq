@@ -32,6 +32,8 @@ import seq.util.Prefs;
 //   		FINISH: when PROCESSED, it raises the finished flag in the clip and returns at most one node
 //   		JOIN: when NOTIFIED, increments ONE WAITING.
 //   				when PROCESSED, if ONE WAITING >= 2, set ONE WAITING to ONE_WAITING - 2, returns a node or none; else returns UNFINISHED
+//   		TRIGGER: when NOTIFIED, increments ONE WAITING.
+//   				when PROCESSED, if ONE WAITING >= 1 and TRIGGERED, set ONE WAITING to ONE_WAITING - 1, returns a node or none; else returns UNFINISHED
 //
 //   Each NODE has the following methods
 //   	resetRepeats()          // called at thread.process()
@@ -267,6 +269,7 @@ public class Automaton extends Motif
         if (type.equals("motif")) node = new MotifNode(getChildren().get(from.getInt("child")));
         else if (type.equals("fork")) node = new Fork();
         else if (type.equals("join")) node = new Join();
+        else if (type.equals("trigger")) node = new Trigger();
         else if (type.equals("chord")) node = new Chord();
         else if (type.equals("delay")) node = new Delay();
         else if (type.equals("random")) node = new Random();
@@ -306,6 +309,25 @@ public class Automaton extends Motif
         public Node copy() { return new Join().copyFrom(this); } 
         public void save(JSONObject to, Automaton automaton) throws JSONException { to.put("type", "join"); super.save(to, automaton); }
         public String getBaseName() { return "Join"; }
+        }
+
+	public static final int TRIGGER_NODE_PARAMETER = 6;
+	
+    /** Trigger has a single output and a parameter number.  When it receives the a trigger on the parameter, it then outputs on that output. */
+    public static class Trigger extends Node
+        {
+        // We abuse aux[0].  It contains both the parameternumber and onlytrigger encoded as:
+        // parameternumber + onlytrigger * Motif.NUM_PARAMETERS
+        public int getParameter() { return (int)(getOnlyTrigger() ? aux[0] - Motif.NUM_PARAMETERS : aux[0]); }
+        public void setParameter(int val) { aux[0] = val + (getOnlyTrigger() ? Motif.NUM_PARAMETERS : 0); }
+        public boolean getOnlyTrigger() { return (aux[0] >= Motif.NUM_PARAMETERS); }
+        public void setOnlyTrigger(boolean val) { aux[0] = getParameter() + (val ? Motif.NUM_PARAMETERS : 0); }
+        public int maxOut() { return 1; }
+        public Trigger() { this(TRIGGER_NODE_PARAMETER); }
+        public Trigger(int parameter) { setParameter(parameter); }
+        public Node copy() { return new Trigger().copyFrom(this); } 
+        public void save(JSONObject to, Automaton automaton) throws JSONException { to.put("type", "trigger"); super.save(to, automaton); }
+        public String getBaseName() { return "Trigger"; }
         }
 
     /** Delay has a single output and a delay amount in PPQ.  When it receives an input transition, that transition
@@ -765,6 +787,13 @@ public class Automaton extends Motif
     public Join addJoin()
         {
         Join node = new Join();
+        nodes.add(node);
+        return node;
+        } 
+
+    public Trigger addTrigger()
+        {
+        Trigger node = new Trigger();
         nodes.add(node);
         return node;
         } 

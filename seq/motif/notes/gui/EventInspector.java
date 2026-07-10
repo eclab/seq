@@ -382,7 +382,7 @@ public class EventInspector extends WidgetList
                     value.setScale(512.0);      // increase resolution
                     value.setToolTipText(VALUE_TOOLTIP);
 
-                    valuePresets = new PushButton("Presets...", BEND_OPTIONS)
+                    valuePresets = new PushButton("...", BEND_OPTIONS)
                         {
                         public void perform(int val)
                             {

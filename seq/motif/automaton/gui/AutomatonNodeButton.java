@@ -37,6 +37,7 @@ public class AutomatonNodeButton extends JButton implements Transferable
     public static final int TYPE_RANDOM = 4;
     public static final int TYPE_FORK = 5;
     public static final int TYPE_JOIN = 6;
+    public static final int TYPE_TRIGGER = 7;
     
     public static ImageIcon buildIcon(String file)
         {
@@ -54,8 +55,9 @@ public class AutomatonNodeButton extends JButton implements Transferable
     static final ImageIcon randomIcon = buildIcon("icons/random.png");
     static final ImageIcon forkIcon = buildIcon("icons/fork.png");
     static final ImageIcon joinIcon = buildIcon("icons/join.png");
-    static final ImageIcon[] icons = { delayIcon, chordIcon, finishedIcon, iterateIcon, randomIcon, forkIcon, joinIcon };
-    static final String[] text = { "Delay", "Chord", "Finished", "Iterate", "Random", "Fork", "Join" };
+    static final ImageIcon triggerIcon = buildIcon("icons/tap.png");
+    static final ImageIcon[] icons = { delayIcon, chordIcon, finishedIcon, iterateIcon, randomIcon, forkIcon, joinIcon, triggerIcon };
+    static final String[] text = { "Delay", "Chord", "Finished", "Iterate", "Random", "Fork", "Join", "Trigger" };
 
     public int type;
     
@@ -211,6 +213,12 @@ public class AutomatonNodeButton extends JButton implements Transferable
         "When a thread arrives at the input, Join may do nothing yet: it will wait until the right<br>" +
         "number of threads have arrived before joining them (see <b>Threads</b> in the inspector at right).</html>";
 
-    public static final String[] TOOLTIPS = { DELAY_BUTTON_TOOLTIP, CHORD_BUTTON_TOOLTIP, FINISHED_BUTTON_TOOLTIP, ITERATE_BUTTON_TOOLTIP, RANDOM_BUTTON_TOOLTIP, FORK_BUTTON_TOOLTIP, JOIN_BUTTON_TOOLTIP };
+    static final String TRIGGER_BUTTON_TOOLTIP = "<html><b>Trigger Button</b><br>" +
+        "Drag from this button into the grid to create a Trigger Node.<br><br>" +
+        "This node waits until at least one thread has transitioned to it.<br>" +
+        "Then, when it receives a trigger on Parameter 6, it releases that thread.<br>" +
+        "If multiple threads arrive, it releases them one at a time with successive triggers.</html>";
+
+    public static final String[] TOOLTIPS = { DELAY_BUTTON_TOOLTIP, CHORD_BUTTON_TOOLTIP, FINISHED_BUTTON_TOOLTIP, ITERATE_BUTTON_TOOLTIP, RANDOM_BUTTON_TOOLTIP, FORK_BUTTON_TOOLTIP, JOIN_BUTTON_TOOLTIP, TRIGGER_BUTTON_TOOLTIP };
 
     }

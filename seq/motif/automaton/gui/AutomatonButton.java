@@ -313,6 +313,13 @@ public class AutomatonButton extends MotifButton
                 button.outputJacks[0] = new OutputJack(0, owner, owner.getAutomatonGrid(), button);
                 button.setToolTipText(JOIN_TOOLTIP);
                 }
+            else if (node instanceof Automaton.Trigger)
+                {
+                button.setIcon(AutomatonNodeButton.triggerIcon);
+                button.outputJacks = new OutputJack[1];
+                button.outputJacks[0] = new OutputJack(0, owner, owner.getAutomatonGrid(), button);
+                button.setToolTipText(TRIGGER_TOOLTIP);
+                }
             else 
                 {
                 System.err.println("AutomatonButton.buildButton: unknown node type " + node);
@@ -542,5 +549,11 @@ public class AutomatonButton extends MotifButton
         "Joined threads are collapsed to a single thread, which is then transitioned along the output.<br>" +
         "When a thread arrives at the input, Join may do nothing yet: it will wait until the right<br>" +
         "number of threads have arrived before joining them (see <b>Threads</b> in the inspector at right).</html>";
+
+    static final String TRIGGER_TOOLTIP = "<html><b>Trigger Node</b><br>" +
+        "This node waits until at least one thread has transitioned to it.<br>" +
+        "Then, when it receives a trigger on Parameter 6, it releases that thread.<br>" +
+        "If multiple threads arrive, it releases them one at a time with successive triggers.</html>";
+
     }
         
