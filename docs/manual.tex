@@ -965,7 +965,7 @@ Automaton may be thought of as an elaborate combination of Parallel and Select. 
 
 An Automaton contains {\bf Nodes}, that is, Children and Decision Points\,---\,and {\bf Edges}, that is, connections from Node to another.  Connections go from the endpoint of a Node to the start point of a new Node.  In our Automaton, several kinds of Nodes can have multiple endpoints, but all Nodes have just one start point.  However, while can connect many Edges to the same start point, you can connect only one Edge to a given end point.
 
-You add Children to the Automaton by dragging them in from the Motif List.  You add Decision Points to the Automaton by dragging them in from one of the six Decision Point buttons at top ({\bf Delay, Chord, Finished, Iterate, Random, Fork,} and {\bf Join}).  You can delete a Node by selecting it, then pressing the {\bf Delete Button} at bottom, and similarly you can duplicate a Node by selecting it, then pressing the {\bf Duplicate Button}.  You can move nodes to different slots by dragging them. 
+You add Children to the Automaton by dragging them in from the Motif List.  You add Decision Points to the Automaton by dragging them in from one of the seven Decision Point buttons at top ({\bf Delay, Chord, Finished, Iterate, Random, Fork, Join} and {\bf Trigger}).  You can delete a Node by selecting it, then pressing the {\bf Delete Button} at bottom, and similarly you can duplicate a Node by selecting it, then pressing the {\bf Duplicate Button}.  You can move nodes to different slots by dragging them. 
 
 Edge are connected by dragging from an endpoint to a start point.  You can delete an edge by clicking on the endpoint from which it began.
 
@@ -1017,6 +1017,8 @@ Iterate normally updates its position in the loop regardless of which Thread is 
 \item{\bf Fork}\quad This Decision Point passes control to {\it all its endpoints at the same time}, thus allowing playing of multiple Nodes in parallel.  It does this in zero time.  New Threads are created as necessary.  If Fork cannot create enough Threads (the active thread limit of 8 would be exceeded) Threads are only created up to the maximum for the earlier endpoints, and later endpoints are ignored.
 
 \item{\bf Join}\quad This Decision Point waits until some number \(N\) of Threads have reached its start point, and then it terminates all of them, and creates a single Thread which passes control to its endpoint.  You can set \(N\) to any value from 2 to 8 (2 is the default).  Join is used to enable playing Threads to synchronize and wait for one another before terminating.  
+
+\item{\bf Trigger}\quad This Decision Point emits a Thread when it receives a {\bf trigger} a certain Parameter (by default Parameter 7, but you can change that).  If {\bf Wait For Thread} is checked, then it must also have received a Thread prior to the trigger; if multiple Threads were received prior to the trigger, only one is emitted: the others wait to be emitted in successive triggers.  You can use this in combination with MIDI CC in a parent Modulation motif to trigger a Thread when you press a remote button on a synthesizer, for example.
 
 \end{itemize}
 

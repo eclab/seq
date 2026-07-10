@@ -529,12 +529,12 @@ public class SeqUI extends JPanel
             }
         else
             {       
-            int result = showSimpleChoice("Log MIDI ...", "<html>Log to..." + 
-                "<ul><li>One or more Notes objects" +
-                "<li>A multi-channel MIDI file" +
-                "<li>Several one-channel files" +
-                "</ul><p>Some DAWs (like Ableton) cannot properly load a MIDI file with more than one channel.",
-                new String[] { "Log to Notes", "Log to One File", "Log to Multiple Files", "Cancel" });
+            int result = showSimpleChoice("Log MIDI ...", "<html>Log MIDI to ..." + 
+                "<ul><li>One Notes motif (or several Notes grouped under a Parallel)" +
+                "<li>One multi-channel MIDI file" +
+                "<li><i>or</i> Several one-channel MIDI files" +
+                "</ul><p>Some DAWs (like Ableton) cannot properly load a multi-channel MIDI file.",
+                new String[] { "Log to Notes", "Log to One File", "Log to Several Files", "Cancel" });
             if (result < 0 || result == 3) return;
                 
             if (seq != null) seq.stop();
