@@ -919,7 +919,7 @@ public class NotesInspector extends WidgetList
 */
             else if (type == Notes.EVENT_PARAMETER_SYSEX)    // it's Sysex
                 {
-                full = "Sysex";		// I don't think we want to show the message here!
+                full = "";
                 }
             else if (type == Notes.EVENT_PARAMETER_NRPN)    // it's NRPN
                 {

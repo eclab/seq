@@ -924,10 +924,11 @@ public class EventInspector extends WidgetList
                         };
                     value.setToolTipText(VALUE_TOOLTIP);
 
-                    strs = new String[] {  "Out", "Value" };
+                    strs = new String[] {  "Out", "When", "Value" };
                     comps = new JComponent[] 
                         {
                     	out,
+                    	when,
                         value.getLabelledDial("127")
                         };
                     }
@@ -935,10 +936,11 @@ public class EventInspector extends WidgetList
                     {
                     Notes.Sysex sysex = (Notes.Sysex) event;
 
-                    strs = new String[] { "Out" };
+                    strs = new String[] { "Out", "When", };
                     comps = new JComponent[] 
                         {
                     	out,
+                    	when
                         };
                     }
                 }
