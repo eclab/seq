@@ -190,6 +190,7 @@ public class EventUI extends JComponent
         // even if the bounds aren't set, we still have to set the bounds so we have bounds, otherwise
         // Java won't even send a paintComponent to this EventUI when ParameterUI.paintChildren is called.
                 
+
         // compute Y
         // Center y ranges from HEIGHT / 2 to bounds.height - HEIGHT/2 corresponding to the value
         int computedY = HEIGHT / 2 + (int)((parameteruiHeight - HEIGHT) * (1.0 - (value < 0 ? 0.5 : value)));

@@ -1232,7 +1232,7 @@ public class NotesUI extends MotifUI
             else return;
             }
                 
-        String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch", "Remove PC" };
+        String[] names = { "Remove Notes", "Remove Bend", "Remove CC", "Remove NRPN", "Remove RPN", "Remove Aftertouch", "Remove PC", "Remove Sysex" };
         JCheckBox removeNotes = new JCheckBox("");
         JCheckBox removeBend = new JCheckBox("");
         JCheckBox removeCC = new JCheckBox("");
@@ -1240,6 +1240,7 @@ public class NotesUI extends MotifUI
         JCheckBox removeNRPN = new JCheckBox("");
         JCheckBox removeRPN = new JCheckBox("");
         JCheckBox removePC = new JCheckBox("");
+        JCheckBox removeSysex = new JCheckBox("");
 
         removeNotes.setSelected(Prefs.getLastBoolean("FilterRemoveNotes", false));
         removeBend.setSelected(Prefs.getLastBoolean("FilterRemoveBend", false));
@@ -1248,8 +1249,9 @@ public class NotesUI extends MotifUI
         removeNRPN.setSelected(Prefs.getLastBoolean("FilterRemoveNRPN", false));
         removeRPN.setSelected(Prefs.getLastBoolean("FilterRemoveRPN", false));
         removePC.setSelected(Prefs.getLastBoolean("FilterRemovePC", false));
+        removeSysex.setSelected(Prefs.getLastBoolean("FilterRemoveSysex", false));
         
-        JComponent[] components = new JComponent[] { removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch, removePC};
+        JComponent[] components = new JComponent[] { removeNotes, removeBend, removeCC, removeNRPN, removeRPN, removeAftertouch, removePC, removeSysex};
         int result = Dialogs.showMultiOption(sequi, names, components, new String[] {  all ? "Filter All" : "Filter", "Cancel" }, 0, all ? "Filter All" : "Filter", "Enter Filter Settings");
         
         if (result == 0)
@@ -1261,6 +1263,7 @@ public class NotesUI extends MotifUI
             boolean _removeNRPN = removeNRPN.isSelected();
             boolean _removeRPN = removeRPN.isSelected();
             boolean _removePC = removePC.isSelected();
+            boolean _removeSysex = removeSysex.isSelected();
         
             ReentrantLock lock = seq.getLock();
             lock.lock();
@@ -1268,7 +1271,7 @@ public class NotesUI extends MotifUI
             try
                 {
                 sequi.push();
-                notes.filter(events, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removePC, _removeAftertouch);
+                notes.filter(events, _removeNotes, _removeBend, _removeCC, _removeNRPN, _removeRPN, _removePC, _removeAftertouch, _removeSysex);
                 }
             finally
                 {
@@ -1282,6 +1285,7 @@ public class NotesUI extends MotifUI
             Prefs.setLastBoolean("FilterRemoveNRPN", _removeNRPN);
             Prefs.setLastBoolean("FilterRemoveRPN", _removeRPN);
             Prefs.setLastBoolean("FilterRemovePC", _removePC);
+            Prefs.setLastBoolean("FilterRemoveSysex", _removeSysex);
 
             rebuild();
             }
