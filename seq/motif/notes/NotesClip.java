@@ -371,10 +371,9 @@ public class NotesClip extends Clip
         else
             {
             ArrayList<Notes.Event> playing = notes.events;
-            int size = playing.size();
-            
+
             // At present, index is where I LAST had an event, or -1            
-            while (size > (index + 1) && playing.get(index + 1).when <= pos)            // is there another event, and is it time for it?
+            while (playing.size() > (index + 1) && playing.get(index + 1).when <= pos)            // is there another event, and is it time for it?
                 {
                 index++;                                                                                                                        // advance to that event
                 // Now emit it

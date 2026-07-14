@@ -44,10 +44,10 @@ public class NotesUI extends MotifUI
         Seq.PPQ / 4, 
         Seq.PPQ / 3, 
         Seq.PPQ,
-        -Seq.PPQ / 16, 
-        -Seq.PPQ / 4, 
-        -Seq.PPQ / 3, 
-        -Seq.PPQ
+        Seq.PPQ / 16, 
+        Seq.PPQ / 4, 
+        Seq.PPQ / 3, 
+        Seq.PPQ
         };
     // The default snap option index ("Snap to Beat")
     public static final int SNAP_DEFAULT_OPTION = 4;
@@ -588,6 +588,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
+		updateChildInspector(false);
         }
         
     public void doDown()
@@ -623,6 +624,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
+		updateChildInspector(false);
         }
         
     public void doLeft()
@@ -662,6 +664,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
+		updateChildInspector(false);
         }
         
     public void doRight()               // always do right.  Never do wrong.
@@ -700,6 +703,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
+		updateChildInspector(false);
         }
         
     public void doBringToFront()
@@ -1841,21 +1845,21 @@ public class NotesUI extends MotifUI
         scrollButton.setToolTipText(SCROLL_BUTTON_TOOLTIP);
 
         snapBox = new JComboBox(SNAP_OPTIONS);
-        snapBox.setSelectedIndex(Prefs.getLastInt("SnapTo", SNAP_DEFAULT_OPTION));
-        gridui.setSnap(SNAP_QUANTIZATIONS[snapBox.getSelectedIndex()]);
+        int _snap = Prefs.getLastInt("SnapTo", SNAP_DEFAULT_OPTION);
+        snapBox.setSelectedIndex(_snap);
+        gridui.setSnap(SNAP_QUANTIZATIONS[_snap]);
         snapBox.addActionListener(new ActionListener()
             {
             public void actionPerformed(ActionEvent event)
                 {
                 int snap = snapBox.getSelectedIndex();
+                gridui.setSnap(SNAP_QUANTIZATIONS[snap]);
                 if (snap <= 4)          // Snap-To Range
                     {
-                    gridui.setSnap(SNAP_QUANTIZATIONS[snap]);
                     gridui.setSnapBy(false);
                     }
                 else                            // Snap-By Range
                     {
-                    gridui.setSnap(SNAP_QUANTIZATIONS[snap - 4]);
                     gridui.setSnapBy(true);
                     }
                 Prefs.setLastInt("SnapTo", snapBox.getSelectedIndex());

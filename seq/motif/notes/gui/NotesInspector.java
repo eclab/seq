@@ -1120,7 +1120,7 @@ public class NotesInspector extends WidgetList
         "Selects the type of non-note event to display.  Note types include<br>" +
         "None, Control Change (CC), Polyphonic Aftertouch, Channel Aftertouch,<br>" + 
         "Pitch Bend Program Change (PC), Non-Registered Parameter Numbers (NRPN),<br>" +
-        "and Registered Parameter Numbers (RPN).</html>";
+        "Registered Parameter Numbers (RPN), and System Exclusive (Sysex).</html>";
 
     static final String MSB_TOOLTIP = "<html><b>MSB</b><br>" +
         "Selects the Parameter, or if LSB is also present, the Most Significant Byte of the Parameter.<br><br>" +
