@@ -44,7 +44,9 @@ public class Notes extends Motif
     // 256-383          Poly Aftertouch by Pitch
     // 384              Channel Aftertouch
     // 385              Pitch Bend
-    // 386-16383        [RESERVED] -- future use, 16-bit CC, PC, and sysex perhaps
+    // 386				Program Change
+    // 387				System Exclusive
+    // 388-16383        [RESERVED] -- future use, 16-bit CC, PC
     // 16384-32767      NRPN
     // 32768-49151      RPN
     
@@ -54,6 +56,7 @@ public class Notes extends Motif
     public static final int TYPE_CHANNEL_AFTERTOUCH = 384;
     public static final int TYPE_PITCH_BEND = 385;
     public static final int TYPE_PC = 386;
+    public static final int TYPE_SYSEX = 387;
     public static final int TYPE_NRPN = 16384;
     public static final int TYPE_RPN = 32768;
     
@@ -65,8 +68,9 @@ public class Notes extends Motif
         if (type < TYPE_POLYPHONIC_AFTERTOUCH) return new CC(type - TYPE_CC, (int)(value * 128), when);
         if (type < TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch(type - TYPE_POLYPHONIC_AFTERTOUCH, (int)(value * 128), when);
         if (type == TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch((int)(value * 128), when);
-        if (type == TYPE_PITCH_BEND) return new Bend((int)(value * 16384) - 8192, when);
+        if (type == TYPE_PITCH_BEND) return new Bend((int)(value * 16384), when);
         if (type == TYPE_PC) return new PC((int)(value * 128), when);
+        if (type == TYPE_SYSEX) return new Sysex(when);
         if (type < TYPE_RPN) return new NRPN(type - TYPE_NRPN, (int)(value * 16384), when);
         return new RPN(type - TYPE_RPN, (int)(value * 16384), when);
         }
@@ -81,6 +85,7 @@ public class Notes extends Motif
         if (type == TYPE_CHANNEL_AFTERTOUCH) return "Ch AT";
         if (type == TYPE_PITCH_BEND) return "Bend";
         if (type == TYPE_PC) return "PC";
+        if (type == TYPE_SYSEX) return "Sysex";
         if (type < TYPE_RPN) return "NRPN";
         return "RPN";
         }
@@ -95,6 +100,7 @@ public class Notes extends Motif
         if (type == TYPE_CHANNEL_AFTERTOUCH) return "Channel Aftertouch";
         if (type == TYPE_PITCH_BEND) return "Pitch Bend";
         if (type == TYPE_PC) return "Program Change";
+        if (type == TYPE_SYSEX) return "System Exclusive";
         if (type < TYPE_RPN) return "NRPN";
         return "RPN";
         }
@@ -109,6 +115,7 @@ public class Notes extends Motif
         if (type == TYPE_CHANNEL_AFTERTOUCH) return "";
         if (type == TYPE_PITCH_BEND) return "";
         if (type == TYPE_PC) return "";
+        if (type == TYPE_SYSEX) return "";
         if (type < TYPE_RPN) return "" + (type - TYPE_NRPN);
         return "" + (type - TYPE_RPN);
         }
@@ -127,6 +134,7 @@ public class Notes extends Motif
         if (type == TYPE_CHANNEL_AFTERTOUCH) return header;
         if (type == TYPE_PITCH_BEND) return header;
         if (type == TYPE_PC) return header;
+        if (type == TYPE_SYSEX) return header;
         if (type < TYPE_RPN) return header + " " + footer;
         return header + " " + footer;
         }
@@ -136,7 +144,7 @@ public class Notes extends Motif
     public static boolean isValidType(int type)
         {
         if (type < TYPE_NOTE) return false;
-        if (type > TYPE_PC && type < TYPE_NRPN) return false;
+        if (type > TYPE_SYSEX && type < TYPE_NRPN) return false;
         if (type > TYPE_RPN + 16384) return false;
         return true;
         }
@@ -201,6 +209,8 @@ public class Notes extends Motif
                 return new Aftertouch(obj);
             else if (type.equals("p"))
                 return new PC(obj);
+            else if (type.equals("s"))
+                return new Sysex(obj);
             else if (type.equals("N"))
                 return new NRPN(obj);
             else if (type.equals("R"))
@@ -243,6 +253,65 @@ public class Notes extends Motif
         /** Returns the out value, which by edefault is DEFAULT_OUT */
         public int getOut() { return out; }
         }
+
+    public static class Sysex extends Event
+        {
+        public static final byte[] EMPTY = new byte[0];
+        public byte[] data;		// data including 0xF0 and 0xF7.  Or if EMPTY (or length 0) there is no message.  May not be null.
+        
+    	// This just uses the existing data -- so I own it now
+        public Sysex(byte[] data, int when)
+            {
+            super(when);
+            if (data == null)
+            	{
+            	System.err.println("Notes.Sysex constructor: data passed in was null, which shouldn't happen.");
+            	data = EMPTY;
+            	}
+            this.data = data;
+            }
+            
+    	// This just uses the existing data -- so I own it now
+        public Sysex(int when)
+            {
+            this(EMPTY, when);
+            }
+            
+        public Sysex(JSONObject obj)
+            {
+            super(obj);
+            data = Base64.getDecoder().decode(obj.optString("d", ""));
+            }
+            
+        public Event copy()
+            {
+            return new Sysex((byte[])(data.length == 0 ? EMPTY : data.clone()), when);
+            }
+            
+        public void write(Track track, Notes notes) throws InvalidMidiDataException
+            {
+            if (data.length > 0) 
+            	track.add(new MidiEvent(new SysexMessage(data, data.length), when));
+            }
+                        
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            obj.put("d", Base64.getEncoder().encode(data));
+            return obj;
+            }
+        
+        public String toString() { return "Sysex " + StringUtility.toHex(data); }
+        
+        public int getValue() { return 63; }		// this way it appears dead-center in the middle of the EventUI field
+        public void setValue(int val) { }		// do nothing
+        public double getNormalizedValue() { return 0.5; }		// this way it appears dead-center in the middle of the EventUI field
+        public void setNormalizedValue(double value) { }	// do nothing
+        public int getParameter() { return 0; }
+        public int getType() { return TYPE_SYSEX; }
+        public int getLength() { return 0; }
+        }
+        
 
     public static class Note extends Event
         {
@@ -339,7 +408,7 @@ public class Notes extends Motif
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
-            int v = value + 8192;
+            int v = value;
             track.add(new MidiEvent(new ShortMessage(ShortMessage.PITCH_BEND, (v & 127), ((v >>> 7) & 127)), when));
             }
         public JSONObject save() throws JSONException
@@ -806,8 +875,9 @@ public class Notes extends Motif
     public static final int EVENT_PARAMETER_CHANNEL_AT = 3;
     public static final int EVENT_PARAMETER_BEND = 4;
     public static final int EVENT_PARAMETER_PC = 5;
-    public static final int EVENT_PARAMETER_NRPN = 6;
-    public static final int EVENT_PARAMETER_RPN = 7;
+    public static final int EVENT_PARAMETER_SYSEX = 6;
+    public static final int EVENT_PARAMETER_NRPN = 7;
+    public static final int EVENT_PARAMETER_RPN = 8;
     
     // Types of event parameters
     int[] eventParameterType = new int[NUM_EVENT_PARAMETERS];
@@ -1263,7 +1333,7 @@ public class Notes extends Motif
         }
 
     /** Filters events from all events. */
-    public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removePC, boolean removeAftertouch)
+    public ArrayList<Event> filter(boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removePC, boolean removeAftertouch, boolean removeSysex)
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
@@ -1276,6 +1346,7 @@ public class Notes extends Motif
                 (event instanceof CC && removeCC) ||
                 (event instanceof PC && removePC) ||
                 (event instanceof Aftertouch && removeAftertouch) ||
+                (event instanceof Sysex && removeSysex) ||
                 (event instanceof NRPN && removeNRPN) ||
                 (event instanceof RPN && removeRPN)
                 )            
@@ -1294,7 +1365,7 @@ public class Notes extends Motif
         }
     
     /** Filters events from the given events. */
-    public ArrayList<Event> filter(ArrayList<Event> eventsIn, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removePC, boolean removeAftertouch)        // endIndex is inclusive
+    public ArrayList<Event> filter(ArrayList<Event> eventsIn, boolean removeNotes, boolean removeBend, boolean removeCC, boolean removeNRPN, boolean removeRPN, boolean removePC, boolean removeAftertouch, boolean removeSysex)        // endIndex is inclusive
         {
         ArrayList<Event> newEvents = new ArrayList<Event>();
         ArrayList<Event> cut = new ArrayList<Event>();
@@ -1311,6 +1382,7 @@ public class Notes extends Motif
                     (event instanceof CC && removeCC) ||
                     (event instanceof PC && removePC) ||
                     (event instanceof Aftertouch && removeAftertouch) ||
+                    (event instanceof Sysex && removeSysex) ||
                     (event instanceof NRPN && removeNRPN) ||
                     (event instanceof RPN && removeRPN)
                     )            
@@ -1974,7 +2046,7 @@ public class Notes extends Motif
                     int lsb = shortmessage.getData1();
                     int msb = shortmessage.getData2();
 
-                    Notes.Bend bend = new Notes.Bend(msb * 128 + lsb - 8192, pos);
+                    Notes.Bend bend = new Notes.Bend(msb * 128 + lsb, pos);
                     readEvents.add(bend);
                     }
                 else if (Clip.isCC(shortmessage) && getRecordCC())
