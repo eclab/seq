@@ -256,25 +256,21 @@ public class Notes extends Motif
 
     public static class Sysex extends Event
         {
-        public static final byte[] EMPTY = new byte[0];
-        public byte[] data;		// data including 0xF0 and 0xF7.  Or if EMPTY (or length 0) there is no message.  May not be null.
+        public byte[] data;		// data including 0xF0 and 0xF7
+        public byte value;  	// just something to display the event dot in a random location
         
     	// This just uses the existing data -- so I own it now
         public Sysex(byte[] data, int when)
             {
             super(when);
-            if (data == null)
-            	{
-            	System.err.println("Notes.Sysex constructor: data passed in was null, which shouldn't happen.");
-            	data = EMPTY;
-            	}
-            this.data = data;
+            setData(data);
+            this.value = (byte)(Math.random() * 128);
             }
             
     	// This just uses the existing data -- so I own it now
         public Sysex(int when)
             {
-            this(EMPTY, when);
+            this(new byte[] { (byte)0xF0, (byte)0xF7 }, when);
             }
             
         public Sysex(JSONObject obj)
@@ -285,7 +281,7 @@ public class Notes extends Motif
             
         public Event copy()
             {
-            return new Sysex((byte[])(data.length == 0 ? EMPTY : data.clone()), when);
+            return new Sysex((byte[])(data.clone()), when);
             }
             
         public void write(Track track, Notes notes) throws InvalidMidiDataException
@@ -297,19 +293,30 @@ public class Notes extends Motif
         public JSONObject save() throws JSONException
             {
             JSONObject obj = super.save();
-            obj.put("d", Base64.getEncoder().encode(data));
+            obj.put("t", "s");
+            obj.put("d", Base64.getEncoder().encodeToString(data));
             return obj;
             }
         
         public String toString() { return "Sysex " + StringUtility.toHex(data); }
         
-        public int getValue() { return 63; }		// this way it appears dead-center in the middle of the EventUI field
+        public int getValue() { return value; }		// this way it appears dead-center in the middle of the EventUI field
         public void setValue(int val) { }		// do nothing
-        public double getNormalizedValue() { return 0.5; }		// this way it appears dead-center in the middle of the EventUI field
+        public double getNormalizedValue() { return value / 128.0; }		// this way it appears dead-center in the middle of the EventUI field
         public void setNormalizedValue(double value) { }	// do nothing
         public int getParameter() { return 0; }
         public int getType() { return TYPE_SYSEX; }
         public int getLength() { return 0; }
+        public byte[] getData() { return data; }
+        public void setData(byte[] data) 
+        	{
+        	if (data == null)
+            	{
+            	System.err.println("Notes.setData constructor: data passed in was null, which shouldn't happen.");
+            	data = new byte[] { (byte)0xF0, (byte)0xF7 };
+            	}
+			this.data = data; 
+			}
         }
         
 
@@ -901,6 +908,8 @@ public class Notes extends Motif
     boolean recordCC;
     // Do we record aftertouch?
     boolean recordAftertouch;
+    // Do we record sysex?
+    boolean recordSysex;
     // Do we convert CC to NRP and RPN after recording?
     boolean convertNRPNRPN;
     // Do we quantize on recording?
@@ -995,6 +1004,11 @@ public class Notes extends Motif
     public boolean getRecordAftertouch() { return recordAftertouch; }
     /** Sets whether we record Aftertouich. */
     public void setRecordAftertouch(boolean val) { recordAftertouch = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordaftertouch", val); }
+
+    /** Returns whether we record Sysex. */
+    public boolean getRecordSysex() { return recordSysex; }
+    /** Sets whether we record Sysex. */
+    public void setRecordSysex(boolean val) { recordSysex = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordsysex", val); }
 
     /** Returns whether we quantize on recording. */
     public boolean getConvertNRPNRPN() { return convertNRPNRPN; }
@@ -1097,6 +1111,7 @@ public class Notes extends Motif
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
         recordPC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordpc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
+        recordSysex = Prefs.getLastBoolean("seq.motif.notes.Notes.recordsysex", true); 
         convertNRPNRPN = Prefs.getLastBoolean("seq.motif.notes.Notes.convertNRPNRPN", true); 
         quantize = Prefs.getLastBoolean("seq.motif.notes.Notes.quantize", true); 
         quantizeTo = Prefs.getLastInt("seq.motif.notes.Notes.quantizeTo", 3);                   // 16th notes 
@@ -1292,10 +1307,35 @@ public class Notes extends Motif
     /** Returns the time at which we should declare we are no longer playing.   */
     public int getEndTime()
         {
+        // This is difficult.  If the last thing is a NOTE OFF at time X, then we should mark our
+        // end time as X - 1, because we want the NEXT MOTIF to be able to start at time X.  And
+        // the note-off will get pushed into the note-off queue anyway.
+        //
+        // But what if the last thing is say, a CC a time X?  We don't want to mark our end time
+        // as X - 1, because then the CC will never happen!  By time X we'll be in the next motif!
+        // So we have two options.  Either we secretly push the CC to time X - 1, or we keep it at
+        // X and so our end time is X.  That's the approach I'm taking here.  Neither is optimal.
+        
+		int endTime = 0;
+        if (maxNoteOffPosition > maxEventPosition)
+        	{
+        	endTime = (maxNoteOffPosition > end ? maxNoteOffPosition : (end >= 0 ? end : 0)) - 1;    // FIXME: So I'm subtracting 1....
+        	}
+        else
+        	{
+        	endTime = (maxEventPosition > end ? maxEventPosition : (end >= 0 ? end : 0));
+        	}
+        	
+        if (endTime < 0) endTime = 0;
+        return endTime;
+    
+    	/*
         int maxPos = (maxNoteOffPosition > maxEventPosition ? maxNoteOffPosition : maxEventPosition);
         int endTime = (maxPos > end ? maxPos : (end >= 0 ? end : 0)) - 1;                       // FIXME: So I'm subtracting 1....
         if (endTime < 0) endTime = 0;
+        System.err.println("End Time " + endTime);
         return endTime;
+        */
         }
         
     /** Sorts the events by onset time. */
@@ -2080,6 +2120,11 @@ public class Notes extends Motif
                     readEvents.add(aftertouch);
                     }
                 }
+			else if (message instanceof SysexMessage && getRecordSysex())
+				{
+				Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
+				readEvents.add(sysex);
+				}
             }
         events = readEvents;
         computeMaxTime();

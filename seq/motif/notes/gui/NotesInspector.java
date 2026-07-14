@@ -35,6 +35,7 @@ public class NotesInspector extends WidgetList
     JCheckBox recordCC;
     JCheckBox recordAftertouch;
     JCheckBox recordPC;
+    JCheckBox recordSysex;
     JCheckBox convertNRPNRPN;
     JCheckBox warpedBend;
     //JCheckBox polyAftertouchPitch;
@@ -323,6 +324,20 @@ public class NotesInspector extends WidgetList
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try { notes.setRecordPC(recordPC.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
+                
+            recordSysex = new JCheckBox();
+            recordSysex.setSelected(notes.getRecordSysex());
+            recordSysex.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setRecordSysex(recordSysex.isSelected()); }
                     finally { lock.unlock(); }                              
                     }
                 });
@@ -709,6 +724,7 @@ public class NotesInspector extends WidgetList
         recordAftertouch.setToolTipText(RECORD_AFTERTOUCH_TOOLTIP);
         recordCC.setToolTipText(RECORD_CC_TOOLTIP);
         recordPC.setToolTipText(RECORD_PC_TOOLTIP);
+        recordSysex.setToolTipText(RECORD_SYSEX_TOOLTIP);
         quantize.setToolTipText(QUANTIZE_ON_RECORD_TOOLTIP);
         quantizeTo.setToolTipText(QUANTIZE_TO_TOOLTIP);
         quantizeNoteEnds.setToolTipText(QUANTIZE_NOTE_ENDS_TOOLTIP);
@@ -740,9 +756,9 @@ public class NotesInspector extends WidgetList
                 echo,
                 });
                 
-        recordList1 = new WidgetList(new String[] { "Integration", "Record Bend", "Record Aftertouch", "Record CC", "Record PC", "Make NRPN/RPN",
+        recordList1 = new WidgetList(new String[] { "Integration", "Record Bend", "Record Aftertouch", "Record CC", "Record PC", "Record Sysex", "Make NRPN/RPN",
                 "Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
-            new JComponent[] { recordIntegration, recordBend, recordAftertouch, recordCC, recordPC, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
+            new JComponent[] { recordIntegration, recordBend, recordAftertouch, recordCC, recordPC, recordSysex, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
         
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
         DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
@@ -997,6 +1013,7 @@ public class NotesInspector extends WidgetList
             recordBend.setSelected(notes.getRecordBend()); 
             recordCC.setSelected(notes.getRecordCC()); 
             recordPC.setSelected(notes.getRecordPC()); 
+            recordSysex.setSelected(notes.getRecordSysex()); 
             recordAftertouch.setSelected(notes.getRecordAftertouch()); 
             quantize.setSelected(notes.getQuantize());
             quantizeNoteEnds.setSelected(notes.getQuantizeNoteEnds());
@@ -1065,6 +1082,9 @@ public class NotesInspector extends WidgetList
         
     static final String RECORD_PC_TOOLTIP = "<html><b>Record PC</b><br>" +
         "Sets whether the Notes will record PC (Program Change) data during recording.</html>";
+        
+    static final String RECORD_SYSEX_TOOLTIP = "<html><b>Record Sysex</b><br>" +
+        "Sets whether the Notes will record System Exclusive data during recording.</html>";
         
     static final String CONVERT_NRPN_RPN_TOOLTIP = "<html><b>Make NRPN/RPN</b><br>" +
         "Sets whether the Notes will attempt to convert appropriate CC data<br>" + 

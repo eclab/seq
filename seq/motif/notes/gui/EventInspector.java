@@ -8,6 +8,7 @@ package seq.motif.notes.gui;
 import seq.motif.notes.*;
 import seq.engine.*;
 import seq.gui.*;
+import seq.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -96,6 +97,8 @@ public class EventInspector extends WidgetList
         this.type = event.getType();
         this.event = event;
         buildDefaults(notes);
+        
+        StringArea area = null;
 
         if (event == null)
             {
@@ -935,17 +938,138 @@ public class EventInspector extends WidgetList
                 else if (event instanceof Notes.Sysex)
                     {
                     Notes.Sysex sysex = (Notes.Sysex) event;
+                    
+                    String data = StringUtility.toHex(sysex.getData()).trim();
 
-                    strs = new String[] { "Out", "When", };
+                    area = new StringArea(data)
+                    	{
+                    	public boolean verifyValue(String val)
+                    		{
+                    		boolean started = false;
+                    		boolean ended = false;
+                    		int[] count = { 0 };
+                    		
+							Scanner scan = new Scanner(val);
+							while(true)
+								{
+								if (ended)
+									{
+									if (scan.hasNextInt(16))
+										{
+										// ERROR, we already ended
+										notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is text after the ending F7.");
+										return false;
+										}
+									else return true;	// yay we're done!
+									}
+								else if (!scan.hasNextInt(16) && !started)
+									{
+									// ERROR, empty or garbage
+									if (scan.hasNext())
+										{
+										// ERROR, garbage
+                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is garbage at the beginning of the text");
+                    				return false;
+										}
+									else
+										{
+										// ERROR, premature ending
+                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "The text is empty.");
+                    				return false;
+										}
+									}
+								else if (!scan.hasNextInt(16) && !ended)
+									{
+									// ERROR, premature ending or garbage
+									if (scan.hasNext())
+										{
+										// ERROR, garbage
+                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is garbage text after hex number #" + count[0]);
+                    				return false;
+										}
+									else
+										{
+										// ERROR, premature ending
+                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "No ending F7.");
+                    				return false;
+										}
+									}	
+								
+								int next = scan.nextInt(16);
+								count[0]++;
+								if (!started)
+									{
+									if (next != 0xF0)
+										{
+										/// ERROR, didn't start with F0
+                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "No initial F0.");
+                    				return false;
+										}
+									else started = true;
+									}
+								else if (!ended)
+									{
+									if (next == 0xF7)
+										{
+										// we're done
+										ended = true;
+										}
+									else if (next < 0x00 || next > 0xFF)
+										{
+										/// ERROR, out of bounds value
+                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "Hex number #" + count[0] + " is " + StringUtility.toHexFull(next) + ", which is out of bounds.");
+                    				return false;
+										}
+									}
+								}
+                    		}
+                    		
+                    	public String newValue(String val)
+                    		{
+                    		ArrayList<Integer> vals = new ArrayList<>();
+							Scanner scan = new Scanner(val);
+							while(scan.hasNextInt(16))
+								{
+								vals.add(scan.nextInt(16));
+								}
+							byte[] v = new byte[vals.size()];
+							for(int i = 0; i < v.length; i++)
+								{
+								v[i] = (byte)(vals.get(i).byteValue());
+								}
+
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { sysex.setData(v); }
+							finally { lock.unlock(); }
+							
+							return getValue();
+                    		}
+                    		
+                    	public String getValue()
+                    		{
+							ReentrantLock lock = seq.getLock();
+							lock.lock();
+							try { return StringUtility.toHex(sysex.getData()).trim(); }
+							finally { lock.unlock(); }
+                    		}
+                    	};
+					area.setBorder(BorderFactory.createTitledBorder("Data"));
+					
+                    strs = new String[] { "Out", "When" };
                     comps = new JComponent[] 
                         {
                     	out,
-                    	when
+                    	when,
                         };
                     }
                 }
             finally { lock.unlock(); }
             build(strs, comps);
+            if (area != null) // it's sysex
+            	{
+                add(area, BorderLayout.CENTER);
+            	}
             }
         }
                 

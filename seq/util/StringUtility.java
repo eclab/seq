@@ -388,6 +388,7 @@ public class StringUtility
         return filename.substring(0, extensionIndex);
         }
 
+
     /** Returns the byte as a hex number */
     public static String toHex(byte val)
         {

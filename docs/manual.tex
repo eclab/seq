@@ -532,7 +532,7 @@ You can loop the entire sequence\,---\,that is, loop the {\bf Root Motif}\,---\,
 \subsection{Notes}
 \label{notesmotif}
  
-Notes is simply a collection of MIDI events: MIDI Notes, Pitch Bend events, Control Change (CC) events, Program Change (CC) events NRPN/RPN events, and Aftertouch Events.  Notes are not stored as MIDI Note On/Note Off, but as entire notes with an onset, pitch, velocity, length, and release velocity.   Other events are simply stored as their time stamp and value.  
+Notes is simply a collection of MIDI events: MIDI Notes, Pitch Bend events, Control Change (CC) events, Program Change (CC) events NRPN/RPN events, Aftertouch Events, and System Exclusive (Sysex) events.  Notes are not stored as MIDI Note On/Note Off, but as entire notes with an onset, pitch, velocity, length, and release velocity.   Other events are simply stored as their time stamp and value.  
 
 Like other Motifs, you can give your Notes a {\bf Name} in the Notes Inspector.  
 
@@ -549,6 +549,8 @@ The color of a non-note event is (at present) its {\bf value}.  The value is als
 You can {\bf zoom} the piano player roll in and out with the magnifying glass buttons at the bottom of the window.
 
 At the top of the display is the {\bf Ruler}.  Depending on the zoom amount, will display ticks for Bars, Beats, and 16th notes.  It will also show numbers for Bars.
+
+A quick note about {\bf System Exclusive} (or {\bf Sysex}) events.  These non-note events do not have values.  Instead they are associated with a textual string of {\bf hexadecimal values}, each separated by whitespace.  We assume you understand how sysex works and so what these strings look like.  Because the events do not have values, we assign them random vertical and horizontal placement in the display so multiple Sysex events at the same timestamp don't pile up on top of one another.
 
 \paragraph{Creating Notes and Events}
 

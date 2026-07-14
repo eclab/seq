@@ -359,6 +359,11 @@ public class NotesClip extends Clip
                                 }
                             }
                         }
+                    else if (message instanceof SysexMessage && notes.getRecordSysex())
+						{
+						Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
+						recording.add(sysex);
+                    	}
                     }
                 }
             return false;           // we're never done
@@ -368,12 +373,10 @@ public class NotesClip extends Clip
             ArrayList<Notes.Event> playing = notes.events;
             int size = playing.size();
             
-            
             // At present, index is where I LAST had an event, or -1            
             while (size > (index + 1) && playing.get(index + 1).when <= pos)            // is there another event, and is it time for it?
                 {
                 index++;                                                                                                                        // advance to that event
-                
                 // Now emit it
                 Notes.Event event = playing.get(index);
                 if (event instanceof Notes.Note)
@@ -424,6 +427,11 @@ public class NotesClip extends Clip
                     Notes.RPN rpn = (Notes.RPN)event;
                     rpn(determineOut(rpn.out, out), rpn.parameter, rpn.value);
                     }
+                else if (event instanceof Notes.Sysex)
+                	{
+                	Notes.Sysex sysex = (Notes.Sysex)event;
+                	sysex(determineOut(sysex.out, out), sysex.getData());
+                	}
                 }
                                  
             // at this point, index points to the LAST EVENT that we emitted
