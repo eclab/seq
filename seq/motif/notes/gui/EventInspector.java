@@ -931,6 +931,16 @@ public class EventInspector extends WidgetList
                         value.getLabelledDial("127")
                         };
                     }
+                else if (event instanceof Notes.Sysex)
+                    {
+                    Notes.Sysex sysex = (Notes.Sysex) event;
+
+                    strs = new String[] { "Out" };
+                    comps = new JComponent[] 
+                        {
+                    	out,
+                        };
+                    }
                 }
             finally { lock.unlock(); }
             build(strs, comps);

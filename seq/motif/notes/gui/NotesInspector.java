@@ -92,9 +92,9 @@ public class NotesInspector extends WidgetList
     public JComponent eventLSB[] = new JComponent[Notes.NUM_EVENT_PARAMETERS];
     public JComponent eventBox[] = new Box[Notes.NUM_EVENT_PARAMETERS];
 
-    public static final String[] EVENT_TYPES = { "None", "CC", "Poly AT", "Channel AT", "Bend", "PC", "NRPN", "RPN" };
-    public static final boolean[] EVENT_HAS_LSB = { false, false, false, false, false, false, true, true };
-    public static final boolean[] EVENT_HAS_MSB = { false, true, false, false, false, false, true, true };
+    public static final String[] EVENT_TYPES = { "None", "CC", "Poly AT", "Channel AT", "Bend", "PC", "Sysex", "NRPN", "RPN" };
+    public static final boolean[] EVENT_HAS_LSB = { false, false, false, false, false, false, false, true, true };
+    public static final boolean[] EVENT_HAS_MSB = { false, true, false, false, false, false, false, true, true };
 
     public static final String[] PARAMETER_HEIGHT_STRINGS = { "Small", "Medium", "Large" };
     public static final int[] PARAMETER_HEIGHTS = { 32, 64, 128 };
@@ -676,6 +676,11 @@ public class NotesInspector extends WidgetList
                     notesui.getEventsUI().setParameterHeight(PARAMETER_HEIGHTS[parameterHeight.getSelectedIndex()]);
                     notesui.getEventsUI().rebuild();
                     notesui.getGridUI().clearSelected();
+                    // we didn't change the bounds until AFTER rebuild, so we have to resize again to force the bounds change
+					notesui.rebuildSizes();
+					// This forces revalidates and repaint events, but the bounds don't get updated 
+					// until the Swing events go through, grrr, so we have to wait and then reload....
+					SwingUtilities.invokeLater(new Runnable() { public void run() { notesui.getEventsUI().reload(); }});       
                     }
                 });
 
@@ -912,6 +917,10 @@ public class NotesInspector extends WidgetList
   full = "" + eventParamMSB + " " + CC_14_NAMES[eventParamMSB];
   }
 */
+            else if (type == Notes.EVENT_PARAMETER_SYSEX)    // it's Sysex
+                {
+                full = "Sysex";		// I don't think we want to show the message here!
+                }
             else if (type == Notes.EVENT_PARAMETER_NRPN)    // it's NRPN
                 {
                 full = "" + (eventParamMSB * 128 + eventParamLSB);
@@ -958,6 +967,10 @@ public class NotesInspector extends WidgetList
         else if (type == Notes.EVENT_PARAMETER_PC)
             {
             return Notes.TYPE_PC;
+            }
+        else if (type == Notes.EVENT_PARAMETER_SYSEX)
+            {
+            return Notes.TYPE_SYSEX;
             }
         else if (type == Notes.EVENT_PARAMETER_NRPN)
             {
@@ -1155,6 +1168,6 @@ public class NotesInspector extends WidgetList
         "Settings which control how notes are edited.</html>";
 
     static final String NON_NOTE_DISPLAY_TOOLTIP = "<html><b>Non-Note Display</b><br>" +
-        "Settings which control which non-note events (CC, NRPN, RPN, Pitch Bend, Aftertouch, PC)<br>" +
+        "Settings which control which non-note events (CC, NRPN, RPN, Pitch Bend, Aftertouch, PC, Sysex)<br>" +
         "are displayed, and how they are displayed.</html>";
     }
