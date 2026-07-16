@@ -1317,13 +1317,14 @@ public class Notes extends Motif
         // X and so our end time is X.  That's the approach I'm taking here.  Neither is optimal.
         
 		int endTime = 0;
+		int manualEnd = (end >= start ? end : start);
         if (maxNoteOffPosition > maxEventPosition)
         	{
-        	endTime = (maxNoteOffPosition > end ? maxNoteOffPosition : (end >= 0 ? end : 0)) - 1;    // FIXME: So I'm subtracting 1....
+        	endTime = (maxNoteOffPosition > manualEnd ? maxNoteOffPosition : manualEnd) - 1;    // FIXME: So I'm subtracting 1....
         	}
         else
         	{
-        	endTime = (maxEventPosition > end ? maxEventPosition : (end >= 0 ? end : 0));
+        	endTime = (maxEventPosition > manualEnd ? maxEventPosition : manualEnd);
         	}
         	
         if (endTime < 0) endTime = 0;
@@ -1416,16 +1417,14 @@ public class Notes extends Motif
             {
             if (hash.contains(event))
                 {
-                if (
-                    (event instanceof Note && removeNotes) ||
+                if ((event instanceof Note && removeNotes) ||
                     (event instanceof Bend && removeBend) ||
                     (event instanceof CC && removeCC) ||
                     (event instanceof PC && removePC) ||
                     (event instanceof Aftertouch && removeAftertouch) ||
                     (event instanceof Sysex && removeSysex) ||
                     (event instanceof NRPN && removeNRPN) ||
-                    (event instanceof RPN && removeRPN)
-                    )            
+                    (event instanceof RPN && removeRPN))            
                     {
                     cut.add(event);
                     }

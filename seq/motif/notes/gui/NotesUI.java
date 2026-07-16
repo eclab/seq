@@ -655,6 +655,7 @@ public class NotesUI extends MotifUI
                 event.when = newTime;
                 if (event.when < 0) event.when = 0;
                 }
+	        notes.computeMaxTime(); 
             }
         finally 
             {
@@ -694,6 +695,7 @@ public class NotesUI extends MotifUI
                     event.when = Seq.MIN_MAX_TIME;
                     }
                 }
+	        notes.computeMaxTime(); 
             }
         finally 
             {
