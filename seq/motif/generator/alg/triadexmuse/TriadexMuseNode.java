@@ -33,15 +33,15 @@ public class TriadexMuseNode extends AlgorithmNode
     		{
     		int in = clip.getCorrectedValueInt(triadexmuse.getInterval(i), 39);
 
-    		if (in == 0) { System.err.print("0 "); note += 0; }
-    		else if (in == 1) { System.err.print("1 "); note += multiplicand; }
-    		else if (in < 9) { System.err.print("" + (counter[in - 2] >= 0 ? 1 : 0) + " "); note += multiplicand * (counter[in - 2] >= 0 ? 1 : 0); }
-    		else { System.err.print("" + ((lfsr >>> (in - 9)) & 0x1) + " "); note += multiplicand * ((lfsr >>> (in - 9)) & 0x1); }
+    		if (in == 0) { /* System.err.print("0 "); */ note += 0; }
+    		else if (in == 1) { /* System.err.print("1 "); */ note += multiplicand; }
+    		else if (in < 9) { /* System.err.print("" + (counter[in - 2] >= 0 ? 1 : 0) + " "); */ note += multiplicand * (counter[in - 2] >= 0 ? 1 : 0); }
+    		else { /* System.err.print("" + ((lfsr >>> (in - 9)) & 0x1) + " "); */ note += multiplicand * ((lfsr >>> (in - 9)) & 0x1); }
     		
     		if (i == 3) multiplicand = 7;
     		else multiplicand *= 2;
     		}
-
+/*
 System.err.print(" " + KEYS[note % 7] + (note / 7 + 1));
 
 System.err.print(" -> 0 1 |");
@@ -55,7 +55,7 @@ for(int i = 0; i < 31; i++)
 	System.err.print(" " + ((lfsr >>> i) & 0x1));
 	}
 System.err.println();
-
+*/
     	return PITCHES[note];
     	}
     
@@ -82,6 +82,7 @@ System.err.println();
     	lfsr = lfsr << 1;
     	
 		// LAST we fill in the first bit based on the count
+		// Note that this is the opposite of what the manual (which is wrong) says
     	if (count == 0 || count == 2 || count == 4) lfsr = lfsr | 0x1;
     	else lfsr = lfsr | 0x0;
     	}
@@ -134,7 +135,29 @@ System.err.println();
     	reset();
     	}
     	
+    public void release()
+    	{
+    	if (lastNote != REST)
+    		{
+    		noteOff(lastNote, 0x64, lastNoteID);
+    		lastNote = REST;
+    		}
+    	}
+    	
+    public void cut()
+    	{
+    	if (lastNote != REST)
+    		{
+    		noteOff(lastNote, 0x64, lastNoteID);
+    		lastNote = REST;
+    		}
+    	}
+    	
     public static final int LOW_NOTE = 0x60;
+    
+    public static final int REST = -1;
+    int lastNote = REST;
+    int lastNoteID = 0;
     
     public boolean process(ArrayList<GeneratorClip.Note> notes)
     	{
@@ -154,8 +177,38 @@ System.err.println();
     	
     	int velocity = triadexmuse.getVelocity();
     	double gate = triadexmuse.getGate();
+    	boolean legato = triadexmuse.getLegato();
     	
-    	note(note, velocity, (int)Math.max(rate * gate, 1), 64);
+    	if (lastNote == note)
+    		{
+    		// don't do anything
+    		}
+    	else
+    		{
+    		if (legato)
+    			{
+    			if (lastNote != REST)
+    				{
+    				noteOff(lastNote, 0x64, lastNoteID);
+    				lastNoteID = -1;  	// probably not needed
+    				}
+    			if (note != REST)
+    				{
+    				lastNoteID = noteOn(note, velocity);	
+    				}
+    			}
+    		else
+    			{
+    			if (note != REST)
+    				{
+	    			note(note, velocity, (int)Math.max(rate * gate, 1), 64);
+	    			}
+    			lastNote = REST;
+    			lastNoteID = -1;		// probably not needed
+    			}
+    		}
+    	lastNote = note;
+    	
     	return false;
     	}
 	}

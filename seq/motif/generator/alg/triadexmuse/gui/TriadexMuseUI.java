@@ -24,6 +24,7 @@ public class TriadexMuseUI extends AlgorithmUI
     JComboBox rate;
     SmallDial transpose;
     JCheckBox rest;
+    JCheckBox legato;
     PushButton preset;
     
     public static final String[] LABELS = 
@@ -306,10 +307,23 @@ public class TriadexMuseUI extends AlgorithmUI
                     finally { lock.unlock(); }                              
                     }
                 });
+                
+            legato = new JCheckBox();
+            legato.setSelected(triadexmuse.getLegato());
+            legato.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { triadexmuse.setLegato(legato.isSelected()); }
+                    finally { lock.unlock(); }                              
+                    }
+                });
             }
         finally { lock.unlock(); }
 
-        build(new String[] { "", "Volume", "Transpose", "Gate", "Rate", "Rests", "Intervals", "A (+1)", "B (+2)", "C (+4)", "D (+Octave)", "Themes", "W", "X", "Y", "Z" }, 
+        build(new String[] { "", "Volume", "Transpose", "Gate", "Rate", "Rests", "Legato", "Intervals", "A (+1)", "B (+2)", "C (+4)", "D (+Octave)", "Themes", "W", "X", "Y", "Z" }, 
             new JComponent[] 
                 {
                 preset,
@@ -318,6 +332,7 @@ public class TriadexMuseUI extends AlgorithmUI
                 gate.getLabelledDial("0.8888"),
                 rate,
                 rest,
+                legato,
                 null,
                 intervals[0].getLabelledDial("C 1/2"),
                 intervals[1].getLabelledDial("C 1/2"),
@@ -340,6 +355,7 @@ public class TriadexMuseUI extends AlgorithmUI
             {
             rate.setSelectedIndex(triadexmuse.getRateIndex()); 
             rest.setSelected(triadexmuse.getRest()); 
+            legato.setSelected(triadexmuse.getLegato()); 
             }
         finally { lock.unlock(); }                              
         if (transpose != null) transpose.redraw();

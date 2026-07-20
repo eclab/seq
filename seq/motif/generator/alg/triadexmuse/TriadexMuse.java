@@ -40,11 +40,6 @@ public class TriadexMuse extends Algorithm
 		return 0;
 		}
 	
-	public static final double GATE_LEGATO = 1.0;
-	public static final double GATE_THREE_QUARTERS = 0.75;
-	public static final double GATE_HALF = 0.5;
-	public static final double GATE_QUARTER = 0.25;
-	
 	public static final int MAX_TRANSPOSE = 24;
 
     int[] interval = new int[4];
@@ -53,7 +48,8 @@ public class TriadexMuse extends Algorithm
     int velocity = 64;
     boolean rest = false;
     int rate = RATE_EIGHTH_NOTES;
-    double gate = GATE_LEGATO;
+    double gate = 1.0;
+    boolean legato = true;
     
     public TriadexMuse copy()
         {
@@ -93,7 +89,8 @@ public class TriadexMuse extends Algorithm
 		velocity = obj.optInt("vel", 64);
 		rest = obj.optBoolean("rest", false);
 		rate = obj.optInt("rate", RATE_EIGHTH_NOTES);
-		gate = obj.optDouble("gate", GATE_LEGATO);
+		gate = obj.optDouble("gate", 1.0);
+		legato = obj.optBoolean("leg", true);
 		}
     	
 	public void save(JSONObject obj) throws JSONException
@@ -116,6 +113,7 @@ public class TriadexMuse extends Algorithm
 		obj.put("rest", rest);
 		obj.put("rate", rate);
 		obj.put("gate", gate);
+		obj.put("leg", legato);
 		}
 
 	public AlgorithmNode buildNode(Seq seq, GeneratorClip clip)
@@ -152,6 +150,8 @@ public class TriadexMuse extends Algorithm
     public void setRate(int val) { rate = val; }
     public double getGate() { return gate; }
     public void setGate(double val) { gate = val; }
+    public boolean getLegato() { return legato; }
+    public void setLegato(boolean val) { legato = val; }
 
 	public String getHTMLDescription() 
 		{
