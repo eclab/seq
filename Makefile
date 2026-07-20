@@ -31,7 +31,11 @@ seq/motif/arpeggio/gui/*.java \
 seq/motif/filter/*.java \
 seq/motif/filter/gui/*java \
 seq/motif/modulation/*.java \
-seq/motif/modulation/gui/*.java 
+seq/motif/modulation/gui/*.java \
+seq/motif/generator/*.java \
+seq/motif/generator/gui/*.java \
+seq/motif/generator/alg/*/*.java \
+seq/motif/generator/alg/*/gui/*.java
 
 
 # Make the main Seq code

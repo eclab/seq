@@ -137,6 +137,7 @@ public class MotifList extends JPanel
         seq.motif.arpeggio.gui.ArpeggioUI.class,
         seq.motif.filter.gui.FilterUI.class,
         seq.motif.modulation.gui.ModulationUI.class,
+        seq.motif.generator.gui.GeneratorUI.class,
         seq.motif.macro.gui.MacroChildUI.class,
         seq.motif.macro.gui.MacroUI.class,
         };
@@ -153,6 +154,7 @@ public class MotifList extends JPanel
         seq.motif.arpeggio.Arpeggio.class,
         seq.motif.filter.Filter.class,
         seq.motif.modulation.Modulation.class,
+        seq.motif.generator.Generator.class,
         seq.motif.macro.MacroChild.class,
         seq.motif.macro.Macro.class,
         };
