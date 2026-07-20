@@ -23,6 +23,15 @@ public abstract class SmallDial extends JPanel
     {
     private static final long serialVersionUID = 1;
 
+	public static final double EPSILON = 0.0000001;
+	/** If d is very VERY slightly less than an integer, it is rounded up (like x.999999),
+		otherwise it is rounded down.  This fixes certain slight errors in converting from
+		double to an int. */
+	public static final int toInt(double d)
+		{
+		return (int)(d + EPSILON);
+		}
+
     public void setToolTipText(String text) 
         {
         super.setToolTipText(text);
@@ -591,4 +600,27 @@ public abstract class SmallDial extends JPanel
         arc.setArc(rect.getX() + STROKE_WIDTH / 2, rect.getY() + STROKE_WIDTH/2, rect.getWidth() - STROKE_WIDTH, rect.getHeight() - STROKE_WIDTH, startAngle, interval, Arc2D.OPEN);            
         graphics.draw(arc);
         }
+
+
+	// Test to determine which integer sequences can all be safely mapped to 0.0 ... 1.0
+        public static void main(String[] args)
+                {
+                int[] tests = { 1, 31, 48, 7, 6, 8, 16, 63, 64, 16, 127, 479, 11, 126, 127, 128, 15, 16383, 24, 39, 4 };
+                for(int test : tests)
+                        {
+                        System.err.println("Testing " + test);
+                        for(int i = 0; i <= test; i++)
+                                {
+                                if ((int) ((i / (double)test) * test) != i)
+                                        {
+                                        System.err.println("FAILED AT " + i);
+                                        if (seq.gui.SmallDial.toInt((i / (double)test) * test) != i)
+                                                {
+                                                System.err.println("STILL FAILED AT " + i);
+                                                }
+                                        }
+                                }
+                        }
+                }
+
     }

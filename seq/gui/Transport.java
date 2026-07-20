@@ -204,7 +204,8 @@ public class Transport extends JPanel implements SeqListener
             final int bpmL = Seq.MAX_BPM - 1;
             bpm = new SmallDial((Math.min(bpmL, seq.getBPM() - 1) / (double)bpmL))
                 {
-                protected String map(double val) { return String.valueOf((int)(val * bpmL) + 1) + " BPM"; }
+                // Values up to 479 will fail a bit, so we have to deal with that
+                protected String map(double val) { return String.valueOf(SmallDial.toInt(val * bpmL) + 1) + " BPM"; }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
