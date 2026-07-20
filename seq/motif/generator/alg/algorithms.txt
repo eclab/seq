@@ -1,0 +1,6 @@
+# This is a list of classnames of algorithms in the generator module, 
+# each followed by a TAB, then a String name for the class
+# The first classname MUST be seq.motif.generator.Algorithm TAB None
+
+seq.motif.generator.Algorithm	<html><i>None</i></html>
+seq.motif.generator.alg.triadexmuse.TriadexMuse	<html>Triadex Muse</html>

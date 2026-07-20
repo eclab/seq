@@ -1,0 +1,47 @@
+<html>
+<body>
+<h1>Triadex Muse</h1>
+
+<p>Marvin Minsky and Edward Fredkin, 1969
+
+<p>The Muse is a melody generator which uses two binary counters and a 31-step linear feedback shift register (or LFSR), a kind of random number generator.  It produces melodies of notes over two octaves, with or without rests.  You can change the volume (velocity), tempo, and pitch of the songs.  I have also added the ability to change the length of each note (that is, the gate).
+
+<p>Each timestep, notes are produced by adding together the four <b>intervals</b>.  Each interval is either on or off, depending on whether the item it's tuned to is on or off.  To determine what the note is:
+
+<ol>
+<li>We start at "Do" (which have set to Middle C unless you changed the <b>transpose</b> value).
+<li>If Interval A is ON, we increase the pitch by one semitone.
+<li>If Interval B is ON, we increase the pitch by two more semitones.
+<li>If Interval C is ON, we increase the pitch by four more semitones.
+<li>If Interval D is ON, we increase the pitch further by an octave.
+<li>If the <b>Rest</b> switch is turned on, and we are still at "Do" (none of the intervals was ON), then we play a rest (we play nothing).
+<li>Otherwise we play the resulting note pitch.
+</ol>
+
+What can the Intervals be tuned to?  We can set them to any of (let's assume the first note is note 0):
+
+<ul>
+<li>Always <b>ON</b>
+<li>Always <b>OFF</b>
+<li><b>C 1/2</b>.  This means ON for the first half of the note, then OFF for the back half.
+<li><b>C1</b>.  This means OFF for notes 0, 2, 4, 8, ..., and ON for notes 1, 3, 5, 7, ... (changing every note)
+<li><b>C2</b>.  This means OFF for notes 0, 1, 4, 5, ..., and ON for notes 2, 3, 6, 7, ... (changing every two notes)
+<li><b>C4</b>.  This means OFF for notes 0...3, ..., and ON for notes 4...7, ... (changing every four notes)
+<li><b>C8</b>.  This means OFF for notes 0...7, ..., and ON for notes 8...15, ... (changing every eight notes)
+<li><b>B1...B31</b>.  This means ON for if the LFSR is ON in that slot (1...31), else OFF.
+</ul>
+
+The LFSR is a list of 31 <b>slots</b>, each of which can be set to either ON or OFF.  Each timestep we <b>advance</b> the LFSR.  This means that the value of each of the slots is moved forward to the next slot.  Slot 31's value is set to what slot 30 was.  Slot 30's value is set to what slot 29 was, and so on, down to slot 2 being set to slot 1.  
+
+<p>What is slot 1's new value then?  It is set to a mathematical function of the current values of the four <b>themes</b>.  Just like the Intervals, the Themes can be tuned to on, off, C 1/2, C1...8, or B1...B31.  But whereas Intervals determine the note, the Themes just determine the next value of LFSR's slot 1.  Slot 1 will be set to ON if there are an even number of Themes tuned to ON, and it will be set to OFF otherwise.
+
+<p>Note that the <b>C 1/2</b> goes On and then Off over the course of one note.  This means that to play at the proper rate of one "note" per quarter note, we must have a rate of <b>Eighth Notes</b> by default.
+
+<p>This algorithm has quite illustrious inventors.  Marvin Minsky and Edward Fredkin were both quite accomplished people in their own (non-musical) fields.  Minsky is considered to be the godfather of Artificial Intelligence, and Fredkin popularized the notion in physics of the universe as a giant discrete computional device.
+
+<p>My implementation is based off of Donald Tillmans's Javascript version.  His <a href="https://till.com/articles/muse/">website</a> is really spectacular.
+
+<br><br><br>
+
+</body>
+</html>
