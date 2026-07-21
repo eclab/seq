@@ -239,8 +239,8 @@ sean@cs.gmu.edu}\\
 \\
 \\
 \large\rm {\bf Seq Version 10}\\
-\large\rm {\bf Manual Version 9.0}\\
-\large\rm  January 2026\\
+\large\rm {\bf Manual Version 10.0}\\
+\large\rm  July 2026\\
 
 \vspace{5in}
 \noindent\Large\bf Where to Obtain Seq\\
@@ -293,7 +293,7 @@ Seq goes further than this, however: different sequences can be built out of the
 
 Music made with Seq tends to be composed bottom-up: you start with some basic building blocks (step sequences, small MIDI clips), combine them in different ways, and then combine the combinations, and so on, building up larger pieces of compositions until you have your finished song.  Seq can also be useful for real-time performance, as you can modify the structure and parameters of a song in real-time.  Seq even has a dedicated object, called {\it Select}, which lets you launch MIDI subsequences just like a clip launcher in Ableton etc.  Seq sequences, or pieces of them, can also be broken out and easily shared in other compositions.  Finally, many Seq features can be {\it parameterized}, meaning that you can change them automatically or manually at a very abstract level.
 
-Seq was largely written from 2023--2025 by Sean Luke with help from Filippo Carnovalini.
+Seq was largely written from 2023--2026 by Sean Luke with help from Filippo Carnovalini and Cesar Liendo.
 
 \paragraph{Who is Seq For?}
 
@@ -349,7 +349,7 @@ Seq's sequence structure is very amenable to customization and automated modific
 
 We'd also like to see a Live Coding module for Seq, though there are some challenges due to the poor options among Live Coding programming languages.
 
-In the immediate future, we'll be adding external sync, a dark mode, interface improvements, and more MIDI file generation.
+In the immediate future, we'll be adding external sync, interface improvements, and more generative algorithms.
 
 \clearpage\section{The User Interface}
 
@@ -503,10 +503,10 @@ At bottom are {\bf Text Notes}.  You can resize this region and store all the no
 \clearpage\section{The Motifs}
 \label{motifs}
 
-Excluding Macros and Macro Children, there are presently nine Motifs available in Seq:
+Excluding Macros and Macro Children, there are presently eleven Motifs available in Seq:
 
 \begin{itemize}
-\item Three {\bf Basic (Note-Generating) Motifs}: Step Sequence, Notes, and Silence.  These do not have children Motifs.
+\item Four {\bf Basic (Note-Generating) Motifs}: Step Sequence, Notes, Generator, and Silence.  These do not have children Motifs, except for Generator, which has an optional child Motif.
 \item Four {\bf Combination Motifs}: Series, Parallel, Automaton, and Select.  These have children Motifs.
 \item One {\bf Parameter Modification Motif}: Modulation.  This has a single child Motif.
 \item Two {\bf MIDI Effect Motifs}: Arpeggio and Filter.  These have a single child Motif each.
@@ -1496,8 +1496,45 @@ As is the case for Serial, you can specify the number of times the child will re
 Like a number of other motifs, Modulation lets you modulate the rate, transpose, gain, and out of your (sole) child.  There is a difference however.  If you set the rate, transpose, or gain to a {\it parameter}, keep in mind that the whole point of Modulation is to modulate {\it its own parameters}, which are normally passed down to the child.  However these parameters that Modulation is modulating will {\it also} affect your Child MIDI settings.  This is by design: if for example you set your Child's MIDI gain to Param 1, then if you set up an Envelope on Argument 1, it will modulate that gain!
 
 
+\clearpage
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=6.5in]{Generator}
+\vspace{-2em}
+\caption{Generator Motif.}
+\label{arpeggio}
+\end{figure}
 
+\subsection{Generator}
+
+Generator is where Seq runs various algorithms which perform generative music, that is, they automatically generate melodies or rhythms, either on their own or in response to MIDI from a child (such as to accompany~it).
+
+At present Generator has two algorithms:
+
+\begin{itemize}
+\item {\bf Triadex Muse}, from a 1969 music-generating device by Marvin Minsky and Edward Fredkin of MIT and Triadex Inc.  The Muse uses two logic devices (a binary counter and a linear feedback shift register or LSFR) to generate random melody patterns.
+\item {\bf Grids}, from a 2013 Eurorack module by {\'E}milie Gillet of Mutable Instruments  Grids interpolates among a wide range of three-drum patterns in a two-dimensional space, plus additional parameters for complexity and randomness.
+\end{itemize}
+
+You select the algorithm at right.  The main part of the motif then has three parts:
+
+\begin{itemize}
+\item {\it (At Left)} The parameters of the algorithm.  In the image above, the parameters shown are for the Triadex Muse.
+\item {\it (At Right)} Instructions for using the algorithm and all of its parameters.
+\item {\it (At Top}) A slot for an optional single motif Child.  Some algorithms may operate by receiving MIDI from this child, and then emitting MIDI to accompany it in some way, and so require a child.  Many other algorithms generate music on their own and so will simply ignore any child you place here. 
+\end{itemize}
+
+\paragraph{Additional Parameters}
+
+\begin{itemize}
+\item {\bf Out}\quad Specifies the MIDI Device that the algorithm will use to emit its generated music.  This can be any device, or set to be the {\bf Same as Received}.
+\item {\bf Received}\quad  When the Child emits MIDI for the algorithm to accompany, the algorithm will expect MIDI sent to this device only.  Other MIDI will be ignored.
+\item {\bf Omni}\quad  If checked, then when the Child emits MIDI for the algorithm to accompany, the algorithm will respond to MIDI sent to any device (regardless of the setting of {\bf Received}).
+\item {\bf Pass}\quad  If checked, then when the Child emits MIDI, the algorithm will then pass this MIDI to its parent motif in addition to any MIDI it generates.  this MIDI the algorithm will respond to MIDI sent to any device (regardless of the setting of {\bf Received}).
+\end{itemize}
+
+Whenever the Generator motif is started, or restarted, it will reset the algorithm to its initial position and then play from there.
 
 \clearpage
 
