@@ -203,6 +203,7 @@ public class ParallelInspector extends WidgetList
         seq = old;
         name.update();
         if (crossFade != null) crossFade.repaint();
+        if (end != null) end.revise();
         }
 
 

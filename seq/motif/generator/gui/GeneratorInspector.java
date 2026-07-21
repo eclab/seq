@@ -25,6 +25,7 @@ public class GeneratorInspector extends WidgetList
     JCheckBox omni;
     JCheckBox pass;
     JComboBox algorithm;
+    TimeDisplay end;
     
     int lastSelectedAlgorithm = 0;
 
@@ -145,7 +146,7 @@ public class GeneratorInspector extends WidgetList
             		{
             		if (e.getStateChange() == ItemEvent.DESELECTED)
             			{
-            			lastSelectedAlgorithm = e.getID();
+            			lastSelectedAlgorithm = generator.getAlgorithmIndex();
             			}
             		}
             	});
@@ -163,7 +164,8 @@ public class GeneratorInspector extends WidgetList
 						alg = generator.getAlgorithmIndex();
 						}
 					finally { lock.unlock(); }
-					if (lastSelectedAlgorithm > 0 && alg != lastSelectedAlgorithm)
+
+					if (lastSelectedAlgorithm > 0)
 						{
 						// warn that we're about to reset everything
 						if (!generatorui.getSeqUI().showSimpleConfirm("Change Algorithm", "Change the algorithm?\n\nChanging the Algorithm will reset all of your Generator settings.", "Change"))
@@ -194,6 +196,22 @@ public class GeneratorInspector extends WidgetList
                 	generatorui.updateAlgorithmUI();
                     }
                 });
+
+
+            end = new TimeDisplay(generator.getEnd() , seq)
+                {
+                public int getTime()
+                    {
+                    return generator.getEnd(); 
+                    }
+                        
+                public void setTime(int time)
+                    {
+                    generator.setEnd(time);
+                    }
+                };
+            end.setDisplaysTime(true);
+            end.setToolTipText(END_TOOLTIP);
             }
         finally { lock.unlock(); }
         
@@ -214,7 +232,7 @@ public class GeneratorInspector extends WidgetList
         activeTo.setToolTipText(FROM_TOOLTIP);
     	*/
 
-        build(new String[] { "Name", "Algorithm", "Out", "Received", "Omni", "Pass" }, 
+        build(new String[] { "Name", "Algorithm", "Out", "Received", "Omni", "Pass", "Max End Time" }, 
             new JComponent[] 
                 {
                 name,
@@ -223,6 +241,7 @@ public class GeneratorInspector extends WidgetList
                 in,
                 omni,
                 pass,
+                end,
                 });
         add(new DefaultParameterList(seq, generatorui), BorderLayout.SOUTH);
         generatorui.revalidate();                            
@@ -245,6 +264,7 @@ public class GeneratorInspector extends WidgetList
         finally { lock.unlock(); }                              
         seq = old;
         name.update();
+        if (end != null) end.revise();
         }
 
 
@@ -254,6 +274,10 @@ public class GeneratorInspector extends WidgetList
     static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
         "Sets the MIDI output for the Generator.  This also may restrict which notes are<br>"+
         "arpeggiated (see <b>Omni Input</b>).</html>";
+        
+    static final String END_TOOLTIP = "<html><b>Max End Time</b><br>" +
+        "Sets the maximum time that the Generator will play.  The Generator algorithm may choose<br>" +
+        "to play for a shorter period than this.</html>";
         
     static final String OMNI_INPUT_TOOLTIP = "<html><b>Omni Input</b><br>" +
         "If checked, all notes from the underlying child Motif will be converted into generators.<br>" +

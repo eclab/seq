@@ -20,6 +20,7 @@ public class Generator extends Motif
     public static final int SAME_AS_IN = -1;
     int out = SAME_AS_IN;
     int in;
+    int end = Seq.MIN_MAX_TIME;
     boolean omni;
     boolean pass;
     Algorithm algorithm;
@@ -38,6 +39,9 @@ public class Generator extends Motif
     	setAlgorithm(Algorithm.instantiate(this, val));
     	}
     	
+    public int getEnd() { return end; }
+    public void setEnd(int val) { end = val; }
+
     /** Returns the output device. */
     public int getOut() { return out; }
     

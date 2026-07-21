@@ -1514,13 +1514,13 @@ At present Generator has two algorithms:
 
 \begin{itemize}
 \item {\bf Triadex Muse}, from a 1969 music-generating device by Marvin Minsky and Edward Fredkin of MIT and Triadex Inc.  The Muse uses two logic devices (a binary counter and a linear feedback shift register or LSFR) to generate random melody patterns.
-\item {\bf Grids}, from a 2013 Eurorack module by {\'E}milie Gillet of Mutable Instruments  Grids interpolates among a wide range of three-drum patterns in a two-dimensional space, plus additional parameters for complexity and randomness.
+\item {\bf Grids}, from a 2013 Eurorack module by {\'E}milie Gillet of Mutable Instruments.  Grids interpolates among a wide range of three-drum patterns in a two-dimensional space, plus additional parameters for complexity and randomness.
 \end{itemize}
 
-You select the algorithm at right.  The main part of the motif then has three parts:
+\noindent You select the algorithm from the {\bf Algorithms} popup menu at right.  The main part of the motif then has three parts:
 
 \begin{itemize}
-\item {\it (At Left)} The parameters of the algorithm.  In the image above, the parameters shown are for the Triadex Muse.
+\item {\it (At Left)} The algorithm's parameters.  The image above shows the parameters for the Triadex Muse.
 \item {\it (At Right)} Instructions for using the algorithm and all of its parameters.
 \item {\it (At Top}) A slot for an optional single motif Child.  Some algorithms may operate by receiving MIDI from this child, and then emitting MIDI to accompany it in some way, and so require a child.  Many other algorithms generate music on their own and so will simply ignore any child you place here. 
 \end{itemize}
@@ -1532,6 +1532,7 @@ You select the algorithm at right.  The main part of the motif then has three pa
 \item {\bf Received}\quad  When the Child emits MIDI for the algorithm to accompany, the algorithm will expect MIDI sent to this device only.  Other MIDI will be ignored.
 \item {\bf Omni}\quad  If checked, then when the Child emits MIDI for the algorithm to accompany, the algorithm will respond to MIDI sent to any device (regardless of the setting of {\bf Received}).
 \item {\bf Pass}\quad  If checked, then when the Child emits MIDI, the algorithm will then pass this MIDI to its parent motif in addition to any MIDI it generates.  this MIDI the algorithm will respond to MIDI sent to any device (regardless of the setting of {\bf Received}).
+\item {\bf Max End Time}\quad Specifies the time that the algorithm will stop playing.  The algorithm is free to play for a shorter period of time than this.
 \end{itemize}
 
 Whenever the Generator motif is started, or restarted, it will reset the algorithm to its initial position and then play from there.

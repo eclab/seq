@@ -346,6 +346,7 @@ public class GeneratorClip extends Clip
 		boolean nodedone = node.process(notes);
 		
 		if (clipdone || nodedone) return true;
+        else if (getPosition() >= generator.getEnd() - 1) return true;
 		else return false;
         }
     }
