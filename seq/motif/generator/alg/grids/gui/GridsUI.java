@@ -382,9 +382,9 @@ public class GridsUI extends AlgorithmUI
         build(new String[] { "X", "Y", "Chaos", "Rate", "Accents", "Complexity", "Drum 1", "Drum 2", "Drum 3", "Note", "Drum 1", "Drum 2", "Drum 3", "Velocity", "Drum 1", "Drum 2", "Drum 3", "Accent Velocity", "Drum 1", "Drum 2", "Drum 3" }, 
             new JComponent[] 
                 {
-                x.getLabelledDial("127"),
-            	y.getLabelledDial("127"),
-                chaos.getLabelledDial("127"),
+                x.getLabelledDial("255"),
+            	y.getLabelledDial("255"),
+                chaos.getLabelledDial("255"),
                 rate,
                 accents,
                 null,
