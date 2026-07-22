@@ -1,0 +1,39 @@
+<html>
+<body>
+<h1>Grids</h1>
+
+<p>&#x00C8;milie Gillet, 2013 
+
+<p>Grids was a drum pattern generator module for Eurorack, designed by &#x00C8;milie Gillet
+under her brand name, Mutable Instruments.  It outputs a pattern for three drums, each playing on a different drum note.  Grids has six knobs, thus six parameters:  
+
+<ul>
+<li> X
+<li> Y
+<li> Drum 1 Complexity
+<li> Drum 2 Complexity
+<li> Drum 3 Complexity
+<li> Chaos
+</ul>
+
+<p><b>X</b> and <b>Y</b> select a drum pattern in a 2D space.  This pattern has information for
+all three drums. The space is <i>smooth</i>, meaning that it is set up so that nearby patterns will tend to sound
+similar and will morph from one to the other as you move from one pattern to
+the other in the space.
+
+<p>Each drum note in a drum's pattern has a certain amount of importance to the pattern (lower importance values are <i>more</i> important).  If the <b>complexity</b> knob is above the importance of a note, the note will sound, else it will be muted.    Thus turning the knob down will allow only "basic" or "critical" notes to be sounded, and turning it up will gradually include more and more embellishments with less important drum notes.  This can be done for each of the drums independently (three knobs).
+
+<p><b>Chaos</b> introduces randomness into whether a drum note is sounded or muted regardless of complexity. 
+
+<p>To this Seq adds some additional parameters not found in the original module (as it is based on Gate/CV).  First, you can set the MIDI <b>Note</b> which will be output when a drum is sounded.  Second, you can set the MIDI <b>Velocity</b> for the same.
+
+<p>Grids optionally <b>accents</b> a drum note if it is very important.  If you turn this feature on, you must also stipulate the <b>accent velocity</b> for each drum hit.  (Yes, those velocities can be <i>quieter</i> than normal notes if you like).
+
+<p>Seq's implementation is based on a modified version of the original Grids C++ code.  Grids's code is GPL; but Seq is Apache 2.0.  However we have received permission from &#x00C8;milie to change the Grids license in order for Seq to remain Apache 2.0 based.  Please do not abuse this by distributing Grids code as Apache 2.0, except for use by Seq-related code.
+
+<p>The original Grids code <a href="https://github.com/pichenettes/eurorack/tree/master/grids">is here.</a>  More information on Grids <a href="https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/">may be found here</a>.
+
+<br><br><br>
+
+</body>
+</html>
