@@ -31,7 +31,7 @@ public class TriadexMuseNode extends AlgorithmNode
     	TriadexMuse triadexmuse = (TriadexMuse)algorithm;
     	for(int i = 0; i < 4; i++)
     		{
-    		int in = clip.getCorrectedValueInt(triadexmuse.getInterval(i), 39);
+    		int in = getCorrectedValueInt(triadexmuse.getInterval(i), 39);
 
     		if (in == 0) { /* System.err.print("0 "); */ note += 0; }
     		else if (in == 1) { /* System.err.print("1 "); */ note += multiplicand; }
@@ -70,7 +70,7 @@ System.err.println();
     	// FIRST we must compute the count, before we advance the LFSR
     	for(int i = 0; i < 4; i++)
     		{
-    		int th = clip.getCorrectedValueInt(triadexmuse.getTheme(i), 39);
+    		int th = getCorrectedValueInt(triadexmuse.getTheme(i), 39);
     		if (th == 0) count += 0;
     		else if (th == 1) count += 1;
     		else if (th < 9) count += (counter[th - 2] >= 0 ? 1 : 0);
@@ -127,6 +127,7 @@ System.err.println();
     public TriadexMuseNode copy()
         {
         TriadexMuseNode lmn = (TriadexMuseNode)(super.copy());
+        lmn.counter = (int[])(counter.clone());
         return lmn;
         }
     
@@ -171,12 +172,12 @@ System.err.println();
     	int note = getNote();
     	if (note == 0 && triadexmuse.getRest()) return false;
     	
-    	int trans = clip.getCorrectedValueInt(triadexmuse.getTranspose(), TriadexMuse.MAX_TRANSPOSE);
+    	int trans = getCorrectedValueInt(triadexmuse.getTranspose(), TriadexMuse.MAX_TRANSPOSE);
     	note = note + trans + LOW_NOTE;
     	while (note > 127) note -= 12;
     	
-    	int velocity = triadexmuse.getVelocity();
-    	double gate = triadexmuse.getGate();
+    	int velocity = getCorrectedValueInt(triadexmuse.getVelocity(), 127);
+    	double gate = getCorrectedValueDouble(triadexmuse.getGate(), 1.0);
     	boolean legato = triadexmuse.getLegato();
     	
     	if (lastNote == note)
