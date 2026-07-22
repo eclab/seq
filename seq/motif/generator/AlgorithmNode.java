@@ -135,6 +135,39 @@ public class AlgorithmNode implements Cloneable
     	if (out == -1) out = generator.getIn();
     	clip.sendNoteOff(out, note, vel, id);
     	}
+
+    /** 
+        Corrects the given basic value, loading parameter values. Current options are:
+        -  >=0: a ground value
+        -   -1: bound to random
+        -   -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+    */
+    public int getCorrectedValueInt(int basicVal, int maxVal)
+    	{
+    	return clip.getCorrectedValueInt(basicVal, maxVal);
+    	}
+    
+    /** 
+        Corrects the given basic value, loading parameter values. Current options are:
+        -  >=0: a ground value
+        -   -1: bound to random
+        -   -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+    */
+    public double getCorrectedValueDouble(double basicVal, double maxVal)
+    	{
+    	return clip.getCorrectedValueDouble(basicVal, maxVal);
+    	}
+
+    /** 
+        Corrects the given basic value, loading parameter values. Current options are:
+        -  >=0: a ground value
+        -   -1: bound to random
+        -   -2 ... -(NUM_PARAMETERS + 1) inclusive: a link to a parent parameter
+    */
+    public double getCorrectedValueDouble(double basicVal)
+    	{
+    	return clip.getCorrectedValueDouble(basicVal);
+    	}
 	}
 	
 	
