@@ -369,6 +369,16 @@ public class GridsUI extends AlgorithmUI
             }
         finally { lock.unlock(); }
 
+        for(int i = 0; i < complexity.length; i++) complexity[i].setToolTipText(COMPLEXITY_TOOLTIP);
+        for(int i = 0; i < note.length; i++) note[i].setToolTipText(NOTE_TOOLTIP);
+        for(int i = 0; i < velocity.length; i++) velocity[i].setToolTipText(VELOCITY_TOOLTIP);
+        for(int i = 0; i < accentVelocity.length; i++) accentVelocity[i].setToolTipText(ACCENT_VELOCITY_TOOLTIP);
+        x.setToolTipText(X_TOOLTIP);
+        y.setToolTipText(Y_TOOLTIP);
+        rate.setToolTipText(RATE_TOOLTIP);
+        chaos.setToolTipText(CHAOS_TOOLTIP);
+        accents.setToolTipText(ACCENTS_TOOLTIP);
+
         build(new String[] { "X", "Y", "Chaos", "Rate", "Accents", "Complexity", "Drum 1", "Drum 2", "Drum 3", "Note", "Drum 1", "Drum 2", "Drum 3", "Velocity", "Drum 1", "Drum 2", "Drum 3", "Accent Velocity", "Drum 1", "Drum 2", "Drum 3" }, 
             new JComponent[] 
                 {
@@ -419,4 +429,31 @@ public class GridsUI extends AlgorithmUI
         	}
         }
 
+    static final String COMPLEXITY_TOOLTIP = "<html><b>Complexity</b><br>" +
+        "Sets complexity for each drum.  With higher complexity, more and less important drum notes in the pattern will sound.</html>";
+
+    static final String NOTE_TOOLTIP = "<html><b>Note</b><br>" +
+        "Sets the MIDI drum note for each drum.</html>";
+        
+    static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
+        "Sets the (non-accented) MIDI drum velocity for each drum.</html>";
+        
+    static final String ACCENT_VELOCITY_TOOLTIP = "<html><b>Accent Velocity</b><br>" +
+        "Sets the accented MIDI drum velocity for each drum.</html>";
+        
+    static final String X_TOOLTIP = "<html><b>X</b><br>" +
+        "Sets X value for the drum pattern in the two-dimensional drum pattern grid.</html>";
+        
+    static final String Y_TOOLTIP = "<html><b>Y</b><br>" +
+        "Sets Y value for the drum pattern in the two-dimensional drum pattern grid.</html>";
+        
+    static final String RATE_TOOLTIP = "<html><b>Rate</b><br>" +
+        "Sets the rate at which the algorithm produces notes.</html>";
+
+    static final String CHAOS_TOOLTIP = "<html><b>Chaos</b><br>" +
+        "Sets the chaos (randomness) value for the drum patterns.  Higher chaos means more<br>" +
+        "notes randomly become \"important\", thus potentially crossing the complexity threshold.</html>";
+
+    static final String ACCENTS_TOOLTIP = "<html><b>Accents</b><br>" +
+        "Turns on accents.</html>";
     }

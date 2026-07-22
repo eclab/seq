@@ -215,22 +215,12 @@ public class GeneratorInspector extends WidgetList
             }
         finally { lock.unlock(); }
         
-        /*
         name.setToolTipText(NAME_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
-        omni.setToolTipText(OMNI_INPUT_TOOLTIP);
-        rate.setToolTipText(STEP_RATE_TOOLTIP);
-        arp.setToolTipText(ARPEGGIO_TYPE_TOOLTIP);
-        octaves.setToolTipText(OCTAVES_TOOLTIP);
-        length.setToolTipText(PATTERN_LENGTH_TOOLTIP);
-        velocity.setToolTipText(VELOCITY_TOOLTIP);
-        asPlayed.setToolTipText(AS_PLAYED_TOOLTIP);
-        velocityPanel.setToolTipText(VELOCITY_TOOLTIP);
-        newChordReset.setToolTipText(NEW_CHORD_RESET_TOOLTIP);
-        activeAlways.setToolTipText(ALWAYS_TOOLTIP);
-        activeFrom.setToolTipText(FROM_TOOLTIP);
-        activeTo.setToolTipText(FROM_TOOLTIP);
-    	*/
+        omni.setToolTipText(OMNI_TOOLTIP);
+        in.setToolTipText(IN_TOOLTIP);
+        end.setToolTipText(END_TOOLTIP);
+        pass.setToolTipText(PASS_TOOLTIP);
 
         build(new String[] { "Name", "Algorithm", "Out", "Received", "Omni", "Pass", "Max End Time" }, 
             new JComponent[] 
@@ -272,58 +262,23 @@ public class GeneratorInspector extends WidgetList
         "Sets the name of the Generator.  This will appear in the Motif List at left.</html>";
 
     static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
-        "Sets the MIDI output for the Generator.  This also may restrict which notes are<br>"+
-        "arpeggiated (see <b>Omni Input</b>).</html>";
+        "Sets the MIDI device for the Generator. Can be set to any device or to <b>Same as Received</b>.<br>" +
+        "If set to Same as Received, then output will be the same as Received, even if Received itself<br>" +
+        "has been overridden with <b>Omni</b>.</html>";
         
     static final String END_TOOLTIP = "<html><b>Max End Time</b><br>" +
         "Sets the maximum time that the Generator will play.  The Generator algorithm may choose<br>" +
         "to play for a shorter period than this.</html>";
         
-    static final String OMNI_INPUT_TOOLTIP = "<html><b>Omni Input</b><br>" +
-        "If checked, all notes from the underlying child Motif will be converted into generators.<br>" +
-        "Otherwise, only the notes designated for the <b>Out</b> will be arpeggiated,<br>" +
-        "and the others will be simply passed through.</html>";
+    static final String OMNI_TOOLTIP = "<html><b>Omni</b><br>" +
+        "If checked, all notes from the underlying child Motif will be sent to the generator<br>" +
+        "algorithm.  Otherwise, only the notes designated for <b>Received</b> will be sent.</html>";
 
-    static final String STEP_RATE_TOOLTIP = "<html><b>Step Rate</b><br>" +
-        "Sets amount of time between each step of the generator.</html>";
-        
-    static final String ARPEGGIO_TYPE_TOOLTIP = "<html><b>Generator Type</b><br>" +
-        "Sets the generator type" + 
-        "<ul>" +
-        "<li><b>Up</b>&nbsp;&nbsp;Each note in the chord is played in order, lowest to highest." +
-        "<li><b>Down</b>&nbsp;&nbsp;Each note in the chord is played in order, highest to lowest." +
-        "<li><b>Up-Down</b>&nbsp;&nbsp;Up and then Down, except the top note and bottom note are not played twice." +
-        "<li><b>Up-Down-Plus</b>&nbsp;&nbsp;Up, then the lowest note is transposed and played again at the top, then Down." +
-        "<li><b>Random</b>&nbsp;&nbsp;Chord notes are played randomly.  Seq tries to not play the same note twice in a row." +
-        "<li><b>Pattern</b>&nbsp;&nbsp;Chord notes are using the Pattern Grid at left." +
-        "</ul></html>";
+    static final String IN_TOOLTIP = "<html><b>Received</b><br>" +
+        "Sets the device that the notes from the underlying child Motif must be assigned to<br>" +
+        "in order to be sent to the generator algorithm.  This can be overridden by <b>Omni</b>.</html>";
 
-    static final String OCTAVES_TOOLTIP = "<html><b>Octaves</b><br>" +
-        "Sets the number of octaves that the generator will repeat.</html>";
-
-    static final String PATTERN_LENGTH_TOOLTIP = "<html><b>Pattern Length</b><br>" +
-        "Sets the length of the Pattern in the Pattern Grid at left.</html>";
-
-    static final String VELOCITY_TOOLTIP = "<html><b>Velocity</b><br>" +
-        "Sets the Velocity (Volume) of all arpeggiated notes.<br><br>" +
-        "Only has an effect if <b>As Played</b> is unchecked.</html>";
-
-    static final String AS_PLAYED_TOOLTIP = "<html><b>As Played</b><br>" +
-        "Determines whether the Velocity (Volume) of the arpeggiated notes is determined<br>" +
-        "by the underlying notes of the child Motif, or by the <b>Velocity</b> knob.</html>";
-
-    static final String NEW_CHORD_RESET_TOOLTIP = "<html><b>New Chord Reset</b><br>" +
-        "Sets whether the generator resets when all underlying notes are finished</br>" +
-        "and new ones are played in the underlying child Motif.</html>";
-
-    static final String ALWAYS_TOOLTIP = "<html><b>Always</b><br>" +
-        "Sets whether the Generator plays for the full length of time of its underlying Child Motif.</html>";
-
-    static final String FROM_TOOLTIP = "<html><b>From</b><br>" +
-        "Sets when in the underlying Child Motif the Generator starts arpeggiating its notes.<br><br>" +
-        "Only has an effect if <b>Always</b> is unchecked.</html>";
-        
-    static final String TO_TOOLTIP = "<html><b>To</b><br>" +
-        "Sets when in the underlying Child Motif the Generator stops arpeggiating its notes.<br><br>" +
-        "Only has an effect if <b>Always</b> is unchecked.</html>";
+    static final String PASS_TOOLTIP = "<html><b>Pass</b><br>" +
+        "If set, then all MIDI from the underlying child Motif will be passed to the parent Motif<br>" +
+        "in addition to MIDI from the generator algorithm.</html>";
     }

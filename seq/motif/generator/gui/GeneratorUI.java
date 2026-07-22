@@ -463,12 +463,7 @@ public class GeneratorUI extends MotifUI
         
     static final String CHILD_TOOLTIP = "<html><b>Child Motif</b><br>" +
         "Drag a Motif here to make it Generator's child Motif.<br><br>"+
-        "Generator will use MIDI notes generated from this Child Motif to make its generators.</html>";
-
-    static final String PATTERN_GRID_TOOLTIP = "<html><b>Pattern Grid</b><br>" +
-        "Draw your generator pattern here.  Boxes above the blue line represent the underlying<br>" +
-        "chord, going up and then repeating one or more octaves.  Boxes below the blue line represent<br>" +
-        "the underlying chord, one or more octaves below its actual notes.<br><br>" +
-        "If you <b>shift-click</b> or <b>right-click</b> on a box, you can make a <b>tie</b>, in blue.</html>";
-
+        "Generator will use MIDI notes generated from this Child Motif to inform its generator<br>" +
+        "algorithms.  Only some algorithms will use this MIDI data: other algorithms will produce<br>" +
+        "music on their own, and so will entirel ignore the Child (if any).</html>";
     }

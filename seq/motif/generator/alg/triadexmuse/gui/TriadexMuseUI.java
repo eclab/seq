@@ -323,6 +323,16 @@ public class TriadexMuseUI extends AlgorithmUI
             }
         finally { lock.unlock(); }
 
+        for(int i = 0; i < themes.length; i++) themes[i].setToolTipText(THEMES_TOOLTIP);
+        for(int i = 0; i < intervals.length; i++) intervals[i].setToolTipText(INTERVALS_TOOLTIP);
+        volume.setToolTipText(VOLUME_TOOLTIP);
+        gate.setToolTipText(GATE_TOOLTIP);
+        rate.setToolTipText(RATE_TOOLTIP);
+        transpose.setToolTipText(TRANSPOSE_TOOLTIP);
+        rest.setToolTipText(RESTS_TOOLTIP);
+        legato.setToolTipText(LEGATO_TOOLTIP);
+        preset.setToolTipText(PRESET_TOOLTIP);
+
         build(new String[] { "", "Volume", "Transpose", "Gate", "Rate", "Rests", "Legato", "Intervals", "A (+1)", "B (+2)", "C (+4)", "D (+Octave)", "Themes", "W", "X", "Y", "Z" }, 
             new JComponent[] 
                 {
@@ -368,4 +378,30 @@ public class TriadexMuseUI extends AlgorithmUI
         	}
         }
 
+    static final String THEMES_TOOLTIP = "<html><b>Theme</b><br>" +
+        "Sets one of the four theme slider settings.  These affect the LFSR B1 seed value.</html>";
+
+    static final String INTERVALS_TOOLTIP = "<html><b>Interval</b><br>" +
+        "Sets one of the four interval slider settings.  These affect the note pitches.</html>";
+        
+    static final String VOLUME_TOOLTIP = "<html><b>Velocity</b><br>" +
+        "Sets the overall note velocity.</html>";
+        
+    static final String GATE_TOOLTIP = "<html><b>Gate</b><br>" +
+        "Sets the note gate value (its length).  This is overridden if you have set <b>Legato</b>.</html>";
+        
+    static final String RATE_TOOLTIP = "<html><b>Rate</b><br>" +
+        "Sets the rate at which the algorithm produces notes.</html>";
+
+    static final String TRANSPOSE_TOOLTIP = "<html><b>Transpose</b><br>" +
+        "Transposes the notes by semitones.</html>";
+
+    static final String RESTS_TOOLTIP = "<html><b>Rests</b><br>" +
+        "Turns on the ability to output rests as well as notes.</html>";
+
+    static final String LEGATO_TOOLTIP = "<html><b>Legato</b><br>" +
+        "Forces legato (long notes).  This is the default behavior for the Muse.</html>";
+
+    static final String PRESET_TOOLTIP = "<html><b>Preset...</b><br>" +
+        "Song presets for the Muse.</html>";
     }
