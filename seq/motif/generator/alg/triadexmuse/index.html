@@ -35,13 +35,20 @@ The LFSR is a list of 31 <b>slots</b>, each of which can be set to either ON or 
 
 <p>What is slot 1's new value then?  It is set to a mathematical function of the current values of the four <b>themes</b>.  Just like the Intervals, the Themes can be tuned to on, off, C 1/2, C1...8, or B1...B31.  But whereas Intervals determine the note, the Themes just determine the next value of LFSR's slot 1.  Slot 1 will be set to ON if there are an even number of Themes tuned to ON, and it will be set to OFF otherwise.
 
-<p>Note that the <b>C 1/2</b> goes On and then Off over the course of one note.  This means that to play at the proper rate of one "note" per quarter note, we must have a rate of <b>Eighth Notes</b> by default.
+
+<h2>Seq-Specific Notes</h2>
+
+Note that the <b>C 1/2</b> goes On and then Off over the course of one note.  This means that to play at the proper rate of one "note" per quarter note, we must have a rate of <b>Eighth Notes</b> by default.
 
 <p>By default this algorithm is <b>legato</b>.  That means that a new note doesn't start (and the old one has ended) until the pitch has changed or the note is a rest.  This is basically what the original device did: it had no notion of the start or end of a note -- it just changed the pitch here and there.  I have added the ability to have notes with <b>gates</b> (note length) from very short up to one step long; but they must be all this length, so the gate isn't very useful perhaps.
 
-<p>This algorithm has quite illustrious inventors.  Marvin Minsky and Edward Fredkin were both quite accomplished people in their own (non-musical) fields.  Minsky is considered to be the godfather of Artificial Intelligence, and Fredkin popularized the notion in physics of the universe as a giant discrete computional device.
+<h2>Authorship</h2>
 
-<p>Seq's implementation is based off of Donald Tillmans's Javascript version.  His <a href="https://till.com/articles/muse/">website</a> is really spectacular.
+This algorithm has quite illustrious inventors.  Marvin Minsky and Edward Fredkin were both quite accomplished people in their own (non-musical) fields.  Minsky is considered to be the godfather of Artificial Intelligence, and Fredkin popularized the notion in physics of the universe as a giant discrete computional device.
+
+<h2>For More Information...</h2>
+
+Seq's implementation is based off of Donald Tillmans's Javascript version.  His <a href="https://till.com/articles/muse/">website</a> is really spectacular.  For way more information on linear shift feedback registers (LFSRs) than you wanted to know, see <a href="https://en.wikipedia.org/wiki/Linear-feedback_shift_register">Wikipedia's entry</a>.  Note that Wikipedia calls the Muse's type of LFSR a <i>Fibonacci LFSR</i>.
 
 <br><br><br>
 

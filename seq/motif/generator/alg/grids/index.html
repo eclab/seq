@@ -25,13 +25,19 @@ the other in the space.
 
 <p><b>Chaos</b> introduces randomness into whether a drum note is sounded.  It does this by randomly increasing the "importance" of a drum note, so that it might pass the complexity threshold for that drum.
 
-<p>To this Seq adds some additional parameters not found in the original module (as it is based on Gate/CV).  First, you can set the MIDI <b>Note</b> which will be output when a drum is sounded.  Second, you can set the MIDI <b>Velocity</b> for the same.
+<h2>Additional Seq Features</h2>
 
-<p>Grids optionally <b>accents</b> a drum note if it is very important.  If you turn this feature on, you must also stipulate the <b>accent velocity</b> for each drum hit.  (Yes, those velocities can be <i>quieter</i> than normal notes if you like).
+Seq adds some additional parameters not found in the original module (as it is based on Gate/CV).  First, you can set the MIDI <b>Note</b> which will be output when a drum is sounded.  Second, you can set the MIDI <b>Velocity</b> for the same.
 
-<p>Seq's implementation is based on a modified version of the original Grids C++ code.  Grids's code is GPL; but Seq is Apache 2.0.  However we have received permission from &#x00C8;milie to change the Grids license in order for Seq to remain Apache 2.0 based.  Please do not abuse this by distributing Grids code as Apache 2.0, except for use by Seq-related code.
+<p>The original Grids module would optionally <b>accent</b> a drum note if it had a sufficiently high level of importance.  You can turn this feature on in Seq, but as Seq is emitting MIDI and not just Gate/CV as in the original module, you must also stipulate the <b>accent velocity</b> for each drum hit.  (Yes, those velocities can be <i>quieter</i> than normal notes if you like).
 
-<p>The original Grids code <a href="https://github.com/pichenettes/eurorack/tree/master/grids">is here.</a>  More information on Grids <a href="https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/">may be found here</a>.
+<h2>License</h2>
+
+Seq's implementation is based on a modified version of the original Grids C++ code.  Grids's code is GPL; but Seq is Apache 2.0.  However we have received permission from &#x00C8;milie to change the Grids license in order for Seq to remain Apache 2.0 based.  Please do not abuse this by distributing Grids code as Apache 2.0, except for use by Seq-related code.
+
+<h2>For More Information...</h2>
+
+The original Grids code <a href="https://github.com/pichenettes/eurorack/tree/master/grids">is here.</a>  More information on Grids <a href="https://pichenettes.github.io/mutable-instruments-documentation/modules/grids/">may be found here</a>.
 
 <br><br><br>
 
