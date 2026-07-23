@@ -91,9 +91,9 @@ public class Modulation extends Motif
             return new Step();
             }
         else if (index == 4)
-        	{
-        	return new CC();
-        	}
+            {
+            return new CC();
+            }
         else if (index == 5)
             {
             return new Constant();

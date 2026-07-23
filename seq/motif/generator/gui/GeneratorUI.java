@@ -39,8 +39,8 @@ public class GeneratorUI extends MotifUI
     JSplitPane split;
     //JTextPane text;
     HTMLBrowser text;
-	JScrollPane algorithmScroll;
-	JComponent algorithmContainer;
+    JScrollPane algorithmScroll;
+    JComponent algorithmContainer;
         
     JPanel generatorOuter;
     TitledBorder generatorBorder;
@@ -157,10 +157,10 @@ public class GeneratorUI extends MotifUI
 
         algorithmContainer = new JPanel();
         algorithmContainer.setLayout(new BorderLayout());
-		JPanel algorithmContainer2 = new JPanel();
-		algorithmContainer2.setLayout(new BorderLayout());
-		algorithmContainer2.add(algorithmContainer, BorderLayout.NORTH);
-		algorithmScroll = new JScrollPane(algorithmContainer2, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);       
+        JPanel algorithmContainer2 = new JPanel();
+        algorithmContainer2.setLayout(new BorderLayout());
+        algorithmContainer2.add(algorithmContainer, BorderLayout.NORTH);
+        algorithmScroll = new JScrollPane(algorithmContainer2, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);       
         
         generatorGrid.setDropTarget(new DropTarget(this, buildDropTargetListener()));
         generatorGrid.setLayout(new GridLayout(1, 1));
@@ -170,9 +170,9 @@ public class GeneratorUI extends MotifUI
 
         text = new HTMLBrowser();
         // JTextPane();
-		//text.setContentType("text/html");
-		//text.setEditable(false);
-		//text.getCaret().setVisible(false);
+        //text.setContentType("text/html");
+        //text.setEditable(false);
+        //text.getCaret().setVisible(false);
         //JScrollPane textScroll = new JScrollPane(text);
         //textScroll.setMinimumSize(new Dimension(0, 0));
         //textScroll.setPreferredSize(textScroll.getMinimumSize());
@@ -186,48 +186,48 @@ public class GeneratorUI extends MotifUI
         // so we ONLY get updated when the user moves the bar, no other reason.  This is because
         // setResizeWeight and setDividerLocation don't correspond exadtly with getDividerLocation,
         // believe it or not -- it's slightly off, partly because of the divider size.  Very annoying.
-		SplitPaneUI spui = split.getUI();
-			if (spui instanceof BasicSplitPaneUI) 
-				{
-			  // Setting a mouse listener directly on split pane does not work, because no events are being received.
-			  ((BasicSplitPaneUI) spui).getDivider().addMouseListener(new MouseAdapter() 
-			  	{
-				public void mouseReleased(MouseEvent e) 
-					{
-           		double weight = (split.getDividerLocation() + split.getDividerSize() / 2 - split.getMinimumDividerLocation()) / 
-           						(double)(split.getMaximumDividerLocation() - split.getMinimumDividerLocation());
-           		Prefs.setLastDouble("seq.motif.generator.Generator.split", weight);
-					}
-				});
-				}
+        SplitPaneUI spui = split.getUI();
+        if (spui instanceof BasicSplitPaneUI) 
+            {
+            // Setting a mouse listener directly on split pane does not work, because no events are being received.
+            ((BasicSplitPaneUI) spui).getDivider().addMouseListener(new MouseAdapter() 
+                {
+                public void mouseReleased(MouseEvent e) 
+                    {
+                    double weight = (split.getDividerLocation() + split.getDividerSize() / 2 - split.getMinimumDividerLocation()) / 
+                        (double)(split.getMaximumDividerLocation() - split.getMinimumDividerLocation());
+                    Prefs.setLastDouble("seq.motif.generator.Generator.split", weight);
+                    }
+                });
+            }
         
         topPanel.add(generatorGrid, BorderLayout.NORTH);
         topPanel.add(split, BorderLayout.CENTER);
 
-		updateAlgorithmUI();
-		
+        updateAlgorithmUI();
+                
         return topPanel;
         }
         
     AlgorithmUI lastAlgorithmUI = null;
     
     /** Called whenever the algorithm is updated, either when the generator ui is first built,
-    	or when the algorithm is changed from the combo box. This builds a new AlgorithmUI and also
-    	updates the HTML description. */
+        or when the algorithm is changed from the combo box. This builds a new AlgorithmUI and also
+        updates the HTML description. */
     public void updateAlgorithmUI()
-    	{
+        {
         algorithmUI = generator.getAlgorithm().buildUI(seq, this);
         if (algorithmUI != lastAlgorithmUI)
-        	{
-        	// need to revise
-			algorithmContainer.removeAll();
-			algorithmContainer.add(algorithmUI, BorderLayout.WEST);        
-			algorithmContainer.revalidate();
-			algorithmContainer.repaint();
-			text.setText(generator.getAlgorithm().getHTMLDescription());
-			}
+            {
+            // need to revise
+            algorithmContainer.removeAll();
+            algorithmContainer.add(algorithmUI, BorderLayout.WEST);        
+            algorithmContainer.revalidate();
+            algorithmContainer.repaint();
+            text.setText(generator.getAlgorithm().getHTMLDescription());
+            }
         lastAlgorithmUI = algorithmUI;
-    	}
+        }
 
     public JPanel buildConsole()
         {

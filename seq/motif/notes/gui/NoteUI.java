@@ -392,9 +392,9 @@ public class NoteUI extends EventUI implements Comparable
             g.setPaint(DEFAULT_COLOR);
             }
         else if (altOut)
-			{
-			g.setPaint(ALT_VELOCITY_MAP.getColor((int)value));
-			}
+            {
+            g.setPaint(ALT_VELOCITY_MAP.getColor((int)value));
+            }
         else
             {
             g.setPaint(VELOCITY_MAP.getColor((int)value));

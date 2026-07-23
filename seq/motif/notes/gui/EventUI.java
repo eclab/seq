@@ -506,23 +506,23 @@ public class EventUI extends JComponent
         
         if (polyATPitch >= 0)
             {
-			 if (altOut)
-					{
-					g.setPaint(ALT_VALUE_MAP.getColor((int)value));
-					}
+            if (altOut)
+                {
+                g.setPaint(ALT_VALUE_MAP.getColor((int)value));
+                }
             else
-            	{
-            	g.setPaint(VALUE_MAP.getColor(polyATPitch));
-            	}
+                {
+                g.setPaint(VALUE_MAP.getColor(polyATPitch));
+                }
             }
         else if (value < 0)
             {
             g.setPaint(DEFAULT_COLOR);
             }
         else if (altOut)
-            	{
+            {
             g.setPaint(ALT_VALUE_MAP.getColor((int)value));
-            	}
+            }
         else
             {
             g.setPaint(VALUE_MAP.getColor(value * 127.0));

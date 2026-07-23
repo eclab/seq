@@ -1247,35 +1247,35 @@ public class FunctionInspector extends JPanel
                 {
                 Modulation.CC func = (Modulation.CC)(modulation.getFunction(index));
 
-            In[] seqIns = seq.getIns();
-            String[] ins = new String[seqIns.length + 1];
-            ins[0] = "<html><i>None</i></html>";
-            for(int i = 0; i < seqIns.length; i++)
-                {
-                ins[i + 1] = "" + (i + 1) + ": " + seqIns[i].toString();
-                }
-
-            	in = new JComboBox(ins);
-            	in.setSelectedIndex(func.getIn());
-            in.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
+                In[] seqIns = seq.getIns();
+                String[] ins = new String[seqIns.length + 1];
+                ins[0] = "<html><i>None</i></html>";
+                for(int i = 0; i < seqIns.length; i++)
                     {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { func.setIn(in.getSelectedIndex()); }
-                    finally { lock.unlock(); }                              
+                    ins[i + 1] = "" + (i + 1) + ": " + seqIns[i].toString();
                     }
-                });
-            // in.setToolTipText(CC_IN_TOOLTIP);
+
+                in = new JComboBox(ins);
+                in.setSelectedIndex(func.getIn());
+                in.addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { func.setIn(in.getSelectedIndex()); }
+                        finally { lock.unlock(); }                              
+                        }
+                    });
+                // in.setToolTipText(CC_IN_TOOLTIP);
                         
                 cc = new SmallDial(func.getCC() / 127.0, defaults)
                     {
                     protected String map(double val) 
-                    	{ 
-                    	return String.valueOf((int)(val * 127.0)); 
-                    	}
+                        { 
+                        return String.valueOf((int)(val * 127.0)); 
+                        }
                     public double getValue() 
                         { 
                         ReentrantLock lock = seq.getLock();
@@ -1311,9 +1311,9 @@ public class FunctionInspector extends JPanel
                 defaultValue = new SmallDial(func.getDefault() / 127.0, defaults)
                     {
                     protected String map(double val) 
-                    	{ 
-                    	return String.valueOf((int)(val * 127.0)); 
-                    	}
+                        { 
+                        return String.valueOf((int)(val * 127.0)); 
+                        }
                     public double getValue() 
                         { 
                         ReentrantLock lock = seq.getLock();
@@ -1404,9 +1404,9 @@ public class FunctionInspector extends JPanel
             return new StepInspector();
             }
         else if (type.equals(Modulation.CC))
-        	{
-        	return new CCInspector();
-        	}
+            {
+            return new CCInspector();
+            }
         else if (type.equals(Modulation.CONSTANT))
             {
             return new ConstantInspector();

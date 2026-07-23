@@ -37,8 +37,8 @@ public class SeqUI extends JPanel
         {
         ToolTipManager.sharedInstance().setDismissDelay(1000000);                       // Our tooltips are long. We don't want an auto-dismiss unless the user navigates away
 
-		if (Theme.isDark()) UIManager.put("ToolTip.background", Theme.GRAY_80);
-         }
+        if (Theme.isDark()) UIManager.put("ToolTip.background", Theme.GRAY_80);
+        }
         
     /*  
         private static class MyEventQueue extends EventQueue {
@@ -987,17 +987,17 @@ public class SeqUI extends JPanel
                         }
                     }
 
-				Midi.Tuple tuple = Midi.CANCELLED;
+                Midi.Tuple tuple = Midi.CANCELLED;
                 lock.lock();
                 try
-                	{
-					Midi midi = seq.getMIDI();
-					Midi.Tuple old = seq.getMIDITuple();
-					String[] outNicks = seq.getOutNicknames();
-					String[] inNicks = seq.getInNicknames();
-					tuple = midi.getNewTuple(old, SeqUI.this, seq, "Set MIDI Devices", seq.getIns(), outNicks, inNicks);
-					}
-				finally { lock.unlock(); }
+                    {
+                    Midi midi = seq.getMIDI();
+                    Midi.Tuple old = seq.getMIDITuple();
+                    String[] outNicks = seq.getOutNicknames();
+                    String[] inNicks = seq.getInNicknames();
+                    tuple = midi.getNewTuple(old, SeqUI.this, seq, "Set MIDI Devices", seq.getIns(), outNicks, inNicks);
+                    }
+                finally { lock.unlock(); }
                 if (tuple != Midi.CANCELLED)
                     {
                     lock.lock();

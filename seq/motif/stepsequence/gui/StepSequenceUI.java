@@ -1042,89 +1042,89 @@ public class StepSequenceUI extends MotifUI
         }
 
     /*
-    public void revise()
-        {
-        getInspector().revise();
-        if (trackInspector != null) 
-            {
-            trackBorder.setTitle("Track " + (trackInspector.getTrackNum() + 1));    //  + " " + ss.getTrackName(inspector.getTrackNum()).trim());
-            trackOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-            trackOuter.setBorder(trackBorder);
-            trackInspector.revise();
-            }
-        if (stepInspector != null) 
-            {
-            stepBorder.setTitle("Step " + (trackInspector.getTrackNum() + 1) + " / " + (stepInspector.getStepNum() + 1));
-            stepOuter.setBorder(null);              // this has to be done or it won't immediately redraw!
-            stepOuter.setBorder(stepBorder);
-            stepInspector.revise();
-            }
-        }
+      public void revise()
+      {
+      getInspector().revise();
+      if (trackInspector != null) 
+      {
+      trackBorder.setTitle("Track " + (trackInspector.getTrackNum() + 1));    //  + " " + ss.getTrackName(inspector.getTrackNum()).trim());
+      trackOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+      trackOuter.setBorder(trackBorder);
+      trackInspector.revise();
+      }
+      if (stepInspector != null) 
+      {
+      stepBorder.setTitle("Step " + (trackInspector.getTrackNum() + 1) + " / " + (stepInspector.getStepNum() + 1));
+      stepOuter.setBorder(null);              // this has to be done or it won't immediately redraw!
+      stepOuter.setBorder(stepBorder);
+      stepInspector.revise();
+      }
+      }
     */
         
     /*
-    public static void main(String[] args) throws Exception
-        {
-        // Set up FlatLaf
-        FlatLightLaf.setup();
+      public static void main(String[] args) throws Exception
+      {
+      // Set up FlatLaf
+      FlatLightLaf.setup();
                 
-        // Set up Seq
-        Seq seq = new Seq();            // starts timer running
-        seq.setupForMIDI(StepSequenceClip.class, args, 0, 2);   // sets up MIDI in and out
-        seq.setLooping(true);
+      // Set up Seq
+      Seq seq = new Seq();            // starts timer running
+      seq.setupForMIDI(StepSequenceClip.class, args, 0, 2);   // sets up MIDI in and out
+      seq.setLooping(true);
         
-        // Set up our module structure
-        StepSequence dSeq = new StepSequence(seq, 2, 16);
-        seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
-        seq.setOut(1, new Out(seq, 1));         // Out 0 points to device 0 in the tuple.  This is too complex.
+      // Set up our module structure
+      StepSequence dSeq = new StepSequence(seq, 2, 16);
+      seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
+      seq.setOut(1, new Out(seq, 1));         // Out 0 points to device 0 in the tuple.  This is too complex.
         
-        // Specify notes
-        dSeq.setTrackNote(0, 60);
-        dSeq.setTrackNote(1, 75);
-        dSeq.setTrackOut(0, 0);
-        dSeq.setTrackOut(1, 1);
-        dSeq.setDefaultSwing(0.33);
+      // Specify notes
+      dSeq.setTrackNote(0, 60);
+      dSeq.setTrackNote(1, 75);
+      dSeq.setTrackOut(0, 0);
+      dSeq.setTrackOut(1, 1);
+      dSeq.setDefaultSwing(0.33);
         
-        // Load the StepSequence with some data
-        dSeq.setVelocity(0, 0, 1 * 8);
-        dSeq.setVelocity(0, 4, 5 * 8);
-        dSeq.setVelocity(0, 8, 9 * 8);
-        dSeq.setVelocity(0, 12, 13 * 8);
-        dSeq.setVelocity(1, 1, 2 * 8);
-        dSeq.setVelocity(1, 2, 3 * 8);
-        dSeq.setVelocity(1, 3, 4 * 8);
-        dSeq.setVelocity(1, 5, 6 * 8);
-        dSeq.setVelocity(1, 7, 8 * 8);
-        dSeq.setVelocity(1, 9, 10 * 8);
-        dSeq.setVelocity(1, 10, 11 * 8);
-        dSeq.setVelocity(1, 15, 127);
+      // Load the StepSequence with some data
+      dSeq.setVelocity(0, 0, 1 * 8);
+      dSeq.setVelocity(0, 4, 5 * 8);
+      dSeq.setVelocity(0, 8, 9 * 8);
+      dSeq.setVelocity(0, 12, 13 * 8);
+      dSeq.setVelocity(1, 1, 2 * 8);
+      dSeq.setVelocity(1, 2, 3 * 8);
+      dSeq.setVelocity(1, 3, 4 * 8);
+      dSeq.setVelocity(1, 5, 6 * 8);
+      dSeq.setVelocity(1, 7, 8 * 8);
+      dSeq.setVelocity(1, 9, 10 * 8);
+      dSeq.setVelocity(1, 10, 11 * 8);
+      dSeq.setVelocity(1, 15, 127);
         
-        // Build Clip Tree
-        seq.setData(dSeq);
+      // Build Clip Tree
+      seq.setData(dSeq);
 
-        seq.setBPM(128);
+      seq.setBPM(128);
 
-        // Build GUI
-        SeqUI ui = new SeqUI(seq);
+      // Build GUI
+      SeqUI ui = new SeqUI(seq);
 
-        StepSequenceUI ssui = new StepSequenceUI(seq, ui, dSeq);
-        seq.sequi = ui;
-        ui.addMotifUI(ssui);
-        JFrame frame = new JFrame();
-        frame.getContentPane().add(ui);
-        frame.pack();
-        frame.setVisible(true);
+      StepSequenceUI ssui = new StepSequenceUI(seq, ui, dSeq);
+      seq.sequi = ui;
+      ui.addMotifUI(ssui);
+      JFrame frame = new JFrame();
+      frame.getContentPane().add(ui);
+      frame.pack();
+      frame.setVisible(true);
 
-        seq.reset();
-        ssui.revise();
+      seq.reset();
+      ssui.revise();
     
-        //Toolkit.getDefaultToolkit().getSystemEventQueue().push(new MyEventQueue());
+      //Toolkit.getDefaultToolkit().getSystemEventQueue().push(new MyEventQueue());
         
-        seq.play();
+      seq.play();
         
-        seq.waitUntilStopped();         // we're looping so this will never exit
-        }
-	*/
+      seq.waitUntilStopped();         // we're looping so this will never exit
+      }
+    */
 
 
     boolean parseDrumset(Reader reader) throws IOException

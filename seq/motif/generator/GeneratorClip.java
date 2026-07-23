@@ -105,13 +105,13 @@ public class GeneratorClip extends Clip
         }
         
     public Clip getChild()
-    	{
-    	if (clip == null)
-    		{
-    		buildClip();
-    		}
-    	return clip;
-    	}
+        {
+        if (clip == null)
+            {
+            buildClip();
+            }
+        return clip;
+        }
     
     public void reset()
         {
@@ -124,9 +124,9 @@ public class GeneratorClip extends Clip
             }
             
         if (node == null)
-        	{
-        	node = generator.getAlgorithm().buildNode(seq, this);
-        	}
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
         node.reset();
 
         loadRandomValue(clip, generator.getChildren().get(0));
@@ -144,13 +144,13 @@ public class GeneratorClip extends Clip
             }
 
         if (node == null)
-        	{
-        	node = generator.getAlgorithm().buildNode(seq, this);
-        	}
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
         node.loop();
 
         loadRandomValue(clip, generator.getChildren().get(0));
-        clip.loop();						// FIXME should this be clip.reset()?
+        clip.loop();                                            // FIXME should this be clip.reset()?
         }
         
     public void terminate()
@@ -158,20 +158,20 @@ public class GeneratorClip extends Clip
         super.terminate();
         Generator generator = (Generator)getMotif();
 
-		if (clip == null)
-			{
-			buildClip();
-			}
-			
+        if (clip == null)
+            {
+            buildClip();
+            }
+                        
         if (node == null)
-        	{
-        	node = generator.getAlgorithm().buildNode(seq, this);
-        	}
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
         node.release();
         node.terminate();
 
-		clip.release();
-		clip.terminate();
+        clip.release();
+        clip.terminate();
         processNoteOffs(true, true);
         notes.clear();
         }
@@ -181,18 +181,18 @@ public class GeneratorClip extends Clip
         super.cut();
         Generator generator = (Generator)getMotif();
 
-		if (clip == null)
-			{
-			buildClip();
-			}
-			
+        if (clip == null)
+            {
+            buildClip();
+            }
+                        
         if (node == null)
-        	{
-        	node = generator.getAlgorithm().buildNode(seq, this);
-        	}
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
         node.cut();
 
-		clip.cut();
+        clip.cut();
         }
     
 
@@ -201,18 +201,18 @@ public class GeneratorClip extends Clip
         super.release();
         Generator generator = (Generator)getMotif();
 
-		if (clip == null)
-			{
-			buildClip();
-			}
-			
+        if (clip == null)
+            {
+            buildClip();
+            }
+                        
         if (node == null)
-        	{
-        	node = generator.getAlgorithm().buildNode(seq, this);
-        	}
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
         node.release();
 
-		clip.release();
+        clip.release();
         }
     
     public void noteOn(int out, int note, double vel, int id) 
@@ -220,40 +220,40 @@ public class GeneratorClip extends Clip
         Generator generator = (Generator)getMotif();
         if (generator.isOmni() || out == generator.getOut())
             {
-			if (node == null)
-				{
-				node = generator.getAlgorithm().buildNode(seq, this);
-				}
+            if (node == null)
+                {
+                node = generator.getAlgorithm().buildNode(seq, this);
+                }
             notes.add(new Note(note, (int)vel, id, true));
             }
         
         if (generator.isPass())
-        	{
-        	super.noteOn(out, note, vel, id);
-        	}
+            {
+            super.noteOn(out, note, vel, id);
+            }
         }
         
     public void passNoteOff(int out, int note, double vel, int id)
-    	{
-    	super.noteOn(out, note, vel, id);
-    	}
-    	
+        {
+        super.noteOn(out, note, vel, id);
+        }
+        
     public void noteOff(int out, int note, double vel, int id) 
         {
         Generator generator = (Generator)getMotif();
         if (generator.isOmni() || out == generator.getOut())
             {
-			if (node == null)
-				{
-				node = generator.getAlgorithm().buildNode(seq, this);
-				}
+            if (node == null)
+                {
+                node = generator.getAlgorithm().buildNode(seq, this);
+                }
             notes.add(new Note(note, (int)vel, id, false));
             }
         
         if (generator.isPass())
-        	{
-        	super.noteOff(out, note, vel, id);
-        	}
+            {
+            super.noteOff(out, note, vel, id);
+            }
         }
         
     public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
@@ -265,9 +265,9 @@ public class GeneratorClip extends Clip
             }
         
         if (generator.isPass())
-        	{
-        	super.scheduleNoteOff(out, note, vel, time, id);
-        	}
+            {
+            super.scheduleNoteOff(out, note, vel, time, id);
+            }
         }        
 
     public int scheduleNoteOn(int out, int note, double vel, int time) 
@@ -275,9 +275,9 @@ public class GeneratorClip extends Clip
         Generator generator = (Generator)getMotif();
         int id = -1;
         if (generator.isPass())
-        	{
-        	id = super.scheduleNoteOn(out, note, vel, time);
-        	}
+            {
+            id = super.scheduleNoteOn(out, note, vel, time);
+            }
         
         if (id == -1) id = noteID++;
 
@@ -312,42 +312,42 @@ public class GeneratorClip extends Clip
             }       
         }
 
-	public void resetAlgorithmNode() 
-		{ 
-		if (node != null)
-			{
-			node.release();
-			node.terminate();		// should I do this?
-			}
-			
-		node = null; 
-		}
+    public void resetAlgorithmNode() 
+        { 
+        if (node != null)
+            {
+            node.release();
+            node.terminate();               // should I do this?
+            }
+                        
+        node = null; 
+        }
 
     public boolean process()
         {
         Generator generator = (Generator)getMotif();
 
-		notes.clear();
-		
+        notes.clear();
+                
         if (clip != null)
             {
             buildClip();
             }
 
-		processNoteOffs(false, false);
-		
-		loadParameterValues(clip, generator.getChildren().get(0));
-		boolean clipdone = clip.advance();
-	
-		if (node == null)
-			{
-			node = generator.getAlgorithm().buildNode(seq, this);
-			}
-		boolean nodedone = node.process(notes);
-		
-		if (clipdone || nodedone) return true;
+        processNoteOffs(false, false);
+                
+        loadParameterValues(clip, generator.getChildren().get(0));
+        boolean clipdone = clip.advance();
+        
+        if (node == null)
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
+        boolean nodedone = node.process(notes);
+                
+        if (clipdone || nodedone) return true;
         else if (getPosition() >= generator.getEnd() - 1) return true;
-		else return false;
+        else return false;
         }
     }
 

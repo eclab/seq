@@ -29,16 +29,16 @@ public class Generator extends Motif
     public void setAlgorithm(Algorithm val) { algorithm = val; }
     
     public int getAlgorithmIndex()
-    	{
-    	String classname = algorithm.getClass().getName();
-    	return Algorithm.findAlgorithmClassName(classname);
-    	}
+        {
+        String classname = algorithm.getClass().getName();
+        return Algorithm.findAlgorithmClassName(classname);
+        }
 
     public void setAlgorithmIndex(int val)
-    	{
-    	setAlgorithm(Algorithm.instantiate(this, val));
-    	}
-    	
+        {
+        setAlgorithm(Algorithm.instantiate(this, val));
+        }
+        
     public int getEnd() { return end; }
     public void setEnd(int val) { end = val; }
 
@@ -77,7 +77,7 @@ public class Generator extends Motif
         out = (Prefs.getLastOutDevice(0, "seq.motif.generator.Generator.out", SAME_AS_IN));
         in = (Prefs.getLastInDevice(0, "seq.motif.generator.Generator.in"));
         add(new Blank(seq));
-        setAlgorithmIndex(0);		// "None"
+        setAlgorithmIndex(0);           // "None"
         }
     
     public void add(Motif motif)
@@ -87,51 +87,51 @@ public class Generator extends Motif
 
     public void load(JSONObject obj) throws JSONException
         {
-    	obj.optInt("out", 0);
-    	obj.optInt("in", 0);
-    	obj.optBoolean("omni", true);
-    	obj.optBoolean("pass", false);
+        obj.optInt("out", 0);
+        obj.optInt("in", 0);
+        obj.optBoolean("omni", true);
+        obj.optBoolean("pass", false);
 
         JSONObject alg = obj.optJSONObject("alg");
         if (alg == null) algorithm = null;
-        else algorithm = Algorithm.load(this, alg);        	
+        else algorithm = Algorithm.load(this, alg);             
         }
         
     public void save(JSONObject obj) throws JSONException
         {
-		obj.put("out", out);
-		obj.put("in", in);
-		obj.put("omni", omni);
-		obj.put("pass", pass);
+        obj.put("out", out);
+        obj.put("in", in);
+        obj.put("omni", omni);
+        obj.put("pass", pass);
 
         if (algorithm != null) 
-        	{
-	        JSONObject alg = new JSONObject();
-        	algorithm.save(alg);
-        	obj.put("alg", alg);
-        	}
+            {
+            JSONObject alg = new JSONObject();
+            algorithm.save(alg);
+            obj.put("alg", alg);
+            }
         }
         
 /*
-    public String getParameterName(int param) 
-        { 
-        if (getChildren().size() > 0)
-            {
-            Motif motif = getChild(0).getMotif();
-            if (motif instanceof Blank)
-                {
-                return super.getParameterName(param);
-                }
-            else
-                {
-                return motif.getParameterName(param);
-                }
-            }
-        else
-            {
-            return super.getParameterName(param);
-            }
-        }
+  public String getParameterName(int param) 
+  { 
+  if (getChildren().size() > 0)
+  {
+  Motif motif = getChild(0).getMotif();
+  if (motif instanceof Blank)
+  {
+  return super.getParameterName(param);
+  }
+  else
+  {
+  return motif.getParameterName(param);
+  }
+  }
+  else
+  {
+  return super.getParameterName(param);
+  }
+  }
 */
 
     static int document = 0;

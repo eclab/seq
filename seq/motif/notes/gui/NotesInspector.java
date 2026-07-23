@@ -692,10 +692,10 @@ public class NotesInspector extends WidgetList
                     notesui.getEventsUI().rebuild();
                     notesui.getGridUI().clearSelected();
                     // we didn't change the bounds until AFTER rebuild, so we have to resize again to force the bounds change
-					notesui.rebuildSizes();
-					// This forces revalidates and repaint events, but the bounds don't get updated 
-					// until the Swing events go through, grrr, so we have to wait and then reload....
-					SwingUtilities.invokeLater(new Runnable() { public void run() { notesui.getEventsUI().reload(); }});       
+                    notesui.rebuildSizes();
+                    // This forces revalidates and repaint events, but the bounds don't get updated 
+                    // until the Swing events go through, grrr, so we have to wait and then reload....
+                    SwingUtilities.invokeLater(new Runnable() { public void run() { notesui.getEventsUI().reload(); }});       
                     }
                 });
 

@@ -567,7 +567,7 @@ public class AutomatonClip extends Clip
                 {
                 Automaton.Trigger atrig = (Automaton.Trigger)node;
                 Trigger trigger = getTriggerFor(atrig);
-                if ((trigger.count >= 1 || atrig.getOnlyTrigger()) && isTriggered(atrig.getParameter()))			// we received a trigger
+                if ((trigger.count >= 1 || atrig.getOnlyTrigger()) && isTriggered(atrig.getParameter()))                        // we received a trigger
                     {
                     trigger.count--;
                     return node.selectOut();

@@ -509,16 +509,16 @@ public class MacroUI extends MotifUI
         }
 
 /*
-    public void revise()
-        {
-        if (childInspector != null) 
-            {
-            childBorder.setTitle("Child (" + childInspector.getAt() + ")");
-            childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-            childOuter.setBorder(childBorder);
-            childInspector.revise();
-            }
-        }
+  public void revise()
+  {
+  if (childInspector != null) 
+  {
+  childBorder.setTitle("Child (" + childInspector.getAt() + ")");
+  childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+  childOuter.setBorder(childBorder);
+  childInspector.revise();
+  }
+  }
 */     
 
 

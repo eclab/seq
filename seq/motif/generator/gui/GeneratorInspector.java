@@ -141,16 +141,16 @@ public class GeneratorInspector extends WidgetList
             
             // we need to be told what the last item WAS
             algorithm.addItemListener(new ItemListener()
-            	{
-            	public void itemStateChanged(ItemEvent e)
-            		{
-            		if (e.getStateChange() == ItemEvent.DESELECTED)
-            			{
-            			lastSelectedAlgorithm = generator.getAlgorithmIndex();
-            			}
-            		}
-            	});
-            	
+                {
+                public void itemStateChanged(ItemEvent e)
+                    {
+                    if (e.getStateChange() == ItemEvent.DESELECTED)
+                        {
+                        lastSelectedAlgorithm = generator.getAlgorithmIndex();
+                        }
+                    }
+                });
+                
             algorithm.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
@@ -160,40 +160,40 @@ public class GeneratorInspector extends WidgetList
                     lock.lock();
                     int alg = 0;
                     try
-                    	{
-						alg = generator.getAlgorithmIndex();
-						}
-					finally { lock.unlock(); }
+                        {
+                        alg = generator.getAlgorithmIndex();
+                        }
+                    finally { lock.unlock(); }
 
-					if (lastSelectedAlgorithm > 0)
-						{
-						// warn that we're about to reset everything
-						if (!generatorui.getSeqUI().showSimpleConfirm("Change Algorithm", "Change the algorithm?\n\nChanging the Algorithm will reset all of your Generator settings.", "Change"))
-							{
-							return; 
-							}
-						}
+                    if (lastSelectedAlgorithm > 0)
+                        {
+                        // warn that we're about to reset everything
+                        if (!generatorui.getSeqUI().showSimpleConfirm("Change Algorithm", "Change the algorithm?\n\nChanging the Algorithm will reset all of your Generator settings.", "Change"))
+                            {
+                            return; 
+                            }
+                        }
                     
                     // Okay, let's go ahead and change it
                     lock.lock();
                     try 
-                    	{ 
-						GeneratorClip clip = (GeneratorClip)(generator.getPlayingClip());
-						if (clip != null)
-							{
-							clip.release();		// force the algorithm node to release all its notes
-							}
-                    	// Now we can change the algorithm and algorithm node 
-                    	generator.setAlgorithmIndex(algorithm.getSelectedIndex()); 
-                    	// Rebuild algorithm
-						if (clip != null)
-							{
-							clip.resetAlgorithmNode();
-							clip.release();		// force a rebuild of algorithm node
-							}
-                    	}
+                        { 
+                        GeneratorClip clip = (GeneratorClip)(generator.getPlayingClip());
+                        if (clip != null)
+                            {
+                            clip.release();         // force the algorithm node to release all its notes
+                            }
+                        // Now we can change the algorithm and algorithm node 
+                        generator.setAlgorithmIndex(algorithm.getSelectedIndex()); 
+                        // Rebuild algorithm
+                        if (clip != null)
+                            {
+                            clip.resetAlgorithmNode();
+                            clip.release();         // force a rebuild of algorithm node
+                            }
+                        }
                     finally { lock.unlock(); }  
-                	generatorui.updateAlgorithmUI();
+                    generatorui.updateAlgorithmUI();
                     }
                 });
 

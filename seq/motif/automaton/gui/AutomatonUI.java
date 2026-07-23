@@ -478,25 +478,25 @@ public class AutomatonUI extends MotifUI
         }
 
 /*
-    public void revise()
-        {
-        if (nodeInspector != null) 
-            {
-            int num = nodeInspector.getNodeNum();
-            if (num < 0) // uh oh
-                {
-                childBorder.setTitle("Child [Error]");
-                System.err.println("SetChildInspector error: childNum is -1, probably button.getAuxilliary returned null.");
-                }
-            else
-                {
-                childBorder.setTitle("Child (" + (num % 8 + 1) + ", " + (num / 8 + 1) + ")");
-                }
-            childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-            childOuter.setBorder(childBorder);
-            nodeInspector.revise();
-            }
-        }
+  public void revise()
+  {
+  if (nodeInspector != null) 
+  {
+  int num = nodeInspector.getNodeNum();
+  if (num < 0) // uh oh
+  {
+  childBorder.setTitle("Child [Error]");
+  System.err.println("SetChildInspector error: childNum is -1, probably button.getAuxilliary returned null.");
+  }
+  else
+  {
+  childBorder.setTitle("Child (" + (num % 8 + 1) + ", " + (num / 8 + 1) + ")");
+  }
+  childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+  childOuter.setBorder(childBorder);
+  nodeInspector.revise();
+  }
+  }
 */ 
     
     /// AutomatonUI is VERY COSTLY to redraw.  Doing a full-speed redraw
@@ -988,107 +988,107 @@ public class AutomatonUI extends MotifUI
                 
                 
 /*        
-    // TESTING
-    public static void main(String[] args) throws Exception
-        {
-        // Set up Menu and FlatLAF
-        SeqUI.setupGUI();
+// TESTING
+public static void main(String[] args) throws Exception
+{
+// Set up Menu and FlatLAF
+SeqUI.setupGUI();
                 
-        // Set up Seq
-        Seq seq = new Seq();            // starts timer running
-        seq.setupForMIDI(AutomatonClip.class, args, 1, 2);   // sets up MIDI in and out
-        seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
-        seq.setOut(1, new Out(seq, 1));         // Out 0 points to device 0 in the tuple.  This is too complex.
+// Set up Seq
+Seq seq = new Seq();            // starts timer running
+seq.setupForMIDI(AutomatonClip.class, args, 1, 2);   // sets up MIDI in and out
+seq.setOut(0, new Out(seq, 0));         // Out 0 points to device 0 in the tuple.  This is too complex.
+seq.setOut(1, new Out(seq, 1));         // Out 0 points to device 0 in the tuple.  This is too complex.
         
-        // Set up our module structure
-        Automaton automaton = new Automaton(seq);
+// Set up our module structure
+Automaton automaton = new Automaton(seq);
 
-        // Set up first StepSequence
-        seq.motif.stepsequence.StepSequence dSeq = new seq.motif.stepsequence.StepSequence(seq, 2, 16);
+// Set up first StepSequence
+seq.motif.stepsequence.StepSequence dSeq = new seq.motif.stepsequence.StepSequence(seq, 2, 16);
         
-        // Specify notes
-        dSeq.setTrackNote(0, 60);
-        dSeq.setTrackNote(1, 120);
-        dSeq.setTrackOut(0, 0);
-        dSeq.setTrackOut(1, 1);
-        dSeq.setDefaultSwing(0.33);
+// Specify notes
+dSeq.setTrackNote(0, 60);
+dSeq.setTrackNote(1, 120);
+dSeq.setTrackOut(0, 0);
+dSeq.setTrackOut(1, 1);
+dSeq.setDefaultSwing(0.33);
         
-        // Load the StepSequence with some data
-        dSeq.setVelocity(0, 0, 1);
-        dSeq.setVelocity(0, 4, 5);
-        dSeq.setVelocity(0, 8, 9);
-        dSeq.setVelocity(0, 12, 13);
-        dSeq.setVelocity(1, 1, 2);
-        dSeq.setVelocity(1, 2, 3);
-        dSeq.setVelocity(1, 3, 4);
-        dSeq.setVelocity(1, 5, 6);
-        dSeq.setVelocity(1, 7, 8);
-        dSeq.setVelocity(1, 9, 10);
-        dSeq.setVelocity(1, 10, 11);
-        dSeq.setVelocity(1, 15, 16);
+// Load the StepSequence with some data
+dSeq.setVelocity(0, 0, 1);
+dSeq.setVelocity(0, 4, 5);
+dSeq.setVelocity(0, 8, 9);
+dSeq.setVelocity(0, 12, 13);
+dSeq.setVelocity(1, 1, 2);
+dSeq.setVelocity(1, 2, 3);
+dSeq.setVelocity(1, 3, 4);
+dSeq.setVelocity(1, 5, 6);
+dSeq.setVelocity(1, 7, 8);
+dSeq.setVelocity(1, 9, 10);
+dSeq.setVelocity(1, 10, 11);
+dSeq.setVelocity(1, 15, 16);
         
 
-        // Set up second StepSequence
-        seq.motif.stepsequence.StepSequence dSeq2 = new seq.motif.stepsequence.StepSequence(seq, 2, 16);
+// Set up second StepSequence
+seq.motif.stepsequence.StepSequence dSeq2 = new seq.motif.stepsequence.StepSequence(seq, 2, 16);
         
-        // Specify notes
-        dSeq2.setTrackNote(0, 45);
-        dSeq2.setTrackNote(1, 90);
-        dSeq2.setTrackOut(0, 0);
-        dSeq2.setTrackOut(1, 1);
-        dSeq2.setDefaultSwing(0);
+// Specify notes
+dSeq2.setTrackNote(0, 45);
+dSeq2.setTrackNote(1, 90);
+dSeq2.setTrackOut(0, 0);
+dSeq2.setTrackOut(1, 1);
+dSeq2.setDefaultSwing(0);
         
-        // Load the StepSequence with some data
-        dSeq2.setVelocity(0, 0, 1);
-        dSeq2.setVelocity(0, 2, 5);
-        dSeq2.setVelocity(0, 4, 9);
-        dSeq2.setVelocity(0, 6, 13);
-        dSeq2.setVelocity(1, 8, 2);
-        dSeq2.setVelocity(1, 9, 3);
-        dSeq2.setVelocity(1, 10, 4);
-        dSeq2.setVelocity(1, 11, 6);
-        dSeq2.setVelocity(1, 12, 2);
-        dSeq2.setVelocity(1, 13, 3);
-        dSeq2.setVelocity(1, 14, 4);
-        dSeq2.setVelocity(1, 15, 6);
+// Load the StepSequence with some data
+dSeq2.setVelocity(0, 0, 1);
+dSeq2.setVelocity(0, 2, 5);
+dSeq2.setVelocity(0, 4, 9);
+dSeq2.setVelocity(0, 6, 13);
+dSeq2.setVelocity(1, 8, 2);
+dSeq2.setVelocity(1, 9, 3);
+dSeq2.setVelocity(1, 10, 4);
+dSeq2.setVelocity(1, 11, 6);
+dSeq2.setVelocity(1, 12, 2);
+dSeq2.setVelocity(1, 13, 3);
+dSeq2.setVelocity(1, 14, 4);
+dSeq2.setVelocity(1, 15, 6);
 
-        // Load into automaton
-        //automaton.add(dSeq, 0, 0.5);
-        //automaton.add(dSeq2, 1);
-        //automaton.add(dSeq, 2);
+// Load into automaton
+//automaton.add(dSeq, 0, 0.5);
+//automaton.add(dSeq2, 1);
+//automaton.add(dSeq, 2);
                 
-        // Build Clip Tree
-        seq.setData(automaton);
+// Build Clip Tree
+seq.setData(automaton);
 
-        // Build GUI
-        SeqUI ui = new SeqUI(seq);
+// Build GUI
+SeqUI ui = new SeqUI(seq);
 
-        seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, dSeq);
-        seq.motif.stepsequence.gui.StepSequenceUI ssui2 = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, dSeq2);
-        AutomatonUI automatonui = new AutomatonUI(seq, ui, automaton);
-        automatonui.doAdd(ssui, 0);
-        automatonui.doAdd(ssui2, 1);
-        automatonui.doAdd(ssui, 2);
-        ui.addMotifUI(automatonui);
-        ui.addMotifUI(ssui);
-        ui.addMotifUI(ssui2);
-        seq.sequi = ui;
-        JFrame frame = new JFrame();
-        ui.setupMenu(frame);
-        frame.getContentPane().add(ui);
-        frame.pack();
-        frame.setVisible(true);
+seq.motif.stepsequence.gui.StepSequenceUI ssui = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, dSeq);
+seq.motif.stepsequence.gui.StepSequenceUI ssui2 = new seq.motif.stepsequence.gui.StepSequenceUI(seq, ui, dSeq2);
+AutomatonUI automatonui = new AutomatonUI(seq, ui, automaton);
+automatonui.doAdd(ssui, 0);
+automatonui.doAdd(ssui2, 1);
+automatonui.doAdd(ssui, 2);
+ui.addMotifUI(automatonui);
+ui.addMotifUI(ssui);
+ui.addMotifUI(ssui2);
+seq.sequi = ui;
+JFrame frame = new JFrame();
+ui.setupMenu(frame);
+frame.getContentPane().add(ui);
+frame.pack();
+frame.setVisible(true);
 
-        seq.reset();
+seq.reset();
 //      automaton.revise();
-        automatonui.revise();
+automatonui.revise();
                     
-        //Toolkit.getDefaultToolkit().getSystemEventQueue().push(new MyEventQueue());
+//Toolkit.getDefaultToolkit().getSystemEventQueue().push(new MyEventQueue());
         
-        //seq.play();
+//seq.play();
 
-        //seq.waitUntilStopped();
-        }
+//seq.waitUntilStopped();
+}
 */
 
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Node</b><br>" +

@@ -113,29 +113,29 @@ public class EventInspector extends WidgetList
             lock.lock();
             try
                 {
-				Out[] seqOuts = seq.getOuts();
-				String[] outs = new String[seqOuts.length + 1];
-				outs[0] = "<html><i>Default</i></html>";
-				for(int i = 1; i < seqOuts.length; i++)
-					{
-					outs[i] = "" + i + ": " + seqOuts[i].toString();
-					}
+                Out[] seqOuts = seq.getOuts();
+                String[] outs = new String[seqOuts.length + 1];
+                outs[0] = "<html><i>Default</i></html>";
+                for(int i = 1; i < seqOuts.length; i++)
+                    {
+                    outs[i] = "" + i + ": " + seqOuts[i].toString();
+                    }
 
-				out = new JComboBox(outs);
-				out.setSelectedIndex(event.getOut() + 1);		// note:  +1
-				out.setMaximumRowCount(outs.length);
-				out.addActionListener(new ActionListener()
-					{
-					public void actionPerformed(ActionEvent e)
-						{
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { event.setOut(out.getSelectedIndex() - 1); }	// note:  -1
-						finally { lock.unlock(); }     
-						if (!revising) notesui.reload();		// we break the recursion here.  We don't break in reload() because that's always with a NEW EventInspector
-						}
-					});
+                out = new JComboBox(outs);
+                out.setSelectedIndex(event.getOut() + 1);               // note:  +1
+                out.setMaximumRowCount(outs.length);
+                out.addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { event.setOut(out.getSelectedIndex() - 1); }       // note:  -1
+                        finally { lock.unlock(); }     
+                        if (!revising) notesui.reload();                // we break the recursion here.  We don't break in reload() because that's always with a NEW EventInspector
+                        }
+                    });
 
                 out.setToolTipText(OUT_TOOLTIP);
 
@@ -332,7 +332,7 @@ public class EventInspector extends WidgetList
                     comps = new JComponent[] 
                         {
                         //new JLabel("Note"),
-                    	out,
+                        out,
                         when,
                         length,
                         pitch.getLabelledDial("A#"),
@@ -411,7 +411,7 @@ public class EventInspector extends WidgetList
                     strs = new String[] { /*"Type",*/ "Out", "When", "Bend" };
                     comps = new JComponent[] 
                         {
-                    	out,
+                        out,
                         //new JLabel("Bend"),
                         when,
                         valuePanel,
@@ -489,7 +489,7 @@ public class EventInspector extends WidgetList
                     strs = new String[] { /*"Type",*/ "Out", "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
-                    	out,
+                        out,
                         //new JLabel("CC"),
                         when,
                         //parameter.getLabelledDial("127"),
@@ -633,7 +633,7 @@ public class EventInspector extends WidgetList
                     strs = new String[] { /*"Type",*/ "Out", "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
-                    	out,
+                        out,
                         //new JLabel("NRPN"),
                         when,
                         //pan1,
@@ -777,7 +777,7 @@ public class EventInspector extends WidgetList
                     strs = new String[] { /*"Type",*/ "Out", "When", /*"Parameter",*/ "Value" };
                     comps = new JComponent[] 
                         {
-                    	out,
+                        out,
                         //new JLabel("RPN"),
                         when,
                         //pan1,
@@ -864,7 +864,7 @@ public class EventInspector extends WidgetList
                         strs = new String[] { /*"Type",*/ "Out", "When", "Value" };
                         comps = new JComponent[] 
                             {
-                    	out,
+                            out,
                             //new JLabel("Aftertouch"),
                             when,
                             value.getLabelledDial("127")
@@ -875,7 +875,7 @@ public class EventInspector extends WidgetList
                         strs = new String[] { /*"Type",*/ "Out", "When", "Pitch", "Value" };
                         comps = new JComponent[] 
                             {
-                    	out,
+                            out,
                             //new JLabel("Aftertouch"),
                             when,
                             pitch.getLabelledDial("A#"),
@@ -930,8 +930,8 @@ public class EventInspector extends WidgetList
                     strs = new String[] {  "Out", "When", "Value" };
                     comps = new JComponent[] 
                         {
-                    	out,
-                    	when,
+                        out,
+                        when,
                         value.getLabelledDial("127")
                         };
                     }
@@ -942,134 +942,134 @@ public class EventInspector extends WidgetList
                     String data = StringUtility.toHex(sysex.getData()).trim();
 
                     area = new StringArea(data)
-                    	{
-                    	public boolean verifyValue(String val)
-                    		{
-                    		boolean started = false;
-                    		boolean ended = false;
-                    		int[] count = { 0 };
-                    		
-							Scanner scan = new Scanner(val);
-							while(true)
-								{
-								if (ended)
-									{
-									if (scan.hasNextInt(16))
-										{
-										// ERROR, we already ended
-										notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is text after the ending F7.");
-										return false;
-										}
-									else return true;	// yay we're done!
-									}
-								else if (!scan.hasNextInt(16) && !started)
-									{
-									// ERROR, empty or garbage
-									if (scan.hasNext())
-										{
-										// ERROR, garbage
-                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is garbage at the beginning of the text");
-                    				return false;
-										}
-									else
-										{
-										// ERROR, premature ending
-                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "The text is empty.");
-                    				return false;
-										}
-									}
-								else if (!scan.hasNextInt(16) && !ended)
-									{
-									// ERROR, premature ending or garbage
-									if (scan.hasNext())
-										{
-										// ERROR, garbage
-                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is garbage text after hex number #" + count[0]);
-                    				return false;
-										}
-									else
-										{
-										// ERROR, premature ending
-                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "No ending F7.");
-                    				return false;
-										}
-									}	
-								
-								int next = scan.nextInt(16);
-								count[0]++;
-								if (!started)
-									{
-									if (next != 0xF0)
-										{
-										/// ERROR, didn't start with F0
-                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "No initial F0.");
-                    				return false;
-										}
-									else started = true;
-									}
-								else if (!ended)
-									{
-									if (next == 0xF7)
-										{
-										// we're done
-										ended = true;
-										}
-									else if (next < 0x00 || next > 0xFF)
-										{
-										/// ERROR, out of bounds value
-                    					notesui.getSeqUI().showSimpleError("Error Reading Sysex", "Hex number #" + count[0] + " is " + StringUtility.toHexFull(next) + ", which is out of bounds.");
-                    				return false;
-										}
-									}
-								}
-                    		}
-                    		
-                    	public String newValue(String val)
-                    		{
-                    		ArrayList<Integer> vals = new ArrayList<>();
-							Scanner scan = new Scanner(val);
-							while(scan.hasNextInt(16))
-								{
-								vals.add(scan.nextInt(16));
-								}
-							byte[] v = new byte[vals.size()];
-							for(int i = 0; i < v.length; i++)
-								{
-								v[i] = (byte)(vals.get(i).byteValue());
-								}
+                        {
+                        public boolean verifyValue(String val)
+                            {
+                            boolean started = false;
+                            boolean ended = false;
+                            int[] count = { 0 };
+                                
+                            Scanner scan = new Scanner(val);
+                            while(true)
+                                {
+                                if (ended)
+                                    {
+                                    if (scan.hasNextInt(16))
+                                        {
+                                        // ERROR, we already ended
+                                        notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is text after the ending F7.");
+                                        return false;
+                                        }
+                                    else return true;       // yay we're done!
+                                    }
+                                else if (!scan.hasNextInt(16) && !started)
+                                    {
+                                    // ERROR, empty or garbage
+                                    if (scan.hasNext())
+                                        {
+                                        // ERROR, garbage
+                                        notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is garbage at the beginning of the text");
+                                        return false;
+                                        }
+                                    else
+                                        {
+                                        // ERROR, premature ending
+                                        notesui.getSeqUI().showSimpleError("Error Reading Sysex", "The text is empty.");
+                                        return false;
+                                        }
+                                    }
+                                else if (!scan.hasNextInt(16) && !ended)
+                                    {
+                                    // ERROR, premature ending or garbage
+                                    if (scan.hasNext())
+                                        {
+                                        // ERROR, garbage
+                                        notesui.getSeqUI().showSimpleError("Error Reading Sysex", "There is garbage text after hex number #" + count[0]);
+                                        return false;
+                                        }
+                                    else
+                                        {
+                                        // ERROR, premature ending
+                                        notesui.getSeqUI().showSimpleError("Error Reading Sysex", "No ending F7.");
+                                        return false;
+                                        }
+                                    }       
+                                                                
+                                int next = scan.nextInt(16);
+                                count[0]++;
+                                if (!started)
+                                    {
+                                    if (next != 0xF0)
+                                        {
+                                        /// ERROR, didn't start with F0
+                                        notesui.getSeqUI().showSimpleError("Error Reading Sysex", "No initial F0.");
+                                        return false;
+                                        }
+                                    else started = true;
+                                    }
+                                else if (!ended)
+                                    {
+                                    if (next == 0xF7)
+                                        {
+                                        // we're done
+                                        ended = true;
+                                        }
+                                    else if (next < 0x00 || next > 0xFF)
+                                        {
+                                        /// ERROR, out of bounds value
+                                        notesui.getSeqUI().showSimpleError("Error Reading Sysex", "Hex number #" + count[0] + " is " + StringUtility.toHexFull(next) + ", which is out of bounds.");
+                                        return false;
+                                        }
+                                    }
+                                }
+                            }
+                                
+                        public String newValue(String val)
+                            {
+                            ArrayList<Integer> vals = new ArrayList<>();
+                            Scanner scan = new Scanner(val);
+                            while(scan.hasNextInt(16))
+                                {
+                                vals.add(scan.nextInt(16));
+                                }
+                            byte[] v = new byte[vals.size()];
+                            for(int i = 0; i < v.length; i++)
+                                {
+                                v[i] = (byte)(vals.get(i).byteValue());
+                                }
 
-							ReentrantLock lock = seq.getLock();
-							lock.lock();
-							try { sysex.setData(v); }
-							finally { lock.unlock(); }
-							
-							return getValue();
-                    		}
-                    		
-                    	public String getValue()
-                    		{
-							ReentrantLock lock = seq.getLock();
-							lock.lock();
-							try { return StringUtility.toHex(sysex.getData()).trim(); }
-							finally { lock.unlock(); }
-                    		}
-                    	};
-					area.setBorder(BorderFactory.createTitledBorder("Data"));
-					
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { sysex.setData(v); }
+                            finally { lock.unlock(); }
+                                                        
+                            return getValue();
+                            }
+                                
+                        public String getValue()
+                            {
+                            ReentrantLock lock = seq.getLock();
+                            lock.lock();
+                            try { return StringUtility.toHex(sysex.getData()).trim(); }
+                            finally { lock.unlock(); }
+                            }
+                        };
+                    area.setBorder(BorderFactory.createTitledBorder("Data"));
+                                        
                     strs = new String[] { "Out", "When" };
                     comps = new JComponent[] 
                         {
-                    	out,
-                    	when,
+                        out,
+                        when,
                         };
                     }
                 }
             finally { lock.unlock(); }
             build(strs, comps);
             if (area != null) // it's sysex
-            	{
+                {
                 add(area, BorderLayout.CENTER);
-            	}
+                }
             }
         }
                 
@@ -1082,7 +1082,7 @@ public class EventInspector extends WidgetList
     
     public void revise()
         {
-        if (revising) return;		// probably moot since we check for this earlier
+        if (revising) return;           // probably moot since we check for this earlier
         revising = true;
 
         Seq old = seq;

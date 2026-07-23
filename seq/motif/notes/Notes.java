@@ -30,7 +30,7 @@ public class Notes extends Motif
     /** A list of note strings */
     public static final String[] NOTES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-	public static final int DEFAULT_OUT = -1;
+    public static final int DEFAULT_OUT = -1;
 
 
 
@@ -44,8 +44,8 @@ public class Notes extends Motif
     // 256-383          Poly Aftertouch by Pitch
     // 384              Channel Aftertouch
     // 385              Pitch Bend
-    // 386				Program Change
-    // 387				System Exclusive
+    // 386                              Program Change
+    // 387                              System Exclusive
     // 388-16383        [RESERVED] -- future use, 16-bit CC, PC
     // 16384-32767      NRPN
     // 32768-49151      RPN
@@ -193,7 +193,7 @@ public class Notes extends Motif
             {
             when = obj.optInt("w", 0);
             out = obj.optInt("o", DEFAULT_OUT);
-			}
+            }
         
         /** Loads the Event from JSON */
         public static Event load(JSONObject obj) throws JSONException
@@ -256,10 +256,10 @@ public class Notes extends Motif
 
     public static class Sysex extends Event
         {
-        public byte[] data;		// data including 0xF0 and 0xF7
-        public byte value;  	// just something to display the event dot in a random location
+        public byte[] data;             // data including 0xF0 and 0xF7
+        public byte value;      // just something to display the event dot in a random location
         
-    	// This just uses the existing data -- so I own it now
+        // This just uses the existing data -- so I own it now
         public Sysex(byte[] data, int when)
             {
             super(when);
@@ -267,7 +267,7 @@ public class Notes extends Motif
             this.value = (byte)(Math.random() * 128);
             }
             
-    	// This just uses the existing data -- so I own it now
+        // This just uses the existing data -- so I own it now
         public Sysex(int when)
             {
             this(new byte[] { (byte)0xF0, (byte)0xF7 }, when);
@@ -287,7 +287,7 @@ public class Notes extends Motif
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
             if (data.length > 0) 
-            	track.add(new MidiEvent(new SysexMessage(data, data.length), when));
+                track.add(new MidiEvent(new SysexMessage(data, data.length), when));
             }
                         
         public JSONObject save() throws JSONException
@@ -300,23 +300,23 @@ public class Notes extends Motif
         
         public String toString() { return "Sysex " + StringUtility.toHex(data); }
         
-        public int getValue() { return value; }		// this way it appears dead-center in the middle of the EventUI field
-        public void setValue(int val) { }		// do nothing
-        public double getNormalizedValue() { return value / 128.0; }		// this way it appears dead-center in the middle of the EventUI field
-        public void setNormalizedValue(double value) { }	// do nothing
+        public int getValue() { return value; }         // this way it appears dead-center in the middle of the EventUI field
+        public void setValue(int val) { }               // do nothing
+        public double getNormalizedValue() { return value / 128.0; }            // this way it appears dead-center in the middle of the EventUI field
+        public void setNormalizedValue(double value) { }        // do nothing
         public int getParameter() { return 0; }
         public int getType() { return TYPE_SYSEX; }
         public int getLength() { return 0; }
         public byte[] getData() { return data; }
         public void setData(byte[] data) 
-        	{
-        	if (data == null)
-            	{
-            	System.err.println("Notes.setData constructor: data passed in was null, which shouldn't happen.");
-            	data = new byte[] { (byte)0xF0, (byte)0xF7 };
-            	}
-			this.data = data; 
-			}
+            {
+            if (data == null)
+                {
+                System.err.println("Notes.setData constructor: data passed in was null, which shouldn't happen.");
+                data = new byte[] { (byte)0xF0, (byte)0xF7 };
+                }
+            this.data = data; 
+            }
         }
         
 
@@ -1316,26 +1316,26 @@ public class Notes extends Motif
         // So we have two options.  Either we secretly push the CC to time X - 1, or we keep it at
         // X and so our end time is X.  That's the approach I'm taking here.  Neither is optimal.
         
-		int endTime = 0;
-		int manualEnd = (end >= start ? end : start);
+        int endTime = 0;
+        int manualEnd = (end >= start ? end : start);
         if (maxNoteOffPosition > maxEventPosition)
-        	{
-        	endTime = (maxNoteOffPosition > manualEnd ? maxNoteOffPosition : manualEnd) - 1;    // FIXME: So I'm subtracting 1....
-        	}
+            {
+            endTime = (maxNoteOffPosition > manualEnd ? maxNoteOffPosition : manualEnd) - 1;    // FIXME: So I'm subtracting 1....
+            }
         else
-        	{
-        	endTime = (maxEventPosition > manualEnd ? maxEventPosition : manualEnd);
-        	}
-        	
+            {
+            endTime = (maxEventPosition > manualEnd ? maxEventPosition : manualEnd);
+            }
+                
         if (endTime < 0) endTime = 0;
         return endTime;
     
-    	/*
-        int maxPos = (maxNoteOffPosition > maxEventPosition ? maxNoteOffPosition : maxEventPosition);
-        int endTime = (maxPos > end ? maxPos : (end >= 0 ? end : 0)) - 1;                       // FIXME: So I'm subtracting 1....
-        if (endTime < 0) endTime = 0;
-        System.err.println("End Time " + endTime);
-        return endTime;
+        /*
+          int maxPos = (maxNoteOffPosition > maxEventPosition ? maxNoteOffPosition : maxEventPosition);
+          int endTime = (maxPos > end ? maxPos : (end >= 0 ? end : 0)) - 1;                       // FIXME: So I'm subtracting 1....
+          if (endTime < 0) endTime = 0;
+          System.err.println("End Time " + endTime);
+          return endTime;
         */
         }
         
@@ -2119,11 +2119,11 @@ public class Notes extends Motif
                     readEvents.add(aftertouch);
                     }
                 }
-			else if (message instanceof SysexMessage && getRecordSysex())
-				{
-				Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
-				readEvents.add(sysex);
-				}
+            else if (message instanceof SysexMessage && getRecordSysex())
+                {
+                Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
+                readEvents.add(sysex);
+                }
             }
         events = readEvents;
         computeMaxTime();

@@ -136,15 +136,15 @@ public class Seq
                     // we need to modify the channel
                     ShortMessage original = (ShortMessage)message;
                     ShortMessage sm = new ShortMessage(original.getCommand(), 
-                            tuple.outChannel[routeOut], 
-                            original.getData1(), 
-                            original.getData2());
-		                outs[routeOut].sendMIDI(sm, timestamp);
+                        tuple.outChannel[routeOut], 
+                        original.getData1(), 
+                        original.getData2());
+                    outs[routeOut].sendMIDI(sm, timestamp);
                     }
                 else
-                	{
-		            outs[routeOut].sendMIDI((MidiMessage)(message.clone()), timestamp);
-                	}     
+                    {
+                    outs[routeOut].sendMIDI((MidiMessage)(message.clone()), timestamp);
+                    }     
                 }
             }
         catch (InvalidMidiDataException ex) { ex.printStackTrace(); }
@@ -334,28 +334,28 @@ public class Seq
     public void setFile(File file) { this.file = file; }
     
     public String[] getOutNicknames() 
-    	{
-    	String[] outNicknames = new String[NUM_OUTS];
-    	if (outs == null || outs[0] == null) return outNicknames;		// this is a hack
-    	
-    	for(int i = 0; i < outNicknames.length; i++)
-    		{
-    		outNicknames[i] = getOut(i).getName();
-    		}
-    	return outNicknames;
-    	}
+        {
+        String[] outNicknames = new String[NUM_OUTS];
+        if (outs == null || outs[0] == null) return outNicknames;               // this is a hack
+        
+        for(int i = 0; i < outNicknames.length; i++)
+            {
+            outNicknames[i] = getOut(i).getName();
+            }
+        return outNicknames;
+        }
 
     public String[] getInNicknames() 
-		{
-		String[] inNicknames = new String[NUM_INS];
-    	if (ins == null || ins[0] == null) return inNicknames;		// this is a hack
+        {
+        String[] inNicknames = new String[NUM_INS];
+        if (ins == null || ins[0] == null) return inNicknames;          // this is a hack
 
-		for(int i = 0; i < inNicknames.length; i++)
-			{
-			inNicknames[i] = getIn(i).getName();
-			}
-    	return inNicknames;
-    	}
+        for(int i = 0; i < inNicknames.length; i++)
+            {
+            inNicknames[i] = getIn(i).getName();
+            }
+        return inNicknames;
+        }
     
     public int getBeepPitch()
         {
@@ -582,13 +582,13 @@ public class Seq
         outs = old.outs;
         ins = old.ins;
         for(int i = 0; i < outs.length; i++)
-        	{
-        	outs[i].setName(Prefs.getLastTupleOutName(i));
-        	}
+            {
+            outs[i].setName(Prefs.getLastTupleOutName(i));
+            }
         for(int i = 0; i < ins.length; i++)
-        	{
-        	ins[i].setName(Prefs.getLastTupleInName(i));
-        	}
+            {
+            ins[i].setName(Prefs.getLastTupleInName(i));
+            }
         //outNames = old.outNames;
         //inNames = old.inNames;
         sequi = old.sequi;
@@ -675,7 +675,7 @@ public class Seq
     // IN
     public In getIn(int in) { return ins[in]; }
     public In[] getIns() { return ins; }
-   // public String[] getInNames() { return inNames; }
+    // public String[] getInNames() { return inNames; }
     public void setIn(int in, In val) { ins[in] = val; }
     public int getNumIns() { return ins.length; }
 
@@ -1754,18 +1754,18 @@ public class Seq
         obj.put("seed", getDeterministicRandomSeed());
         
         JSONArray outNicks = new JSONArray();
-    	for(int i = 0; i < NUM_OUTS; i++)
-    		{
-    		outNicks.put(i, getOut(i).getName());
-    		}
-    	obj.put("outnicks", outNicks);
+        for(int i = 0; i < NUM_OUTS; i++)
+            {
+            outNicks.put(i, getOut(i).getName());
+            }
+        obj.put("outnicks", outNicks);
 
         JSONArray inNicks = new JSONArray();
-    	for(int i = 0; i < NUM_INS; i++)
-    		{
-    		inNicks.put(i, getIn(i).getName());
-    		}
-    	obj.put("innicks", inNicks);
+        for(int i = 0; i < NUM_INS; i++)
+            {
+            inNicks.put(i, getIn(i).getName());
+            }
+        obj.put("innicks", inNicks);
                 
         // Set the display order
         int order = 0;
@@ -1845,21 +1845,21 @@ public class Seq
         
         JSONArray outNicks = obj.optJSONArray("outnicks");
         if (outNicks != null)
-        	{
-			for(int i = 0; i < NUM_OUTS; i++)
-				{
-				seq.getOut(i).setName(outNicks.optString(i, null));
-				}
-			}
+            {
+            for(int i = 0; i < NUM_OUTS; i++)
+                {
+                seq.getOut(i).setName(outNicks.optString(i, null));
+                }
+            }
 
         JSONArray inNicks = obj.optJSONArray("innicks");
         if (inNicks != null)
-        	{
-			for(int i = 0; i < NUM_INS; i++)
-				{
-				seq.getIn(i).setName(inNicks.optString(i, null));
-				}
-			}
+            {
+            for(int i = 0; i < NUM_INS; i++)
+                {
+                seq.getIn(i).setName(inNicks.optString(i, null));
+                }
+            }
 
         // seed
         int seed = obj.optInt("seed", 0);
@@ -2128,7 +2128,7 @@ public class Seq
             //String[] inNames = new String[NUM_INS];
             //String[] outNames = new String[NUM_OUTS];
             
-             // Initially all NULL.  We gotta set this up with something smarter
+            // Initially all NULL.  We gotta set this up with something smarter
             tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, getOutNicknames(), getInNicknames());
 
             for(int i = 0; i < NUM_OUTS; i++)

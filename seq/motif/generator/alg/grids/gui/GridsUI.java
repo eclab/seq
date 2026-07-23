@@ -27,7 +27,7 @@ public class GridsUI extends AlgorithmUI
     JComboBox rate;
     JCheckBox accents;
     
-	public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
+    public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
     public static final String[] RATES = { "Whole Note", "Half Note", "Quarter Note", "Eighth Note", "Triplet", "Sixteenth Note", "Triplet Sixteenth Note", "Thirty-Second Note" };
     
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
@@ -52,290 +52,290 @@ public class GridsUI extends AlgorithmUI
     public GridsUI(Seq seq, Generator generator, GeneratorUI generatorUI, Algorithm algorithm)
         {
         super(seq, generator, generatorUI, algorithm);
-		final Grids grids = (Grids) algorithm;
-		
-		setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-		
+        final Grids grids = (Grids) algorithm;
+                
+        setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+                
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
             for(int i = 0; i < complexity.length; i++)
-            	{
-            	final int _i = i;
-             	complexity[i] = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.valueOf((int)(val * 255)); 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return grids.getComplexity(_i) / 255.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { grids.setComplexity(_i, (int)(val * 255)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) grids.setComplexity(_i, -(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = grids.getComplexity(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
-				}
+                {
+                final int _i = i;
+                complexity[i] = new SmallDial(-1, defaults)
+                    {
+                    protected String map(double val) 
+                        { 
+                        return String.valueOf((int)(val * 255)); 
+                        }
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return grids.getComplexity(_i) / 255.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { grids.setComplexity(_i, (int)(val * 255)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) grids.setComplexity(_i, -(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = grids.getComplexity(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
+                }
 
             for(int i = 0; i < note.length; i++)
-            	{
-            	final int _i = i;
-             	note[i] = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						int key = (int)(val * 127);
-						return KEYS[key % 12] + (key / 12); 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return grids.getNote(_i) / 127.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { grids.setNote(_i, (int)(val * 127)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) grids.setNote(_i, -(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = grids.getNote(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
-				}
-				
+                {
+                final int _i = i;
+                note[i] = new SmallDial(-1, defaults)
+                    {
+                    protected String map(double val) 
+                        { 
+                        int key = (int)(val * 127);
+                        return KEYS[key % 12] + (key / 12); 
+                        }
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return grids.getNote(_i) / 127.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { grids.setNote(_i, (int)(val * 127)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) grids.setNote(_i, -(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = grids.getNote(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
+                }
+                                
             for(int i = 0; i < velocity.length; i++)
-            	{
-            	final int _i = i;
-             	velocity[i] = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.valueOf((int)(val * 127)); 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return grids.getVelocity(_i) / 127.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { grids.setVelocity(_i, (int)(val * 127)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) grids.setVelocity(_i, -(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = grids.getVelocity(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
-				}
-				
+                {
+                final int _i = i;
+                velocity[i] = new SmallDial(-1, defaults)
+                    {
+                    protected String map(double val) 
+                        { 
+                        return String.valueOf((int)(val * 127)); 
+                        }
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return grids.getVelocity(_i) / 127.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { grids.setVelocity(_i, (int)(val * 127)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) grids.setVelocity(_i, -(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = grids.getVelocity(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
+                }
+                                
             for(int i = 0; i < accentVelocity.length; i++)
-            	{
-            	final int _i = i;
-             	accentVelocity[i] = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.valueOf((int)(val * 127)); 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return grids.getAccentVelocity(_i) / 127.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { grids.setAccentVelocity(_i, (int)(val * 127)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) grids.setAccentVelocity(_i, -(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = grids.getAccentVelocity(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
-				}
+                {
+                final int _i = i;
+                accentVelocity[i] = new SmallDial(-1, defaults)
+                    {
+                    protected String map(double val) 
+                        { 
+                        return String.valueOf((int)(val * 127)); 
+                        }
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return grids.getAccentVelocity(_i) / 127.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { grids.setAccentVelocity(_i, (int)(val * 127)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) grids.setAccentVelocity(_i, -(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = grids.getAccentVelocity(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
+                }
 
-             	x = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.valueOf((int)(val * 255)); 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return grids.getX() / 255.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { grids.setX((int)(val * 255)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) grids.setX(-(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = grids.getX(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
+            x = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.valueOf((int)(val * 255)); 
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return grids.getX() / 255.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { grids.setX((int)(val * 255)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) grids.setX(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = grids.getX(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
 
-             	y = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.valueOf((int)(val * 255)); 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return grids.getY() / 255.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { grids.setY((int)(val * 255)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) grids.setY(-(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = grids.getY(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
+            y = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.valueOf((int)(val * 255)); 
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return grids.getY() / 255.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { grids.setY((int)(val * 255)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) grids.setY(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = grids.getY(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
-             	chaos = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.valueOf((int)(val * 255)); 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return grids.getChaos() / 255.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { grids.setChaos((int)(val * 255)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) grids.setChaos(-(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = grids.getChaos(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
+            chaos = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.valueOf((int)(val * 255)); 
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return grids.getChaos() / 255.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { grids.setChaos((int)(val * 255)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) grids.setChaos(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = grids.getChaos(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
             rate = new JComboBox(RATES);
             rate.setSelectedIndex(grids.getRateIndex());
@@ -346,12 +346,12 @@ public class GridsUI extends AlgorithmUI
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try
-                    	{
-                    	grids.setRate(grids.RATES[rate.getSelectedIndex()]);
-						}
-					finally { lock.unlock(); }
-					}
-				});
+                        {
+                        grids.setRate(grids.RATES[rate.getSelectedIndex()]);
+                        }
+                    finally { lock.unlock(); }
+                    }
+                });
 
             accents = new JCheckBox();
             accents.setSelected(grids.getAccents());
@@ -383,7 +383,7 @@ public class GridsUI extends AlgorithmUI
             new JComponent[] 
                 {
                 x.getLabelledDial("255"),
-            	y.getLabelledDial("255"),
+                y.getLabelledDial("255"),
                 chaos.getLabelledDial("255"),
                 rate,
                 accents,
@@ -421,12 +421,12 @@ public class GridsUI extends AlgorithmUI
         if (y != null) y.redraw();
         if (chaos != null) chaos.redraw();
         for(int i = 0; i < complexity.length; i++)
-        	{
-        	if (complexity[i] != null) complexity[i].redraw();
-        	if (note[i] != null) note[i].redraw();
-        	if (velocity[i] != null) velocity[i].redraw();
-        	if (accentVelocity[i] != null) accentVelocity[i].redraw();
-        	}
+            {
+            if (complexity[i] != null) complexity[i].redraw();
+            if (note[i] != null) note[i].redraw();
+            if (velocity[i] != null) velocity[i].redraw();
+            if (accentVelocity[i] != null) accentVelocity[i].redraw();
+            }
         }
 
     static final String COMPLEXITY_TOOLTIP = "<html><b>Complexity</b><br>" +

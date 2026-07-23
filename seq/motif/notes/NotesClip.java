@@ -253,10 +253,10 @@ public class NotesClip extends Clip
         }
         
     public int determineOut(int noteOut, int notesOut)
-    	{
-    	if (noteOut == -1) return notesOut;
-    	else return noteOut;
-    	}
+        {
+        if (noteOut == -1) return notesOut;
+        else return noteOut;
+        }
     
     public boolean process()
         {
@@ -360,10 +360,10 @@ public class NotesClip extends Clip
                             }
                         }
                     else if (message instanceof SysexMessage && notes.getRecordSysex())
-						{
-						Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
-						recording.add(sysex);
-                    	}
+                        {
+                        Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
+                        recording.add(sysex);
+                        }
                     }
                 }
             return false;           // we're never done
@@ -427,10 +427,10 @@ public class NotesClip extends Clip
                     rpn(determineOut(rpn.out, out), rpn.parameter, rpn.value);
                     }
                 else if (event instanceof Notes.Sysex)
-                	{
-                	Notes.Sysex sysex = (Notes.Sysex)event;
-                	sysex(determineOut(sysex.out, out), sysex.getData());
-                	}
+                    {
+                    Notes.Sysex sysex = (Notes.Sysex)event;
+                    sysex(determineOut(sysex.out, out), sysex.getData());
+                    }
                 }
                                  
             // at this point, index points to the LAST EVENT that we emitted

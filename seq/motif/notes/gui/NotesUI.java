@@ -354,7 +354,7 @@ public class NotesUI extends MotifUI
         menu.add(filter);
 
         menu.addSeparator();
-		JMenu outmenu = new JMenu("Set Out...");
+        JMenu outmenu = new JMenu("Set Out...");
         menu.add(outmenu);
 
         JMenuItem outs = new JMenuItem("Default");
@@ -368,18 +368,18 @@ public class NotesUI extends MotifUI
         outmenu.add(outs);
         
         for(int i = 0; i < 16; i++)
-        	{
-        	final int _i = i;
-			outs = new JMenuItem(String.valueOf(i + 1));
-			outs.addActionListener(new ActionListener()
-				{
-				public void actionPerformed(ActionEvent event)
-					{
-					setNoteOut(_i);
-					}
-				});
-			outmenu.add(outs);
-        	}
+            {
+            final int _i = i;
+            outs = new JMenuItem(String.valueOf(i + 1));
+            outs.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent event)
+                    {
+                    setNoteOut(_i);
+                    }
+                });
+            outmenu.add(outs);
+            }
 
         menu.addSeparator();
 
@@ -466,7 +466,7 @@ public class NotesUI extends MotifUI
     
     // Change the output device of the selected events or notes
     void setNoteOut(int out)
-    	{
+        {
         ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
 
         ReentrantLock lock = seq.getLock();
@@ -487,8 +487,8 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-    	}
-    	
+        }
+        
     /** Re-caches the NoteUI or EventUI objects for all Notes and all non-Note Events, and repaints the GridUI, EventsUI, and ruler. */
     public void reload()
         {
@@ -588,7 +588,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-		updateChildInspector(false);
+        updateChildInspector(false);
         }
         
     public void doDown()
@@ -624,7 +624,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-		updateChildInspector(false);
+        updateChildInspector(false);
         }
         
     public void doLeft()
@@ -655,7 +655,7 @@ public class NotesUI extends MotifUI
                 event.when = newTime;
                 if (event.when < 0) event.when = 0;
                 }
-	        notes.computeMaxTime(); 
+            notes.computeMaxTime(); 
             }
         finally 
             {
@@ -665,7 +665,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-		updateChildInspector(false);
+        updateChildInspector(false);
         }
         
     public void doRight()               // always do right.  Never do wrong.
@@ -695,7 +695,7 @@ public class NotesUI extends MotifUI
                     event.when = Seq.MIN_MAX_TIME;
                     }
                 }
-	        notes.computeMaxTime(); 
+            notes.computeMaxTime(); 
             }
         finally 
             {
@@ -705,7 +705,7 @@ public class NotesUI extends MotifUI
         eventsui.reload();
         gridui.repaint();
         eventsui.repaint();
-		updateChildInspector(false);
+        updateChildInspector(false);
         }
         
     public void doBringToFront()
@@ -1970,21 +1970,21 @@ public class NotesUI extends MotifUI
         }
 
     /** Updates the child inspector. */
-   /*
-   public void revise()
-        {
-        if (childInspector != null) 
-            {
-            childBorder.setTitle(childInspector.getName());
-            childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
-            childOuter.setBorder(childBorder);
-            childInspector.revise();
-            }
-        else
-            {
-            childBorder.setBorder(null);
-            }
-        }
+    /*
+      public void revise()
+      {
+      if (childInspector != null) 
+      {
+      childBorder.setTitle(childInspector.getName());
+      childOuter.setBorder(null);             // this has to be done or it won't immediately redraw!
+      childOuter.setBorder(childBorder);
+      childInspector.revise();
+      }
+      else
+      {
+      childBorder.setBorder(null);
+      }
+      }
     */
         
     /** Updates the NotesUI and repaints it. */

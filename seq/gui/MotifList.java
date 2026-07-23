@@ -268,11 +268,11 @@ public class MotifList extends JPanel
                 ImageIcon icon = (ImageIcon)(MOTIF_UIS[i].getMethod("getStaticIcon").invoke(null));
                 Image image = icon.getImage().getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); 
                 if (allowInvert)
-                	{
-                	image = Theme.invertImage(image);
-                	}
+                    {
+                    image = Theme.invertImage(image);
+                    }
                 image = image.getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH);
-                	
+                        
 
                 items[i] = new JMenuItem((String)(MOTIF_UIS[i].getMethod("getType").invoke(null)), new ImageIcon(image));
                 items[i].setHorizontalAlignment(SwingConstants.LEADING);

@@ -28,15 +28,15 @@ public class TriadexMuseUI extends AlgorithmUI
     PushButton preset;
     
     public static final String[] LABELS = 
-    	{ 
-    	"Off", "On", 
-    	"C 1/2", "C1", "C2", "C4", "C8", "C3", "C6", 
-    	"B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8",
-    	"B9", "B10", "B11", "B12", "B13", "B14", "B15", "B16",
-    	"B17", "B18", "B19", "B20", "B21", "B22", "B23", "B24",
-    	"B25", "B26", "B27", "B28", "B29", "B30", "B31"
-    	};
-    	
+        { 
+        "Off", "On", 
+        "C 1/2", "C1", "C2", "C4", "C8", "C3", "C6", 
+        "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8",
+        "B9", "B10", "B11", "B12", "B13", "B14", "B15", "B16",
+        "B17", "B18", "B19", "B20", "B21", "B22", "B23", "B24",
+        "B25", "B26", "B27", "B28", "B29", "B30", "B31"
+        };
+        
     public static final String[] RATES = { "Whole Note", "Half Note", "Quarter Note", "Eighth Note", "Triplet", "Sixteenth Note", "Triplet Sixteenth Note", "Thirty-Second Note" };
     
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
@@ -61,223 +61,223 @@ public class TriadexMuseUI extends AlgorithmUI
     public TriadexMuseUI(Seq seq, Generator generator, GeneratorUI generatorUI, Algorithm algorithm)
         {
         super(seq, generator, generatorUI, algorithm);
-		final TriadexMuse triadexmuse = (TriadexMuse) algorithm;
-		
-		setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-		
-		
-		preset = new PushButton("Preset...", TriadexMuse.PRESET_NAMES)
-			{
-			public void perform(int i)
-				{
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try 
-					{
-					triadexmuse.setRest(TriadexMuse.PRESET_RESTS[i]);
-					for(int j = 0; j < 4; j++)
-						{
-						triadexmuse.setInterval(j, TriadexMuse.PRESET_INTERVALS[i][j]);
-						triadexmuse.setTheme(j, TriadexMuse.PRESET_THEMES[i][j]);
-						}
-					}
-				finally { lock.unlock(); }
-				revise();
-				}
-			};
-		
+        final TriadexMuse triadexmuse = (TriadexMuse) algorithm;
+                
+        setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+                
+                
+        preset = new PushButton("Preset...", TriadexMuse.PRESET_NAMES)
+            {
+            public void perform(int i)
+                {
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    {
+                    triadexmuse.setRest(TriadexMuse.PRESET_RESTS[i]);
+                    for(int j = 0; j < 4; j++)
+                        {
+                        triadexmuse.setInterval(j, TriadexMuse.PRESET_INTERVALS[i][j]);
+                        triadexmuse.setTheme(j, TriadexMuse.PRESET_THEMES[i][j]);
+                        }
+                    }
+                finally { lock.unlock(); }
+                revise();
+                }
+            };
+                
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
             for(int i = 0; i < themes.length; i++)
-            	{
-            	final int _i = i;
-             	themes[i] = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return LABELS[SmallDial.toInt(val * 39)]; 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return triadexmuse.getTheme(_i) / 39.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { triadexmuse.setTheme(_i, (int)(val * 39)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setTheme(_i, -(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = triadexmuse.getTheme(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
+                {
+                final int _i = i;
+                themes[i] = new SmallDial(-1, defaults)
+                    {
+                    protected String map(double val) 
+                        { 
+                        return LABELS[SmallDial.toInt(val * 39)]; 
+                        }
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return triadexmuse.getTheme(_i) / 39.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { triadexmuse.setTheme(_i, (int)(val * 39)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setTheme(_i, -(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = triadexmuse.getTheme(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
 
-             	intervals[i] = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return LABELS[(int)(val * 39)]; 
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return triadexmuse.getInterval(_i) / 39.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { triadexmuse.setInterval(_i, (int)(val * 39)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setInterval(_i, -(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = triadexmuse.getInterval(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
-				}
+                intervals[i] = new SmallDial(-1, defaults)
+                    {
+                    protected String map(double val) 
+                        { 
+                        return LABELS[(int)(val * 39)]; 
+                        }
+                    public double getValue() 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { return triadexmuse.getInterval(_i) / 39.0; }
+                        finally { lock.unlock(); }
+                        }
+                    public void setValue(double val) 
+                        { 
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { triadexmuse.setInterval(_i, (int)(val * 39)); }
+                        finally { lock.unlock(); }
+                        }
+                    public void setDefault(int val) 
+                        { 
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setInterval(_i, -(val + 1)); }
+                        finally { lock.unlock(); }
+                        }
+                    public int getDefault()
+                        {
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { double val = triadexmuse.getInterval(_i); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                        finally { lock.unlock(); }
+                        }
+                    };
+                }
 
-             	volume = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.format("%.4f", val);  
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return triadexmuse.getVelocity() / 127.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { triadexmuse.setVelocity((int)(val * 127)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setVelocity(-(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = triadexmuse.getVelocity(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
+            volume = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.format("%.4f", val);  
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return triadexmuse.getVelocity() / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { triadexmuse.setVelocity((int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setVelocity(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = triadexmuse.getVelocity(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
-             	transpose = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.format("%.4f", val);  
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return triadexmuse.getTranspose() / 24.0; }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { triadexmuse.setTranspose((int)(val * 24)); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setTranspose(-(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = triadexmuse.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
+            transpose = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.format("%.4f", val);  
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return triadexmuse.getTranspose() / 24.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { triadexmuse.setTranspose((int)(val * 24)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setTranspose(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = triadexmuse.getTranspose(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
-             	gate = new SmallDial(-1, defaults)
-					{
-					protected String map(double val) 
-						{ 
-						return String.format("%.4f", val);  
-						}
-					public double getValue() 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { return triadexmuse.getGate(); }
-						finally { lock.unlock(); }
-						}
-					public void setValue(double val) 
-						{ 
-						if (seq == null) return;
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { triadexmuse.setGate(val); }
-						finally { lock.unlock(); }
-						}
-					public void setDefault(int val) 
-						{ 
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setGate(-(val + 1)); }
-						finally { lock.unlock(); }
-						}
-					public int getDefault()
-						{
-						ReentrantLock lock = seq.getLock();
-						lock.lock();
-						try { double val = triadexmuse.getGate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-						finally { lock.unlock(); }
-						}
-					};
+            gate = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    { 
+                    return String.format("%.4f", val);  
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return triadexmuse.getGate(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { triadexmuse.setGate(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) triadexmuse.setGate(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = triadexmuse.getGate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
             rate = new JComboBox(RATES);
             rate.setSelectedIndex(triadexmuse.getRateIndex());
@@ -288,13 +288,13 @@ public class TriadexMuseUI extends AlgorithmUI
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try
-                    	{
-                    	triadexmuse.setRate(triadexmuse.RATES[rate.getSelectedIndex()]);
-						}
-					finally { lock.unlock(); }
-					}
-				});
-				
+                        {
+                        triadexmuse.setRate(triadexmuse.RATES[rate.getSelectedIndex()]);
+                        }
+                    finally { lock.unlock(); }
+                    }
+                });
+                                
             rest = new JCheckBox();
             rest.setSelected(triadexmuse.getRest());
             rest.addActionListener(new ActionListener()
@@ -372,10 +372,10 @@ public class TriadexMuseUI extends AlgorithmUI
         if (gate != null) gate.redraw();
         if (volume != null) volume.redraw();
         for(int i = 0; i < themes.length; i++)
-        	{
-        	if (themes[i] != null) themes[i].redraw();
-        	if (intervals[i] != null) intervals[i].redraw();
-        	}
+            {
+            if (themes[i] != null) themes[i].redraw();
+            if (intervals[i] != null) intervals[i].redraw();
+            }
         }
 
     static final String THEMES_TOOLTIP = "<html><b>Theme</b><br>" +
