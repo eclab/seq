@@ -77,7 +77,7 @@ public class Generator extends Motif
         out = (Prefs.getLastOutDevice(0, "seq.motif.generator.Generator.out", SAME_AS_IN));
         in = (Prefs.getLastInDevice(0, "seq.motif.generator.Generator.in"));
         add(new Blank(seq));
-        setAlgorithmIndex(0);           // "None"
+        setAlgorithmIndex(Prefs.getLastInt("GeneratorAlgorithm", 0));           // "None"
         }
     
     public void add(Motif motif)

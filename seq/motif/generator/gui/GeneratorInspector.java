@@ -8,6 +8,7 @@ package seq.motif.generator.gui;
 import seq.motif.generator.*;
 import seq.engine.*;
 import seq.gui.*;
+import seq.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -178,6 +179,7 @@ public class GeneratorInspector extends WidgetList
                     lock.lock();
                     try 
                         { 
+						Prefs.setLastInt("GeneratorAlgorithm", algorithm.getSelectedIndex());
                         GeneratorClip clip = (GeneratorClip)(generator.getPlayingClip());
                         if (clip != null)
                             {
