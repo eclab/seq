@@ -20,7 +20,8 @@ public class ParameterUI extends JComponent
     // How far away should the new copied parameter be from me in time?
     public static final int COPY_DISTANCE = 48;
     // My background color if I am a black event pitch
-    public static final Color BACKGROUND_COLOR = new Color(210, 210, 210);
+
+    public static final Color BACKGROUND_COLOR = PitchUI.BLACK_KEY_BACKGROUND_COLOR;
     // The color of the lower border of the ruler
     public static final Color BORDER_COLOR = Color.BLACK;
 
