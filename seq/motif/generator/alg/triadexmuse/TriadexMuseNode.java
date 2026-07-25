@@ -22,8 +22,8 @@ public class TriadexMuseNode extends AlgorithmNode
     int lfsr;
     int[] counter = new int[7];
     
-    int[] PITCHES = { 0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24 };
-    String[] KEYS = { "C", "D", "E", "F", "G", "A", "B" };
+//    int[] PITCHES = { 0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24 };
+//    String[] KEYS = { "C", "D", "E", "F", "G", "A", "B" };
     int getNote()
         {
         int note = 0;
@@ -56,7 +56,8 @@ public class TriadexMuseNode extends AlgorithmNode
   }
   System.err.println();
 */
-        return PITCHES[note];
+        // return PITCHES[note];
+        return triadexmuse.getPitch(note);
         }
     
     void advanceLFSR()
@@ -154,7 +155,6 @@ public class TriadexMuseNode extends AlgorithmNode
             }
         }
         
-    public static final int LOW_NOTE = 0x60;
     
     public static final int REST = -1;
     int lastNote = REST;
@@ -173,7 +173,7 @@ public class TriadexMuseNode extends AlgorithmNode
         if (note == 0 && triadexmuse.getRest()) return false;
         
         int trans = getCorrectedValueInt(triadexmuse.getTranspose(), TriadexMuse.MAX_TRANSPOSE);
-        note = note + trans + LOW_NOTE;
+        note = note + trans + TriadexMuse.LOW_NOTE;
         while (note > 127) note -= 12;
         
         int velocity = getCorrectedValueInt(triadexmuse.getVelocity(), 127);

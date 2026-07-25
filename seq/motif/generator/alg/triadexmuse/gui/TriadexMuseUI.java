@@ -26,6 +26,7 @@ public class TriadexMuseUI extends AlgorithmUI
     JCheckBox rest;
     JCheckBox legato;
     PushButton preset;
+    JComboBox scale;
     
     public static final String[] LABELS = 
         { 
@@ -209,13 +210,14 @@ public class TriadexMuseUI extends AlgorithmUI
                 {
                 protected String map(double val) 
                     { 
-                    return String.format("%.4f", val);  
+                    int trans = (int)(val * TriadexMuse.MAX_TRANSPOSE) - (TriadexMuse.MAX_TRANSPOSE / 2);
+                    return String.valueOf(trans);
                     }
                 public double getValue() 
                     { 
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { return triadexmuse.getTranspose() / 24.0; }
+                    try { return triadexmuse.getTranspose() / (double)(TriadexMuse.MAX_TRANSPOSE); }
                     finally { lock.unlock(); }
                     }
                 public void setValue(double val) 
@@ -223,7 +225,7 @@ public class TriadexMuseUI extends AlgorithmUI
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { triadexmuse.setTranspose((int)(val * 24)); }
+                    try { triadexmuse.setTranspose((int)(val * (TriadexMuse.MAX_TRANSPOSE))); }
                     finally { lock.unlock(); }
                     }
                 public void setDefault(int val) 
@@ -320,6 +322,23 @@ public class TriadexMuseUI extends AlgorithmUI
                     finally { lock.unlock(); }                              
                     }
                 });
+
+            scale = new JComboBox(TriadexMuse.SCALE_NAMES);
+            scale.setSelectedIndex(triadexmuse.getScale());
+            scale.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try
+                        {
+                        triadexmuse.setScale(scale.getSelectedIndex());
+                        }
+                    finally { lock.unlock(); }
+                    }
+                });
+                                
             }
         finally { lock.unlock(); }
 
@@ -332,8 +351,9 @@ public class TriadexMuseUI extends AlgorithmUI
         rest.setToolTipText(RESTS_TOOLTIP);
         legato.setToolTipText(LEGATO_TOOLTIP);
         preset.setToolTipText(PRESET_TOOLTIP);
+        scale.setToolTipText(SCALE_TOOLTIP);
 
-        build(new String[] { "", "Volume", "Transpose", "Gate", "Rate", "Rests", "Legato", "Intervals", "A (+1)", "B (+2)", "C (+4)", "D (+Octave)", "Themes", "W", "X", "Y", "Z" }, 
+        build(new String[] { "", "Volume", "Transpose", "Gate", "Rate", "Rests", "Legato", "Scale", "Intervals", "A (+1)", "B (+2)", "C (+4)", "D (+Octave)", "Themes", "W", "X", "Y", "Z" }, 
             new JComponent[] 
                 {
                 preset,
@@ -343,6 +363,7 @@ public class TriadexMuseUI extends AlgorithmUI
                 rate,
                 rest,
                 legato,
+                scale,
                 null,
                 intervals[0].getLabelledDial("C 1/2"),
                 intervals[1].getLabelledDial("C 1/2"),
@@ -401,6 +422,9 @@ public class TriadexMuseUI extends AlgorithmUI
 
     static final String LEGATO_TOOLTIP = "<html><b>Legato</b><br>" +
         "Forces legato (long notes).  This is the default behavior for the Muse.</html>";
+
+    static final String SCALE_TOOLTIP = "<html><b>Scale</b><br>" +
+        "Sets the scale used to produce the melody.</html>";
 
     static final String PRESET_TOOLTIP = "<html><b>Preset...</b><br>" +
         "Song presets for the Muse.</html>";

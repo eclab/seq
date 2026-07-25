@@ -31,7 +31,30 @@ public class TriadexMuse extends Algorithm
         
     public static final int[] RATES = { RATE_WHOLE_NOTES, RATE_HALF_NOTES, RATE_QUARTER_NOTES, RATE_EIGHTH_NOTES, RATE_TRIPLET_NOTES, RATE_SIXTEENTH_NOTES, RATE_TRIPLET_SIXTEENTH_NOTES, RATE_THIRTY_SECOND_NOTES };
 
-    public int getRateIndex() 
+	public static final int[][] SCALES = 
+		{
+		{ 0, 2, 4, 5, 7, 9, 11 },			// Major
+		{ 0, 2, 3, 5, 7, 9, 10 },			// Dorian
+		{ 0, 1, 3, 5, 7, 8, 10 },			// Phrygian
+		{ 0, 2, 4, 6, 7, 9, 10 },			// Lydian
+		{ 0, 2, 4, 5, 7, 9, 10 },			// Mixolydian
+		{ 0, 2, 3, 5, 7, 8, 10 },			// Natural Minor
+		{ 0, 1, 3, 5, 6, 8, 10 },			// Locrian
+		{ 0, 2, 3, 5, 7, 8, 11 },			// Harmonic Minor
+		{ 0, 2, 3, 5, 7, 9, 11 },			// Melodic Minor
+		};
+		
+	public static final String[] SCALE_NAMES = 
+		{
+		"Major", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Natural Minor", "Locrian", "Harmonic Minor", "Melodic Minor"
+		};
+		
+	public int getPitch(int note)
+		{
+		return (note / 7) * 7 + SCALES[scale][note % 7];
+		}
+
+    public int getRateIndex()
         { 
         for(int i = 0; i < RATES.length; i++) 
             {
@@ -40,11 +63,13 @@ public class TriadexMuse extends Algorithm
         return 0;
         }
         
-    public static final int MAX_TRANSPOSE = 24;
+    public static final int MAX_TRANSPOSE = 48;
+    public static final int LOW_NOTE = 60 - 24;
 
+	int scale;
     int[] interval = new int[4];
     int[] theme = new int[4];
-    int transpose;
+    int transpose = 24;				// dead center?
     int velocity = 64;
     boolean rest = false;
     int rate = RATE_EIGHTH_NOTES;
@@ -91,6 +116,7 @@ public class TriadexMuse extends Algorithm
         rate = obj.optInt("rate", RATE_EIGHTH_NOTES);
         gate = obj.optDouble("gate", 1.0);
         legato = obj.optBoolean("leg", true);
+        scale = obj.optInt("sca", 0);
         }
         
     public void save(JSONObject obj) throws JSONException
@@ -114,6 +140,7 @@ public class TriadexMuse extends Algorithm
         obj.put("rate", rate);
         obj.put("gate", gate);
         obj.put("leg", legato);
+        obj.put("sca", scale);
         }
 
     public AlgorithmNode buildNode(Seq seq, GeneratorClip clip)
@@ -152,6 +179,8 @@ public class TriadexMuse extends Algorithm
     public void setGate(double val) { gate = val; }
     public boolean getLegato() { return legato; }
     public void setLegato(boolean val) { legato = val; }
+    public int getScale() { return scale; }
+    public void setScale(int val) { scale = val; }
 
     public String getHTMLDescription() 
         {
