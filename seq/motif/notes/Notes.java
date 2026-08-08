@@ -61,18 +61,18 @@ public class Notes extends Motif
     public static final int TYPE_RPN = 32768;
     
     /** Creates a new Event for the given type, onset, and value (or pitch) */
-    public static Event buildEvent(int type, int when, double value)
+    public static Event buildEvent(int type, int when, double value, int out)
         {
         if (!isValidType(type)) return null;
-        if (type < TYPE_CC) return new Note(type - TYPE_NOTE, (int)(value * 128), when, 0);
-        if (type < TYPE_POLYPHONIC_AFTERTOUCH) return new CC(type - TYPE_CC, (int)(value * 128), when);
-        if (type < TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch(type - TYPE_POLYPHONIC_AFTERTOUCH, (int)(value * 128), when);
-        if (type == TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch((int)(value * 128), when);
-        if (type == TYPE_PITCH_BEND) return new Bend((int)(value * 16384), when);
-        if (type == TYPE_PC) return new PC((int)(value * 128), when);
-        if (type == TYPE_SYSEX) return new Sysex(when);
-        if (type < TYPE_RPN) return new NRPN(type - TYPE_NRPN, (int)(value * 16384), when);
-        return new RPN(type - TYPE_RPN, (int)(value * 16384), when);
+        if (type < TYPE_CC) return new Note(type - TYPE_NOTE, (int)(value * 128), when, 0, out);
+        if (type < TYPE_POLYPHONIC_AFTERTOUCH) return new CC(type - TYPE_CC, (int)(value * 128), when, out);
+        if (type < TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch(type - TYPE_POLYPHONIC_AFTERTOUCH, (int)(value * 128), when, out);
+        if (type == TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch((int)(value * 128), when, out);
+        if (type == TYPE_PITCH_BEND) return new Bend((int)(value * 16384), when, out);
+        if (type == TYPE_PC) return new PC((int)(value * 128), when, out);
+        if (type == TYPE_SYSEX) return new Sysex(when, out);
+        if (type < TYPE_RPN) return new NRPN(type - TYPE_NRPN, (int)(value * 16384), when, out);
+        return new RPN(type - TYPE_RPN, (int)(value * 16384), when, out);
         }
     
     /** Returns the short name for this type */
@@ -184,9 +184,10 @@ public class Notes extends Motif
         public boolean selected;
         public int out = DEFAULT_OUT;
         
-        public Event(int when)
+        public Event(int when, int out)
             {
             this.when = when;
+            this.out = out;
             }
             
         public Event(JSONObject obj)
@@ -260,17 +261,17 @@ public class Notes extends Motif
         public byte value;      // just something to display the event dot in a random location
         
         // This just uses the existing data -- so I own it now
-        public Sysex(byte[] data, int when)
+        public Sysex(byte[] data, int when, int out)
             {
-            super(when);
+            super(when, out);
             setData(data);
             this.value = (byte)(Math.random() * 128);
             }
             
         // This just uses the existing data -- so I own it now
-        public Sysex(int when)
+        public Sysex(int when, int out)
             {
-            this(new byte[] { (byte)0xF0, (byte)0xF7 }, when);
+            this(new byte[] { (byte)0xF0, (byte)0xF7 }, when, out);
             }
             
         public Sysex(JSONObject obj)
@@ -281,7 +282,7 @@ public class Notes extends Motif
             
         public Event copy()
             {
-            return new Sysex((byte[])(data.clone()), when);
+            return new Sysex((byte[])(data.clone()), when, out);
             }
             
         public void write(Track track, Notes notes) throws InvalidMidiDataException
@@ -331,18 +332,18 @@ public class Notes extends Motif
         // Returns the note length, should be > 0
         public int length;
         
-        public Note(int pitch, int velocity, int when, int length, int release)
+        public Note(int pitch, int velocity, int when, int length, int release, int out)
             {
-            super(when);
+            super(when, out);
             this.pitch = pitch;
             this.velocity = velocity;
             this.release = release;
             this.length = length;
             }
             
-        public Note(int pitch, int velocity, int when, int length)
+        public Note(int pitch, int velocity, int when, int length, int out)
             {
-            super(when);
+            super(when, out);
             this.pitch = pitch;
             this.velocity = velocity;
             this.release = 64;
@@ -360,7 +361,7 @@ public class Notes extends Motif
             
         public Event copy()
             {
-            return new Note(pitch, velocity, when, length, release);
+            return new Note(pitch, velocity, when, length, release, out);
             }
             
         public void write(Track track, Notes notes) throws InvalidMidiDataException
@@ -399,9 +400,9 @@ public class Notes extends Motif
         // Bend value from 0 to 16383
         public int value;
         
-        public Bend(int value, int when)
+        public Bend(int value, int when, int out)
             {
-            super(when);
+            super(when, out);
             this.value = value;
             }
         public Bend(JSONObject obj)
@@ -411,7 +412,7 @@ public class Notes extends Motif
             }
         public Event copy()
             {
-            return new Bend(value, when);
+            return new Bend(value, when, out);
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
@@ -496,9 +497,9 @@ public class Notes extends Motif
         // NRPN value from 0 to 16383
         public int value;
         
-        public NRPN(int parameter, int value, int when)
+        public NRPN(int parameter, int value, int when, int out)
             {
-            super(when);
+            super(when, out);
             this.value = value;
             this.parameter = parameter;
             }
@@ -510,7 +511,7 @@ public class Notes extends Motif
             }
         public Event copy()
             {
-            return new NRPN(parameter, value, when);
+            return new NRPN(parameter, value, when, out);
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
@@ -551,9 +552,9 @@ public class Notes extends Motif
         // RPN parameter value from 0 to 16383
         public int value;
 
-        public RPN(int parameter, int value, int when)
+        public RPN(int parameter, int value, int when, int out)
             {
-            super(when);
+            super(when, out);
             this.value = value;
             this.parameter = parameter;
             }
@@ -565,7 +566,7 @@ public class Notes extends Motif
             }
         public Event copy()
             {
-            return new RPN(parameter, value, when);
+            return new RPN(parameter, value, when, out);
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
@@ -606,9 +607,9 @@ public class Notes extends Motif
         // CC parameter value from 0 to 127.  We do not yet support 14-bit CC in Notes
         public int value;
 
-        public CC(int parameter, int value, int when)
+        public CC(int parameter, int value, int when, int out)
             {
-            super(when);
+            super(when, out);
             this.value = value;
             this.parameter = parameter;
             }
@@ -620,7 +621,7 @@ public class Notes extends Motif
             }
         public Event copy()
             {
-            return new CC(parameter, value, when);
+            return new CC(parameter, value, when, out);
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
@@ -650,9 +651,9 @@ public class Notes extends Motif
         // CC parameter value from 0 to 127.  We do not yet support 14-bit CC in Notes
         public int value;
 
-        public PC(int value, int when)
+        public PC(int value, int when, int out)
             {
-            super(when);
+            super(when, out);
             this.value = value;
             }
         public PC(JSONObject obj)
@@ -662,7 +663,7 @@ public class Notes extends Motif
             }
         public Event copy()
             {
-            return new PC(value, when);
+            return new PC(value, when, out);
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
@@ -691,15 +692,15 @@ public class Notes extends Motif
         public int pitch;
         // Aftertouch value
         public int value;
-        public Aftertouch(int pitch, int value, int when)
+        public Aftertouch(int pitch, int value, int when, int out)
             {
-            super(when);
+            super(when, out);
             this.value = value;
             this.pitch = pitch;
             }
-        public Aftertouch(int value, int when)
+        public Aftertouch(int value, int when, int out)
             {
-            super(when);
+            super(when, out);
             this.value = value;
             this.pitch = Out.CHANNEL_AFTERTOUCH;
             }
@@ -711,7 +712,7 @@ public class Notes extends Motif
             }
         public Event copy()
             {
-            return new Aftertouch(pitch, value, when);
+            return new Aftertouch(pitch, value, when, out);
             }
         public void write(Track track, Notes notes) throws InvalidMidiDataException
             {
@@ -768,11 +769,11 @@ public class Notes extends Motif
                 {
                 if (rpn)
                     {
-                    parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
+                    parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen, Notes.DEFAULT_OUT));
                     }
                 else
                     {
-                    parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen));
+                    parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, lastValueMSB << 7, bareValueMSBWhen, Notes.DEFAULT_OUT));
                     }
                 bareValueMSB = false;
                 lastValueMSB = -1;
@@ -835,11 +836,11 @@ public class Notes extends Motif
                             {
                             if (rpn)
                                 {
-                                parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
+                                parsed.add(new Notes.RPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when, Notes.DEFAULT_OUT));
                                 }
                             else
                                 {
-                                parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when));
+                                parsed.add(new Notes.NRPN((lastParamMSB << 7) | lastParamLSB, (lastValueMSB << 7) | cc.value, cc.when, Notes.DEFAULT_OUT));
                                 }
                             bareValueMSB = false;
                             bareValueMSBWhen = 0;
@@ -2063,7 +2064,7 @@ public class Notes extends Motif
                     int pitch = shortmessage.getData1();
                     Notes.Note noteOn = new Notes.Note(pitch,
                         shortmessage.getData2(),
-                        pos, 1);             // gotta have something for length
+                        pos, 1, Notes.DEFAULT_OUT);             // gotta have something for length
                     readEvents.add(noteOn);
                     recordedNoteOn[pitch] = noteOn;
                     }
@@ -2085,7 +2086,7 @@ public class Notes extends Motif
                     int lsb = shortmessage.getData1();
                     int msb = shortmessage.getData2();
 
-                    Notes.Bend bend = new Notes.Bend(msb * 128 + lsb, pos);
+                    Notes.Bend bend = new Notes.Bend(msb * 128 + lsb, pos, Notes.DEFAULT_OUT);
                     readEvents.add(bend);
                     }
                 else if (Clip.isCC(shortmessage) && getRecordCC())
@@ -2093,21 +2094,21 @@ public class Notes extends Motif
                     int parameter = shortmessage.getData1();
                     int value = shortmessage.getData2();
 
-                    Notes.CC cc = new Notes.CC(parameter, value, pos);
+                    Notes.CC cc = new Notes.CC(parameter, value, pos, Notes.DEFAULT_OUT);
                     readEvents.add(cc);
                     }
                 else if (Clip.isPC(shortmessage) && getRecordPC())
                     {
                     int value = shortmessage.getData1();
 
-                    Notes.PC pc = new Notes.PC(value, pos);
+                    Notes.PC pc = new Notes.PC(value, pos, Notes.DEFAULT_OUT);
                     readEvents.add(pc);
                     }
                 else if (Clip.isChannelAftertouch(shortmessage) && getRecordAftertouch())
                     {
                     int value = shortmessage.getData1();
 
-                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos);
+                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos, Notes.DEFAULT_OUT);
                     readEvents.add(aftertouch);
                     }
                 else if (Clip.isPolyphonicAftertouch(shortmessage) && recordAftertouch)
@@ -2115,13 +2116,13 @@ public class Notes extends Motif
                     int pitch = shortmessage.getData1();
                     int value = shortmessage.getData2();
 
-                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos);
+                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos, Notes.DEFAULT_OUT);
                     readEvents.add(aftertouch);
                     }
                 }
             else if (message instanceof SysexMessage && getRecordSysex())
                 {
-                Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
+                Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos, Notes.DEFAULT_OUT);
                 readEvents.add(sysex);
                 }
             }

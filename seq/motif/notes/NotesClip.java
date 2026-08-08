@@ -294,7 +294,7 @@ public class NotesClip extends Clip
                             if (isNoteOn(shortmessage))
                                 {
                                 int pitch = shortmessage.getData1();
-                                Notes.Note noteOn = new Notes.Note(pitch, shortmessage.getData2(), pos, 1);             // gotta have something for length
+                                Notes.Note noteOn = new Notes.Note(pitch, shortmessage.getData2(), pos, 1, Notes.DEFAULT_OUT);             // release is by default 64.  And gotta have something for length
                                 recording.add(noteOn);
                                 //if (notes.getEcho()) noteOn(out, pitch, noteOn.velocity, NO_NOTE_ID);
                                 recordedNoteOn[pitch] = noteOn;
@@ -319,7 +319,7 @@ public class NotesClip extends Clip
                                 int lsb = shortmessage.getData1();
                                 int msb = shortmessage.getData2();
 
-                                Notes.Bend bend = new Notes.Bend(msb * 128 + lsb - 8192, pos);
+                                Notes.Bend bend = new Notes.Bend(msb * 128 + lsb - 8192, pos, Notes.DEFAULT_OUT);
                                 recording.add(bend);
                                 //if (notes.getEcho()) bend(out, bend.value);
                                 }
@@ -328,7 +328,7 @@ public class NotesClip extends Clip
                                 int parameter = shortmessage.getData1();
                                 int value = shortmessage.getData2();
 
-                                Notes.CC cc = new Notes.CC(parameter, value, pos);
+                                Notes.CC cc = new Notes.CC(parameter, value, pos, Notes.DEFAULT_OUT);
                                 recording.add(cc);
                                 //if (notes.getEcho()) cc(out, parameter, value);
                                 }
@@ -336,7 +336,7 @@ public class NotesClip extends Clip
                                 {
                                 int value = shortmessage.getData1();
 
-                                Notes.PC pc = new Notes.PC(value, pos);
+                                Notes.PC pc = new Notes.PC(value, pos, Notes.DEFAULT_OUT);
                                 recording.add(pc);
                                 //if (notes.getEcho()) pc(out, value);
                                 }
@@ -344,7 +344,7 @@ public class NotesClip extends Clip
                                 {
                                 int value = shortmessage.getData1();
 
-                                Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos);
+                                Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos, Notes.DEFAULT_OUT);
                                 recording.add(aftertouch);
                                 //if (notes.getEcho()) aftertouch(out, Out.CHANNEL_AFTERTOUCH, value);
                                 }
@@ -353,7 +353,7 @@ public class NotesClip extends Clip
                                 int pitch = shortmessage.getData1();
                                 int value = shortmessage.getData2();
 
-                                Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos);
+                                Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos, Notes.DEFAULT_OUT);
                                 recording.add(aftertouch);
                                 //if (notes.getEcho()) aftertouch(out, pitch, value);
                                 }
@@ -361,7 +361,7 @@ public class NotesClip extends Clip
                         }
                     else if (message instanceof SysexMessage && notes.getRecordSysex())
                         {
-                        Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos);
+                        Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos, Notes.DEFAULT_OUT);
                         recording.add(sysex);
                         }
                     }
