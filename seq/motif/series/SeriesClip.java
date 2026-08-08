@@ -132,7 +132,6 @@ public class SeriesClip extends Clip
 
     public void terminate() 
         { 
-        System.err.println("--terminate");
         super.terminate();
         if (playing != null) 
             {
@@ -243,7 +242,6 @@ public class SeriesClip extends Clip
           
     public void cut()  
         {
-        System.err.println("--cut");
         if (previous != null)
             {
             previous.cut();
@@ -256,7 +254,6 @@ public class SeriesClip extends Clip
         
     public void release()  
         {
-        System.err.println("--release");
         if (previous != null)
             {
             previous.release();
@@ -286,14 +283,12 @@ public class SeriesClip extends Clip
 
     public void loop()
         {
-        System.err.println("--loop");
         super.loop();
         resetChild();
         }
                 
     public void reset()  
         {
-        System.err.println("--reset");
         super.reset();
         for(int i = 0; i < midiValues.length; i++)
             {
