@@ -22,6 +22,29 @@ public class TriadexMuseNode extends AlgorithmNode
     int lfsr;
     int[] counter = new int[7];
     
+    public void save(JSONObject obj) throws JSONException
+        {
+        JSONArray array = new JSONArray();
+        for(int i = 0; i < interval.length; i++)
+            {
+            array.put(interval[i]);
+            }
+        obj.put("int", array);
+        array = new JSONArray();
+        for(int i = 0; i < theme.length; i++)
+            {
+            array.put(theme[i]);
+            }
+        obj.put("thm", array);
+        obj.put("trans", transpose);
+        obj.put("vel", velocity);
+        obj.put("rest", rest);
+        obj.put("rate", rate);
+        obj.put("gate", gate);
+        obj.put("leg", legato);
+        obj.put("sca", scale);
+        }
+    
 //    int[] PITCHES = { 0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24 };
 //    String[] KEYS = { "C", "D", "E", "F", "G", "A", "B" };
     int getNote()
@@ -212,6 +235,41 @@ public class TriadexMuseNode extends AlgorithmNode
         
         return false;
         }
+
+
+
+    /** Writes the initial AlgorithmNode state to the the given JSONObject.  
+    	If your alorithm can save runtime state, implement this and OBJ.  Otherwise don't and return NULL. */
+    public JSONObject save(JSONObject obj) throws JSONException
+        {
+        obj.put("adv", lsfrAdvance);
+        obj.put("lfsr", lfsr);
+        JSONArray intArray = new JSONArray();
+        for(int i : counter)
+        	{
+        	intArray.put(i);
+        	}
+        obj.put("count", intArray);
+        return obj;
+        }
+
+    /** Reads the initial AlgorithmNode state from the given JSObject.  
+    	If your algorithm can save runtime state, implement this.  Otherwise don't. */
+/*    public void load(JSONObject obj) throws JSONException
+        {
+        if (obj != null)
+        	{
+        	JSONArray intArray = obj.optJSONArray("count", null);
+        	if (intArray != null)
+        		{
+        		for(int i = 0; i < counter.length; i++)
+        			{
+        			counter[i] = intArray.optInt(i, 0);
+        			}
+        	obj.optBoolean("adv", false);
+        	}
+        }
+*/
     }
         
         

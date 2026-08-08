@@ -168,6 +168,21 @@ public class AlgorithmNode implements Cloneable
         {
         return clip.getCorrectedValueDouble(basicVal);
         }
+
+    /** Writes the initial AlgorithmNode state to the the given JSONObject.  
+    	If your alorithm can save runtime state, implement this and OBJ.  Otherwise don't and return NULL. */
+    public JSONObject save(JSONObject obj) throws JSONException
+        {
+        // does nothing by default
+        return null;
+        }
+
+    /** Reads the initial AlgorithmNode state from the given JSObject.  
+    	If your algorithm can save runtime state, implement this.  Otherwise don't. */
+    public void load(JSONObject obj) throws JSONException
+        {
+        // does nothing by default
+        }
     }
         
         

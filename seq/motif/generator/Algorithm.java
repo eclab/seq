@@ -41,6 +41,8 @@ public class Algorithm implements Cloneable
     public Generator generator;
     // Is the Algorithm a valid Algorithm, or is it a stub produced because of an error?
     boolean valid = false;
+    // The AlgorithmNode's state, if any.  This is read-only.
+    JSONObject state = null;
         
         
     static
@@ -180,12 +182,17 @@ public class Algorithm implements Cloneable
     public Algorithm(Generator generator, JSONObject obj) throws JSONException
         {
         this.generator = generator;
+        state = obj.optJSONObject("state", null);
         }
         
     /** Writes the Algorithm to the the given JSONObject.  You should override this, but remember to call super.save(...) */
     public void save(JSONObject obj) throws JSONException
         {
         obj.put("class", getClass().getSimpleName());
+        if (state != null)
+        	{
+        	obj.put("state", state);
+        	}
         }
 
     /** Returns a new AlgorithmNode associated with this Algorithm.  You should override this to return the appropriate AlgorithmNode subclass.  Don't call super.buildNode(...) */
@@ -206,6 +213,16 @@ public class Algorithm implements Cloneable
         { 
         return new Scanner(getClass().getResourceAsStream("index.html")).useDelimiter("\\Z").next(); 
         }
+        
+    public void setState(JSONObject state)
+    	{
+    	this.state = state;
+    	}
+
+    public JSONObject getState()
+    	{
+    	return state;
+    	}
                 
     /** Return, as an HTML String, a description of this Algorithm. */
     public String getHTMLDescription() { return "<html><h1>None</h1><p>Select an Algorithm at right.</html>"; }
