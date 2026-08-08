@@ -102,7 +102,7 @@ public class ParameterUI extends JComponent
                     double value = getValue(e);
                     int when = getQuantizedTime(e);
                         
-                    Notes.Event event = Notes.buildEvent(type, when, value);
+                    Notes.Event event = Notes.buildEvent(type, when, value, Notes.DEFAULT_OUT);
                                      
                     ReentrantLock lock = getSeq().getLock();
                     lock.lock();
