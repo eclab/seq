@@ -412,7 +412,7 @@ public abstract class Motif implements Cloneable
 
     ///// COPYING
         
-    /** Light copies the Motif*/
+    /** Light copies the Motif. */
     @SuppressWarnings("unchecked")              // other.parents = (ArrayList<Motif>)(other.parents.clone());
     public Motif copy()
         {

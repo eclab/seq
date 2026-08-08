@@ -526,7 +526,10 @@ public class Midi
         /** The actual receivers */
         public Receiver[] inReceiver;
         
-        public Tuple(MidiDeviceWrapper[] inWrap, int[] inChannel, MidiDeviceWrapper[] outWrap, int[] outChannel, String[] inName, String[] outName)
+        public int inClock;
+        public boolean[] outClock;
+        
+        public Tuple(MidiDeviceWrapper[] inWrap, int[] inChannel, MidiDeviceWrapper[] outWrap, int[] outChannel, String[] inName, String[] outName, boolean[] outClock, int inClock)
             {
             this.inWrap = inWrap;
             this.outWrap = outWrap;
@@ -535,10 +538,17 @@ public class Midi
             this.inChannel = inChannel;
             this.outChannel = outChannel;
             this.inReceiver = new Receiver[inWrap.length];
+            this.inClock = inClock;
+            this.outClock = outClock;
             }
         
         public Tuple() 
             {
+            outClock = new boolean[numOutDevices];
+            for(int i = 0; i < outClock.length; i++) { outClock[i] = true; }
+            
+            inClock = 0;
+            
             outWrap = new MidiDeviceWrapper[numOutDevices];
             outChannel = new int[numOutDevices];
             for(int i = 0; i < outWrap.length; i++)
@@ -581,7 +591,7 @@ public class Midi
     static final String[] outChannelOptions = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
 
 
-    public static Tuple loadTupleFromJSON(JSONArray outDevs, JSONArray inDevs, In[] inReceiver)
+    public static Tuple loadTupleFromJSON(JSONArray outDevs, JSONArray inDevs, In[] inReceiver, JSONObject mainObj)
         {
         updateDevices();
         Tuple tuple = new Tuple();
@@ -590,34 +600,38 @@ public class Midi
             {
             JSONObject jsonobj = outDevs.getJSONObject(i);
             
-            Object obj = findDevice(jsonobj.optString("dev", NONE), outDevices);
+            Object dev = findDevice(jsonobj.optString("dev", NONE), outDevices);
             int channel = jsonobj.optInt("ch", 0);
             String name = jsonobj.optString("name", "");
-            if (channel > 0 && obj != null && (obj instanceof MidiDeviceWrapper))
+            boolean clock = jsonobj.optBoolean("clock", true);
+            if (channel > 0 && dev != null && (dev instanceof MidiDeviceWrapper))
                 {
                 tuple.outChannel[i] = channel;
-                tuple.outWrap[i] = ((MidiDeviceWrapper)(obj));
+                tuple.outWrap[i] = ((MidiDeviceWrapper)(dev));
                 tuple.outName[i] = name;
+                tuple.outClock[i] = clock;
                 }
             else
                 {
                 tuple.outChannel[i] = channel;
                 tuple.outWrap[i] = null;
                 tuple.outName[i] = name;
+                tuple.outClock[i] = clock;
                 }
             }
 
+        tuple.inClock = mainObj.optInt("inclock", 0);
         for(int i = 0; i < numInDevices; i++)
             {
             JSONObject jsonobj = inDevs.getJSONObject(i);
 
-            Object obj = findDevice(jsonobj.optString("dev", NONE), inDevices);
+            Object dev = findDevice(jsonobj.optString("dev", NONE), inDevices);
             int channel = jsonobj.optInt("ch", 0);
             String name = jsonobj.optString("name", "");
-            if (channel > -1 && obj != null && (obj instanceof MidiDeviceWrapper))
+            if (channel > -1 && dev != null && (dev instanceof MidiDeviceWrapper))
                 {
                 tuple.inChannel[i] = channel;
-                tuple.inWrap[i] = ((MidiDeviceWrapper)(obj));
+                tuple.inWrap[i] = ((MidiDeviceWrapper)(dev));
                 inReceiver[i].setWrapper(tuple.inWrap[i]);      // do this first so the old one is removed
                 tuple.inReceiver[i] = inReceiver[i];
                 tuple.inWrap[i].addToTransmitter(inReceiver[i]);
@@ -636,8 +650,10 @@ public class Midi
         }
 
     // assumes outDevs and inDevs are empty
-    public static void saveTupleToJSON(Tuple tuple, JSONArray outDevs, JSONArray inDevs)
+    public static void saveTupleToJSON(Tuple tuple, JSONArray outDevs, JSONArray inDevs, JSONObject mainObj)
         {
+		mainObj.put("inclock", tuple.inClock);
+		
         for(int i = 0; i < numOutDevices; i++)
             {
             JSONObject obj = new JSONObject();
@@ -648,8 +664,10 @@ public class Midi
                 obj.put("dev", tuple.outWrap[i].toString());
             obj.put("ch", tuple.outChannel[i]);
             obj.put("name", tuple.outName[i] == null ? "" : tuple.outName[i].trim());
+            obj.put("clock", tuple.outClock[i]);
             }
-                                                                        
+                          
+                                                      
         for(int i = 0; i < numInDevices; i++)
             {
             JSONObject obj = new JSONObject();
@@ -676,20 +694,24 @@ public class Midi
             Object obj = findDevice(Prefs.getLastTupleOut(i), outDevices);
             int channel = Prefs.getLastTupleOutChannel(i);
             String name = Prefs.getLastTupleOutName(i);
+            boolean clock = Prefs.getLastTupleOutClock(i);
             if (channel > 0 && obj != null && (obj instanceof MidiDeviceWrapper))
                 {
                 tuple.outChannel[i] = channel;
                 tuple.outWrap[i] = ((MidiDeviceWrapper)(obj));
                 tuple.outName[i] = name;
+                tuple.outClock[i] = clock;
                 }
             else
                 {
                 tuple.outChannel[i] = channel;
                 tuple.outWrap[i] = null;
                 tuple.outName[i] = name;
+                tuple.outClock[i] = clock;
                 }
             }
 
+        tuple.inClock = Prefs.getLastTupleInClock();
         for(int i = 0; i < numInDevices; i++)
             {
             Object obj = findDevice(Prefs.getLastTupleIn(i), inDevices);
@@ -732,7 +754,7 @@ public class Midi
         also saved to preferences if the user presses OKAY.  Otherwise the current nicknames in the preferences
         are used instead.  In either case, outNick and inNick are then set to the user's chosen nicknames Strings.
     */ 
-    public static Tuple getNewTuple(Tuple old, JComponent parent, Seq seq, String message, In[] inReceiver, String[] outNick, String[] inNick)
+    public static Tuple getNewTuple(Tuple old, JComponent parent, Seq seq, String message, In[] inReceiver, String[] outNick, String[] inNick, boolean[] outClock, int inClock)
         {
         updateDevices();
         
@@ -847,6 +869,48 @@ public class Midi
                     });
                 }
                 
+            JCheckBox[] outClockCheck = new JCheckBox[numOutDevices];
+            for(int i = 0; i < outClockCheck.length; i++)
+                {
+                outClockCheck[i] = new JCheckBox();
+                outClockCheck[i].getAccessibleContext().setAccessibleName("Input Clock");
+                if (old != null)
+                    outClockCheck[i].setSelected(old.outClock[i]);
+                else outClockCheck[i].setSelected(outClock[i]);
+
+                outClockCheck[i].addActionListener(new ActionListener() 
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        changed[0] = true;
+                        }
+                    });
+                }
+
+            JRadioButton[] inClockRadio = new JRadioButton[numInDevices];
+            ButtonGroup inClockRadioGroup = new ButtonGroup();
+            for(int i = 0; i < inClockRadio.length; i++)
+                {
+                inClockRadio[i] = new JRadioButton();
+                inClockRadioGroup.add(inClockRadio[i]);
+                inClockRadio[i].getAccessibleContext().setAccessibleName("Input Clock");
+                if (old != null)
+                	inClockRadio[i].setSelected(old.inClock == i);
+                else inClockRadio[i].setSelected(inClock == i); 
+
+                inClockRadio[i].addActionListener(new ActionListener() 
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        changed[0] = true;
+                        }
+                    });
+                }
+
+			if (old != null)
+				inClockRadio[old.inClock].setSelected(true);
+			else inClockRadio[Prefs.getLastTupleInClock()].setSelected(true);
+                
             StringField[] outNicknames = new StringField[numOutDevices];
             for(int i = 0; i < outNicknames.length; i++)
                 {
@@ -908,6 +972,8 @@ public class Midi
                 box.add(outCombo[i]);
                 box.add(new JLabel("    Channel "));
                 box.add(outChannelsCombo[i]);
+                box.add(new JLabel("    Clock "));
+                box.add(outClockCheck[i]);
                 box.add(new JLabel("    Nickname " ));
                 box.add(outNicknames[i]);
                 components[i] = box;
@@ -924,6 +990,8 @@ public class Midi
                 box.add(inCombo[i]);
                 box.add(new JLabel("    Channel "));
                 box.add(inChannelsCombo[i]);
+                box.add(new JLabel("    Clock "));
+                box.add(inClockRadio[i]);
                 box.add(new JLabel("    Nickname " ));
                 box.add(inNicknames[i]);
                 components[i + numOutDevices + 1] = box;
@@ -933,7 +1001,7 @@ public class Midi
                                         
             if (result == 1)                        // "Reload"
                 {
-                Tuple tup = getNewTuple(old, parent, seq, message, inReceiver, outNick, inNick);
+                Tuple tup = getNewTuple(old, parent, seq, message, inReceiver, outNick, inNick, outClock, inClock);
                 Dialogs.enableMenuBar();
                 return tup;
                 }         
@@ -963,6 +1031,7 @@ public class Midi
                         if (str.length() == 0) str = null;
                         }
                     tuple.outName[i] = str;
+                    tuple.outClock[i] = outClockCheck[i].isSelected();
                                 
                     if (outCombo[i].getSelectedItem() instanceof String)    // NONE
                         {
@@ -984,6 +1053,7 @@ public class Midi
                         if (str.length() == 0) str = null;
                         }
                     tuple.inName[i] = str;
+                    if (inClockRadio[i].isSelected()) { tuple.inClock = i; }
 
                     if (inCombo[i].getSelectedItem() instanceof String)     // NONE
                         {
@@ -1022,6 +1092,8 @@ public class Midi
                     Prefs.setLastTupleOutChannel(i, tuple.outChannel[i]);
                     outNick[i] = (tuple.outName[i] == null ? "" : tuple.outName[i].trim());
                     Prefs.setLastTupleOutName(i, outNick[i]);
+                    outClock[i] = tuple.outClock[i];
+                    Prefs.setLastTupleOutClock(i, outClock[i]);
                     }
                                                 
                 for(int i = 0; i < numInDevices; i++)
@@ -1034,6 +1106,8 @@ public class Midi
                     inNick[i] = (tuple.inName[i] == null ? "" : tuple.inName[i].trim());
                     Prefs.setLastTupleInName(i, inNick[i]);
                     }
+				inClock = tuple.inClock;
+				Prefs.setLastTupleInClock(inClock);
 
                 Dialogs.enableMenuBar();
                 return tuple;

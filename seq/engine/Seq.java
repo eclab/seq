@@ -357,6 +357,31 @@ public class Seq
         return inNicknames;
         }
     
+    public boolean[] getOutClocks() 
+        {
+        boolean[] outClocks = new boolean[NUM_OUTS];
+        if (outs == null || outs[0] == null) return outClocks;               // this is a hack
+        
+        for(int i = 0; i < outClocks.length; i++)
+            {
+            outClocks[i] = getOut(i).getClock();
+            }
+        return outClocks;
+        }
+
+    public int getInClock() 
+        {
+        if (ins == null || ins[0] == null) return 0;          // this is a hack
+
+        for(int i = 0; i < NUM_INS; i++)
+            {
+            if (getIn(i).getClock()) return i;
+            }
+        /// .... else ...
+        getIn(0).setClock(true);
+        return 0;
+        }
+    
     public int getBeepPitch()
         {
         return beepPitch;
@@ -1801,7 +1826,7 @@ public class Seq
             {
             JSONArray outDevs = new JSONArray();
             JSONArray inDevs = new JSONArray();
-            Midi.saveTupleToJSON(tuple, outDevs, inDevs);
+            Midi.saveTupleToJSON(tuple, outDevs, inDevs, obj);
             obj.put("out", outDevs);
             obj.put("in", inDevs);
             }
@@ -1897,7 +1922,7 @@ public class Seq
             JSONArray inDevs = obj.getJSONArray("in");
             if (outDevs != null && inDevs != null)
                 {
-                seq.tuple = Midi.loadTupleFromJSON(outDevs, inDevs, seq.getIns());
+                seq.tuple = Midi.loadTupleFromJSON(outDevs, inDevs, seq.getIns(), obj);
                 }
             }
         catch(org.json.JSONException ex)
@@ -2129,7 +2154,7 @@ public class Seq
             //String[] outNames = new String[NUM_OUTS];
             
             // Initially all NULL.  We gotta set this up with something smarter
-            tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, getOutNicknames(), getInNicknames());
+            tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, getOutNicknames(), getInNicknames(), getOutClocks(), getInClock());
 
             for(int i = 0; i < NUM_OUTS; i++)
                 {
@@ -2245,7 +2270,7 @@ public class Seq
                 //String[] inNames = new String[NUM_INS];
                 //String[] outNames = new String[NUM_OUTS];
 
-                tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, getOutNicknames(), getInNicknames());
+                tuple = new Midi.Tuple(inWrappers, inChannels, outWrappers, outChannels, getOutNicknames(), getInNicknames(), getOutClocks(), getInClock());
                 // ins have to be set up after the tuple
                 for(int i = 0; i < numMIDIInput; i++)
                     {

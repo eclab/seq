@@ -56,7 +56,8 @@ public class In implements Receiver
     /** Returns the channel */
     public int getChannel() { return channel; }
         
-        
+    public void setClock(boolean val) { seq.tuple.inClock = index; }
+    public boolean getClock() { return seq.tuple.inClock == index; }
     
     public void setName(String val) { seq.tuple.inName[index] = val; }
     public String getName() { return seq.tuple.inName[index]; }

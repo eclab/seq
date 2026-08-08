@@ -46,6 +46,10 @@ public class Out
         sysex(new byte[] { (byte)0xF0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x00, 0x7F, (byte)0xF7 });        
         }
     
+        
+    public void setClock(boolean val) { seq.tuple.outClock[index] = val; }
+    public boolean getClock() { return seq.tuple.outClock[index]; }
+
     public void setName(String val) { seq.tuple.outName[index] = val; }
     public String getName() { return seq.tuple.outName[index]; }
     
