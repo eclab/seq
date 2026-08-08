@@ -441,6 +441,44 @@ public class Prefs
         if (s.trim().length() == 0) return null;
         return s.trim();
         }
+        
+    public static void setLastTupleInClock(int val)
+    	{
+    	setLastX("" + val, "LastTupleInClock");
+    	}
+
+    public static int getLastTupleInClock()
+    	{
+        String s = getLastX("LastTupleInClock");
+        try
+            {
+            if (s != null)
+                return Integer.parseInt(s);
+            }
+        catch (NumberFormatException e)
+            {
+            }
+        return 0;
+    	}
+
+    public static void setLastTupleOutClock(int index, boolean val)
+    	{
+    	setLastX("" + val, "LastTupleOutClock" + index);
+    	}
+
+    public static boolean getLastTupleOutClock(int index)
+    	{
+        String s = getLastX("LastTupleOutClock" + index);
+        try
+            {
+            if (s != null)
+                return Boolean.parseBoolean(s);
+            }
+        catch (NumberFormatException e)
+            {
+            }
+        return true;
+    	}
 
     }
 
