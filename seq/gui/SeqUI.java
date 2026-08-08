@@ -995,7 +995,9 @@ public class SeqUI extends JPanel
                     Midi.Tuple old = seq.getMIDITuple();
                     String[] outNicks = seq.getOutNicknames();
                     String[] inNicks = seq.getInNicknames();
-                    tuple = midi.getNewTuple(old, SeqUI.this, seq, "Set MIDI Devices", seq.getIns(), outNicks, inNicks);
+                    int inClock = seq.getInClock();
+                    boolean[] outClocks = seq.getOutClocks();
+                    tuple = midi.getNewTuple(old, SeqUI.this, seq, "Set MIDI Devices", seq.getIns(), outNicks, inNicks, outClocks, inClock);
                     }
                 finally { lock.unlock(); }
                 if (tuple != Midi.CANCELLED)
