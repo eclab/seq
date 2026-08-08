@@ -182,7 +182,7 @@ public class Algorithm implements Cloneable
     public Algorithm(Generator generator, JSONObject obj) throws JSONException
         {
         this.generator = generator;
-        state = obj.optJSONObject("state", null);
+        state = obj.optJSONObject("state");
         }
         
     /** Writes the Algorithm to the the given JSONObject.  You should override this, but remember to call super.save(...) */

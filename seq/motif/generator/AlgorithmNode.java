@@ -170,7 +170,7 @@ public class AlgorithmNode implements Cloneable
         }
 
     /** Writes the initial AlgorithmNode state to the the given JSONObject.  
-    	If your alorithm can save runtime state, implement this and OBJ.  Otherwise don't and return NULL. */
+    	If your alorithm can save runtime state, implement this and return OBJ.  Otherwise don't and return NULL. */
     public JSONObject save(JSONObject obj) throws JSONException
         {
         // does nothing by default

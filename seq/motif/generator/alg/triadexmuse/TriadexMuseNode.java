@@ -22,7 +22,8 @@ public class TriadexMuseNode extends AlgorithmNode
     int lfsr;
     int[] counter = new int[7];
     
-    public void save(JSONObject obj) throws JSONException
+    /*
+    public JSONObject save(JSONObject obj) throws JSONException
         {
         JSONArray array = new JSONArray();
         for(int i = 0; i < interval.length; i++)
@@ -44,6 +45,7 @@ public class TriadexMuseNode extends AlgorithmNode
         obj.put("leg", legato);
         obj.put("sca", scale);
         }
+    */
     
 //    int[] PITCHES = { 0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24 };
 //    String[] KEYS = { "C", "D", "E", "F", "G", "A", "B" };
@@ -240,6 +242,7 @@ public class TriadexMuseNode extends AlgorithmNode
 
     /** Writes the initial AlgorithmNode state to the the given JSONObject.  
     	If your alorithm can save runtime state, implement this and OBJ.  Otherwise don't and return NULL. */
+/*
     public JSONObject save(JSONObject obj) throws JSONException
         {
         obj.put("adv", lsfrAdvance);
@@ -252,6 +255,7 @@ public class TriadexMuseNode extends AlgorithmNode
         obj.put("count", intArray);
         return obj;
         }
+*/
 
     /** Reads the initial AlgorithmNode state from the given JSObject.  
     	If your algorithm can save runtime state, implement this.  Otherwise don't. */
