@@ -289,7 +289,7 @@ public class EventInspector extends WidgetList
                         };
                     velocity.setToolTipText(VELOCITY_TOOLTIP);
 
-                    release = new SmallDial(note.velocity / 127.0, defaults)
+                    release = new SmallDial(note.release / 127.0, defaults)
                         {
                         protected String map(double val) { return "" + (int)(val * 127.0); }
                         public double getValue() 
