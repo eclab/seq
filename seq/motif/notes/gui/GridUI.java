@@ -162,7 +162,7 @@ public class GridUI extends JComponent
                         lock.unlock();
                         }
 
-                    Notes.Note note = new Notes.Note(pitch, velocity, when, length, releaseVelocity);
+                    Notes.Note note = new Notes.Note(pitch, velocity, when, length, releaseVelocity, Notes.DEFAULT_OUT);
                                      
                     lock.lock();
                     try

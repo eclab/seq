@@ -122,6 +122,7 @@ public class EventInspector extends WidgetList
                     }
 
                 out = new JComboBox(outs);
+                System.err.println(event.getOut());
                 out.setSelectedIndex(event.getOut() + 1);               // note:  +1
                 out.setMaximumRowCount(outs.length);
                 out.addActionListener(new ActionListener()

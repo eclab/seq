@@ -64,7 +64,7 @@ public class Notes extends Motif
     public static Event buildEvent(int type, int when, double value, int out)
         {
         if (!isValidType(type)) return null;
-        if (type < TYPE_CC) return new Note(type - TYPE_NOTE, (int)(value * 128), when, 0, out);
+        if (type < TYPE_CC) return new Note(type - TYPE_NOTE, (int)(value * 128), when, 0, 64, out);
         if (type < TYPE_POLYPHONIC_AFTERTOUCH) return new CC(type - TYPE_CC, (int)(value * 128), when, out);
         if (type < TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch(type - TYPE_POLYPHONIC_AFTERTOUCH, (int)(value * 128), when, out);
         if (type == TYPE_CHANNEL_AFTERTOUCH) return new Aftertouch((int)(value * 128), when, out);
@@ -192,8 +192,7 @@ public class Notes extends Motif
             
         public Event(JSONObject obj)
             {
-            when = obj.optInt("w", 0);
-            out = obj.optInt("o", DEFAULT_OUT);
+            this(obj.optInt("w", 0), obj.optInt("o", DEFAULT_OUT));
             }
         
         /** Loads the Event from JSON */
@@ -341,6 +340,7 @@ public class Notes extends Motif
             this.length = length;
             }
             
+/*
         public Note(int pitch, int velocity, int when, int length, int out)
             {
             super(when, out);
@@ -349,6 +349,7 @@ public class Notes extends Motif
             this.release = 64;
             this.length = length;
             }
+*/
             
         public Note(JSONObject obj)
             {
@@ -361,7 +362,7 @@ public class Notes extends Motif
             
         public Event copy()
             {
-            return new Note(pitch, velocity, when, length, release, out);
+            return new Note(pitch, velocity, when, length, release, getOut());
             }
             
         public void write(Track track, Notes notes) throws InvalidMidiDataException
@@ -1983,7 +1984,7 @@ public class Notes extends Motif
                     if (val >= 1 && val <= 127) { success = true; break; }
                     }
                 if (success) note.velocity = val;
-                else {System.err.println("Panic"); note.velocity = random.nextInt(127) + 1;     }       // I don't think this can happen?
+                else { System.err.println("Notes.RandomVelocity() Panic"); note.velocity = random.nextInt(127) + 1;     }       // I don't think this can happen?
 
                 // Next handle releases (which can have 0 velocity)
                 if (randomizeReleases)
@@ -2000,7 +2001,7 @@ public class Notes extends Motif
                         if (val >= 0 && val <= 127) { success = true; break; }
                         }
                     if (success) note.release = val;
-                    else {System.err.println("Panic"); note.release = random.nextInt(128);  }       // I don't think this can happen?
+                    else { System.err.println("Notes.RandomVelocity() randomize releases Panic"); note.release = random.nextInt(128);  }       // I don't think this can happen?
                     }
                 }
             }
@@ -2062,9 +2063,9 @@ public class Notes extends Motif
                 if (Clip.isNoteOn(shortmessage))
                     {
                     int pitch = shortmessage.getData1();
+                    int vel = shortmessage.getData2();
                     Notes.Note noteOn = new Notes.Note(pitch,
-                        shortmessage.getData2(),
-                        pos, 1, Notes.DEFAULT_OUT);             // gotta have something for length
+                        vel, pos, 1, 64, Notes.DEFAULT_OUT);             // gotta have something for length, 64 default release velocity for the moment
                     readEvents.add(noteOn);
                     recordedNoteOn[pitch] = noteOn;
                     }
