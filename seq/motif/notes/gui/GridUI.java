@@ -691,7 +691,7 @@ public class GridUI extends JComponent
                 }
             else
                 {
-                timeDiff = getQuantizedTime(evt) - dragEventUI.getOriginalWhen();
+                timeDiff = getQuantizedTimeDiff(origin, evt); //  - dragEventUI.getOriginalWhen();
                 }
             }
 

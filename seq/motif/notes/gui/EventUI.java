@@ -508,7 +508,7 @@ public class EventUI extends JComponent
             {
             if (altOut)
                 {
-                g.setPaint(ALT_VALUE_MAP.getColor((int)value));
+                g.setPaint(ALT_VALUE_MAP.getColor(polyATPitch));
                 }
             else
                 {
@@ -521,7 +521,7 @@ public class EventUI extends JComponent
             }
         else if (altOut)
             {
-            g.setPaint(ALT_VALUE_MAP.getColor((int)value));
+            g.setPaint(ALT_VALUE_MAP.getColor(value * 127.0));
             }
         else
             {

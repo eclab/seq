@@ -1916,7 +1916,13 @@ public class NotesUI extends MotifUI
         return console; 
         }
 
-    /** Revises the child inspector's values to reflect the current Note values.  If the */
+	/** Revises the notes inspector to reflect the current Notes values. */
+	public void updateNotesInspector()
+		{
+		notesInspector.revise();
+		}
+
+    /** Revises the child inspector's values to reflect the current Note values. */
     public void updateChildInspector(boolean forceRebuild)
         {
         if (gridui.selected.size() == 1)

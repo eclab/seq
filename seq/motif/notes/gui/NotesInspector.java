@@ -180,7 +180,7 @@ public class NotesInspector extends WidgetList
                     }
                 });
 
-            start = new TimeDisplay(0, seq)
+            start = new TimeDisplay(notes.getStart(), seq)
                 {
                 public int getTime()
                     {
@@ -199,7 +199,7 @@ public class NotesInspector extends WidgetList
                 };
             start.setDisplaysTime(true);
                                                                         
-            end = new TimeDisplay(0, seq)
+            end = new TimeDisplay(notes.getEnd(), seq)
                 {
                 public int getTime()
                     {
@@ -893,7 +893,9 @@ public class NotesInspector extends WidgetList
         eventBox[param].repaint();
 
         String full = null;
-        ReentrantLock lock = seq.getLock();
+        ReentrantLock lock;
+        if (oldLock != null) lock = oldLock;
+        else lock = seq.getLock();
         lock.lock();
         try 
             { 
@@ -998,11 +1000,17 @@ public class NotesInspector extends WidgetList
             }
         }
 
+	// This is a hack.  By tradition we set seq to null when we revise, but
+	// NotesInspector needs to update its events, which need access to seq's lock.
+	// So we stash it here so the event updater can find it temporarily.  Yuck.
+	ReentrantLock oldLock;
+	
     public void revise()
         {
         Seq old = seq;
         seq = null;
         ReentrantLock lock = old.getLock();
+        oldLock = lock;
         lock.lock();
         try 
             { 
@@ -1044,6 +1052,7 @@ public class NotesInspector extends WidgetList
             if (eventParameterMSB[i] != null) eventParameterMSB[i].redraw();
             if (eventParameterLSB[i] != null) eventParameterLSB[i].redraw();
             }
+        oldLock = null;
         }
 
         

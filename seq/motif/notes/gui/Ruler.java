@@ -116,6 +116,31 @@ public class Ruler extends JComponent
                 repaint();
                 }
  
+ 			public void mouseClicked(MouseEvent e)
+ 				{
+ 				if (e.getClickCount() == 2)
+ 					{
+ 					int time = getGridUI().getQuantizedTime(e);
+ 					Notes notes = notesui.getNotes();
+ 					
+        			Seq seq = notesui.getSeqUI().getSeq();
+        			
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try
+						{
+ 					    notes.setStart(time);
+						}
+					finally
+						{
+						lock.unlock();
+						}
+                    notesui.getGridUI().repaint();
+                    notesui.getEventsUI().repaint();
+					notesui.updateNotesInspector();
+ 					}
+ 				}
+ 				
             public void mouseReleased(MouseEvent e)
                 {
                 if (!mouseDown) return;                                 // not released on me
