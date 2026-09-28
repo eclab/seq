@@ -24,6 +24,7 @@ public class NotesInspector extends WidgetList
     StringField name;
     JComboBox in;
     JComboBox out;
+    JComboBox recordOut;
     TimeDisplay end;
     TimeDisplay start;
     WidgetList recordList1;
@@ -369,6 +370,32 @@ public class NotesInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 });
+
+
+                seqOuts = seq.getOuts();
+                 outs = new String[seqOuts.length + 1];
+                outs[0] = "<html><i>Default</i></html>";
+                for(int i = 0; i < seqOuts.length; i++)
+                    {
+                    outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
+                    }
+
+			recordOut = new JComboBox(outs);
+                recordOut.setSelectedIndex(notes.getRecordOut() + 1);               // note:  +1
+                recordOut.setMaximumRowCount(outs.length);
+                recordOut.addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { notes.setRecordOut(out.getSelectedIndex() - 1); }       // note:  -1
+                        finally { lock.unlock(); }     
+//                        if (!revising) notesui.reload();                // we break the recursion here.  We don't break in reload() because that's always with a NEW EventInspector
+                        }
+                    });
+
 /*
   quantize = new JCheckBox();
   quantize.setSelected(notes.getQuantize());
@@ -715,6 +742,7 @@ public class NotesInspector extends WidgetList
 
         name.setToolTipText(NAME_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
+        recordOut.setToolTipText(RECORD_OUT_TOOLTIP);
         in.setToolTipText(IN_TOOLTIP);
         start.setToolTipText(START_TOOLTIP);
         end.setToolTipText(END_TOOLTIP);
@@ -756,9 +784,9 @@ public class NotesInspector extends WidgetList
                 echo,
                 });
                 
-        recordList1 = new WidgetList(new String[] { "Integration", "Record Bend", "Record Aftertouch", "Record CC", "Record PC", "Record Sysex", "Make NRPN/RPN",
+        recordList1 = new WidgetList(new String[] { "Integration", "Record Bend", "Record Aftertouch", "Record CC", "Record PC", "Record Sysex", "Make NRPN/RPN", "Record Out",
                 "Quantize On Record", "Quantize To", "Quantize Note Ends", "Quantize Other Events", "Quantize Bias" },  
-            new JComponent[] { recordIntegration, recordBend, recordAftertouch, recordCC, recordPC, recordSysex, convertNRPNRPN, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
+            new JComponent[] { recordIntegration, recordBend, recordAftertouch, recordCC, recordPC, recordSysex, convertNRPNRPN, recordOut, quantize, quantizeTo, quantizeNoteEnds, quantizeNonNotes, quantizeBias.getLabelledDial("0.8888")});
         
         recordList1.setBorder(BorderFactory.createTitledBorder("<html><i>Recording</i></html>"));
         DisclosurePanel recordDisclosure = new DisclosurePanel("Recording", recordList1);
@@ -1015,6 +1043,7 @@ public class NotesInspector extends WidgetList
         try 
             { 
             out.setSelectedIndex(notes.getOut()); 
+            recordOut.setSelectedIndex(notes.getRecordOut() + 1);		// notice + 1
             in.setSelectedIndex(notes.getIn()); 
             armed.setSelected(notes.isArmed()); 
             echo.setSelected(notes.getEcho()); 
@@ -1199,4 +1228,8 @@ public class NotesInspector extends WidgetList
     static final String NON_NOTE_DISPLAY_TOOLTIP = "<html><b>Non-Note Display</b><br>" +
         "Settings which control which non-note events (CC, NRPN, RPN, Pitch Bend, Aftertouch, PC, Sysex)<br>" +
         "are displayed, and how they are displayed.</html>";
+
+    static final String RECORD_OUT_TOOLTIP = "<html><b>Record Out</b><br>" +
+        "Customizes the output device for newly recorded notes.</html>";
+        
     }

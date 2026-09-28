@@ -928,6 +928,8 @@ public class Notes extends Motif
     int out;
     // The in device
     int in;
+    // The record out device
+    int recordOut;
     // The highest timestamp for any event
     int maxEventPosition = 0;
     // The highest timestamp for a note
@@ -991,6 +993,11 @@ public class Notes extends Motif
     public boolean getRecordBend() { return recordBend; }
     /** Sets whether we record pitch bend. */
     public void setRecordBend(boolean val) { recordBend = val; Prefs.setLastBoolean("seq.motif.notes.Notes.recordbend", val); }
+
+    /** Returns our record out. */
+    public int getRecordOut() { return recordOut; }
+    /** Sets our record out. */
+    public void setRecordOut(int val) { recordOut = val; Prefs.setLastInt("seq.motif.notes.Notes.recordout", val); }
 
     /** Returns whether we record CC. */
     public boolean getRecordCC() { return recordCC; }
@@ -1111,6 +1118,7 @@ public class Notes extends Motif
         setArmed(arm);
         recordBend = Prefs.getLastBoolean("seq.motif.notes.Notes.recordbend", true); 
         recordCC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordcc", true); 
+        recordOut = Prefs.getLastInt("seq.motif.notes.Notes.recordout", 0); 
         recordPC = Prefs.getLastBoolean("seq.motif.notes.Notes.recordpc", true); 
         recordAftertouch = Prefs.getLastBoolean("seq.motif.notes.Notes.recordaftertouch", true); 
         recordSysex = Prefs.getLastBoolean("seq.motif.notes.Notes.recordsysex", true); 
@@ -2065,7 +2073,7 @@ public class Notes extends Motif
                     int pitch = shortmessage.getData1();
                     int vel = shortmessage.getData2();
                     Notes.Note noteOn = new Notes.Note(pitch,
-                        vel, pos, 1, 64, Notes.DEFAULT_OUT);             // gotta have something for length, 64 default release velocity for the moment
+                        vel, pos, 1, 64, getRecordOut());             // gotta have something for length, 64 default release velocity for the moment
                     readEvents.add(noteOn);
                     recordedNoteOn[pitch] = noteOn;
                     }
@@ -2087,7 +2095,7 @@ public class Notes extends Motif
                     int lsb = shortmessage.getData1();
                     int msb = shortmessage.getData2();
 
-                    Notes.Bend bend = new Notes.Bend(msb * 128 + lsb, pos, Notes.DEFAULT_OUT);
+                    Notes.Bend bend = new Notes.Bend(msb * 128 + lsb, pos, getRecordOut());
                     readEvents.add(bend);
                     }
                 else if (Clip.isCC(shortmessage) && getRecordCC())
@@ -2095,21 +2103,21 @@ public class Notes extends Motif
                     int parameter = shortmessage.getData1();
                     int value = shortmessage.getData2();
 
-                    Notes.CC cc = new Notes.CC(parameter, value, pos, Notes.DEFAULT_OUT);
+                    Notes.CC cc = new Notes.CC(parameter, value, pos, getRecordOut());
                     readEvents.add(cc);
                     }
                 else if (Clip.isPC(shortmessage) && getRecordPC())
                     {
                     int value = shortmessage.getData1();
 
-                    Notes.PC pc = new Notes.PC(value, pos, Notes.DEFAULT_OUT);
+                    Notes.PC pc = new Notes.PC(value, pos, getRecordOut());
                     readEvents.add(pc);
                     }
                 else if (Clip.isChannelAftertouch(shortmessage) && getRecordAftertouch())
                     {
                     int value = shortmessage.getData1();
 
-                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos, Notes.DEFAULT_OUT);
+                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(value, pos, getRecordOut());
                     readEvents.add(aftertouch);
                     }
                 else if (Clip.isPolyphonicAftertouch(shortmessage) && recordAftertouch)
@@ -2117,13 +2125,13 @@ public class Notes extends Motif
                     int pitch = shortmessage.getData1();
                     int value = shortmessage.getData2();
 
-                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos, Notes.DEFAULT_OUT);
+                    Notes.Aftertouch aftertouch = new Notes.Aftertouch(pitch, value, pos, getRecordOut());
                     readEvents.add(aftertouch);
                     }
                 }
             else if (message instanceof SysexMessage && getRecordSysex())
                 {
-                Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos, Notes.DEFAULT_OUT);
+                Notes.Sysex sysex = new Notes.Sysex(message.getMessage(), pos, getRecordOut());
                 readEvents.add(sysex);
                 }
             }

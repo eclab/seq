@@ -627,7 +627,9 @@ In the {\bf Recording} disclosure panel there are a number of recording options.
 \item {\bf Merge} means to simply add the new events to the existing ones (mixing them in).
 \end{itemize}
 
-Next, if you check the {\bf Record Bend}, {\bf Record Aftertouch}, or {\bf Record CC} checkboxes, Notes will record these events: otherwise it will ignore and discard them while recording.   And if you check the {\bf Make NRPN/RPN} checkbox, Notes will attempt to build NRPN or RPN parameters as it receives them.  NRPN and RPN parameters are made up of collections of CC messages, so if those CC messages are used to build a parameter, the CC messages will not be recorded as CC messages but as NRPN or RPN.  
+Next, if you check the {\bf Record Bend}, {\bf Record Aftertouch}, or {\bf Record CC} checkboxes, Notes will record these events: otherwise it will ignore and discard them while recording.   And if you check the {\bf Make NRPN/RPN} checkbox, Notes will attempt to build NRPN or RPN parameters as it receives them.  NRPN and RPN parameters are made up of collections of CC messages, so if those CC messages are used to build a parameter, the CC messages will not be recorded as CC messages but as NRPN or RPN.
+
+If you change the {\bf Record Out} value to something other than {\it Default}, you can customize the Out value of all events being recorded.
 
 Other recording options deal with automatic quantization.  You can turn {\bf Quantize} on for notes, instruct it to also {\bf Quantize Note Ends} and to {\bf Quantize Non-Note Events} (like pitch bend or CC), and tell it to {\bf Quantize To} a certain resolution.  There also is a mysterious {\bf Quantize Bias} knob.  Normally Quantize works by rounding your note to the nearest resolution point, before or after.  By adjusting the Quantize Bias knob you can push Quantize to more likely round to the note before or to the note after.  This is useful because as humans we each have a different tendency to either play too early or too late, and can set the Quantize Bias knob to adjust for our own nature.
 
