@@ -146,7 +146,7 @@ public class Out
         javax.sound.midi.Track[] tracks = seq.getTracks();
         if (tracks != null)
             {
-            if (tracks[1] != null)  // it's multi
+            if (tracks.length > 1)  // it's multi
                 {
                 tracks[index].add(new javax.sound.midi.MidiEvent(message, seq.getTime()));
                 seq.setValidTrack(index, true);
