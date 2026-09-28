@@ -116,9 +116,9 @@ public class EventInspector extends WidgetList
                 Out[] seqOuts = seq.getOuts();
                 String[] outs = new String[seqOuts.length + 1];
                 outs[0] = "<html><i>Default</i></html>";
-                for(int i = 1; i < seqOuts.length; i++)
+                for(int i = 0; i < seqOuts.length; i++)
                     {
-                    outs[i] = "" + i + ": " + seqOuts[i].toString();
+                    outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
                     }
 
                 out = new JComboBox(outs);
