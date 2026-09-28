@@ -560,7 +560,7 @@ public abstract class SmallDial extends JPanel
         
         if (usesDefaults())
             {
-            graphics.setPaint(def ? DEFAULTS_ON_DOT_COLOR : (getDefaultsList().length > 1 ? DEFAULT_STATIC_COLOR : DEFAULTS_OFF_DOT_COLOR));
+            graphics.setPaint(def ? DEFAULTS_ON_DOT_COLOR : (getDefaultsList().length > 0 ? DEFAULT_STATIC_COLOR : DEFAULTS_OFF_DOT_COLOR));
             if (!isEnabled()) graphics.setPaint(DISABLED_COLOR);
             double x = rect.getX() + rect.getWidth() / 2.0;
             double y = rect.getY() + rect.getHeight() / 2.0;
