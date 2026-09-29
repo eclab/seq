@@ -480,8 +480,9 @@ public class SeqUI extends JPanel
             try
                 {
                 f = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), PATCH_EXTENSION));
-                seq.setFile(new File(fd.getDirectory(), fd.getFile()));
-                frame.setTitle(fd.getFile());
+                seq.setFile(f);
+                System.err.println(f);
+                frame.setTitle(f.getName());
                                 
                 p = new PrintWriter(new GZIPOutputStream(new FileOutputStream(f)));
                 //if (seq != null) seq.stop();
