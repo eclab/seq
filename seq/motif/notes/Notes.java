@@ -250,7 +250,7 @@ public class Notes extends Motif
         public int getLength() { return 0; }
         /** Sets the out value, which by default is DEFAULT_OUT */
         public void setOut(int val) { out = val; }
-        /** Returns the out value, which by edefault is DEFAULT_OUT */
+        /** Returns the out value, which by default is DEFAULT_OUT */
         public int getOut() { return out; }
         }
 

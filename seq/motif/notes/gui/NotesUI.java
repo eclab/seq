@@ -190,6 +190,31 @@ public class NotesUI extends MotifUI
         selectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menu.add(selectAll);
 
+        JMenu select = new JMenu("Deselect...");
+        menu.add(select);
+
+        JMenuItem deselectOtherOuts = new JMenuItem("Reduce Selection to Default Out");
+        deselectOtherOuts.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doDeselectOtherOuts();
+                }
+            });
+        select.add(deselectOtherOuts);
+
+        JMenuItem deselectDefaultOut = new JMenuItem("Reduce Selection to Non-default Outs ");
+        deselectDefaultOut.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doDeselectDefaultOut();
+                }
+            });
+        select.add(deselectDefaultOut);
+
+        menu.addSeparator();
+
         JMenuItem cutEvents = new JMenuItem("Cut Events");
         cutEvents.addActionListener(new ActionListener()
             {
@@ -746,7 +771,51 @@ public class NotesUI extends MotifUI
         gridui.addToSelected(gridui.getAllNoteUIs());
         gridui.repaint();
         }
+    
+    /** Remove from the current selection any notes which have the default out */
+    public void doDeselectDefaultOut()
+    	{
+		ArrayList<EventUI> selected = gridui.getSelectedEventUIs();
+		ReentrantLock lock = seq.getLock();
+		for(EventUI eventui : selected)
+			{
+			lock.lock();
+			try
+				{
+				if (eventui.event.getOut() == Notes.DEFAULT_OUT)
+					{
+					gridui.removeFromSelected(eventui);
+					}
+				}
+			finally
+				{
+				lock.unlock();
+				}
+			}
+		}
  
+    /** Remove from the current selection any notes which DO NOT have the default out */
+    public void doDeselectOtherOuts()
+    	{
+		ArrayList<EventUI> selected = gridui.getSelectedEventUIs();
+		ReentrantLock lock = seq.getLock();
+		for(EventUI eventui : selected)
+			{
+			lock.lock();
+			try
+				{
+				if (eventui.event.getOut() != Notes.DEFAULT_OUT)
+					{
+					gridui.removeFromSelected(eventui);
+					}
+				}
+			finally
+				{
+				lock.unlock();
+				}
+			}
+		}
+
     /** Scrolls to timestep 0 at roughly middle C. */
     public void doScrollToStart()
         {

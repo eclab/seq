@@ -1153,6 +1153,17 @@ public class GridUI extends JComponent
         return events;
         }
         
+    /** Returns all selected event UIs */
+    public ArrayList<EventUI> getSelectedEventUIs()                            // FIXME should we include overlaps?
+        {
+        ArrayList<EventUI> eventuis = new ArrayList<>();
+        for(EventUI eventui : getSelected())
+            {
+            eventuis.add(eventui);
+            }
+        return eventuis;
+        }
+        
 
     /** Returns the Selected NoteUIs */
     public LinkedHashSet<EventUI> getSelected()
