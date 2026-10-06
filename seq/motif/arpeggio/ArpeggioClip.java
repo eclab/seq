@@ -14,7 +14,7 @@ public class ArpeggioClip extends Clip
     {
     private static final long serialVersionUID = 1;
 
-    public static final int TRIES = 4;              // number of times we try to get a unique random number
+    public static final int TRIES = 10;              // number of times we try to get a unique random number
     public static final int RELEASE_VELOCITY = 64;
 
     // Note is used both to store incoming Note Off messages stored the Heap, and
@@ -143,6 +143,7 @@ public class ArpeggioClip extends Clip
             }
         loadRandomValue(clip, arp.getChildren().get(0));
         clip.reset();
+        last = -1;
         }
         
     public void loop()
@@ -495,31 +496,23 @@ public class ArpeggioClip extends Clip
                     }
                 else if (total == 2)
                     {
-                    if (last == 0)
-                        {
-                        basicPitch[0] = notes[1];
-                        }
-                    else
-                        {
-                        basicPitch[1] = notes[0];
-                        }
+                    int p = seq.getDeterministicRandom().nextInt(notes.length);
+                    basicPitch[0] = notes[p];
                     }
                 else
                     {
                     int p = 0;
                     for(int i = 0; i < TRIES; i++)
                         {
-                        p = seq.getDeterministicRandom().nextInt(notes.length - 1);
+                        p = seq.getDeterministicRandom().nextInt(notes.length);
                         if (p != last) break;
                         }
                     last = p;
                     basicPitch[0] = notes[p];
                     }
                 return basicPitch;
-//              break;
             case Arpeggio.TYPE_PATTERN:
                 return advancePattern(arp);
-//              break;
             }
         // won't happen
         System.err.println("ArpeggioClip.advanceArpeggio INVALID ARPEGGIO TYPE " + arp.getArpeggioType());

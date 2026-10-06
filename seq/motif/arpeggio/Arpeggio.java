@@ -22,7 +22,8 @@ public class Arpeggio extends Motif
     public static final int TYPE_UP_DOWN = 2;
     public static final int TYPE_UP_DOWN_2 = 3;
     public static final int TYPE_RANDOM = 4;
-    public static final int TYPE_PATTERN = 5;
+    public static final int TYPE_RANDOM_2 = 5;
+    public static final int TYPE_PATTERN = 6;
     public static final int MAX_PATTERN_LENGTH = 32;
     public static final int PATTERN_NOTES = 24;
     public static final int MAX_OCTAVES = 4;
