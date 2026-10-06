@@ -140,12 +140,12 @@ public abstract class Motif implements Cloneable
 
         public Child(Motif motif, Motif parent) 
             { 
+            this.motif = motif; 
+            data = parent.buildData(motif);
             for(int i = 0; i < parameters.length; i++) 
                 {
                 parameters[i] = -(2 + i);       // Parent parameter value
                 }
-            this.motif = motif; 
-            data = parent.buildData(motif);
             }
 
 
@@ -155,6 +155,12 @@ public abstract class Motif implements Cloneable
             motif = other.motif;
             nickname = other.nickname;
             data = parent.copyData(motif, other.data);
+            for(int i = 0; i < parameters.length; i++) 
+                {
+                parameters[i] = other.parameters[i];
+                }
+            randomMin = other.randomMin;
+            randomMax = other.randomMax;
             }
                 
         /** Save the child to TO, with an ID for its motif.  It will also attempt to save the motif to MOTIFS,
