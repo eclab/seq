@@ -849,6 +849,7 @@ public class Filter extends Motif
     public Motif copy()
         {
         Filter other = (Filter)(super.copy());
+        other.functions = (Function[])(functions.clone());
         for(int i = 0; i < functions.length; i++)
             {
             other.functions[i] = functions[i].copy();

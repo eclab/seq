@@ -103,6 +103,7 @@ public class FunctionInspector extends JPanel
                         return;
                         }
                                                 
+                    sequi.push();                            
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
@@ -115,6 +116,7 @@ public class FunctionInspector extends JPanel
                     }
                 else    
                     {                
+                    sequi.push();                            
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 

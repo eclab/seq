@@ -15,8 +15,8 @@ import java.util.concurrent.locks.*;
 
 public class FunctionInspector extends JPanel
     {
-    public static final String[] INSPECTOR_NAMES = { Modulation.IDENTITY, Modulation.LFO, Modulation.ENVELOPE, Modulation.STEP, Modulation.CC, Modulation.SAME, Modulation.CONSTANT, "<html><i>Copy From...</i></html>" };
-    public static final int COPY_FROM = 6;
+    public static final String[] INSPECTOR_NAMES = { Modulation.IDENTITY, Modulation.LFO, Modulation.ENVELOPE, Modulation.STEP, Modulation.CC, Modulation.CONSTANT, Modulation.SAME, "<html><i>Copy From...</i></html>" };
+    public static final int COPY_FROM = 7;
     public static final String[] MAP_FUNCTIONS = {"None (X)", "X^2", "X^4", "1-(1-X)^2", "1-(1-X)^4" };
     public static final String[] LFO_TYPES = {"Saw Up", "Saw Down", "Square", "Triangle", "Sine", "Random", "S&H" };
         
@@ -104,7 +104,8 @@ public class FunctionInspector extends JPanel
                         subcombo.setSelectedIndex(modulation.typeIndex(modulation.getFunction(_from).getType()));
                         return;
                         }
-                                                
+                    
+                    sequi.push();                            
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
@@ -117,6 +118,7 @@ public class FunctionInspector extends JPanel
                     }
                 else    
                     {
+                    sequi.push();                            
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
                     try 
@@ -742,8 +744,8 @@ public class FunctionInspector extends JPanel
 
 
             build(new String[] { "", "Initial", "Start", "Repeat", "Hold", "Stages", 
-                    "Time 1", "Target 1", "Time 2", "Target 2", "Time 3", "Target 3", "Time 4", "Target 4", 
-                    "Time 5", "Target 5", "Time 6", "Target 6", "Time 7", "Target 7", "Time 8", "Target 8", }, 
+                    "Length 1", "Target 1", "Length 2", "Target 2", "Length 3", "Target 3", "Length 4", "Target 4", 
+                    "Length 5", "Target 5", "Length 6", "Target 6", "Length 7", "Target 7", "Length 8", "Target 8", }, 
                 new JComponent[] 
                     {
                     null,

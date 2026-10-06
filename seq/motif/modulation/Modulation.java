@@ -22,8 +22,8 @@ public class Modulation extends Motif
     public static final String ENVELOPE = "Envelope";
     public static final String STEP = "Step Seq";                           // Repeating Step Sequence
     public static final String CC = "MIDI CC";
-    public static final String SAME = "Same";
     public static final String CONSTANT = "Constant";
+    public static final String SAME = "Same";
 
     public static final int MAX_TRANSPOSE = 24;
     public static final double MAX_GAIN = 4.0;
@@ -570,6 +570,7 @@ public class Modulation extends Motif
     public Motif copy()
         {
         Modulation other = (Modulation)super.copy();
+        other.functions = (Function[])(functions.clone());
         for(int i = 0; i < functions.length; i++)
             {
             other.functions[i] = functions[i].copy();
