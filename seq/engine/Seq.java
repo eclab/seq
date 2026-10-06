@@ -95,6 +95,8 @@ public class Seq
     int time = 0;
     // Which clips are playing RIGHT NOW?
 //    ArrayList<Clip> playingClips = new ArrayList<>();
+	// Do I display time instead of beats?
+	boolean showsTime = false;
     
 
     ///// MIDI ROUTING
@@ -598,6 +600,7 @@ public class Seq
         metronome = Prefs.getLastInt("seq.Seq.metronome", METRONOME_RECORDING_ONLY);
         beepVolume = Prefs.getLastDouble("seq.Seq.beepvolume", 1.0);
         beepPitch = Prefs.getLastInt("seq.Seq.beeppitch", 0);
+        showsTime = Prefs.getLastBoolean("seq.Seq.showstime", false);
         }
         
     // doesn't kill the old timer task, you'll need to do that manually
@@ -847,6 +850,17 @@ public class Seq
         }
         
     public int getBPM() { return bpm; } 
+    
+    public boolean getShowsTime() 
+    	{
+    	return showsTime; 
+    	}
+    
+    public void setShowsTime(boolean val)
+    	{
+    	showsTime = val;
+    	Prefs.setLastBoolean("seq.Seq.showstime", val);
+    	}
     
     void setCountIn(final int val)
         {

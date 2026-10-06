@@ -180,6 +180,20 @@ public class Transport extends JPanel implements SeqListener
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout());
         time = new JLabel("0:0:0:0");
+        time.addMouseListener(new MouseAdapter()
+        	{
+        	public void mouseClicked(MouseEvent e)
+        		{
+        		if (e.getClickCount() > 1)
+        			{
+					ReentrantLock lock = seq.getLock();
+					lock.lock();
+					try { seq.setShowsTime(!seq.getShowsTime()); }
+					finally { lock.unlock(); }
+					sequi.redraw(false);
+					}
+                }
+        	});
         pane.add(midiInLabel, BorderLayout.WEST);
         pane.add(time, BorderLayout.CENTER);
         add(pane, BorderLayout.CENTER);
@@ -393,19 +407,37 @@ public class Transport extends JPanel implements SeqListener
         ReentrantLock lock = seq.getLock();
         lock.lock();
         int beatsPerBar = 0;
-        try { beatsPerBar = seq.getBar(); }
+        int bpm = 0;
+        boolean showTime = false;
+        try { beatsPerBar = seq.getBar(); bpm = seq.getBPM(); showTime = seq.getShowsTime(); }
         finally { lock.unlock(); }
-                
-        if (val <= 0) val = 0;
-        int ticks = 1 + val % Seq.PPQ;
-        if (val < 0) val = 0;
-        int beats = 1 + val % (Seq.PPQ * beatsPerBar) / Seq.PPQ;
-        if (val < 0) val = 0;
-        int bars = 1 + val % (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART) / (Seq.PPQ * beatsPerBar);
-        if (val <= 0) val = 0;
-        int parts = 1 + val / (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART);
         
-        time.setText("  " + parts + "  :  " + bars + "  :  " + beats + "  :  " + ticks);
+        if (showTime)
+        	{
+        	// secs = val ticks * 1 Quarternote / PPQ ticks * 1 minute / BPM quarternotes * 60 sec / 1 minute
+        	double seconds = (double) val / (double) Seq.PPQ / (double) bpm * 60.0;
+        	int hours = (int) (seconds / 60.0 / 60.0);
+        	seconds = seconds - (hours * 60 * 60);
+        	int minutes = (int) (seconds / 60.0);
+        	seconds = seconds - (minutes * 60);
+        	String str = "  " + 
+        		(hours > 0 ? ("" + hours + " h ") : "") + 
+        		(minutes > 0 || hours > 0 ? ("" + minutes + " m ") : "") + 
+        		String.format("%.3f s", seconds);
+        	time.setText(str);
+        	}
+        else
+        	{
+			if (val <= 0) val = 0;
+			int ticks = 1 + val % Seq.PPQ;
+			if (val < 0) val = 0;
+			int beats = 1 + val % (Seq.PPQ * beatsPerBar) / Seq.PPQ;
+			if (val < 0) val = 0;
+			int bars = 1 + val % (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART) / (Seq.PPQ * beatsPerBar);
+			if (val <= 0) val = 0;
+			int parts = 1 + val / (Seq.PPQ * beatsPerBar * Seq.NUM_BARS_PER_PART);
+	        time.setText("  " + parts + "  :  " + bars + "  :  " + beats + "  :  " + ticks);
+			}
         }
                 
     public void stateChanged(Seq seq)       
@@ -669,7 +701,9 @@ public class Transport extends JPanel implements SeqListener
         "<li>You can set the number of <b>Beats per Bar</b> in the Clock Options." + 
         "<li>There are " + Seq.NUM_BARS_PER_PART + " Bars per Part." +
         "<li>There are up to 256 Parts." +
-        "</ul></html>";
+        "</ul>" + 
+        "<p>Double-click on the Time to toggle between this and displaying in<br>" +
+        "wall-clock time (Hours, Minutes, and Seconds).</html>";
 
     static final String CLOCK_OPTIONS_TOOLTIP = "<html><b>Clock Options</b><br>" +
         "Additional options for controlling or displaying the clock.</html>";
