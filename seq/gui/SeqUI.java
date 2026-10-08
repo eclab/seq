@@ -2137,6 +2137,12 @@ public class SeqUI extends JPanel
                 if (tracks[channel] == null) tracks[channel] = new ArrayList();
                 tracks[channel].add(e);
                 }
+            else if (message instanceof SysexMessage)
+            	{
+                int channel = 0;
+                if (tracks[channel] == null) tracks[channel] = new ArrayList();
+                tracks[channel].add(e);
+            	}
             else
                 {
                 if (tracks[16] == null) tracks[16] = new ArrayList();
@@ -2191,10 +2197,8 @@ public class SeqUI extends JPanel
                                 ArrayList[] channels = breakByChannel(tracks[i]);
                                 for(int j = 0; j < channels.length; j++)
                                     {
-                                    // For the time being we're not bothering with non-voice data
                                     if (j == 16) continue;
-                                    
-                                    if (channels[i] == null) continue;
+                                    if (channels[j] == null) continue;
                         
                                     Notes notes = new Notes(seq);
                                     notes.setName("Tr " + i + (j == 16 ? "Non-Voice Data" : ("Channel " + (j + 1))));
@@ -2234,9 +2238,7 @@ public class SeqUI extends JPanel
                                 ParallelUI parallelui = (ParallelUI)(list.getOrAddMotifUIFor(parallel, true, false));
                                 for(int i = 0; i < channels.length; i++)
                                     {
-                                    // For the time being we're not bothering with non-voice data
                                     if (i == 16) continue;
-                                    
                                     if (channels[i] == null) continue;
                         
                                     Notes notes = new Notes(seq);
