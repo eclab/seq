@@ -1446,7 +1446,7 @@ public class FunctionInspector extends JPanel
         "<li><b>MIDI CC</b>&nbsp;&nbsp;Values arriving via a MIDI CC message." +
         "<li><b>Constant</b>&nbsp;&nbsp;A constant value (the parmaeter is still mapped, though that's useless)." +
         "<li><b>Same As</b>&nbsp;&nbsp;The same as another modulation argument, but with possibly different mapping." +
-        "<li><b><i>Copy From</i></b>&nbsp;&nbsp;Copy from another argument." +
+        "<li><b><i>Copy From...</i></b>&nbsp;&nbsp;Copy from another argument." +
         "</ul></html>";
 
     static final String MAP_LOW_TOOLTIP = "<html><b>Map Low</b><br>" +

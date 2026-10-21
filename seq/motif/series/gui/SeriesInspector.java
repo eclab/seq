@@ -86,6 +86,7 @@ public class SeriesInspector extends WidgetList
         add(result, BorderLayout.NORTH);               // re-add it as center
 
 
+		final JComboBox[] pouts = new JComboBox[Series.NUM_PARAMETERS];
         final JComboBox[] types = new JComboBox[Series.NUM_PARAMETERS];
         final Box[] paramsBox = new Box[Series.NUM_PARAMETERS];
         final SmallDial[] params = new SmallDial[Series.NUM_PARAMETERS];
@@ -368,7 +369,37 @@ public class SeriesInspector extends WidgetList
                     if (paramsLSB[_i] != null) paramsLSB[_i].redraw(); 
                     }
                 paramsBox[_i].setToolTipText(PARAM_TYPE_TOOLTIP);
+ 
+ 
+                Out[] seqOuts = seq.getOuts();
+                String[] outs = new String[seqOuts.length + 1];
+                outs[0] = "<html><i>Default</i></html>";
+                for(int j = 0; j < seqOuts.length; j++)
+                    {
+                    outs[j + 1] = "" + (j + 1) + ": " + seqOuts[j].toString();
+                    }
+
+                pouts[_i] = new JComboBox(outs);
+                pouts[_i].setSelectedIndex(series.getMIDIParameterOut(_i) + 1);               // note:  +1
+                pouts[_i].setMaximumRowCount(outs.length);
+                pouts[_i].addActionListener(new ActionListener()
+                    {
+                    public void actionPerformed(ActionEvent e)
+                        {
+                        if (seq == null) return;
+                        ReentrantLock lock = seq.getLock();
+                        lock.lock();
+                        try { series.setMIDIParameterOut(_i, pouts[_i].getSelectedIndex() - 1); }       // note:  -1
+                        finally { lock.unlock(); }     
+                        }
+                    });
+
+                pouts[_i].setToolTipText(PARAMETER_OUT_TOOLTIP);
+ 
                 }
+
+
+
 
             rate = new TimeDisplay(series.getMIDIParameterRate(), seq)
                 {
@@ -392,7 +423,7 @@ public class SeriesInspector extends WidgetList
         for(int i = 0; i < seqOuts.length; i++)
             {
             // We have to make these strings unique, or else the combo box doesn't give the right selected index, Java bug
-            outs[i] = "" + (i) + ": " + seqOuts[i].toString();
+            outs[i] = "" + (i + 1) + ": " + seqOuts[i].toString();
             }
                         
         JComboBox out = new JComboBox(outs);
@@ -412,25 +443,30 @@ public class SeriesInspector extends WidgetList
         out.setToolTipText(OUT_TOOLTIP);      
 
 
-        JComponent[] components = new JComponent[Series.NUM_PARAMETERS + 2];
-        String[] labels = new String[Series.NUM_PARAMETERS + 2];
+        JComponent[] components = new JComponent[Series.NUM_PARAMETERS * 2 + 2];
+        String[] labels = new String[Series.NUM_PARAMETERS * 2 + 2];
         labels[0] = "Rate";
         components[0] = rate;
         labels[1] = "Out";
         components[1] = out;
-        for(int i = 2; i < labels.length; i++) 
+        
+        
+        for(int i = 0; i < Series.NUM_PARAMETERS; i++) 
             {
-            labels[i] = "Param " + String.valueOf(i - 1);
+            labels[i * 2 + 2] = "Param " + String.valueOf(i + 1);
             JPanel comp2 = new JPanel();
             comp2.setToolTipText(PARAM_TYPE_TOOLTIP);
             comp2.setLayout(new BorderLayout());
             JPanel comp = new JPanel();
             comp.setLayout(new BorderLayout());
-            comp.add(types[i-2], BorderLayout.WEST);
-            comp.add(paramsBox[i-2], BorderLayout.CENTER);
+            comp.add(types[i], BorderLayout.WEST);
+            comp.add(paramsBox[i], BorderLayout.CENTER);
             comp2.add(comp, BorderLayout.WEST);
             comp2.add(new JPanel(), BorderLayout.CENTER);
-            components[i] = comp2;
+            components[i * 2 + 2] = comp2;
+            
+            labels[i * 2 + 3] = "Out " + String.valueOf(i + 1);
+            components[i * 2 + 3] = pouts[i];
             }
             
         WidgetList cc = new WidgetList(labels, components);
@@ -494,8 +530,11 @@ public class SeriesInspector extends WidgetList
         "Various options for outputting the Series' own Parameter values as MIDI Parameters.</html>";
 
     static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
-        "Sets the device to be used to emit MIDI parameters being generated from Series's<br>" +
-        "own parameters.</html>";
+        "Sets the default device used to emit MIDI parameters.</html>";
+
+    static final String PARAMETER_OUT_TOOLTIP = "<html><b>(Parameter) Out</b><br>" +
+        "Sets the device used to emit MIDI parameters being generated from this parameter.<br>" +
+        "If set to <i>Default</i>, then the device will be the default (Out) device.</html>";
 
     static final String PARAM_TOOLTIP = "<html><b>Parameter</b><br>" +
         "Sets the parameter.</html>";

@@ -19,6 +19,7 @@ public class Series extends Motif
     public static final int QUANTIZATION_QUARTER = 2;
     public static final int QUANTIZATION_FOUR_QUARTERS = 3;
 
+	public static final int DEFAULT_OUT = -1;
 
     public static final int NONE = 0;
     public static final int CC7 = 1;
@@ -31,6 +32,7 @@ public class Series extends Motif
         
     int[] midiTypes = new int[NUM_PARAMETERS];
     int[] midiParameters = new int[NUM_PARAMETERS];
+    int[] midiParameterOuts = new int[NUM_PARAMETERS];
     int midiParameterOut = 0;
     int midiParameterRate = Seq.PPQ / 4;
         
@@ -51,6 +53,9 @@ public class Series extends Motif
         
     public void setMIDIParameterOut(int val) { midiParameterOut = val; }
     public int getMIDIParameterOut() { return midiParameterOut; }
+
+    public void setMIDIParameterOut(int out, int val) { midiParameterOuts[out] = val; }
+    public int getMIDIParameterOut(int out) { return midiParameterOuts[out]; }
 
     public static class Data
         {
@@ -476,6 +481,10 @@ public class Series extends Motif
     public Series(Seq seq)
         {
         super(seq);
+        for(int i = 0; i < NUM_PARAMETERS; i++) 
+        	{
+        	midiParameterOuts[i] = DEFAULT_OUT;
+        	}
         }
                 
                 
@@ -521,11 +530,24 @@ public class Series extends Motif
         JSONArray typeArray = new JSONArray();
         for(int i = 0; i < NUM_PARAMETERS; i++)
             {
-            JSONObject obj = new JSONObject();
             typeArray.put(getMIDIType(i));
-            typeArray.put(getMIDIParameter(i));
             }
-        to.put("midi", typeArray);
+        to.put("types", typeArray);
+
+        JSONArray paramArray = new JSONArray();
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            paramArray.put(getMIDIParameter(i));
+            }
+        to.put("params", paramArray);
+
+        JSONArray outArray = new JSONArray();
+        for(int i = 0; i < NUM_PARAMETERS; i++)
+            {
+            outArray.put(getMIDIParameterOut(i));
+            }
+		to.put("outs", outArray);
+		
         to.put("out", getMIDIParameterOut());
         to.put("rate", getMIDIParameterRate());
 /*
@@ -539,19 +561,57 @@ public class Series extends Motif
         {
         mode = from.optInt("mode", MODE_SERIES);
 
-        JSONArray typeArray = from.optJSONArray("midi");
+        JSONArray typeArray = from.optJSONArray("types");
         if (typeArray != null)
             {
             for(int i = 0; i < NUM_PARAMETERS; i++)
                 {
-                setMIDIType(i, typeArray.optInt(i * 2, NONE));
-                setMIDIParameter(i, typeArray.optInt(i * 2 + 1, 0));
+                setMIDIType(i, typeArray.optInt(i, NONE));
                 }
             }
         else
             {
-            System.err.println("Modulation.save(): Internal error: no LFO array");
+            System.err.println("Modulation.save(): Internal error: no MIDI type array");
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                setMIDIType(i, NONE);
+                }
             }
+
+        JSONArray paramArray = from.optJSONArray("params");
+        if (paramArray != null)
+            {
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                setMIDIParameter(i, paramArray.optInt(i, NONE));
+                }
+            }
+        else
+            {
+            System.err.println("Modulation.save(): Internal error: no MIDI parameter array");
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                setMIDIParameter(i, NONE);
+                }
+            }
+
+        JSONArray outArray = from.optJSONArray("outs");
+        if (outArray != null)
+            {
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                setMIDIParameterOut(i, outArray.optInt(i, DEFAULT_OUT));
+                }
+            }
+        else
+            {
+            System.err.println("Modulation.save(): Internal error: no MIDI out array");
+            for(int i = 0; i < NUM_PARAMETERS; i++)
+                {
+                setMIDIParameterOut(i, DEFAULT_OUT);
+                }
+            }
+
         setMIDIParameterOut(from.optInt("out", 0));
         setMIDIParameterRate(from.optInt("rate", Seq.PPQ / 4));
 

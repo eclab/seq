@@ -41,6 +41,12 @@ public class SeriesClip extends Clip
         for(int i = 0; i < midiValues.length; i++)
             {
             int type = series.getMIDIType(i);
+        	int out = series.getMIDIParameterOut(i);
+        	if (out == Series.DEFAULT_OUT)
+        		{
+        		out = midiOut;
+        		}
+        		
             switch(type)
                 {
                 case Series.NONE:
@@ -54,7 +60,7 @@ public class SeriesClip extends Clip
                 if (val > 127) val = 127;
                 if (midiValues[i] != val)
                     {
-                    cc(midiOut, series.getMIDIParameter(i), val);
+                    cc(out, series.getMIDIParameter(i), val);
                     midiValues[i] = val;
                     }
                 break;
@@ -65,8 +71,8 @@ public class SeriesClip extends Clip
                 if (val > 16383) val = 16383;
                 if (midiValues[i] != val)
                     {
-                    cc(midiOut, series.getMIDIParameter(i), val / 128);     // grrr, MSB must be first
-                    cc(midiOut, series.getMIDIParameter(i), val % 128);
+                    cc(out, series.getMIDIParameter(i), val / 128);     // grrr, MSB must be first
+                    cc(out, series.getMIDIParameter(i), val % 128);
                     midiValues[i] = val;
                     }
                 break;
@@ -77,7 +83,7 @@ public class SeriesClip extends Clip
                 if (val > 16383) val = 16383;
                 if (midiValues[i] != val)
                     {
-                    nrpn(midiOut, series.getMIDIParameter(i), val);
+                    nrpn(out, series.getMIDIParameter(i), val);
                     midiValues[i] = val;
                     }
                 break;
@@ -88,7 +94,7 @@ public class SeriesClip extends Clip
                 if (val > 127) val = 127;
                 if (midiValues[i] != val)
                     {
-                    nrpnCoarse(midiOut, series.getMIDIParameter(i), val);
+                    nrpnCoarse(out, series.getMIDIParameter(i), val);
                     midiValues[i] = val;
                     }
                 break;
@@ -99,7 +105,7 @@ public class SeriesClip extends Clip
                 if (val > 16383) val = 16383;
                 if (midiValues[i] != val)
                     {
-                    rpn(midiOut, series.getMIDIParameter(i), val);
+                    rpn(out, series.getMIDIParameter(i), val);
                     midiValues[i] = val;
                     }
                 break;
@@ -110,7 +116,7 @@ public class SeriesClip extends Clip
                 if (val > 16383) val = 16383;
                 if (midiValues[i] != val)
                     {
-                    bend(midiOut, val - 8192);
+                    bend(out, val - 8192);
                     midiValues[i] = val;
                     }
                 break;
@@ -121,7 +127,7 @@ public class SeriesClip extends Clip
                 if (val > 127) val = 127;
                 if (midiValues[i] != val)
                     {
-                    aftertouch(midiOut, Out.CHANNEL_AFTERTOUCH, val);
+                    aftertouch(out, Out.CHANNEL_AFTERTOUCH, val);
                     midiValues[i] = val;
                     }
                 break;
