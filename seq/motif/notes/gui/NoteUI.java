@@ -271,6 +271,7 @@ public class NoteUI extends EventUI implements Comparable
                 mouseDown = false;
                 mouseDownEvent = null;
 
+				getGridUI().resetOriginalNoteLengths();		// so we store new ones on dragging next time
 
                 if (MotifUI.shiftOrRightMouseButton(e))
                     {
@@ -337,7 +338,7 @@ public class NoteUI extends EventUI implements Comparable
                         {
                         gridui.getNotesUI().getSeqUI().push();
                         }
-                    gridui.resizeSelectedNotes(NoteUI.this, e);
+                    gridui.resizeSelectedNotes(NoteUI.this, e, e.isShiftDown());
                     }
                 else
                     {

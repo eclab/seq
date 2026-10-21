@@ -636,7 +636,7 @@ public class Notes extends Motif
             obj.put("v", value);
             return obj;
             }
-        public String toString() { return "CC:" + parameter + "->" + value + "[" + when + "]"; }
+        public String toString() { new Throwable().printStackTrace(); return "CC:" + parameter + "->" + value + "[" + when + "]"; }
 
         public int getValue() { return value; }
         public void setValue(int val) { value = val; }

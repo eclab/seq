@@ -527,6 +527,7 @@ public class EventUI extends JComponent
             {
             g.setPaint(VALUE_MAP.getColor(value * 127.0));
             }
+
         g.fill(bounds);
         
         if (selected)

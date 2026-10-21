@@ -113,6 +113,7 @@ public class EventsUI extends JComponent
         the proper ParameterUIs. */
     public void rebuild()
         {
+        /*
         ArrayList<ArrayList<Notes.Event>> events = null;
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -129,6 +130,11 @@ public class EventsUI extends JComponent
         for(int i = 0; i < parameteruis.size(); i++)
             {
             parameteruis.get(i).rebuild(events.get(i));
+            }
+        */
+        for(int i = 0; i < parameteruis.size(); i++)
+            {
+            parameteruis.get(i).rebuild();
             }
         }
         

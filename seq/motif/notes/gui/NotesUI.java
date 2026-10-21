@@ -416,7 +416,7 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                doUp();
+                doUp(false);
                 }
             });
         move.add(up);
@@ -427,7 +427,7 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                doDown();
+                doDown(false);
                 }
             });
         move.add(down);
@@ -438,7 +438,7 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                doLeft();
+                doLeft(false);
                 }
             });
         move.add(left);
@@ -449,11 +449,57 @@ public class NotesUI extends MotifUI
             {
             public void actionPerformed(ActionEvent event)
                 {
-                doRight();
+                doRight(false);
                 }
             });
         move.add(right);
         right.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
+		move.addSeparator();
+
+        JMenuItem upOct = new JMenuItem("Up One Octave");
+        upOct.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doUp(true);
+                }
+            });
+        move.add(upOct);
+        upOct.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+
+        JMenuItem downOct = new JMenuItem("Down One Octave");
+        downOct.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doDown(true);
+                }
+            });
+        move.add(downOct);
+        downOct.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+
+        JMenuItem leftMeasure = new JMenuItem("Left One Measure");
+        leftMeasure.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doLeft(true);
+                }
+            });
+        move.add(leftMeasure);
+        leftMeasure.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+
+        JMenuItem rightMeasure = new JMenuItem("Right One Measure");
+        rightMeasure.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doRight(true);
+                }
+            });
+        move.add(rightMeasure);
+        rightMeasure.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
 
         JMenuItem bringToFront = new JMenuItem("Bring to Front");
         bringToFront.addActionListener(new ActionListener()
@@ -579,7 +625,7 @@ public class NotesUI extends MotifUI
         
         
     public static final double EVENT_COARSE_VALUE = 1.0 / 16.0;
-    public void doUp()
+    public void doUp(boolean byOctave)
         {
         ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
 
@@ -592,7 +638,8 @@ public class NotesUI extends MotifUI
                 if (event instanceof Notes.Note)
                     {
                     Notes.Note note = (Notes.Note)event;
-                    note.pitch++;
+                    if (byOctave) note.pitch += 12;
+                    else note.pitch++;
                     if (note.pitch > 127) note.pitch = 127;
                     }
                 else
@@ -616,7 +663,7 @@ public class NotesUI extends MotifUI
         updateChildInspector(false);
         }
         
-    public void doDown()
+    public void doDown(boolean byOctave)
         {
         ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
 
@@ -629,7 +676,8 @@ public class NotesUI extends MotifUI
                 if (event instanceof Notes.Note)
                     {
                     Notes.Note note = (Notes.Note)event;
-                    note.pitch--;
+                    if (byOctave) note.pitch -= 12;
+                    else note.pitch--;
                     if (note.pitch < 0) note.pitch = 0;
                     }
                 else
@@ -652,16 +700,22 @@ public class NotesUI extends MotifUI
         updateChildInspector(false);
         }
         
-    public void doLeft()
+    public void doLeft(boolean byMeasure)
         {
         ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
         int snap = gridui.getSnap();
         boolean snapBy = gridui.getSnapBy();
-                
+        
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
+        	if (byMeasure) 
+        		{
+        		snap = Seq.PPQ * seq.getBar();
+        		snapBy = true;
+        		}
+                
             for(Notes.Event event : selected)
                 {
                 int newTime = 0;
@@ -693,7 +747,7 @@ public class NotesUI extends MotifUI
         updateChildInspector(false);
         }
         
-    public void doRight()               // always do right.  Never do wrong.
+    public void doRight(boolean byMeasure)               // always do right.  Never do wrong.
         {
         ArrayList<Notes.Event> selected = gridui.getSelectedEvents();
         int snap = gridui.getSnap();
@@ -703,6 +757,12 @@ public class NotesUI extends MotifUI
         lock.lock();
         try
             {
+        	if (byMeasure) 
+        		{
+        		snap = Seq.PPQ * seq.getBar();
+        		snapBy = true;
+        		}
+                
             for(Notes.Event event : selected)
                 {
                 int newTime = 0;
@@ -2404,6 +2464,8 @@ public class NotesUI extends MotifUI
     // Here we restore the JViewport position from the old MotifUI
     public void postUndoOrRedo(MotifUI oldMotifUI) 
         { 
+        // This is not presently working and is fact making things much worse
+        /*
         Point vp = null;
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -2417,6 +2479,7 @@ public class NotesUI extends MotifUI
             {
             getPrimaryScroll().getViewport().setViewPosition(vp); 
             }
+        */
         }
 
                           

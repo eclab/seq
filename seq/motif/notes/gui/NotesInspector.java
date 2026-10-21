@@ -872,7 +872,9 @@ public class NotesInspector extends WidgetList
                 int type;
                 int eventParamMSB;
                 int eventParamLSB;
-                ReentrantLock lock = seq.getLock();
+        ReentrantLock lock;
+        if (oldLock != null) lock = oldLock;
+        else lock = seq.getLock();
                 lock.lock();
                 try 
                     { 
@@ -1037,7 +1039,10 @@ public class NotesInspector extends WidgetList
         {
         Seq old = seq;
         seq = null;
-        ReentrantLock lock = old.getLock();
+        ReentrantLock lock;
+        if (oldLock != null) // use this instead
+        	lock = oldLock;
+        else lock = old.getLock();
         oldLock = lock;
         lock.lock();
         try 

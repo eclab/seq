@@ -282,7 +282,7 @@ public class ParameterUI extends JComponent
         }
 
     /** Rebuilds the ParameterUI entirely.  This discards all the EventUIs and creates new ones from the given events. */
-    public void rebuild(ArrayList<Notes.Event> events)
+    void rebuild(ArrayList<Notes.Event> events)
         {
         this.eventuis.clear();
         removeAll();
@@ -299,7 +299,19 @@ public class ParameterUI extends JComponent
     /** Rebuilds the ParameterUI entirely.  This discards all the EventUIs and creates new ones. */
     public void rebuild()
         {
-        rebuild(getNotesUI().getNotes().getEventsOfType(type));
+		ArrayList<Notes.Event> events = null;
+        ReentrantLock lock = getSeq().getLock();
+        lock.lock();
+        try 
+            {
+            events = getNotesUI().getNotes().getEventsOfType(type);
+            }
+        finally
+            {
+            lock.unlock();
+            }
+
+        rebuild(events);
         }
 
     /** Returns the EventUIs. Note that these may not be in any order. */

@@ -535,10 +535,14 @@ public class GridUI extends JComponent
             lock.unlock();
             }
         }
+        
+    ArrayList<Integer> originalNoteLengths = null;
+    int originalLength = 0;
+	public void resetOriginalNoteLengths() { originalNoteLengths = null; }
 
     /** Resizes the selected notes to a length indicated by the difference from the old origin
         to the new event, quantized. */
-    public void resizeSelectedNotes(NoteUI originalNote, MouseEvent evt)
+    public void resizeSelectedNotes(NoteUI originalNote, MouseEvent evt, boolean makeSameLength)
         {
         int time = getTime(evt);
         int origin = 0;
@@ -551,6 +555,19 @@ public class GridUI extends JComponent
             Notes.Note note = originalNote.getNote();
             origin = note.when;
             currentLen = note.length;
+
+            if (originalNoteLengths == null)
+            	{
+            	originalLength = currentLen;
+            	originalNoteLengths = new ArrayList<Integer>();
+            	for(EventUI eventui : selected)
+            		{
+            		if (eventui instanceof NoteUI)
+            			{
+            			originalNoteLengths.add(eventui.getNote().length);
+            			}
+            		}
+            	}
             }
         finally
             {
@@ -572,8 +589,10 @@ public class GridUI extends JComponent
             boolean[] parameteruisToRepaint = new boolean[Notes.NUM_EVENT_PARAMETERS];
             boolean[] pitchuisToRepaint = new boolean[128];
                         
+            int count = 0;
             if (len > 0 && len != currentLen)               // don't want to go down to zero, it's inconvenient
                 {
+                int diff = len - originalLength; 
                 for(EventUI eventui : selected)
                     {
                     if (eventui instanceof NoteUI)
@@ -581,8 +600,10 @@ public class GridUI extends JComponent
                         lock.lock();
                         try 
                             {
+                            int noteLen = originalNoteLengths.get(count++);
                             Notes.Note note = eventui.getNote();
-                            note.length = len;
+                            if (makeSameLength) note.length = len;
+                            else note.length = noteLen + diff;
                             // should this be outside the lock?
                             ((NoteUI)eventui).reload(note.when, note.length);
                             }
