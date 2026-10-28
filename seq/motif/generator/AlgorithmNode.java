@@ -13,6 +13,11 @@ import java.util.concurrent.*;
 import org.json.*;
 
 
+/** 
+	AlgorithmNode is to Algorithm as Clip is to Motif.  It is called to advance the algorithm
+	over time.
+*/
+
 public class AlgorithmNode implements Cloneable
     {
     public Seq seq;
@@ -27,7 +32,7 @@ public class AlgorithmNode implements Cloneable
         this.clip = clip;
         this.algorithm = algorithm;
         }
-        
+    
     public AlgorithmNode copy()
         {
         AlgorithmNode other = null;
@@ -35,23 +40,28 @@ public class AlgorithmNode implements Cloneable
         catch (CloneNotSupportedException ex) { }
         return other;
         }
-    
+
+	/** Called when the Generator's clip.release() method is called. */
     public void release()
         {
         }
         
+	/** Called when the Generator's clip.cut() method is called. */
     public void cut()
         {
         }
         
+	/** Called when the Generator's clip.terminate() method is called. */
     public void terminate()
         {
         }
         
+	/** Called when the Generator's clip.loop() method is called. */
     public void loop()
         {
         }
         
+	/** Called when the Generator's clip.reset() method is called. */
     public void reset()
         {
         }
@@ -65,40 +75,50 @@ public class AlgorithmNode implements Cloneable
         return false;
         }
         
+	/** Returns Seq's deterministic random object. */
     public Random getDeterministicRandom()
         {
         return getSeq().getDeterministicRandom();
         }
     
+	/** Returns the number of beats per measure. */
     public int getBar() 
         {
         return getSeq().getBar();
         }
     
+	/** Returns the current time position in the song. */
     public int getPosition()
         {
         return clip.getPosition();
         }
         
+	/** Returns the algorithm. */
     public Algorithm getAlgorithm() { return algorithm; }
+
+	/** Returns the Generator's clip. */
     public GeneratorClip getClip() { return clip; }
     
+	/** Returns the Seq. */
     public Seq getSeq()
         {
         return clip.getSeq();
         }
     
+	/** Returns the Generator's child clip, if it exists, else null. */
     public Clip getChildClip()
         {
         return clip.getChild();
         }
 
+	/** Returns the out device for the generator. */
     public int getOut()
         {
         Generator generator = (Generator)(getClip().getMotif());
         return generator.getOut();
         }
     
+	/** Submits a note on and off message to Seq. */
     public void note(int note, double vel, int interval, double velOff)
         {
         GeneratorClip clip = getClip();
@@ -109,16 +129,8 @@ public class AlgorithmNode implements Cloneable
         clip.sendScheduleNoteOff(out, note, velOff, interval, id);
         }
 
-    public void scheduleNoteOff(int note, double vel, int time, int id)
-        {
-        GeneratorClip clip = getClip();
-        Generator generator = (Generator)(clip.getMotif());
-        int out = generator.getOut();
-        if (out == -1) out = generator.getIn();
-        clip.sendScheduleNoteOff(out, note, vel, time, id);
-        }
-
-    public int noteOn(int note, double vel)
+	/** Submits a note on message to Seq, and returns the ID for the message. */
+	public int noteOn(int note, double vel)
         {
         GeneratorClip clip = getClip();
         Generator generator = (Generator)(clip.getMotif());
@@ -127,6 +139,17 @@ public class AlgorithmNode implements Cloneable
         return clip.sendNoteOn(out, note, vel);
         }
 
+	/** Schedules a note off message to Seq.  The ID should match the ID of the corresponding Note On. */
+	public void scheduleNoteOff(int note, double vel, int time, int id)
+        {
+        GeneratorClip clip = getClip();
+        Generator generator = (Generator)(clip.getMotif());
+        int out = generator.getOut();
+        if (out == -1) out = generator.getIn();
+        clip.sendScheduleNoteOff(out, note, vel, time, id);
+        }
+
+	/** Submit a note off message to Seq.  The ID should match the ID of the corresponding Note On. */
     public void noteOff(int note, double vel, int id)
         {
         GeneratorClip clip = getClip();
@@ -170,7 +193,7 @@ public class AlgorithmNode implements Cloneable
         }
 
     /** Writes the initial AlgorithmNode state to the the given JSONObject.  
-    	If your alorithm can save runtime state, implement this and return OBJ.  Otherwise don't and return NULL. */
+    	If your algorithm can save runtime state, implement this and return OBJ.  Otherwise don't and return NULL (the default behavior). */
     public JSONObject save(JSONObject obj) throws JSONException
         {
         // does nothing by default
@@ -178,7 +201,7 @@ public class AlgorithmNode implements Cloneable
         }
 
     /** Reads the initial AlgorithmNode state from the given JSObject.  
-    	If your algorithm can save runtime state, implement this.  Otherwise don't. */
+    	If your algorithm can save runtime state, implement this.  Otherwise don't (the default behavior). */
     public void load(JSONObject obj) throws JSONException
         {
         // does nothing by default
