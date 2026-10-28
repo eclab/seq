@@ -1052,7 +1052,7 @@ public class SeqUI extends JPanel
         // MIDI Menu
         JMenu midiMenu = new JMenu("MIDI");
         menubar.add(midiMenu);
-        JMenuItem midiItem = new JMenuItem("Set MIDI Devices");
+        JMenuItem midiItem = new JMenuItem("Set MIDI Devices...");
         midiMenu.add(midiItem);
         midiItem.addActionListener(new ActionListener()
             {
