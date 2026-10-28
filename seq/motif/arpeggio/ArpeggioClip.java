@@ -90,6 +90,8 @@ public class ArpeggioClip extends Clip
     int countdown = 0;
     // Our NoteOff Heap, a copy of Seq's heap
     Heap noteOff = new Heap();
+    // Counter for making new ids for the noteOff Heap
+    int noteOffCounter = 0;
     // Our child, if any
     Clip clip;
     // last note in notes played
@@ -355,7 +357,10 @@ public class ArpeggioClip extends Clip
         Arpeggio arp = (Arpeggio)getMotif();
         if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
             {
-            noteOff.add(new Note(out, note, (int)vel, id, false), Long.valueOf((time + seq.getTime()) * ((long)Integer.MAX_VALUE) + (noteQueueCounter++)));
+            // We're merging the time with the noteOffCounter.  This allows us to still extract the
+            // exact time (by dividing by Integer.MAX_VALUE later) but guarantee that multiple notes
+            // at the same time are still in the proper order, using the noteOffCounter.
+            noteOff.add(new Note(out, note, (int)vel, id, false), Long.valueOf((time + seq.getTime()) * ((long)Integer.MAX_VALUE) + (noteOffCounter++)));
             }
         else
             {
@@ -369,7 +374,10 @@ public class ArpeggioClip extends Clip
         if (isActive() && (arp.isOmni() || out == arp.getOut()))                // if we're not active, send the note to our parent
             {
             int id = noteID++;
-            noteOff.add(new Note(out, note, (int)vel, id, true), Long.valueOf((time + seq.getTime()) * ((long)Integer.MAX_VALUE) + (noteQueueCounter++)));
+            // We're merging the time with the noteOffCounter.  This allows us to still extract the
+            // exact time (by dividing by Integer.MAX_VALUE later) but guarantee that multiple notes
+            // at the same time are still in the proper order, using the noteOffCounter.
+            noteOff.add(new Note(out, note, (int)vel, id, true), Long.valueOf((time + seq.getTime()) * ((long)Integer.MAX_VALUE) + (noteOffCounter++)));
             return id; 
             }
         else
@@ -379,8 +387,6 @@ public class ArpeggioClip extends Clip
         }        
 
 
-    int noteQueueCounter = 0;
-    Heap noteQueue = new Heap();
 
     // This is a modified copy of the same method in Seq, which removes
     // Note-Off messages and processes them if their time has come up.
@@ -389,18 +395,20 @@ public class ArpeggioClip extends Clip
         int time = seq.getTime();
         while(true)
             {
-            Long i = (Long)(noteQueue.getMinKey());
+            Long i = (Long)(noteOff.getMinKey());
             if (i == null) return;
+            // The time can be extracted by dividing by Integer.MAX_VALUE.  The counter is then lost
+            // but its only purpose is to keep things in the right order in the heap
             if (all || time >= (i.longValue() / Integer.MAX_VALUE))
                 {
-                Note note = (Note)(noteQueue.extractMin());
+                Note note = (Note)(noteOff.extractMin());
                 if (note.on)
                     {
                     if (!noteOffsOnly) noteOn(note.out, note.pitch, note.velocity, note.id);
                     }
                 else 
                     {
-                    noteOff(note.out, note.pitch, 0x40, note.id);
+                    noteOff(note.out, note.pitch, 0x40, note.id);				// 64
                     }
                 }
             else break;
