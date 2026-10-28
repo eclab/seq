@@ -195,7 +195,7 @@ public class Modulation extends Motif
             catch (CloneNotSupportedException ex) { return null; }          // will not happen
             }
             
-        public double map(double val)
+        public double map(double val, double low, double high)
             {
             switch(mapBy)
                 {
@@ -214,7 +214,7 @@ public class Modulation extends Motif
                     val = 1.0 - (1.0 - val) * (1.0 - val) * (1.0 - val) * (1.0 - val);
                     break;
                 }
-            return mapLow + (mapHigh - mapLow) * val;
+            return low + (high - low) * val;
             }
         }
 

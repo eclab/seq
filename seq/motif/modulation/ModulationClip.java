@@ -36,7 +36,8 @@ public class ModulationClip extends Clip
             {
             Modulation modulation = (Modulation)getMotif();
             lastValue = update(index, getPosition());
-            setParameterValue(index, modulation.getFunction(index).map(lastValue));
+            Modulation.Function function = modulation.getFunction(index);
+            setParameterValue(index, function.map(lastValue, getCorrectedValueDouble(function.getMapLow()), getCorrectedValueDouble(function.getMapHigh())));
             }
 
         public double update(int index, int position) { return getParameterValue(index); }
@@ -67,14 +68,14 @@ public class ModulationClip extends Clip
             { 
             Modulation modulation = (Modulation)getMotif();
             Modulation.CC func = (Modulation.CC)(modulation.getFunction(index));
-            lastValue = func.getDefault() / 127.0;                          // FIXME: should we allow CC settings to survive start/stop?  Right now no.
+            lastValue = getCorrectedValueInt(func.getDefault(), 127) / 127.0;                          // FIXME: should we allow CC settings to survive start/stop?  Right now no.
             }
                 
         public double update(int index, int position) 
             {
             Modulation modulation = (Modulation)getMotif();
             Modulation.CC func = (Modulation.CC)(modulation.getFunction(index));
-            int funcCC = func.getCC();
+            int funcCC = getCorrectedValueInt(func.getCC(), 127);
 
             int in = func.getIn() - 1;
             if (in >= 0)
@@ -103,7 +104,7 @@ public class ModulationClip extends Clip
             {
             Modulation modulation = (Modulation)getMotif();
             Modulation.Constant func = (Modulation.Constant)(modulation.getFunction(index));
-            return func.getValue();
+            return getCorrectedValueDouble(func.getValue());
             }
         }
         
@@ -135,7 +136,7 @@ public class ModulationClip extends Clip
             int period = lfo.getPeriod();
             if (period == 0) period = 1;                        // we can't have a 0 length period
 
-            double phase = lfo.getPhase();
+            double phase = getCorrectedValueDouble(lfo.getPhase());
             double variance = phase;
             if (type >= Modulation.TYPE_RANDOM)
                 {
@@ -147,7 +148,7 @@ public class ModulationClip extends Clip
             double x = postX % 1.0;         // instantaneous phase 
             double val = 0;
  
-            double initial = lfo.getInitial();
+            double initial = getCorrectedValueDouble(lfo.getInitial());
             switch (type)
                 {
                 case Modulation.TYPE_SAW_UP:
@@ -243,8 +244,8 @@ public class ModulationClip extends Clip
             Modulation.Envelope envelope = (Modulation.Envelope)modulation.getFunction(index);
             
             int startTime = envelope.getStart();
-            double startTarget = envelope.getInitial();
-            int numStages = envelope.getNumStages();
+            double startTarget = getCorrectedValueDouble(envelope.getInitial());
+            int numStages = getCorrectedValueInt(envelope.getNumStages(), Modulation.MAX_STAGES);
         
             // First handle when we haven't reached the first stage yet
             if (position < startTime || numStages == 0)
@@ -266,7 +267,7 @@ public class ModulationClip extends Clip
             // Now we handle the situation where the position is beyond the envelope.
             if (position >= finalTime)
                 {
-                finalTarget = envelope.getTarget(numStages - 1);
+                finalTarget = getCorrectedValueDouble(envelope.getTarget(numStages - 1));
                 
                 if (envelope.getRepeat())
                     {
@@ -331,14 +332,14 @@ public class ModulationClip extends Clip
                 time0 = startTime;
                 target0 = startTarget;
                 time1 = time[0];
-                target1 = envelope.getTarget(0);
+                target1 = getCorrectedValueDouble(envelope.getTarget(0));
                 }
             else
                 {
                 time0 = time[stage - 1];
-                target0 = envelope.getTarget(stage - 1);
+                target0 = getCorrectedValueDouble(envelope.getTarget(stage - 1));
                 time1 = time[stage];
-                target1 = envelope.getTarget(stage);
+                target1 = getCorrectedValueDouble(envelope.getTarget(stage));
                 }
             
             if (envelope.getHold())
@@ -364,13 +365,13 @@ public class ModulationClip extends Clip
             
             if (position < start)
                 {
-                return step.getInitial();
+                return getCorrectedValueDouble(step.getInitial());
                 }
             
             // determine stage
             int period = step.getPeriod();
             if (period == 0) period = 1;
-            int numSteps = step.getNumSteps();
+            int numSteps = getCorrectedValueInt(step.getNumSteps(), Modulation.MAX_STEPS);
                         
             // If we're not repeating and have gone to far...
             if (!step.getRepeat() && position >= start + period * numSteps)
@@ -381,7 +382,7 @@ public class ModulationClip extends Clip
                     }
                 else
                     {
-                    return step.getInitial();           // step.getStep(numSteps - 1);
+                    return getCorrectedValueDouble(step.getInitial());           // step.getStep(numSteps - 1);
                     }
                 }
                         
@@ -389,7 +390,7 @@ public class ModulationClip extends Clip
             int stage = (position - start) % (period * numSteps) / period;
             int remainder = (position - start) % (period * numSteps) % period;
 
-            double val = step.getStep(stage);
+            double val = getCorrectedValueDouble(step.getStep(stage));
             if (step.getTrigger())
                 {
                 if (remainder == 0) return (val > 0.0 ? 1.0 : 0.0);
@@ -593,7 +594,7 @@ public class ModulationClip extends Clip
             if (val)            // all done.  Should we loop?
                 {
                 numTimes++;
-                if (numTimes > modulation.getRepeats())         // for example, if repeats is 4, then numTimes must have reached 5 to be done
+                if (numTimes > getCorrectedValueInt(modulation.getRepeats(), Modulation.MAX_REPEAT_VALUE))         // for example, if repeats is 4, then numTimes must have reached 5 to be done
                     {
                     return val;
                     }
