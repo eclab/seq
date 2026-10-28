@@ -55,6 +55,7 @@ public class GridsUI extends AlgorithmUI
         final Grids grids = (Grids) algorithm;
                 
         setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+		buildDefaults(generator);
                 
         ReentrantLock lock = seq.getLock();
         lock.lock();

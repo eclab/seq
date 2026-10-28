@@ -65,7 +65,7 @@ public class TriadexMuseUI extends AlgorithmUI
         final TriadexMuse triadexmuse = (TriadexMuse) algorithm;
                 
         setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-                
+		buildDefaults(generator);
                 
         preset = new PushButton("Preset...", TriadexMuse.PRESET_NAMES)
             {
@@ -173,7 +173,7 @@ public class TriadexMuseUI extends AlgorithmUI
                 {
                 protected String map(double val) 
                     { 
-                    return String.format("%.4f", val);  
+                    return "" + (int)(val * 127.0);  
                     }
                 public double getValue() 
                     { 
@@ -353,7 +353,7 @@ public class TriadexMuseUI extends AlgorithmUI
         preset.setToolTipText(PRESET_TOOLTIP);
         scale.setToolTipText(SCALE_TOOLTIP);
 
-        build(new String[] { "", "Volume", "Transpose", "Gate", "Rate", "Rests", "Legato", "Scale", "Intervals", "A (+1)", "B (+2)", "C (+4)", "D (+Octave)", "Themes", "W", "X", "Y", "Z" }, 
+        build(new String[] { "", "Velocity", "Transpose", "Gate", "Rate", "Rests", "Legato", "Scale", "Intervals", "A (+1)", "B (+2)", "C (+4)", "D (+Octave)", "Themes", "W", "X", "Y", "Z" }, 
             new JComponent[] 
                 {
                 preset,
