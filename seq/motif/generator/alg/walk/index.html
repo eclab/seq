@@ -1,0 +1,76 @@
+<html>
+<body>
+<h1>Random Walks</h1>
+
+<p>This is a collection of methods for doing melodies in the form of random walks.  You can pick a method for selecting the next pitch in your random walk (relative to the current one), and a method for selecting the length of the next note.  At present there are two methods:
+
+<ul>
+<li><b>1/f (or Pink) Noise</b>.  This method generates random noise using pink noise, which has a much higher probability for small events (small changes in pitch and preference for shorter notes over longer ones).  You can stretch the size of typical events by adjusting the <b>weight</b>.
+<p><li><b>Binomial Noise</b>.  This method generates random events by iteratively flipping a coin until it comes up heads, then returning how many flips that was.  You an stipulate the probability by adjusting the <b>weight</b>.
+</ul>
+
+<h2>Adjusting Note Pitch</h2>
+
+You first need to specify how the Random Walk chooses note pitches.
+
+<ul>
+<li><b>Scale</b>.  This allows you to lock the pitch of notes to specific scales.  Note that some scales (or in many cases chords) have fewer total notes per octave than others: as a result the random walk will be more spread out for them; you may need to adjust the pitch <b>weight</b> accordingly.
+
+<p><li><b>Method</b>.  Here you specify which of the above methods is used in choosing the next note to wander to.
+
+<p><li><b>Start Pitch</b>.  The default initial note in the melody (before you transpose with <b>transpose</b>), prior to applying the <b>start weight</b> to (possibly) randomize it.
+
+<p><li><b>Start Weight</b>.  The Method will, starting with the <b>start pitch</b>, wander one step with the <b>start weight</b> to arrive at the first note to play.  If you'd like to always start with your chose start pitch, rather than some random deviation of it, then set the start weight to 0.
+
+<p><li><b>Weight</b>.  Each time the Method needs to pick a new note, its pitch will be chosen by wandering one step from the previous note's pitch, using the <b>weight</b>.   Make the weight larger to deviate more significantly.
+
+<p><li><b>Increment Probability</b>. One common deviation from the previous note pitch is no deviation at all.  You probably don't want that very often.  The <b>increment probability</b> stipulates how often the Random Walk will add one pitch step to the final deviation (thus making it impossible to deviate by zero).
+
+<p><li><b>Tether</b>.  This is the probability that at any given time the Random Walk will choose to gravitate back to its starting pitch rather than walk randomly.  You can use this to rope in the Random Walk to keep it from heading too far afield, particularly if you have a high <b>Increment Probability</b>.
+
+</ul>
+
+<h2>Adjusting Note Length</h2>
+
+Note length is pretty crude right now: it's just randomly selected under the distribution specified by the chosen Method.
+
+<ul>
+<li><b>Method</b>.  Here you specify which of the above methods is used in choosing the note length.  Shorter notes are more likely.
+
+<p><li><b>Weight</b>.  Each time the method needs to pick a new note, its length will be chosen with random nose using the given <b>weight</b>.  Make the weight larger to select longer notes more often.
+
+<p><li><b>Gate</b>.  The percentage of the total note length spent playing the note.  At present this is a fixed value rather than randomly chosen; but you can attach it to a random parameter.
+</ul>
+
+<h2>Rests</h2>
+
+Sometimes you don't want to play a note.
+
+<ul>
+<li><b>Rest Probability</b>.  The probability that the Random Walk will play a rest rather than a note.
+</ul>
+
+<h2>General</h>
+
+Overall parameters.
+
+<ul>
+<li><b>Transpose</b>.  How to transpose the final pitch.
+
+<p><li><b>Volume</b>.  The volume of each note.
+
+<p><li><b>Rate</b>.  How fast Random Walk selects new notes.
+
+</ul>
+
+<h2>Authorship</h2>
+
+Numerous authors have suggested random walk distributions, particularly for pitches, and especially for 1/f or Pink noise distributions. 
+
+<h2>For More Information...</h2>
+
+Nothing here yet.
+<br><br><br>
+
+</body>
+</html>
