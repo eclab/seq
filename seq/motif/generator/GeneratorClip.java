@@ -338,6 +338,7 @@ public class GeneratorClip extends Clip
                 
         loadParameterValues(clip, generator.getChildren().get(0));
         boolean clipdone = clip.advance();
+        if (clip instanceof seq.motif.blank.BlankClip) clipdone = false;				// blanks are never done, so we continue with the algorithm
         
         if (node == null)
             {
