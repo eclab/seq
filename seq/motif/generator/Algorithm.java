@@ -142,15 +142,14 @@ public class Algorithm implements Cloneable
         {
         try
             {
-            String shortName = obj.optString("class", null);
-            if (shortName == null) 
+            String classname = obj.optString("class", null);
+            if (classname == null) 
                 {
                 System.err.println("Algorithm.load(JSONObject) ERROR: no \"class\" key in JSONObject.");
                 return null;
                 }
             else 
                 {
-                String classname = "seq.motif.generator." + shortName;
                 if (findAlgorithmClassName(classname) >= 0)
                     {
                     Algorithm alg = (Algorithm)(Class.forName(classname).getConstructor(Generator.class, JSONObject.class).newInstance(generator, obj));
@@ -188,7 +187,7 @@ public class Algorithm implements Cloneable
     /** Writes the Algorithm to the the given JSONObject.  You should override this, but remember to call super.save(...) */
     public void save(JSONObject obj) throws JSONException
         {
-        obj.put("class", getClass().getSimpleName());
+        obj.put("class", getClass().getName());
         if (state != null)
         	{
         	obj.put("state", state);
