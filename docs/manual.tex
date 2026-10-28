@@ -325,13 +325,13 @@ As a simple example, imagine if Chain X had Chain Y as a child as well as Patter
 \label{dag}
 \end{wrapfigure}
 
-Figure~\ref{dag} at right shows this very arrangement of these chains and patterns. In the computer science world, this kind of structure is known as a {\it Directed Acyclic Graph} or {\it DAG}.  It's a {\it graph} because every object is connected to other objects with lines called {\it edges}.  It is {\it directed} because there is a clear relationship between parents and children: that is, the edges are arrows indicating who the child is.  It's {\it acyclic} because no child can be its own ancestor: you can't have loops (or ``cycles'').  That is, all edges are pointing {\it down}.
+Figure~\ref{dag} at right shows this very arrangement of these chains and patterns. In the computer science world, this kind of structure is known as a {\it Directed Acyclic Graph} or {\it DAG}.  It's a {\it graph} because every object is connected to other objects with lines called {\it edges}.  It is {\it directed} because there is a clear relationship between parents and children: that is, the edges have arrows indicating who the child is.  It's {\it acyclic} because no child can be its own ancestor: you can't have loops (or ``cycles'').  That is, all edges are pointing {\it down}.
 
 You don't have to start playing at Chain Z.  You could instead choose to start playing at (say) Chain Y, and so Z and X would both just be ignored.  Seq calls the node that you're starting playing at the {\bf Root} of the current sequence (even if it itself has parents).
 
 \paragraph{Some Terminology}
 
-Seq's sequences are DAGs built out of basic musical building blocks (step sequences, chunks of MIDI, etc.), and objects which group other building blocks into subsequences (including grouping other subsequences together).  All these objects, both basic and grouping, are know as {\bf motifs}.  Thus (to use the LM-1's terminology) both individual step sequence patterns and pattern chains are represented as kinds of motifs.  One motif is designated the {\bf root motif}, and is the start point when playing.  Motifs which group other motifs are known as the {\bf parents} of those {\bf children}.  
+Seq's sequences are DAGs built out of basic musical building blocks (step sequences, chunks of MIDI, etc.), and objects which group other building blocks into subsequences (including grouping other subsequences together).  All these objects, both basic and grouping, are known as {\bf motifs}.  Thus (to use the LM-1's terminology) both individual step sequence patterns and pattern chains are represented as kinds of motifs.  One motif is designated the {\bf root motif}, and is the start point when playing.  Motifs which group other motifs are known as the {\bf parents} of those {\bf children}.  
 
 When you're editing a Motif, you'll be shown the {\bf Motif Display} and, to its right, various {\bf Inspectors} to modify the features of the Motif and how it manages its children (if it has them).  All your Motifs are collected into one group, called the {\bf Motif List}.
 
@@ -570,7 +570,7 @@ The position of the note or event, and the size of the note, are governed by the
 
 You can select a note by clicking on it.  It will get a highlighted selection border in blue.  Once you have selected a note, you can drag it to change its pitch or time.  You can also change the length of the note by clicking and dragging the note near its right end.
 
-You can also select multiple notes by clicking on the display and dragging a rubber-band around them.  
+You can also select multiple notes by clicking on the display and dragging a rubber-band around them.  You can then move or resize all of them by the same amount.  If you hold down the shift key while resizing, you can force them to all resize to the same size.
 
 If you hold down the {\bf shift key} you can add and remove notes to your selection by clicking them or rubber-band dragging around them.  You can do the same by {\bf right clicking}.
 
@@ -582,7 +582,7 @@ When you change the time or length of a note and you have {\bf Snap To} turned o
 
 If you have lost your notes, just play the {\bf Find Notes} button (the {\bf ``F''} at the bottom of the window, and the piano player roll will scroll to show your selected notes, or any notes at all (if you have nothing selected).
 
-Selected notes can also be moved by through the {\bf Up, Down, Left, and Right} menus and their corresponding keystrokes. 
+Selected notes can also be moved by through the {\bf Up, Down, Left, and Right} menus and their corresponding keystrokes: this follows their snap values.  You can also move notes up/down an octave or left/right by a measure using similar menus.
 
 \paragraph{Selecting and Adjusting Non-Note Events}
 
@@ -1372,7 +1372,7 @@ Modulation doesn't make any sound on its own, but it's not a MIDI filter.  Rathe
 
 Note that, like Filter and Arpeggio, Modulation requires a single child to operate on, or else it does nothing!
 
-Before we go any further, it might be helpful for you to read Section~\ref{parameters}, which discusses parameters.  In short: each motif has eight parameters, each of which can be set to any value from 0.0 to 1.0.  Many dials in a motif can be the value of one of the motif's parameters.  Furthermore, in the child's parent, you can modify the parameters of a child (from a parent's perspective, a child's parameters are called its {\bf arguments}).  If you don't, by default the settings of a motif's parameters are automatically set its parent's own parameters. This all allows you to change one or more dial settings in a child, or a deep descendant, or many of children or descendants at the same time, by setting a parent or ancestor's parameter values.
+Before we go any further, it might be helpful for you to {\bf first read Section~\ref{parameters},} which discusses parameters.  In short: each motif has eight parameters, each of which can be set to any value from 0.0 to 1.0.  Many dials in a motif can be the value of one of the motif's parameters.  Furthermore, in the child's parent, you can modify the parameters of a child (from a parent's perspective, a child's parameters are called its {\bf arguments}).  If you don't, by default the settings of a motif's parameters are automatically set its parent's own parameters. This all allows you to change one or more dial settings in a child, or a deep descendant, or many of children or descendants at the same time, by setting a parent or ancestor's parameter values.
 
 In most motifs you can directly set a child's arguments to values as you see fit, or to random values.  And Select lets you set its own parameters via big Dials, or via MIDI CC messages (Seq's root parameters can also be set via MIDI CC messages).  But {\bf Modulation} goes much further: it lets you change the parameters of a child via an automated modulation procedure such as a Low Frequency Oscillator (LFO), Envelope Generator, or a simple parameter Step Sequencer.  This gives you a way to change the parameters of a child automatically over time.
 
@@ -1585,7 +1585,7 @@ Many of the dials on Seq's motifs are {\bf Parameterizable}.  This means that in
 
 \paragraph{Parameters} Each Motif has eight {\bf Parameters}.   Just before the Motif's parent steps the Motif to advance it a little bit, the parent has the opportunity to change the values of any of those Parameters.  The parent can change them to any value from 0.0 to 1.0, or it can set them to any of the current values of the parent's {\it own Parameters}.  (In fact, by default the value of Parameter \(X\) in a Motif is set to the value of Parameter \(X\) in its parent).
 
-Normally changing a motif's parameter does nothing.  But many of the dials you see in a Motif can be {\bf bound} to one of those parameters, meaning that if that parameter is changed, the dial will also be changed.  This allows parents, or ancestors, to change one or more dials in their children or descendants.  Multiple dials can be bound to the same parameter, meaning that by changing a single parameter, a parent can simultaneously affect a number of Dials, even spread across multiple child Motifs.
+Normally changing a motif's parameter does nothing.  But many of the dials you see in a Motif can be {\bf bound} to one of those parameters, meaning that if that parameter is changed, the dial will also be changed.  This allows parents, or ancestors, to change one or more dials in their children or descendants.  Multiple dials can be bound to the same parameter, meaning that by changing a single parameter, a parent can simultaneously affect a number of dials, even spread across multiple child Motifs.
 
 \paragraph{Arguments}
 
@@ -1602,9 +1602,9 @@ From the child motif's perspective, a parameter\,---\,the thing it may have conn
 \end{wrapfigure}
 
 
-\paragraph{Binding a Dial to a Parameter} You can tell that a dial can be bound to a parameter because it has a little red or blue {\bf dot} in the middle of it.  You bind the dial by double-clicking on it.  This brings up a pop-up menu as shown in Figure~\ref{params} at right.  Here you can bind the dial to any of its motif's parameters, here shown as {\bf Param~1 ... Param~8}, or to the motif's random parameter ({\bf rand}).
+\paragraph{Binding a Dial to a Parameter} You can tell that a dial can be bound to a parameter because it has a little red or blue {\bf dot} in the middle of it.  You bind the dial by double-clicking on it.  This brings up a pop-up menu as shown in Figure~\ref{params} at right.  Here you can bind the dial to any of its motif's parameters, here shown as {\bf Param~1 ... Param~8}, or to the motif's random parameter ({\bf Rand}).
 
-After you have bound a dial to a parameter, the dial's will go gray, the dot will go red, and the name of the parameter will be shown along side it. If you would like to break the binding and go back to setting the dial to a fixed value, just turn the knob. 
+After you have bound a dial to a parameter, the dial will go gray, the dot will go red, and the name of the parameter will be shown along side it. If you would like to break the binding and go back to setting the dial to a fixed value, just turn the knob. 
 
 \paragraph{Changing the Parameter Name} Don't like the name {\bf Param 1}?  Want something more descriptive so you can remember what the heck that parameter is for?  Many motif inspectors have a {\bf Parameter Names} section where you can change the names of all eight of the motif's parameters.  You will have to click on the Parameter Names to open it up.
 
