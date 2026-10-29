@@ -340,7 +340,8 @@ public abstract class Motif implements Cloneable
         Random random = seq.getDeterministicRandom();
         for(int i = 0; i < RANDOM_TRIES; i++)
             {
-            double d = random.nextDouble() * 2.0;
+            double d = random.nextDouble();
+	    	if (random.nextBoolean()) { d += 1.0; }			// allow 1.0 as a possibility
             if (d <= 1.0) return d;
             }
         return random.nextDouble();
