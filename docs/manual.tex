@@ -1367,6 +1367,7 @@ Many Effect features can be {\bf Parameterized} by double-clicking on the dials.
 \end{figure}
 
 \subsection{Modulation}
+\label{modulation}
 
 Modulation doesn't make any sound on its own, but it's not a MIDI filter.  Rather, it take a single child and provides some ways for you to modify the child's {\bf parameters}.
 
@@ -1478,7 +1479,9 @@ Note that this isn't the only way you can map incoming MIDI CC data to a Seq par
 
 \paragraph{Random}
 
-This indicates that parameter is random every time, selected uniformly.  Mapping still occurs, and it's useful as it changes the range and density of the random value.
+This indicates that parameter is random every time, selected uniformly.  Mapping still occurs, and it's useful as it changes the range and density of the random value.  
+
+It's important to understand how this is different from the {\bf Rand} parameter/argument feature.  The {\bf Rand} parameter feature sets a random number once each time the child Clip is started or looped back to.  This value is held fixed until the next restart or loop.  However the {\bf Random} modulation function will set the parameter to a different random value every single timestep.  See ``The Random Parameter'' in Section~\ref{parameters}.
 
 \paragraph{Constant}
 
@@ -1644,6 +1647,8 @@ Not all parents can change their child parameters even though they have children
 \paragraph{The Random Parameter} In addition to the eight parameters, the Motif also has an additional {\bf Random Parameter}.  This parameter is set to a random value once each time a Motif is started or looped.  This value is not changed while the Motif is stepped.  Dials can also be bound to this value.  Additionally, a child's arguments can be bound to the parent's own random value.
 
 A parent cannot change the value of its child's random parameter: it is set to a random value.  But the parent can change the {\bf minimum and maximum bounds} from which the random value is selected.  These bounds, like any other parameter, can be set to fixed values or bound to the parent's own parameters or to its random parameter.
+
+If you are looking for a way to set to a random value which changes each timestep, this is not for you.  Instead, you can use the {\bf Random} function option in the {\bf Modulation} Motif.  See Section~\ref{modulation}.
 
 \paragraph{A Warning about Child Arguments}
 
