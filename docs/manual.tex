@@ -1405,6 +1405,7 @@ At present, Modulation has five automated modulation functions available:
 \item {\bf Envelope}\qquad The argument is modulated over time using an {\bf envelope} with up to eight stages.
 \item {\bf Step Seq}\qquad The argument is modulated over time using a {\bf parameter step sequencer} with up to eight stages.
 \item {\bf MIDI CC}\qquad The argument is modulated over time using external MIDI CC parameter data.
+\item {\bf Random}\qquad The argument is a random value each time.
 \item {\bf Constant}\qquad The argument is fixed to a constant value.
 \item {\bf Same}\qquad The argument is set to the same value as some earlier modulation function.
 \end{itemize}
@@ -1475,6 +1476,10 @@ This takes incoming MIDI CC data and outputs it as the parameter value.  There a
 
 Note that this isn't the only way you can map incoming MIDI CC data to a Seq parameter.  You can also do it via the {\bf Dial Parameters} in the {\bf Select} motif.  However, the Dial Parameters override the Select's {\it own parameters}, whereas the MIDI CC Modulation Function here will override only the parameters of the child motif to the Modulation.
 
+\paragraph{Random}
+
+This indicates that parameter is random every time, selected uniformly.  Mapping still occurs, and it's useful as it changes the range and density of the random value.
+
 \paragraph{Constant}
 
 This indicates that parameter is fixed to a certain {\bf constant value}.  Mapping still occurs, but it's not very useful.
@@ -1516,11 +1521,12 @@ Like a number of other motifs, Modulation lets you modulate the rate, transpose,
 
 Generator is where Seq runs various algorithms which perform generative music, that is, they automatically generate melodies or rhythms, either on their own or in response to MIDI from a child (such as to accompany~it).
 
-At present Generator has two algorithms:
+At present Generator has only a few algorithms:
 
 \begin{itemize}
 \item {\bf Triadex Muse}, from a 1969 music-generating device by Marvin Minsky and Edward Fredkin of MIT and Triadex Inc.  The Muse uses two logic devices (a binary counter and a linear feedback shift register or LSFR) to generate random melody patterns.
 \item {\bf Grids}, from a 2013 Eurorack module by {\'E}milie Gillet of Mutable Instruments.  Grids interpolates among a wide range of three-drum patterns in a two-dimensional space, plus additional parameters for complexity and randomness.
+\item {\bf Random Walk}, a small set of methods for generating melodies by randomly walking along scales or chords.
 \end{itemize}
 
 \noindent You select the algorithm from the {\bf Algorithms} popup menu at right.  The main part of the motif then has three parts:
@@ -1542,6 +1548,18 @@ At present Generator has two algorithms:
 \end{itemize}
 
 Whenever the Generator motif is started, or restarted, it will reset the algorithm to its initial position and then play from there.
+
+\paragraph{When Algorithms Stop}
+
+Algorithms will generally play as long as they can.  There are thre
+
+\begin{itemize}
+\item The Algorithm has decided to stop playing.  At present none of the Algorithms will do this: they try to play as long as possible.
+\item There is a Child Clip, and it has finished playing.  This will cause the Algorithm to stop playing as well.
+\item The {\bf Max End Time} has been exceeded.
+\end{itemize}
+
+By default there is no Child Clip and the Max End Time is very high, so all current Algorithms will keep playing as long as they can.
 
 \clearpage
 
