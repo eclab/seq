@@ -765,17 +765,17 @@ public class StepSequence extends Motif
             }
         }
             
-    public boolean playNow(double invNumTracks, int track, int step, int iteration)
+    public boolean playNow(double invNumTracks, int track, int step, int iteration, Random random)
         {
         int w = getFinalWhen(track, step);
         if (w == ALWAYS) return true;
-        else if (w < PROB_TRACK) return (ThreadLocalRandom.current().nextDouble(10.0) < w); //w is integer between 1 and 9 hence the bound
-        else if (w == PROB_TRACK) return (ThreadLocalRandom.current().nextDouble() < invNumTracks);
-        else if (w == PROB_OFF_TRACK) return !(ThreadLocalRandom.current().nextDouble() < invNumTracks);
+        else if (w < PROB_TRACK) return (random.nextDouble(10.0) < w); //w is integer between 1 and 9 hence the bound
+        else if (w == PROB_TRACK) return (random.nextDouble() < invNumTracks);
+        else if (w == PROB_OFF_TRACK) return !(random.nextDouble() < invNumTracks);
         else return WHEN[w - A1_2][iteration % WHEN[w - A1_2].length];
         }
           
-    public int randomWalk(int start, int min, int max, double probability, ThreadLocalRandom random)
+    public int randomWalk(int start, int min, int max, double probability, Random random)
         {
         if (min > max || start < min || start > max) throw new RuntimeException("Invalid start, min, max " + start + " " + min + " " + max);
         if (probability < 0 || probability >= 1) throw new RuntimeException("Invalid probability " + probability);
@@ -808,18 +808,16 @@ public class StepSequence extends Motif
         return last;
         }
                 
-    public void randomizeOn(int track, double density)
+    public void randomizeOn(int track, double density, Random random)
         {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
         for(int i = 0; i < on.length; i++)
             {
             on[track][i] = (random.nextDouble() < density);
             }
         }
         
-    public void mutate(int track, double playWeight, double velocityWeight, double flamWeight /*, double noteWeight, int[] scale */)
+    public void mutate(int track, double playWeight, double velocityWeight, double flamWeight /*, double noteWeight, int[] scale */, Random random)
         {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
         int[] velocities = this.velocities[track];
         int[] flams = this.flams[track];
         int[] notes = this.notes[track];

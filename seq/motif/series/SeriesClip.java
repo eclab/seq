@@ -335,7 +335,7 @@ public class SeriesClip extends Clip
         {
         ordering = new int[kids.size()];
         for(int i = 0; i < ordering.length; i++) ordering[i] = i;
-        shuffle(ordering, ThreadLocalRandom.current());
+        shuffle(ordering, getRandom());
         orderingIndex = 0;
         playingIndex = ordering[orderingIndex];
         }
@@ -373,7 +373,7 @@ public class SeriesClip extends Clip
                 }
             else if (mode == Series.MODE_RANDOM || mode == Series.MODE_MARKOV)
                 {
-                playingIndex = ThreadLocalRandom.current().nextInt(kids.size());
+                playingIndex = getRandom().nextInt(kids.size());
                 }
             else if (mode == Series.MODE_ROUND_ROBIN)
                 {
@@ -470,7 +470,7 @@ public class SeriesClip extends Clip
             playingRepeat++;
             boolean repeatUntilTrigger = data.getRepeatUntilTrigger();
         
-            java.util.Random random = ThreadLocalRandom.current();
+            java.util.Random random = getRandom();
             if ((repeatUntilTrigger && checkAndResetTrigger(TRIGGER_PARAMETER)) ||
                     (!repeatUntilTrigger && (playingRepeat > getCorrectedValueInt(data.getRepeatAtLeast(), Series.Data.MAX_REPEAT_VALUE)) && 
                     (random.nextDouble() >= getCorrectedValueDouble(data.getRepeatProbability()))))

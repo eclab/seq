@@ -176,7 +176,7 @@ public class ParallelClip extends Clip
                 double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
                 if (weight == 0.0) nodes.get(i).muted = true;
                 else if (weight == 1.0) nodes.get(i).muted = false;
-                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
+                else nodes.get(i).muted = getRandom().nextDouble() < weight;
                 }
             }
         else if (numChildrenToSelect == Parallel.ALL_CHILDREN_STOP_AFTER_FIRST)
@@ -188,7 +188,7 @@ public class ParallelClip extends Clip
                 double weight = getCorrectedValueDouble(((Parallel.Data)(children.get(i).getData())).getProbability());
                 if (weight == 0.0) nodes.get(i).muted = true;
                 else if (weight == 1.0) nodes.get(i).muted = false;
-                else nodes.get(i).muted = ThreadLocalRandom.current().nextDouble() < weight;
+                else nodes.get(i).muted = getRandom().nextDouble() < weight;
                 }
             }
         else if (numChildrenToSelect >= children.size())
@@ -201,7 +201,7 @@ public class ParallelClip extends Clip
             }
         else    // need to build distribution.  We do this in stupid O(n^2) fashion 
             {
-            ThreadLocalRandom random = ThreadLocalRandom.current();
+            Random random = getRandom();
             ArrayList<Node> candidates = new ArrayList<>(nodes);
             ArrayList<Double> weights = new ArrayList<>();
             

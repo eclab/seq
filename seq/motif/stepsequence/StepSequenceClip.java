@@ -386,7 +386,7 @@ return;
                     if (remainder == 0) 
                         {
                         // check if I need to play (only at beginning of step, the following flams -if any- must happen iff first happens)
-                        boolean play = dSeq.playNow(invNumTracks, track, step, (iteration == 0 ? 0 : iteration - 1));
+                        boolean play = dSeq.playNow(invNumTracks, track, step, (iteration == 0 ? 0 : iteration - 1), getRandom());
                         if (play) 
                             {
                             trackPlaying[track] = true;

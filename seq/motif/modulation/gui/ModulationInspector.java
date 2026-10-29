@@ -32,6 +32,7 @@ public class ModulationInspector extends WidgetList
     PushButton ratePresets;
     JComboBox out;
     StringField name;
+    SmallDial seed;
 
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
         
@@ -85,6 +86,31 @@ public class ModulationInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
+
+            seed = new SmallDial(0)
+                {
+                protected String map(double val) 
+                    {
+                    if (val == 0) return "Global";
+                    else return String.format("%.4f", val);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return modulation.getLocalRandomSeed(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { modulation.setLocalRandomSeed(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
             }
         finally
             {
@@ -294,11 +320,14 @@ public class ModulationInspector extends WidgetList
         ratePanel.add(ratePresets, BorderLayout.EAST); 
         ratePanel.setToolTipText(MIDI_CHANGES_RATE_TOOLTIP);
 
-        build(new String[] { "Name", "Repeats", "Child MIDI", "Rate", "Transpose", "Gain", "Out" }, 
+        seed.setToolTipText(SEED_TOOLTIP);
+
+        build(new String[] { "Name", "Repeats", "Child MIDI", "Rate", "Transpose", "Gain", "Out", "Seed" }, 
             new JComponent[] 
                 {
                 name,
                 repeats.getLabelledDial("127"),
+                seed.getLabelledDial("0.8888"),
                 null,                   // Separator
                 ratePanel,
                 transpose.getLabelledDial("-24"),
@@ -326,6 +355,7 @@ public class ModulationInspector extends WidgetList
         transpose.redraw();
         gain.redraw();
         repeats.redraw();
+        if (seed != null) seed.redraw();
         }
 
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
@@ -352,4 +382,8 @@ public class ModulationInspector extends WidgetList
 
     static final String INITIAL_REPEATS_TOOLTIP = "<html><b>Initial Repeats</b><br>" +
         "Sets how often the child motif will repeat before the Modulation finishes.</html>";
+
+    static final String SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
+        "Specifies the seed of the Modulation's local random number generator.<br>" +
+        "If the value is 0 (or \"Global\"), then Seq's global random number generator will be used instead.</html>";
     }

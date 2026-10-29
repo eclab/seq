@@ -350,7 +350,7 @@ public class AutomatonClip extends Clip
                     }
                 else if (repeatCount >= getCorrectedValueInt(mnode.getRepeats(), Automaton.Iterate.MAX_REPEATS))
                     {
-                    java.util.Random random = ThreadLocalRandom.current();
+                    java.util.Random random = getRandom();
                     double prob = getCorrectedValueDouble(mnode.getRepeatProbability(), 1.0);
                     if (prob == 0) 
                         {
@@ -477,14 +477,14 @@ public class AutomatonClip extends Clip
                 }
             else if (node instanceof Automaton.Iterate)
                 {
-                java.util.Random random = ThreadLocalRandom.current();
+                java.util.Random random = getRandom();
                 Automaton.Iterate aiterate = (Automaton.Iterate) node;
                 Iterate iterate = getIterateFor(aiterate);
                 return aiterate.selectOut(++iterate.count, AutomatonClip.this);
                 }
             else if (node instanceof Automaton.Random)
                 {
-                java.util.Random random = ThreadLocalRandom.current();
+                java.util.Random random = getRandom();
                 return (((Automaton.Random)node).selectOut(random, AutomatonClip.this));
                 }
             else if (node instanceof Automaton.Delay)

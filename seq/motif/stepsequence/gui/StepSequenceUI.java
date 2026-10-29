@@ -756,11 +756,11 @@ public class StepSequenceUI extends MotifUI
             if (all) 
                 {
                 for(int i = 0; i < ss.getNumTracks(); i++)
-                    ss.randomizeOn(i, density);
+                    ss.randomizeOn(i, density, java.util.concurrent.ThreadLocalRandom.current());
                 }
             else
                 {
-                ss.randomizeOn(selectedTrackNum, density);
+                ss.randomizeOn(selectedTrackNum, density, java.util.concurrent.ThreadLocalRandom.current());
                 }
             }
         finally

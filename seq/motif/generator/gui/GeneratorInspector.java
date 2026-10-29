@@ -27,6 +27,7 @@ public class GeneratorInspector extends WidgetList
     JCheckBox pass;
     JComboBox algorithm;
     TimeDisplay end;
+    SmallDial seed;
     
     int lastSelectedAlgorithm = 0;
 
@@ -214,6 +215,34 @@ public class GeneratorInspector extends WidgetList
                 };
             end.setDisplaysTime(true);
             end.setToolTipText(END_TOOLTIP);
+
+
+            seed = new SmallDial(0)
+                {
+                protected String map(double val) 
+                    {
+                    if (val == 0) return "Global";
+                    else return String.format("%.4f", val);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return generator.getLocalRandomSeed(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { generator.setLocalRandomSeed(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+
+
             }
         finally { lock.unlock(); }
         
@@ -223,8 +252,9 @@ public class GeneratorInspector extends WidgetList
         in.setToolTipText(IN_TOOLTIP);
         end.setToolTipText(END_TOOLTIP);
         pass.setToolTipText(PASS_TOOLTIP);
+        seed.setToolTipText(SEED_TOOLTIP);
 
-        build(new String[] { "Name", "Algorithm", "Out", "Received", "Omni", "Pass", "Max End Time" }, 
+        build(new String[] { "Name", "Algorithm", "Out", "Received", "Omni", "Pass", "Max End Time", "Seed" }, 
             new JComponent[] 
                 {
                 name,
@@ -234,6 +264,7 @@ public class GeneratorInspector extends WidgetList
                 omni,
                 pass,
                 end,
+                seed.getLabelledDial("0.8888"),
                 });
         add(new DefaultParameterList(seq, generatorui), BorderLayout.SOUTH);
         generatorui.revalidate();                            
@@ -257,6 +288,7 @@ public class GeneratorInspector extends WidgetList
         seq = old;
         name.update();
         if (end != null) end.revise();
+        if (seed != null) seed.redraw();
         }
 
 
@@ -283,4 +315,8 @@ public class GeneratorInspector extends WidgetList
     static final String PASS_TOOLTIP = "<html><b>Pass</b><br>" +
         "If set, then all MIDI from the underlying child Motif will be passed to the parent Motif<br>" +
         "in addition to MIDI from the generator algorithm.</html>";
+
+    static final String SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
+        "Specifies the seed of the Generator's local random number generator.<br>" +
+        "If the value is 0 (or \"Global\"), then Seq's global random number generator will be used instead.</html>";
     }

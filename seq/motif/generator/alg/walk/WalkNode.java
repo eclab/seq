@@ -48,7 +48,7 @@ public class WalkNode extends AlgorithmNode
     public boolean process(ArrayList<GeneratorClip.Note> notes)
         {
         Walk walk = (Walk)getAlgorithm();
-    	Random rand = getDeterministicRandom();
+    	Random rand = getRandom();
         
         if (getPosition() < lastPosition)			// not ready yet
         	{
@@ -158,7 +158,7 @@ public class WalkNode extends AlgorithmNode
     
     public boolean nextRest(double weight)
     	{
-    	Random rand = getDeterministicRandom();
+    	Random rand = getRandom();
     	return (rand.nextDouble() < weight);
     	}
     
@@ -167,7 +167,7 @@ public class WalkNode extends AlgorithmNode
     public int nextBinomialInterval(double weight)
     	{
     	int count = 0;
-    	Random rand = getDeterministicRandom();
+    	Random rand = getRandom();
     	for(int i = 0; i < INTERVAL_MAX; i++)
     		{
     		if (rand.nextDouble() >= weight) break;
@@ -235,7 +235,7 @@ public class WalkNode extends AlgorithmNode
     
     public double nextPink()
     	{
-    	Random rand = getDeterministicRandom();
+    	Random rand = getRandom();
     	for(int i = 0; i < PINK_TRIES; i++)
     		{
 			double white = rand.nextDouble() * 2.0 - 1.0;

@@ -76,9 +76,9 @@ public class AlgorithmNode implements Cloneable
         }
         
 	/** Returns Seq's deterministic random object. */
-    public Random getDeterministicRandom()
+    public Random getRandom()
         {
-        return getSeq().getDeterministicRandom();
+        return clip.getRandom();
         }
     
 	/** Returns the number of beats per measure. */

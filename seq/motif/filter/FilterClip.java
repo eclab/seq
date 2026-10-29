@@ -286,14 +286,14 @@ public class FilterClip extends Clip
                         
             if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
             note += (transpose - Filter.MAX_TRANSPOSE);         // this centers it
-            if (transposeV != 0) note += (seq.getDeterministicRandom().nextDouble() * transposeV * 2 - 1) * Filter.MAX_TRANSPOSE_NOISE;
+            if (transposeV != 0) note += (getRandom().nextDouble() * transposeV * 2 - 1) * Filter.MAX_TRANSPOSE_NOISE;
             if (note > 127) note = 127;
             if (note < 0) note = 0;
             vel *= gain;
             if (gainV != 0) 
                 {
-                double val = seq.getDeterministicRandom().nextDouble() * gainV * Filter.MAX_GAIN + 1.0;
-                if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
+                double val = getRandom().nextDouble() * gainV * Filter.MAX_GAIN + 1.0;
+                if (getRandom().nextBoolean()) val = 1.0 / val;
                 vel *= val;
                 }
             super.noteOn(out, note, vel, id, index);
@@ -328,8 +328,8 @@ public class FilterClip extends Clip
             vel *= releaseGain;
             if (releaseGainV != 0) 
                 {
-                double val = seq.getDeterministicRandom().nextDouble() * releaseGainV * Filter.MAX_GAIN + 1.0;
-                if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
+                double val = getRandom().nextDouble() * releaseGainV * Filter.MAX_GAIN + 1.0;
+                if (getRandom().nextBoolean()) val = 1.0 / val;
                 vel *= val;
                 }
             
@@ -374,14 +374,14 @@ public class FilterClip extends Clip
                         
             if (_out != Filter.ChangeNote.NO_OUT_CHANGE) out = _out;
             note += (transpose - Filter.MAX_TRANSPOSE);         // this centers it
-            if (transposeV != 0) note += (seq.getDeterministicRandom().nextDouble() * transposeV * 2 - 1) * Filter.MAX_TRANSPOSE_NOISE;
+            if (transposeV != 0) note += (getRandom().nextDouble() * transposeV * 2 - 1) * Filter.MAX_TRANSPOSE_NOISE;
             if (note > 127) note = 127;
             if (note < 0) note = 0;
             vel *= gain;
             if (gainV != 0) 
                 {
-                double val = seq.getDeterministicRandom().nextDouble() * gainV * Filter.MAX_GAIN + 1.0;
-                if (seq.getDeterministicRandom().nextBoolean()) val = 1.0 / val;
+                double val = getRandom().nextDouble() * gainV * Filter.MAX_GAIN + 1.0;
+                if (getRandom().nextBoolean()) val = 1.0 / val;
                 vel *= val;
                 }
             super.scheduleNoteOn(out, note, vel, time, id, index);
@@ -455,7 +455,7 @@ public class FilterClip extends Clip
             int pos = getPosition();
             
             double probability = getCorrectedValueDouble(func.getProbability(), 1.0);
-            if (func.getCut() || seq.getDeterministicRandom().nextDouble() < probability)
+            if (func.getCut() || getRandom().nextDouble() < probability)
                 {
                 // drop
                 dropped.add(id);
@@ -489,7 +489,7 @@ public class FilterClip extends Clip
             int pos = getPosition();
             
             double probability = getCorrectedValueDouble(func.getProbability(), 1.0);
-            if (func.getCut() || seq.getDeterministicRandom().nextDouble() < probability)
+            if (func.getCut() || getRandom().nextDouble() < probability)
                 {
                 // drop
                 dropped.add(id);
@@ -707,7 +707,7 @@ public class FilterClip extends Clip
                 vel *= cut;
                 dnote.delays[i] = 
                     random ?
-                    (int)(seq.getDeterministicRandom().nextDouble() * ((i + 1) * delayInterval)) :
+                    (int)(getRandom().nextDouble() * ((i + 1) * delayInterval)) :
                     (i + 1) * delayInterval;
                 super.scheduleNoteOn(out, note, vel, dnote.delays[i], dnote.ids[i] = noteID++, index);
                 notePlaying.put(id, dnote);
@@ -784,7 +784,7 @@ public class FilterClip extends Clip
                     lastTime = position;
                     }
                 
-                Random rand = seq.getDeterministicRandom();
+                Random rand = getRandom();
                                 
                 if (func.getParameterType() == Filter.Noise.TYPE_BEND)
                     {

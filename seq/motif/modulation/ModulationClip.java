@@ -102,8 +102,8 @@ public class ModulationClip extends Clip
         {
         public double update(int index, int position) 
             {
-            Modulation modulation = (Modulation)getMotif();
-			return modulation.generateRandomValue();
+            //Modulation modulation = (Modulation)getMotif();
+			return generateRandomValue(true);
             }
         }
         

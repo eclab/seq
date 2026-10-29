@@ -264,7 +264,7 @@ public class Seq
     ///// DETERMINISTIC RANDOMNESS
     static int deterministicRandomSeed = (int)System.currentTimeMillis();
     Random deterministicRandom = new Random(deterministicRandomSeed);
-    public void seedDeterministicRandom(int seed) { deterministicRandom.setSeed(deterministicRandomSeed = seed); }
+    public void seedDeterministicRandom(int seed) { deterministicRandom.setSeed(deterministicRandomSeed = seed); deterministicRandom.nextInt(); }
     public void seedDeterministicRandom() { seedDeterministicRandom((int)System.currentTimeMillis()); }
     public void resetDeterministicRandom() { seedDeterministicRandom(deterministicRandomSeed); }
     public int getDeterministicRandomSeed() { return deterministicRandomSeed; }

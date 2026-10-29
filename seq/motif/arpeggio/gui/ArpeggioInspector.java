@@ -33,6 +33,7 @@ public class ArpeggioInspector extends WidgetList
     JCheckBox activeAlways;
     SmallDial velocity;
     JCheckBox asPlayed;
+    SmallDial seed;
 
     public ArpeggioInspector(Seq seq, Arpeggio arpeggio, ArpeggioUI arpeggioui)
         {
@@ -277,6 +278,30 @@ public class ArpeggioInspector extends WidgetList
                     }
                 });
 
+            seed = new SmallDial(0)
+                {
+                protected String map(double val) 
+                    {
+                    if (val == 0) return "Global";
+                    else return String.format("%.4f", val);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return arpeggio.getLocalRandomSeed(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { arpeggio.setLocalRandomSeed(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
             }
         finally { lock.unlock(); }
         
@@ -299,9 +324,10 @@ public class ArpeggioInspector extends WidgetList
         activeAlways.setToolTipText(ALWAYS_TOOLTIP);
         activeFrom.setToolTipText(FROM_TOOLTIP);
         activeTo.setToolTipText(FROM_TOOLTIP);
+        seed.setToolTipText(SEED_TOOLTIP);
 
         build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "Velocity", "New Chord Reset", 
-                "Activity", "Always", "From", "To"}, 
+                "Activity", "Always", "From", "To", "Seed"}, 
             new JComponent[] 
                 {
                 name,
@@ -316,7 +342,8 @@ public class ArpeggioInspector extends WidgetList
                 null,                           // separator
                 activeAlways,
                 activeFrom,
-                activeTo
+                activeTo,
+                seed.getLabelledDial("0.8888"),
                 });
 
         }
@@ -342,6 +369,7 @@ public class ArpeggioInspector extends WidgetList
         if (octaves != null) octaves.redraw();
         if (activeFrom != null) activeFrom.revise();
         if (activeTo != null) activeTo.revise();
+        if (seed != null) seed.redraw();
         }
 
 
@@ -399,4 +427,8 @@ public class ArpeggioInspector extends WidgetList
     static final String TO_TOOLTIP = "<html><b>To</b><br>" +
         "Sets when in the underlying Child Motif the Arpeggio stops arpeggiating its notes.<br><br>" +
         "Only has an effect if <b>Always</b> is unchecked.</html>";
+
+    static final String SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
+        "Specifies the seed of the Arpeggio's local random number generator.<br>" +
+        "If the value is 0 (or \"Global\"), then Seq's global random number generator will be used instead.</html>";
     }

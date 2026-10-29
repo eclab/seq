@@ -140,7 +140,7 @@ public class GridsNode extends AlgorithmNode
             step = 0;
             for(int drum = 0; drum < NUM_DRUMS; drum++)
                 {
-                rnd[drum] = ((seq.getDeterministicRandom().nextInt(64)  * chaos) >>> 8);
+                rnd[drum] = ((getRandom().nextInt(64)  * chaos) >>> 8);
                 }
             }
         play(grids, step, x, y, complexity, chaos);

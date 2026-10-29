@@ -24,6 +24,7 @@ public class ParallelInspector extends WidgetList
     SmallDial crossFade;
     JCheckBox crossFadeOn;
     TimeDisplay end;
+    SmallDial seed;
     
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
 
@@ -169,11 +170,35 @@ public class ParallelInspector extends WidgetList
             end.setDisplaysTime(true);
             end.setToolTipText(END_TOOLTIP);
 
+            seed = new SmallDial(0)
+                {
+                protected String map(double val) 
+                    {
+                    if (val == 0) return "Global";
+                    else return String.format("%.4f", val);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return parallel.getLocalRandomSeed(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { parallel.setLocalRandomSeed(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
+	        seed.setToolTipText(SEED_TOOLTIP);
 
             }
         finally { lock.unlock(); }
 
-        JPanel result = build(new String[] { "Name", "Children Playing", "Cross-Fade", "Cross-Fade On", "Max End Time"}, 
+        JPanel result = build(new String[] { "Name", "Children Playing", "Cross-Fade", "Cross-Fade On", "Max End Time", "Seed"}, 
             new JComponent[] 
                 {
                 name,
@@ -181,6 +206,7 @@ public class ParallelInspector extends WidgetList
                 crossFade.getLabelledDial("0.000"),
                 crossFadeOn,
                 end,
+                seed.getLabelledDial("0.8888"),
                 });
         remove(result);
         add(result, BorderLayout.CENTER);               // re-add it as center
@@ -204,6 +230,7 @@ public class ParallelInspector extends WidgetList
         name.update();
         if (crossFade != null) crossFade.repaint();
         if (end != null) end.revise();
+        if (seed != null) seed.redraw();
         }
 
 
@@ -239,4 +266,8 @@ public class ParallelInspector extends WidgetList
     static final String END_TOOLTIP = "<html><b>End</b><br>" +
         "This determines the maximum length of the Parallel.  Child motifs may finish sooner than this,<br>" +
         "but no child motif may finish later.</html>";
+
+    static final String SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
+        "Specifies the seed of the Parallel's local random number generator.<br>" +
+        "If the value is 0 (or \"Global\"), then Seq's global random number generator will be used instead.</html>";
     }

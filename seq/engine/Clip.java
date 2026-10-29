@@ -56,6 +56,8 @@ public abstract class Clip
     seq.motif.macro.MacroClip owner = null;
     // The current version of the motif this Clip is designed to work with
     protected int version = 0;
+    // The local Random, if any
+    Random localRandom;
     
     public Clip(Seq seq, Motif motif, Clip parent)
         {
@@ -139,6 +141,7 @@ public abstract class Clip
     /** Resets the clip position to 0 and informs it that it will starting anew. */
     public void reset() 
         {
+        buildLocalRandom();
         getMotif().setPlayingClip(this);
         position = 0;
         resetTriggers();
@@ -193,6 +196,99 @@ public abstract class Clip
     
     
     
+    //// RANDOM NUMBER GENERATION
+    
+    /**
+     Returns an appropriate random number generator.
+     Will attempt to use the localRandom if it exists, else the global random
+  	 */
+	public Random getRandom() 
+		{ 
+		return getRandom(true);
+		}
+		
+    /**
+     Returns an appropriate random number generator.
+     If local is TRUE, then will attempt to use the localRandom if it exists, else the global random
+  	 If local is FALSE, then will only use the global random
+  	 */
+	public Random getRandom(boolean _local) 
+		{ 
+		if (_local && localRandom != null) 
+			{
+			return localRandom;
+			}
+		else 
+			{
+			return seq.getDeterministicRandom();
+			}
+		}
+	
+	/** If the seed is 0, then we presume it is not set. */
+	public double getLocalRandomSeed() { return getMotif().getLocalRandomSeed(); }
+	
+	/** If the seed is 0, then we presume it is not set. */
+	public void setLocalRandomSeed(double seed) 
+		{ 
+		getMotif().setLocalRandomSeed(seed);
+		buildLocalRandom();
+		}
+		
+	public static final long MANTISSA = 4503599627370496L;			// 2^52, the mantissa size of a double
+
+	/**
+		Creates or destroys the local random number generator based on the seed provided.
+	*/
+	public void buildLocalRandom()
+		{
+		double seed = getMotif().getLocalRandomSeed();
+		if (seed == 0)
+			{
+			localRandom = null;
+			}
+		else
+			{
+			localRandom = new Random((long)(seed * MANTISSA));
+			localRandom.nextInt();
+			}
+		}
+
+    public static final int RANDOM_TRIES = 4;
+
+    /** Generates a random value 0...1 INCLUSIVE **/
+    public double generateRandomValue(boolean _local)
+        {
+        Random random = getRandom(_local);
+        for(int i = 0; i < RANDOM_TRIES; i++)
+            {
+            double d = random.nextDouble();
+	    	if (random.nextBoolean()) { d += 1.0; }			// allow 1.0 as a possibility
+            if (d <= 1.0) return d;
+            }
+        return random.nextDouble();
+        }
+
+    /** Generates a random value min...max INCLUSIVE **/
+    public double generateRandomValue(double min, double max, boolean _local)
+        {
+        if (min == max) return min;
+                
+        if (min == 0.0 && max == 1.0) return generateRandomValue(_local);
+
+        // Doing a rectangular distribution for the time being
+        if (min < max)
+            {
+            return generateRandomValue(_local) * (max - min) + min;
+            }
+        else
+            {
+            return generateRandomValue(_local) * (min - max) + max;
+            }
+        }
+    
+
+
+
 
     //// PARAMETERS
     
@@ -315,13 +411,14 @@ public abstract class Clip
             randomMin = 0;  
             }
 
-        child.setRandomValue(child.getMotif().generateRandomValue(randomMin, randomMax));
+		// always use the global random
+        child.setRandomValue(child.generateRandomValue(randomMin, randomMax, false));
         }
 
     /** Loads the random value of this clip, using the given min and max */
     public void loadRootRandomValue(double min, double max)
         {
-        setRandomValue(getMotif().generateRandomValue(min, max));
+        setRandomValue(generateRandomValue(min, max, false));
         }
 
     /** Loads the random value of this clip, assuming it is a root, and thus using the root's random min and max */

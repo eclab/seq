@@ -22,6 +22,7 @@ public class AutomatonInspector extends WidgetList
     StringField name;
     JButton release;
     JButton finish;
+    SmallDial seed;
     
     public AutomatonInspector(Seq seq, Automaton automaton, AutomatonUI automatonui)
         {
@@ -55,15 +56,42 @@ public class AutomatonInspector extends WidgetList
                     }
                 };
             name.setColumns(MotifUI.INSPECTOR_NAME_DEFAULT_SIZE);
+
+
+            seed = new SmallDial(0)
+                {
+                protected String map(double val) 
+                    {
+                    if (val == 0) return "Global";
+                    else return String.format("%.4f", val);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return automaton.getLocalRandomSeed(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { automaton.setLocalRandomSeed(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
             }
         finally { lock.unlock(); }
 
         name.setToolTipText(NAME_TOOLTIP);
+        seed.setToolTipText(SEED_TOOLTIP);
 
-        JPanel result = build(new String[] { "Name" }, 
+        JPanel result = build(new String[] { "Name", "Seed" }, 
             new JComponent[] 
                 {
                 name,
+                seed.getLabelledDial("0.8888"),
                 });
         
         remove(result);
@@ -84,10 +112,14 @@ public class AutomatonInspector extends WidgetList
             }
         finally { lock.unlock(); }                              
         name.update();
+        if (seed != null) seed.redraw();
         }
 
 
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
         "Sets the name of the Automaton.  This will appear in the Motif List at left.</html>";
         
+    static final String SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
+        "Specifies the seed of the Automaton's local random number generator.<br>" +
+        "If the value is 0 (or \"Global\"), then Seq's global random number generator will be used instead.</html>";
     }

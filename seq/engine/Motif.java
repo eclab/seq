@@ -127,12 +127,6 @@ public abstract class Motif implements Cloneable
         public void setRandomMax(double val) { randomMax = val; }
         /** Returns the maximum random value of the random parameter.   This can be 0.0...1.0, or a negative integer (-1 means random, N=-2...-10 means parent parameter -N-2) */
         public double getRandomMax() { return randomMax; }
-        /** Produces a random value between the minimum and maximum values.  
-            Note that these aren't randomMin and randomMax, which have special meaning when negative. */
-        public double generateRandomValue(double min, double max)
-            {
-            return motif.generateRandomValue(min, max);
-            }
                         
 
         // Only used when loading from JSON
@@ -250,7 +244,9 @@ public abstract class Motif implements Cloneable
     // What order am in the Motif list?  This is only used when saving and loading, and may be incorrect
     // while the Motif is in use.
     int order;
-
+    // the local random number seed if any
+	double localSeed;
+	
     public Motif(Seq seq)
         {
         this.seq = seq;
@@ -326,43 +322,6 @@ public abstract class Motif implements Cloneable
     public int getOrder() { return order; }
     public void setOrder(int val) { order = val; }
 
-    ///// RANDOM NUMBER GENERATION
-                
-    /** This method is only called if the Motif is the root. */
-    /// FIXME -- right now we're assuming repeatability at the top level.  
-    public double generateRandomValue() { return generateRandomValue(0.0, 1.0); }  
-        
-    public static final int RANDOM_TRIES = 4;
-
-    // Generates a random value 0...1 INCLUSIVE
-    double generateUniformRandom()
-        {
-        Random random = seq.getDeterministicRandom();
-        for(int i = 0; i < RANDOM_TRIES; i++)
-            {
-            double d = random.nextDouble();
-	    	if (random.nextBoolean()) { d += 1.0; }			// allow 1.0 as a possibility
-            if (d <= 1.0) return d;
-            }
-        return random.nextDouble();
-        }
-
-    double generateRandomValue(double min, double max)
-        {
-        if (min == max) return min;
-                
-        if (min == 0.0 && max == 1.0) return generateUniformRandom();
-
-        // Doing a rectangular distribution for the time being
-        if (min < max)
-            {
-            return generateUniformRandom() * (max - min) + min;
-            }
-        else
-            {
-            return generateUniformRandom() * (min - max) + max;
-            }
-        }
         
                     
     /// Any clip which is currently playing the Motif.  There could be multiple such clips,
@@ -415,6 +374,16 @@ public abstract class Motif implements Cloneable
             }
         return playingClip; 
         }
+        
+    ///// RANDOM NUMBER SEED
+    
+	/** If the seed is 0, then we presume it is not set. */
+	// The seed is a DOUBLE from 0...1 so it can be stored in a SmallDial
+    public double getLocalRandomSeed() { return localSeed; }
+
+	/** If the seed is 0, then we presume it is not set. */
+	// The seed is a DOUBLE from 0...1 so it can be stored in a SmallDial
+    public void setLocalRandomSeed(double val) { localSeed = val; }
 
 
     ///// COPYING
@@ -964,6 +933,12 @@ public abstract class Motif implements Cloneable
         
         obj.put("ord", getOrder());
         
+        // random
+        if (getLocalRandomSeed() != 0)
+        	{
+        	obj.put("rnd", getLocalRandomSeed());
+        	}
+        
         // param names -- only save if they've been touched
         boolean pnameSet = false;
         for(int i = 0; i < Motif.NUM_PARAMETERS; i++)
@@ -1092,6 +1067,10 @@ public abstract class Motif implements Cloneable
         text = from.optString("text", "");
         
         order = from.optInt("ord", 0);
+        
+        // random
+        localSeed = from.optDouble("rnd", 0.0);
+        if (localSeed < 0 || localSeed > 1) localSeed = 0;
 
         // parameter names
         JSONArray pname = from.optJSONArray("pname");

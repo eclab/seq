@@ -504,7 +504,7 @@ public class ArpeggioClip extends Clip
                     }
                 else if (total == 2)
                     {
-                    int p = seq.getDeterministicRandom().nextInt(notes.length);
+                    int p = getRandom().nextInt(notes.length);
                     basicPitch[0] = notes[p];
                     }
                 else
@@ -512,7 +512,7 @@ public class ArpeggioClip extends Clip
                     int p = 0;
                     for(int i = 0; i < TRIES; i++)
                         {
-                        p = seq.getDeterministicRandom().nextInt(notes.length);
+                        p = getRandom().nextInt(notes.length);
                         if (p != last) break;
                         }
                     last = p;

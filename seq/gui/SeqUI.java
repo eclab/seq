@@ -1329,6 +1329,7 @@ public class SeqUI extends JPanel
             {
             public void actionPerformed(ActionEvent event)
                 {
+                autoReseed = autoReseedItem.isSelected();
                 Prefs.setLastBoolean("AutoReseed", autoReseed);
                 }
             });

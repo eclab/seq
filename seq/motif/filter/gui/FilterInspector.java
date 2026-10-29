@@ -24,6 +24,7 @@ public class FilterInspector extends WidgetList
     TimeDisplay activeTo;
     JCheckBox activeAlways;
     JComboBox out;
+    SmallDial seed;
 
     public FilterInspector(Seq seq, Filter filter, FilterUI filterui)
         {
@@ -123,8 +124,32 @@ public class FilterInspector extends WidgetList
                     finally { lock.unlock(); }                              
                     }
                 }); 
-            out.setToolTipText(OUT_TOOLTIP);           
-            }
+            out.setToolTipText(OUT_TOOLTIP);       
+                
+             seed = new SmallDial(0)
+                {
+                protected String map(double val) 
+                    {
+                    if (val == 0) return "Global";
+                    else return String.format("%.4f", val);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return filter.getLocalRandomSeed(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { filter.setLocalRandomSeed(val); }
+                    finally { lock.unlock(); }
+                    }
+                };
+           }
         finally { lock.unlock(); }
 
         name.setToolTipText(NAME_TOOLTIP);
@@ -132,15 +157,17 @@ public class FilterInspector extends WidgetList
         activeFrom.setToolTipText(FROM_TOOLTIP);
         activeTo.setToolTipText(FROM_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);           
+        seed.setToolTipText(SEED_TOOLTIP);
 
-        build(new String[] { "Name", "Always", "From", "To", "Only" }, 
+        build(new String[] { "Name", "Always", "From", "To", "Only", "Seed" }, 
             new JComponent[] 
                 {
                 name,
                 activeAlways,
                 activeFrom,
                 activeTo, 
-                out
+                out,
+                seed.getLabelledDial("0.8888"),
                 });
 
         add(new DefaultParameterList(seq, filterui), BorderLayout.SOUTH);
@@ -162,6 +189,7 @@ public class FilterInspector extends WidgetList
         name.update();
         if (activeFrom != null) activeFrom.revise();
         if (activeTo != null) activeTo.revise();
+        if (seed != null) seed.redraw();
         }
 
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
@@ -186,4 +214,8 @@ public class FilterInspector extends WidgetList
     static final String OUT_TOOLTIP = "<html><b>Only</b><br>" +
         "Restricts filtering to only be done to a specific Output device.<br>" +
         "MIDI to other devices passes through unmodified.</html>";
+
+    static final String SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
+        "Specifies the seed of the Filter's local random number generator.<br>" +
+        "If the value is 0 (or \"Global\"), then Seq's global random number generator will be used instead.</html>";
     }
