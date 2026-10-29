@@ -1768,6 +1768,42 @@ And you're done!  Changing knobs on the controller will change the Dial, which i
 Note that this isn't the only way you can map incoming MIDI CC data to a Seq parameter.  You can also do it via the {\bf MIDI CC} modulation function in the {\bf Modulation} motif.  However, unlike the Select motif, where the CC messages override the Select's own parameters, in the Modulation motif the CC messages override the parameters of the Modulation mofit's child.
 
 
+\clearpage\section{Random Numbers}
+
+Randomness is important to many songs written in Seq, but it can be a tricky subject.  Sometimes you want something to be randomly different every time you press play.  Other times you want something to follow a random sequence, but to always have the {\it same} random sequence.  Seq provides some different options depending on your situation.
+
+\paragraph{The (Global) Rand Seed}
+The {\bf Rand Seed} option, under the {\bf Root Arguments} at left, below the {\bf Transport}, sets the random number seed for the Global random number generator for your entire Sequence.  Normally when you play a sequence, and various random things happen during the sequence, the random decisions that they make will be determined by this seed.  If you save your sequence with a given seed, then load it again, normally it will play exactly the same way, making the same decisions.  Those decisions were originally randomly determined by the seed you picked, but now are set in stone.  This is called a {\it deterministic random sequence}.  Most composers probably want things this way.
+
+The global Rand Seed is saved with your sequence.
+
+\paragraph{Real-time Random Decisions}
+Typically when you play a sequence, you'd like it to be deterministic, that is, always making the same decisions and thus playing the same way each time, even if some of those decisions were originally randomly selected: changing the seed would make new decisions but they'd be set in stone after that again.  But perhaps you want the sequence to always make completely different, fully random decisions every time it plays.  To do this, select {\bf New Generator Each Play}.  This will cause Seq to create an entirely new random number generator each time it plays, with a new random number seed, regardless of the seed stored in {\bf Rand Seed}.
+
+Real-time Random decision making is stored in Seq's preferences.  It's not saved with your sequence.
+
+At any time you can force Seq to build a new random number generator, with a completely new seed, by selecting {\bf New Random Number Generator}.  This might be useful if you're using the deterministic random number generator but suddenly you want a completely new random number sequence during performance.
+
+
+
+\paragraph{Deterministic Per-Motif Seeds}
+You've set up a sequence just as you liked it, and it is deterministic.  When you play it, it sounds great.  Then you add a new Motif to the beginning of the sequence so it plays before certain other random elements.  This Motif has some randomness to it.  When you play the sequence, it now sounds completely different!  What happened?  The Motif drew some random values from the random number generator stream, so when it came time for your carefully-arranged later elements to make their random decisions, the numbers they drew from the sequence are now different.
+
+Or what happens if you want to play a Motif twice in a row, and have it produce the same random sequence each time?  If it uses the global generator, this won't happen: the first time around it drew some random numbers, so the next time around the random numbers it drew will be {\it different}. 
+
+Or what happens if you want to play a Motif in parallel with itself but have both of them draw the same values?  The two Motif clips will be drawing simultaneously from the random generator, interfering with one another and drawing different values.
+
+In these cases, what you probably want is for each Motif to have its own deterministic random number stream independent of the global generator (and other Motifs drawing random numbers from it, including the Motif itself).   Each such Motif has a {\bf Seed} parameter at far right.  This parameter is normally set to {\bf Global} (0), meaning that Seq's global random number generator will be used.  But if you change this parameter to something else, the Motif will create its own deterministic random number generator and seed it with the parameter value you set.  Each time you start or restart that Motif, it will start from that seed again.
+
+Per-Motif Seeds are saved with your sequence.
+
+\paragraph{The Rand Parameter}  As mentioned before, the {\bf Rand} parameter, which appears with other parameter options when you double-click on a dial, does not produce random numbers every single timestep: instead it produces a random number for that Motif when you've started it or restarted it (but not looped it).  This random value is always drawn from the global Seq random number generator, not from any per-Motif local generator.
+
+\paragraph{The Random Modulation Option}  In the Modulation Motif, one of your options is {\bf Random}.  This uses the global generator or the motif-local generator depending on what you set for {\bf Seed} in the Modulation options.  Separate Random modulators cannot have independent generators: if you need something like that for some reason, I suggest you place one Modulation inside a second one.
+
+\paragraph{Random Menu Options}  Some Motifs have menu options to randomize elements as part of the editing process.  For example, {\bf Notes} has the menu option {\bf Randomize Time...}, and {\bf Step Sequence} has many step-randomization options.  These do not draw from Seq's generator nor from any local generator, but use a separate generator so as not to mess up your random number stream.
+
+
 \clearpage
 \section{Developing for Seq}
 
