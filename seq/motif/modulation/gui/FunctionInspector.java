@@ -15,8 +15,8 @@ import java.util.concurrent.locks.*;
 
 public class FunctionInspector extends JPanel
     {
-    public static final String[] INSPECTOR_NAMES = { Modulation.IDENTITY, Modulation.LFO, Modulation.ENVELOPE, Modulation.STEP, Modulation.CC, Modulation.CONSTANT, Modulation.SAME, "<html><i>Copy From...</i></html>" };
-    public static final int COPY_FROM = 7;
+    public static final String[] INSPECTOR_NAMES = { Modulation.IDENTITY, Modulation.LFO, Modulation.ENVELOPE, Modulation.STEP, Modulation.CC, Modulation.RANDOM, Modulation.CONSTANT, Modulation.SAME, "<html><i>Copy From...</i></html>" };
+    public static final int COPY_FROM = 8;
     public static final String[] MAP_FUNCTIONS = {"None (X)", "X^2", "X^4", "1-(1-X)^2", "1-(1-X)^4" };
     public static final String[] LFO_TYPES = {"Saw Up", "Saw Down", "Square", "Triangle", "Sine", "Random", "S&H" };
         
@@ -1153,6 +1153,22 @@ public class FunctionInspector extends JPanel
         }
 
                         
+    public class RandomInspector extends SubInspector
+        {
+        SmallDial value;
+
+        public RandomInspector()
+            {
+            }
+
+        public void revise() 
+            {
+            }
+
+        public String getName() { return "Random"; }
+        }
+        
+
     public class ConstantInspector extends SubInspector
         {
         SmallDial value;
@@ -1409,6 +1425,10 @@ public class FunctionInspector extends JPanel
             {
             return new CCInspector();
             }
+        else if (type.equals(Modulation.RANDOM))
+            {
+            return new RandomInspector();
+            }
         else if (type.equals(Modulation.CONSTANT))
             {
             return new ConstantInspector();
@@ -1444,7 +1464,8 @@ public class FunctionInspector extends JPanel
         "<li><b>Envelope</b>&nbsp;&nbsp;An up to eight-stage envelope generator with repeats." +
         "<li><b>Step Sequence</b>&nbsp;&nbsp;An up to 16-stage step sequence with repeats." +
         "<li><b>MIDI CC</b>&nbsp;&nbsp;Values arriving via a MIDI CC message." +
-        "<li><b>Constant</b>&nbsp;&nbsp;A constant value (the parmaeter is still mapped, though that's useless)." +
+        "<li><b>Random</b>&nbsp;&nbsp;A random value (the parameter is still mapped)." +
+        "<li><b>Constant</b>&nbsp;&nbsp;A constant value (the parameter is still mapped, though that's useless)." +
         "<li><b>Same As</b>&nbsp;&nbsp;The same as another modulation argument, but with possibly different mapping." +
         "<li><b><i>Copy From...</i></b>&nbsp;&nbsp;Copy from another argument." +
         "</ul></html>";

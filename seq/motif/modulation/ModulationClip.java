@@ -98,6 +98,16 @@ public class ModulationClip extends Clip
         }
         
 
+    public class Random extends Node
+        {
+        public double update(int index, int position) 
+            {
+            Modulation modulation = (Modulation)getMotif();
+			return modulation.generateRandomValue();
+            }
+        }
+        
+        
     public class Constant extends Node
         {
         public double update(int index, int position) 
@@ -410,6 +420,8 @@ public class ModulationClip extends Clip
         rebuild();
         }
         
+    public Seq getSeq() { return seq; }
+        
     public void rebuild(Motif motif)
         {
         if (this.getMotif() == motif)
@@ -470,6 +482,10 @@ public class ModulationClip extends Clip
         else if (Modulation.SAME.equals(type))
             {
             return new Same();
+            }
+        else if (Modulation.RANDOM.equals(type))
+            {
+            return new Random();
             }
         else if (Modulation.CONSTANT.equals(type))
             {

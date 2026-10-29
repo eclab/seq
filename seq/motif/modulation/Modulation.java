@@ -22,6 +22,7 @@ public class Modulation extends Motif
     public static final String ENVELOPE = "Envelope";
     public static final String STEP = "Step Seq";                           // Repeating Step Sequence
     public static final String CC = "MIDI CC";
+    public static final String RANDOM = "Random";
     public static final String CONSTANT = "Constant";
     public static final String SAME = "Same";
 
@@ -56,13 +57,17 @@ public class Modulation extends Motif
             {
             return 4;
             }
-        else if (CONSTANT.equals(type))
+        else if (RANDOM.equals(type))
             {
             return 5;
             }
-        else if (SAME.equals(type))
+        else if (CONSTANT.equals(type))
             {
             return 6;
+            }
+        else if (SAME.equals(type))
+            {
+            return 7;
             }
         else
             {
@@ -96,9 +101,13 @@ public class Modulation extends Motif
             }
         else if (index == 5)
             {
-            return new Constant();
+            return new Random();
             }
         else if (index == 6)
+            {
+            return new Constant();
+            }
+        else if (index == 7)
             {
             return new Same();
             }
@@ -131,6 +140,10 @@ public class Modulation extends Motif
         else if (CC.equals(type))
             {
             return new CC(obj);
+            }
+        else if (RANDOM.equals(type))
+            {
+            return new Random(obj);
             }
         else if (CONSTANT.equals(type))
             {
@@ -513,6 +526,22 @@ public class Modulation extends Motif
             return other;
             }
         }
+    
+    public class Random extends Function
+        {
+        public Random() { }
+        public String getType() { return RANDOM; }
+        
+        public Random(JSONObject obj)
+            {
+            }
+        public JSONObject save() throws JSONException
+            {
+            JSONObject obj = super.save();
+            return obj;
+            }
+        }
+    
     
     public class Constant extends Function
         {
