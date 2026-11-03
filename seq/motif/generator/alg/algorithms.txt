@@ -6,3 +6,4 @@
 seq.motif.generator.alg.triadexmuse.TriadexMuse	<html>Triadex Muse</html>
 seq.motif.generator.alg.grids.Grids	<html>Grids</html>
 seq.motif.generator.alg.walk.Walk	<html>Random Walks</html>
+seq.motif.generator.alg.dice.Dice	<html>Musical Dice Game</html>

@@ -23,11 +23,12 @@ public class GeneratorInspector extends WidgetList
     StringField name;
     JComboBox out;
     JComboBox in;
-    JCheckBox omni;
-    JCheckBox pass;
+    JComboBox pass;
     JComboBox algorithm;
     TimeDisplay end;
     SmallDial seed;
+    
+    public static final String[] PASS_OPTIONS = { "None", "All", "Unused" };
     
     int lastSelectedAlgorithm = 0;
 
@@ -66,15 +67,14 @@ public class GeneratorInspector extends WidgetList
  
  
             Out[] seqOuts = seq.getOuts();
-            String[] outs = new String[seqOuts.length + 1];
-            outs[0] = "<html><i>Same as Received</i></html>";
+            String[] outs = new String[seqOuts.length];
             for(int i = 0; i < seqOuts.length; i++)
                 {
-                outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
+                outs[i] = "" + (i + 1) + ": " + seqOuts[i].toString();
                 }
 
             out = new JComboBox(outs);
-            out.setSelectedIndex(generator.getOut() + 1);
+            out.setSelectedIndex(generator.getOut());
             out.setMaximumRowCount(outs.length);
             out.addActionListener(new ActionListener()
                 {
@@ -83,19 +83,20 @@ public class GeneratorInspector extends WidgetList
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { generator.setOut(out.getSelectedIndex() - 1); }
+                    try { generator.setOut(out.getSelectedIndex()); }
                     finally { lock.unlock(); }                              
                     }
                 });
 
-            String[] ins = new String[seqOuts.length];
+            String[] ins = new String[seqOuts.length + 1];
+            ins[0] = "<html><i>All Devices</i></html>";
             for(int i = 0; i < seqOuts.length; i++)
                 {
-                ins[i] = "" + (i + 1) + ": " + seqOuts[i].toString();
+                ins[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
                 }
 
             in = new JComboBox(ins);
-            in.setSelectedIndex(generator.getIn());
+            in.setSelectedIndex(generator.getIn() + 1);
             in.setMaximumRowCount(ins.length);
             in.addActionListener(new ActionListener()
                 {
@@ -104,28 +105,14 @@ public class GeneratorInspector extends WidgetList
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { generator.setIn(in.getSelectedIndex()); }
+                    try { generator.setIn(in.getSelectedIndex() - 1); }
                     finally { lock.unlock(); }                              
                     }
                 });
 
 
-            omni = new JCheckBox();
-            omni.setSelected(generator.isOmni());
-            omni.addActionListener(new ActionListener()
-                {
-                public void actionPerformed(ActionEvent e)
-                    {
-                    if (seq == null) return;
-                    ReentrantLock lock = seq.getLock();
-                    lock.lock();
-                    try { generator.setOmni(omni.isSelected()); }
-                    finally { lock.unlock(); }                              
-                    }
-                });
-
-            pass = new JCheckBox();
-            pass.setSelected(generator.isPass());
+            pass = new JComboBox(PASS_OPTIONS);
+            pass.setSelectedIndex(generator.getPass());
             pass.addActionListener(new ActionListener()
                 {
                 public void actionPerformed(ActionEvent e)
@@ -133,7 +120,7 @@ public class GeneratorInspector extends WidgetList
                     if (seq == null) return;
                     ReentrantLock lock = seq.getLock();
                     lock.lock();
-                    try { generator.setPass(pass.isSelected()); }
+                    try { generator.setPass(pass.getSelectedIndex()); }
                     finally { lock.unlock(); }                              
                     }
                 });
@@ -167,7 +154,7 @@ public class GeneratorInspector extends WidgetList
                         }
                     finally { lock.unlock(); }
 
-                    if (lastSelectedAlgorithm > 0)
+                    //if (lastSelectedAlgorithm > 0)
                         {
                         // warn that we're about to reset everything
                         if (!generatorui.getSeqUI().showSimpleConfirm("Change Algorithm", "Change the algorithm?\n\nChanging the Algorithm will reset all of your Generator settings.", "Change"))
@@ -247,21 +234,20 @@ public class GeneratorInspector extends WidgetList
         finally { lock.unlock(); }
         
         name.setToolTipText(NAME_TOOLTIP);
+        algorithm.setToolTipText(ALGORITHM_TOOLTIP);
         out.setToolTipText(OUT_TOOLTIP);
-        omni.setToolTipText(OMNI_TOOLTIP);
         in.setToolTipText(IN_TOOLTIP);
         end.setToolTipText(END_TOOLTIP);
         pass.setToolTipText(PASS_TOOLTIP);
         seed.setToolTipText(SEED_TOOLTIP);
 
-        build(new String[] { "Name", "Algorithm", "Out", "Received", "Omni", "Pass", "Max End Time", "Seed" }, 
+        build(new String[] { "Name", "Algorithm", "Out", "Received", "Pass", "Max End Time", "Seed" }, 
             new JComponent[] 
                 {
                 name,
                 algorithm,
                 out,
                 in,
-                omni,
                 pass,
                 end,
                 seed.getLabelledDial("0.8888"),
@@ -280,8 +266,7 @@ public class GeneratorInspector extends WidgetList
             {
             out.setSelectedIndex(generator.getOut()); 
             in.setSelectedIndex(generator.getIn()); 
-            omni.setSelected(generator.isOmni()); 
-            pass.setSelected(generator.isPass()); 
+            pass.setSelectedIndex(generator.getPass()); 
             algorithm.setSelectedIndex(generator.getAlgorithmIndex()); 
             }
         finally { lock.unlock(); }                              
@@ -295,26 +280,27 @@ public class GeneratorInspector extends WidgetList
     static final String NAME_TOOLTIP = "<html><b>Name</b><br>" +
         "Sets the name of the Generator.  This will appear in the Motif List at left.</html>";
 
+    static final String ALGORITHM_TOOLTIP = "<html><b>Algorithm</b><br>" +
+        "Sets the Algorithm used by the Generator to generate music.</html>";
+
     static final String OUT_TOOLTIP = "<html><b>Out</b><br>" +
-        "Sets the MIDI device for the Generator. Can be set to any device or to <b>Same as Received</b>.<br>" +
-        "If set to Same as Received, then output will be the same as Received, even if Received itself<br>" +
-        "has been overridden with <b>Omni</b>.</html>";
+        "Sets the MIDI device for the Generator.</html>";
         
     static final String END_TOOLTIP = "<html><b>Max End Time</b><br>" +
         "Sets the maximum time that the Generator will play.  The Generator algorithm may choose<br>" +
         "to play for a shorter period than this.</html>";
         
-    static final String OMNI_TOOLTIP = "<html><b>Omni</b><br>" +
-        "If checked, all notes from the underlying child Motif will be sent to the generator<br>" +
-        "algorithm.  Otherwise, only the notes designated for <b>Received</b> will be sent.</html>";
-
     static final String IN_TOOLTIP = "<html><b>Received</b><br>" +
         "Sets the device that the notes from the underlying child Motif must be assigned to<br>" +
-        "in order to be sent to the generator algorithm.  This can be overridden by <b>Omni</b>.</html>";
+        "in order to be sent to the generator algorithm.  If this is set to <i>All Devices</i>,<br>"+
+        "then all notes will be sent to the generator regardless of their devices.</html>";
 
     static final String PASS_TOOLTIP = "<html><b>Pass</b><br>" +
-        "If set, then all MIDI from the underlying child Motif will be passed to the parent Motif<br>" +
-        "in addition to MIDI from the generator algorithm.</html>";
+        "Sets what MIDI is passed directly from the child Motif to the parent Motif.<br>" +
+        "The options are:<ul>" +
+        "<li><b>None</b>: No MIDI is passed from the child to the parent." + 
+        "<p><li><b>All</b>: All MIDI is passed from the child to the parent, including any MIDI used by the generator." + 
+        "<p><li><b>Unused</b>: MIDI is passed from the child to the parent if it was not used by the generator.</ul></html>";
 
     static final String SEED_TOOLTIP = "<html><b>Random Number Seed</b><br>" +
         "Specifies the seed of the Generator's local random number generator.<br>" +

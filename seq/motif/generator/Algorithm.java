@@ -218,6 +218,13 @@ public class Algorithm implements Cloneable
     	this.state = state;
     	}
 
+    /** If your AlgorithmNode is capable of saving its current runtime state to a JSONObject and
+    	loading the same later, return TRUE.  Otherwise return FALSE (the default behavior).  */
+	public boolean canSave()
+		{
+		return false;
+		}
+
     public JSONObject getState()
     	{
     	return state;

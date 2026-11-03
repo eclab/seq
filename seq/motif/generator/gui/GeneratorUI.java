@@ -21,6 +21,7 @@ import com.formdev.flatlaf.*;
 import java.beans.*;
 import javax.swing.plaf.*;
 import javax.swing.plaf.basic.*;
+import org.json.*;
 
 // For Drag and Drop
 import java.awt.dnd.*;
@@ -41,6 +42,10 @@ public class GeneratorUI extends MotifUI
     HTMLBrowser text;
     JScrollPane algorithmScroll;
     JComponent algorithmContainer;
+    
+    JMenu menu;
+    JMenuItem saveStateMenuItem;
+    JMenuItem resetStateMenuItem;
         
     JPanel generatorOuter;
     TitledBorder generatorBorder;
@@ -225,6 +230,19 @@ public class GeneratorUI extends MotifUI
             algorithmContainer.revalidate();
             algorithmContainer.repaint();
             text.setText(generator.getAlgorithm().getHTMLDescription());
+
+			// update the menu
+			boolean canSave = false;
+            seq.getLock().lock();
+            try
+                {
+                canSave = algorithmUI.getAlgorithm().canSave();
+                }
+            finally
+                {
+                seq.getLock().unlock();
+                }
+        	setLoadSaveState(canSave);
             }
         lastAlgorithmUI = algorithmUI;
         }
@@ -457,6 +475,101 @@ public class GeneratorUI extends MotifUI
                 }
             }
         }
+    
+    
+    public void setLoadSaveState(boolean val)
+    	{
+    	if (saveStateMenuItem != null) 	
+    		{
+    		saveStateMenuItem.setEnabled(val);
+	    	resetStateMenuItem.setEnabled(val);
+	    	}
+    	}
+    	
+    /** Constructs the menu for the GeneratorUI */
+    public void buildMenu()
+        {
+        menu = new JMenu("Generator");
+        
+		saveStateMenuItem = new JMenuItem("Save State");
+        saveStateMenuItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doSaveState();
+                }
+            });
+        menu.add(saveStateMenuItem);
+		
+		resetStateMenuItem = new JMenuItem("Clear State");
+		resetStateMenuItem.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                doResetState();
+                }
+            });		
+        menu.add(resetStateMenuItem);
+        
+        boolean canSave = false;
+		seq.getLock().lock();
+		try
+			{
+			canSave = algorithmUI.getAlgorithm().canSave();
+			}
+		finally
+			{
+			seq.getLock().unlock();
+			}
+		setLoadSaveState(canSave);
+		}
+		
+	public JMenu getMenu() { return menu; }
+	
+	public void doResetState()
+		{
+		boolean saved = false;
+		seq.getLock().lock();
+		try
+			{
+			algorithmUI.getAlgorithm().setState(null);
+			}
+		finally
+			{
+			seq.getLock().unlock();
+			}
+		}
+		
+	public void doSaveState()
+		{
+		boolean saved = false;
+		seq.getLock().lock();
+		try
+			{
+			Clip clip = generator.getPlayingClip();
+			if (clip != null)
+				{
+				JSONObject obj = ((GeneratorClip)clip).save();
+				if (obj == null)
+					{
+					System.err.println("Couldn't save");
+					}
+				else
+					{
+					algorithmUI.getAlgorithm().setState(obj);
+					}
+				saved = true;
+				}
+			}
+		finally
+			{
+			seq.getLock().unlock();
+			}
+		if (!saved)
+			{
+			sequi.showSimpleError("Cannot Save State", "The Algorithm's state cannot be saved because Seq is not presently playing the Motif.\nPlay the sequence until the Motif's clip is playing, then pause where want to save, and try again.");
+			}
+		}
 
     static final String REMOVE_BUTTON_TOOLTIP = "<html><b>Remove Motif</b><br>" +
         "Removes the selected motif from the Generator Child slot.</html>";

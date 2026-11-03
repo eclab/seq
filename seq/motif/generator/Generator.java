@@ -17,12 +17,14 @@ public class Generator extends Motif
     {
     private static final long serialVersionUID = 1;
     
-    public static final int SAME_AS_IN = -1;
-    int out = SAME_AS_IN;
-    int in;
+    public static final int ALL = -1;
+    public static final int PASS_NONE = 0;
+    public static final int PASS_ALL = 1;
+    public static final int PASS_UNUSED = 2;
+    int out = 0;
+    int in = ALL;
     int end = Seq.MIN_MAX_TIME;
-    boolean omni;
-    boolean pass;
+    int pass = PASS_NONE;
     Algorithm algorithm;
     
     public Algorithm getAlgorithm() { return algorithm; }
@@ -54,11 +56,8 @@ public class Generator extends Motif
     /** Sets the In output device. */
     public void setIn(int val) { in = val; Prefs.setLastInDevice(0, val, "seq.motif.generator.Generator.in"); }        
 
-    public boolean isOmni() { return omni; }
-    public void setOmni(boolean val) { omni = val; }
-
-    public boolean isPass() { return pass; }
-    public void setPass(boolean val) { pass = val; }
+    public int getPass() { return pass; }
+    public void setPass(int val) { pass = val; }
     
     public Motif copy()
         {
@@ -74,7 +73,7 @@ public class Generator extends Motif
     public Generator(Seq seq)
         {
         super(seq);
-        out = (Prefs.getLastOutDevice(0, "seq.motif.generator.Generator.out", SAME_AS_IN));
+        out = (Prefs.getLastOutDevice(0, "seq.motif.generator.Generator.out", 0));
         in = (Prefs.getLastInDevice(0, "seq.motif.generator.Generator.in"));
         add(new Blank(seq));
         setAlgorithmIndex(Prefs.getLastInt("GeneratorAlgorithm", 0));           // "None"
@@ -88,9 +87,8 @@ public class Generator extends Motif
     public void load(JSONObject obj) throws JSONException
         {
         obj.optInt("out", 0);
-        obj.optInt("in", 0);
-        obj.optBoolean("omni", true);
-        obj.optBoolean("pass", false);
+        obj.optInt("in", ALL);
+        obj.optInt("pass", PASS_NONE);
 
         JSONObject alg = obj.optJSONObject("alg");
         if (alg == null) algorithm = null;
@@ -101,7 +99,6 @@ public class Generator extends Motif
         {
         obj.put("out", out);
         obj.put("in", in);
-        obj.put("omni", omni);
         obj.put("pass", pass);
 
         if (algorithm != null) 
@@ -111,28 +108,6 @@ public class Generator extends Motif
             obj.put("alg", alg);
             }
         }
-        
-/*
-  public String getParameterName(int param) 
-  { 
-  if (getChildren().size() > 0)
-  {
-  Motif motif = getChild(0).getMotif();
-  if (motif instanceof Blank)
-  {
-  return super.getParameterName(param);
-  }
-  else
-  {
-  return motif.getParameterName(param);
-  }
-  }
-  else
-  {
-  return super.getParameterName(param);
-  }
-  }
-*/
 
     static int document = 0;
     static int counter = 1;

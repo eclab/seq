@@ -486,16 +486,20 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
             }
         finally { lock.unlock(); }
 
-/*
-        volume.setToolTipText(VOLUME_TOOLTIP);
-        gate.setToolTipText(GATE_TOOLTIP);
-        rate.setToolTipText(RATE_TOOLTIP);
-        transpose.setToolTipText(TRANSPOSE_TOOLTIP);
-        rest.setToolTipText(RESTS_TOOLTIP);
-        legato.setToolTipText(LEGATO_TOOLTIP);
-        preset.setToolTipText(PRESET_TOOLTIP);
         scale.setToolTipText(SCALE_TOOLTIP);
-*/
+        pitchMethod.setToolTipText(PITCH_METHOD_TOOLTIP);
+        startPitch.setToolTipText(START_PITCH_TOOLTIP);
+        startWeight.setToolTipText(START_WEIGHT_TOOLTIP);
+        pitchWeight.setToolTipText(PITCH_WEIGHT_TOOLTIP);
+        pitchIncrementProbability.setToolTipText(PITCH_INCREMENT_PROBABILITY_TOOLTIP);
+        tether.setToolTipText(TETHER_TOOLTIP);
+        lengthMethod.setToolTipText(LENGTH_METHOD_TOOLTIP);
+        lengthWeight.setToolTipText(LENGTH_WEIGHT_TOOLTIP);
+        gate.setToolTipText(GATE_TOOLTIP);
+        restProbability.setToolTipText(REST_PROBABILITY_TOOLTIP);
+        transpose.setToolTipText(TRANSPOSE_TOOLTIP);
+        velocity.setToolTipText(VELOCITY_TOOLTIP);
+        rate.setToolTipText(RATE_TOOLTIP);
 
         build(new String[] { "Pitch", "Scale", "Method", "Start Pitch", "Start Spread", "Weight", "Increment Probability", "Tether",
         					 "Length", "Method", "Weight", "Gate",
@@ -547,19 +551,45 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
         if (lengthWeight != null) lengthWeight.redraw();
         if (velocity != null) velocity.redraw();
         if (transpose != null) transpose.redraw();        
+        if (gate != null) gate.redraw();        
         }
 
-    static final String THEMES_TOOLTIP = "<html><b>Theme</b><br>" +
-        "Sets one of the four theme slider settings.  These affect the LFSR B1 seed value.</html>";
+    static final String SCALE_TOOLTIP = "<html><b>Scale / Chord</b><br>" +
+        "Sets the scale or chord to which the random walk note pitches are constrained.</html>";
 
-    static final String INTERVALS_TOOLTIP = "<html><b>Interval</b><br>" +
-        "Sets one of the four interval slider settings.  These affect the note pitches.</html>";
+    static final String PITCH_METHOD_TOOLTIP = "<html><b>Pitch Method</b><br>" +
+        "Sets the random walk method used to determine the pitch of the notes.</html>";
         
-    static final String VOLUME_TOOLTIP = "<html><b>Velocity</b><br>" +
-        "Sets the overall note velocity.</html>";
+    static final String START_PITCH_TOOLTIP = "<html><b>Start Pitch</b><br>" +
+        "Sets the initial pitch from which the random walk will begin.<br>" +
+        "Note that this is not the first note in the random walk:<br>" +
+        "the first note is the first random step away from this pitch.</html>";
         
+    static final String START_WEIGHT_TOOLTIP = "<html><b>Start Weight</b><br>" +
+        "Sets the initial jump size in the first step of the random walk.</html>";
+        
+    static final String PITCH_WEIGHT_TOOLTIP = "<html><b>Pitch Weight</b><br>" +
+        "Sets the jump size in steps of the random walk.</html>";
+
+    static final String PITCH_INCREMENT_PROBABILITY_TOOLTIP = "<html><b>Pitch Increment Probability</b><br>" +
+        "Sets the likelihood that 1 or -1 will be added the pitch (and thus the current pitch will not<br>" +
+        "be the same as the previous pitch).</html>";
+
+    static final String TETHER_TOOLTIP = "<html><b>Tether</b><br>" +
+        "Sets the degree to which the random walk is nudged/pulled back towards the start pitch.<br>" +
+        "This the random walk from wandering too far afield.</html>";
+
+    static final String LENGTH_METHOD_TOOLTIP = "<html><b>Length Method</b><br>" +
+        "Sets the random walk method used to determine the note length.</html>";
+
+    static final String LENGTH_WEIGHT_TOOLTIP = "<html><b>Length Weight</b><br>" +
+        "Sets how long note lengths can be in random walk.</html>";
+
+    static final String REST_PROBABILITY_TOOLTIP = "<html><b>Rest Probability</b><br>" +
+        "Sets how likely the next note will in fact be a rest.</html>";
+
     static final String GATE_TOOLTIP = "<html><b>Gate</b><br>" +
-        "Sets the note gate value (its length).  This is overridden if you have set <b>Legato</b>.</html>";
+        "Sets the note gate value (its length as a percentage of the total note).</html>";
         
     static final String RATE_TOOLTIP = "<html><b>Rate</b><br>" +
         "Sets the rate at which the algorithm produces notes.</html>";
@@ -567,15 +597,6 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
     static final String TRANSPOSE_TOOLTIP = "<html><b>Transpose</b><br>" +
         "Transposes the notes by semitones.</html>";
 
-    static final String RESTS_TOOLTIP = "<html><b>Rests</b><br>" +
-        "Turns on the ability to output rests as well as notes.</html>";
-
-    static final String LEGATO_TOOLTIP = "<html><b>Legato</b><br>" +
-        "Forces legato (long notes).  This is the default behavior for the Muse.</html>";
-
-    static final String SCALE_TOOLTIP = "<html><b>Scale</b><br>" +
-        "Sets the scale used to produce the melody.</html>";
-
-    static final String PRESET_TOOLTIP = "<html><b>Preset...</b><br>" +
-        "Song presets for the Muse.</html>";
+    static final String VELOCITY_TOOLTIP = "<html><b>Volume</b><br>" +
+        "Sets the volume (MIDI Velocity) of a note.</html>";
     }

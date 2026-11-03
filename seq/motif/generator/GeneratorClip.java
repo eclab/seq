@@ -9,6 +9,7 @@ import seq.engine.*;
 import seq.util.*;
 import java.util.*;
 import java.util.concurrent.*;
+import org.json.*;
 
 public class GeneratorClip extends Clip
     {
@@ -126,9 +127,16 @@ public class GeneratorClip extends Clip
         if (node == null)
             {
             node = generator.getAlgorithm().buildNode(seq, this);
+            System.err.println(node);
             }
         node.reset();
-
+        
+    	JSONObject state = generator.getAlgorithm().getState();
+    	if (state != null)
+    		{
+    		node.load(state);
+			}
+			
         loadRandomValue(clip, generator.getChildren().get(0));
         clip.reset();
         }
@@ -218,7 +226,8 @@ public class GeneratorClip extends Clip
     public void noteOn(int out, int note, double vel, int id) 
         {
         Generator generator = (Generator)getMotif();
-        if (generator.isOmni() || out == generator.getOut())
+        int in = generator.getIn();
+        if (out == in || in == Generator.ALL)
             {
             if (node == null)
                 {
@@ -227,7 +236,8 @@ public class GeneratorClip extends Clip
             notes.add(new Note(note, (int)vel, id, true));
             }
         
-        if (generator.isPass())
+        int pass = generator.getPass();
+        if (pass == Generator.PASS_ALL || (pass == Generator.PASS_UNUSED && out != in && in != Generator.ALL))
             {
             super.noteOn(out, note, vel, id);
             }
@@ -241,7 +251,8 @@ public class GeneratorClip extends Clip
     public void noteOff(int out, int note, double vel, int id) 
         {
         Generator generator = (Generator)getMotif();
-        if (generator.isOmni() || out == generator.getOut())
+        int in = generator.getIn();
+        if (out == in || in == Generator.ALL)
             {
             if (node == null)
                 {
@@ -250,7 +261,8 @@ public class GeneratorClip extends Clip
             notes.add(new Note(note, (int)vel, id, false));
             }
         
-        if (generator.isPass())
+        int pass = generator.getPass();
+        if (pass == Generator.PASS_ALL || (pass == Generator.PASS_UNUSED && out != in && in != Generator.ALL))
             {
             super.noteOff(out, note, vel, id);
             }
@@ -259,12 +271,14 @@ public class GeneratorClip extends Clip
     public void scheduleNoteOff(int out, int note, double vel, int time, int id) 
         {
         Generator generator = (Generator)getMotif();
-        if (generator.isOmni() || out == generator.getOut())
+        int in = generator.getIn();
+        if (out == in || in == Generator.ALL)
             {
             noteQueue.add(new Note(note, (int)vel, id, false), Integer.valueOf(time));
             }
         
-        if (generator.isPass())
+        int pass = generator.getPass();
+        if (pass == Generator.PASS_ALL || (pass == Generator.PASS_UNUSED && out != in && in != Generator.ALL))
             {
             super.scheduleNoteOff(out, note, vel, time, id);
             }
@@ -273,15 +287,18 @@ public class GeneratorClip extends Clip
     public int scheduleNoteOn(int out, int note, double vel, int time) 
         {
         Generator generator = (Generator)getMotif();
+        int in = generator.getIn();
+
         int id = -1;
-        if (generator.isPass())
+        int pass = generator.getPass();
+        if (pass == Generator.PASS_ALL || (pass == Generator.PASS_UNUSED && out != in && in != Generator.ALL))
             {
             id = super.scheduleNoteOn(out, note, vel, time);
             }
         
         if (id == -1) id = noteID++;
 
-        if (generator.isOmni() || out == generator.getOut())
+        if (out == in || in == Generator.ALL)
             {
             noteQueue.add(new Note(note, (int)vel, id, true), Integer.valueOf(time));
             }
@@ -316,11 +333,12 @@ public class GeneratorClip extends Clip
         { 
         if (node != null)
             {
-            node.release();
+            node.cut();
             node.terminate();               // should I do this?
             }
                         
         node = null; 
+        System.err.println("node cleared");
         }
 
     public boolean process()
@@ -343,12 +361,48 @@ public class GeneratorClip extends Clip
         if (node == null)
             {
             node = generator.getAlgorithm().buildNode(seq, this);
+            System.err.println("Node " + node);
             }
         boolean nodedone = node.process(notes);
+            System.err.println("Processed " + node);
                 
         if (clipdone || nodedone) return true;
         else if (getPosition() >= generator.getEnd() - 1) return true;
         else return false;
+        }
+
+    public JSONObject save()
+        {
+        Generator generator = (Generator)getMotif();
+
+        if (node == null)
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
+		
+		try
+			{
+	        return node.save(new JSONObject());
+	        }
+	    catch (JSONException ex) { return null; }
+        }
+
+    public void load(JSONObject obj)
+        {
+        if (obj == null) return;
+        
+        Generator generator = (Generator)getMotif();
+
+        if (node == null)
+            {
+            node = generator.getAlgorithm().buildNode(seq, this);
+            }
+		
+		try
+			{
+			node.load(obj);
+			}
+		catch (JSONException ex) { } 
         }
     }
 

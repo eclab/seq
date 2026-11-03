@@ -1,0 +1,38 @@
+<html>
+<body>
+<h1>Musical Dice Game (Musikalisches W&uuml;rfelspiel)</h1>
+
+<p>This algorithm generates a random song using a classic dice game attributed to Mozart.  Musical dice games were popular in the time of classical and baroque composers, and are among the earliest known examples of generative music.
+
+<p>Mozart's dice game worked as follows.  A song consisted of 32 measures.  For each measure you were given ten options (the options differed from measure to measure).  Because the first two quarters of the song were meant to sound similar, and likewise the last two quarters, the options among the first 8 measures was the same as the options for the second 8, and likewise the options among the third 8 measures was the same as the options for the fourth 8.  For each measure, you selected an option by rolling two dice, adding them, then looking up the option in a table for that measure (for dice values 2...12).  All told there were 176 measure options that might find their way into your song.
+
+<p>The dice game generator doesn't have many parameters:
+
+<ul>
+<li><b>Gate Length</b>. Each note has a fixed length specified in the measure options. However you can specify the gate of ach note to be shorter than this by some percentage.
+
+<p><li><b>Transpose</b>.  How to transpose the final pitch.
+
+<p><li><b>Volume</b>.  The volume of each note.
+
+<p><li><b>Rate</b>.  How fast the dice game plays its notes.
+
+</ul>
+
+<h2>Authorship</h2>
+
+This game was published a few years after Mozart's death by his publisher.  Mozart was certainly aware of musical dice games, and allegedly created a system for one around 1787.  Other composers, such as C.P.E. Bach, did in fact publish such games.  But there is debate as to whether this game was made by Mozart.  It could be that his publisher was hoping to ride his coattails after his death.
+
+
+<h2>For More Information...</h2>
+
+<a href="https://en.wikipedia.org/wiki/Musikalisches_W%C3%BCrfelspiel">Wikipedia article</a>
+
+<p>The data for the Dice Game comes from <a href="https://github.com/timmydoza/mozart-dice-game/">this Github repository</a>, released under the Unlicense (see the file dice.json in Seq's distribution).
+
+<p>We note that some notes in this data differ from the generator at <a href="https://dice.humdrum.org/">dice.humdrum.org</a>, which also does not allow new melodies in the second and fourth sections.
+
+<br><br><br>
+
+</body>
+</html>

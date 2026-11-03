@@ -1,0 +1,225 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7754,        215]
+NotebookOptionsPosition[      6399,        182]
+NotebookOutlinePosition[      6792,        198]
+CellTagsIndexPosition[      6749,        195]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\<by0.pdf\>\"", ",", " ", 
+   RowBox[{"Plot", "[", 
+    RowBox[{"x", ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "1"}], "}"}], ",", 
+     RowBox[{"PlotRange", "->", "All"}], ",", 
+     RowBox[{"AspectRatio", "->", "1"}], ",", 
+     RowBox[{"Frame", "->", "True"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<By None\\n\>\""}], ",", " ", 
+     RowBox[{"FrameLabel", "->", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<Initial Uniform Random Value\>\"", ",", 
+        "\"\<Final Output Value\>\""}], "}"}]}]}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{4.002660886829322*^9, 4.002660891817062*^9}, {
+  4.002661004008654*^9, 4.002661008317956*^9}},
+ CellLabel->
+  "In[137]:=",ExpressionUUID->"854ae954-6cc8-47f4-bdf4-1df46b3f3d09"],
+
+Cell[BoxData["\<\"by0.pdf\"\>"], "Output",
+ CellChangeTimes->{4.002660892071086*^9, 4.0026610092043247`*^9},
+ CellLabel->
+  "Out[137]=",ExpressionUUID->"7393e65e-cfff-4fe2-924d-495e457ae55b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\<by1.pdf\>\"", ",", " ", 
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"x", "^", "2"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "1"}], "}"}], ",", 
+     RowBox[{"PlotRange", "->", "All"}], ",", 
+     RowBox[{"AspectRatio", "->", "1"}], ",", 
+     RowBox[{"Frame", "->", "True"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<By X^2\\n\>\""}], ",", " ", 
+     RowBox[{"FrameLabel", "->", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<Initial Uniform Random Value\>\"", ",", 
+        "\"\<Final Output Value\>\""}], "}"}]}]}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{4.002660617562183*^9, 4.0026606336631308`*^9}, {
+  4.002660680539469*^9, 4.002660688092025*^9}, {4.002660722870866*^9, 
+  4.0026607645157557`*^9}, {4.0026607955223503`*^9, 4.0026608628117*^9}, {
+  4.002660976817687*^9, 4.002660995028947*^9}},
+ CellLabel->
+  "In[136]:=",ExpressionUUID->"5f99c2c4-e9fe-44ad-9d1f-d279c1dcf7ef"],
+
+Cell[BoxData["\<\"by1.pdf\"\>"], "Output",
+ CellChangeTimes->{
+  4.002660634444675*^9, {4.002660683712545*^9, 4.002660688337255*^9}, {
+   4.002660731462103*^9, 4.002660764804285*^9}, {4.002660810412841*^9, 
+   4.002660863389537*^9}, 4.0026609961833563`*^9},
+ CellLabel->
+  "Out[136]=",ExpressionUUID->"2f752c3e-f0b6-4be0-9de8-e8ab7e966c2f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\<by2.pdf\>\"", ",", " ", 
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"x", "^", "4"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "1"}], "}"}], ",", 
+     RowBox[{"PlotRange", "->", "All"}], ",", 
+     RowBox[{"AspectRatio", "->", "1"}], ",", 
+     RowBox[{"Frame", "->", "True"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<By X^4\\n\>\""}], ",", " ", 
+     RowBox[{"FrameLabel", "->", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<Initial Uniform Random Value\>\"", ",", 
+        "\"\<Final Output Value\>\""}], "}"}]}]}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{4.002660904161666*^9, 4.0026609066400642`*^9}, {
+  4.002661044803487*^9, 4.002661051454444*^9}},
+ CellLabel->
+  "In[139]:=",ExpressionUUID->"1f12c8d7-2252-4d1f-bb50-f10a3ff41b09"],
+
+Cell[BoxData["\<\"by2.pdf\"\>"], "Output",
+ CellChangeTimes->{4.002660907518853*^9, 4.002661052285501*^9},
+ CellLabel->
+  "Out[139]=",ExpressionUUID->"64ed8e25-f587-49aa-a04f-e1abbf6215db"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\<by3.pdf\>\"", ",", " ", 
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"1", "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"1", "-", "x"}], ")"}], "^", "2"}]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "1"}], "}"}], ",", 
+     RowBox[{"PlotRange", "->", "All"}], ",", 
+     RowBox[{"AspectRatio", "->", "1"}], ",", 
+     RowBox[{"Frame", "->", "True"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<By 1-(1-X)^2\\n\>\""}], ",", " ", 
+     RowBox[{"FrameLabel", "->", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<Initial Uniform Random Value\>\"", ",", 
+        "\"\<Final Output Value\>\""}], "}"}]}]}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{4.0026609195572987`*^9, 4.0026609607382097`*^9}, {
+  4.002661011875368*^9, 4.002661014981002*^9}, {4.002661055115531*^9, 
+  4.002661055225371*^9}},
+ CellLabel->
+  "In[140]:=",ExpressionUUID->"60ade979-f39a-43eb-a2a2-bf3027893c6b"],
+
+Cell[BoxData["\<\"by3.pdf\"\>"], "Output",
+ CellChangeTimes->{{4.002660928630948*^9, 4.002660962375516*^9}, 
+   4.002661019374723*^9, 4.0026610570791492`*^9},
+ CellLabel->
+  "Out[140]=",ExpressionUUID->"d63d7b72-121c-4c0c-a8af-06bf23a58060"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\<by4.pdf\>\"", ",", " ", 
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"1", "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"1", "-", "x"}], ")"}], "^", "4"}]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "1"}], "}"}], ",", 
+     RowBox[{"PlotRange", "->", "All"}], ",", 
+     RowBox[{"AspectRatio", "->", "1"}], ",", 
+     RowBox[{"Frame", "->", "True"}], ",", 
+     RowBox[{"PlotLabel", "->", "\"\<By 1-(1-X)^4\\n\>\""}], ",", " ", 
+     RowBox[{"FrameLabel", "->", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<Initial Uniform Random Value\>\"", ",", 
+        "\"\<Final Output Value\>\""}], "}"}]}]}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{4.002660948199183*^9, 4.002660951036469*^9}, {
+  4.002661060145549*^9, 4.00266106359741*^9}},
+ CellLabel->
+  "In[141]:=",ExpressionUUID->"7b208297-85fa-41b8-b528-d96dac9190a2"],
+
+Cell[BoxData["\<\"by4.pdf\"\>"], "Output",
+ CellChangeTimes->{4.0026609518429937`*^9, 4.002661064530222*^9},
+ CellLabel->
+  "Out[141]=",ExpressionUUID->"4dacdcd8-4d80-4770-9a30-f19b51c959a4"]
+}, Open  ]]
+},
+WindowSize->{808, 911},
+WindowMargins->{{Automatic, 332}, {Automatic, 0}},
+FrontEndVersion->"14.1 for Mac OS X ARM (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"8981d9c1-95b2-4028-9531-2380ac4dc623"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 802, 19, 70, "Input",ExpressionUUID->"854ae954-6cc8-47f4-bdf4-1df46b3f3d09"],
+Cell[1381, 43, 191, 3, 33, "Output",ExpressionUUID->"7393e65e-cfff-4fe2-924d-495e457ae55b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1609, 51, 975, 22, 70, "Input",ExpressionUUID->"5f99c2c4-e9fe-44ad-9d1f-d279c1dcf7ef"],
+Cell[2587, 75, 340, 6, 33, "Output",ExpressionUUID->"2f752c3e-f0b6-4be0-9de8-e8ab7e966c2f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2964, 86, 829, 20, 70, "Input",ExpressionUUID->"1f12c8d7-2252-4d1f-bb50-f10a3ff41b09"],
+Cell[3796, 108, 189, 3, 33, "Output",ExpressionUUID->"64ed8e25-f587-49aa-a04f-e1abbf6215db"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4022, 116, 970, 24, 70, "Input",ExpressionUUID->"60ade979-f39a-43eb-a2a2-bf3027893c6b"],
+Cell[4995, 142, 241, 4, 33, "Output",ExpressionUUID->"d63d7b72-121c-4c0c-a8af-06bf23a58060"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5273, 151, 916, 23, 70, "Input",ExpressionUUID->"7b208297-85fa-41b8-b528-d96dac9190a2"],
+Cell[6192, 176, 191, 3, 77, "Output",ExpressionUUID->"4dacdcd8-4d80-4770-9a30-f19b51c959a4"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

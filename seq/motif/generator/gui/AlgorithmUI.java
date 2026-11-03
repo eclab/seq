@@ -27,7 +27,9 @@ public class AlgorithmUI extends WidgetList
         this.generatorui = generatorui;
         this.algorithm = algorithm;
         }
-                
+    
+    public Algorithm getAlgorithm() { return algorithm; }
+         
     public void revise()
         {
         }

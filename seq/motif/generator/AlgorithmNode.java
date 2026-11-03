@@ -124,7 +124,6 @@ public class AlgorithmNode implements Cloneable
         GeneratorClip clip = getClip();
         Generator generator = (Generator)(clip.getMotif());
         int out = generator.getOut();
-        if (out == -1) out = generator.getIn();
         int id = clip.sendNoteOn(out, note, vel);
         clip.sendScheduleNoteOff(out, note, velOff, interval, id);
         }
@@ -135,7 +134,6 @@ public class AlgorithmNode implements Cloneable
         GeneratorClip clip = getClip();
         Generator generator = (Generator)(clip.getMotif());
         int out = generator.getOut();
-        if (out == -1) out = generator.getIn();
         return clip.sendNoteOn(out, note, vel);
         }
 
@@ -145,7 +143,6 @@ public class AlgorithmNode implements Cloneable
         GeneratorClip clip = getClip();
         Generator generator = (Generator)(clip.getMotif());
         int out = generator.getOut();
-        if (out == -1) out = generator.getIn();
         clip.sendScheduleNoteOff(out, note, vel, time, id);
         }
 
@@ -155,7 +152,6 @@ public class AlgorithmNode implements Cloneable
         GeneratorClip clip = getClip();
         Generator generator = (Generator)(clip.getMotif());
         int out = generator.getOut();
-        if (out == -1) out = generator.getIn();
         clip.sendNoteOff(out, note, vel, id);
         }
 
@@ -201,7 +197,8 @@ public class AlgorithmNode implements Cloneable
         }
 
     /** Reads the initial AlgorithmNode state from the given JSObject.  
-    	If your algorithm can save runtime state, implement this.  Otherwise don't (the default behavior). */
+    	If your algorithm can save runtime state, implement this method. 
+    	This will be called AFTER reset is called. */
     public void load(JSONObject obj) throws JSONException
         {
         // does nothing by default
