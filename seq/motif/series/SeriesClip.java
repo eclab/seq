@@ -41,12 +41,12 @@ public class SeriesClip extends Clip
         for(int i = 0; i < midiValues.length; i++)
             {
             int type = series.getMIDIType(i);
-        	int out = series.getMIDIParameterOut(i);
-        	if (out == Series.DEFAULT_OUT)
-        		{
-        		out = midiOut;
-        		}
-        		
+            int out = series.getMIDIParameterOut(i);
+            if (out == Series.DEFAULT_OUT)
+                {
+                out = midiOut;
+                }
+                        
             switch(type)
                 {
                 case Series.NONE:

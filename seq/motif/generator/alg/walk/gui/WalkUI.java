@@ -19,24 +19,24 @@ public class WalkUI extends AlgorithmUI
     {
     JComboBox scale;
     JComboBox pitchMethod;    
-	SmallDial startPitch;
-	SmallDial startWeight;
-	SmallDial pitchWeight;
-	SmallDial pitchIncrementProbability;
-	SmallDial tether;
-	
-	SmallDial restProbability;
-	
-	JComboBox lengthMethod;
-	SmallDial lengthWeight;
-	SmallDial gate;
-	
-	SmallDial transpose;
-	SmallDial velocity;
-	JComboBox rate;
+    SmallDial startPitch;
+    SmallDial startWeight;
+    SmallDial pitchWeight;
+    SmallDial pitchIncrementProbability;
+    SmallDial tether;
+        
+    SmallDial restProbability;
+        
+    JComboBox lengthMethod;
+    SmallDial lengthWeight;
+    SmallDial gate;
+        
+    SmallDial transpose;
+    SmallDial velocity;
+    JComboBox rate;
 
-public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
-	    
+    public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
+            
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
 
     public void buildDefaults(Motif parent)
@@ -62,7 +62,7 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
         final Walk walk = (Walk) algorithm;
                 
         setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-		buildDefaults(generator);
+        buildDefaults(generator);
                 
         ReentrantLock lock = seq.getLock();
         lock.lock();
@@ -101,211 +101,211 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
                     }
                 });
 
-			startPitch = new SmallDial(-1, defaults)
-				{
-				protected String map(double val) 
-					{
-					int note = (int)(val * 127);
-					return KEYS[note % 12] + (note / 12);
-					}
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getStartPitch() / 127.0; }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setStartPitch((int)(val * 127)); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setStartPitch(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getStartPitch(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            startPitch = new SmallDial(-1, defaults)
+                {
+                protected String map(double val) 
+                    {
+                    int note = (int)(val * 127);
+                    return KEYS[note % 12] + (note / 12);
+                    }
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getStartPitch() / 127.0; }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setStartPitch((int)(val * 127)); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setStartPitch(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getStartPitch(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
 
-			startWeight = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getStartWeight(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setStartWeight(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setStartWeight(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getStartWeight(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            startWeight = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getStartWeight(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setStartWeight(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setStartWeight(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getStartWeight(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
-			pitchWeight = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getPitchWeight(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setPitchWeight(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setPitchWeight(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getPitchWeight(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            pitchWeight = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getPitchWeight(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setPitchWeight(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setPitchWeight(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getPitchWeight(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
-			pitchIncrementProbability = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getPitchIncrementProbability(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setPitchIncrementProbability(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setPitchIncrementProbability(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getPitchIncrementProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
-
-
-			tether = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getTether(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setTether(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setTether(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getTether(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            pitchIncrementProbability = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getPitchIncrementProbability(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setPitchIncrementProbability(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setPitchIncrementProbability(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getPitchIncrementProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
 
-			restProbability = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getRestProbability(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setRestProbability(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setRestProbability(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getRestProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            tether = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getTether(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setTether(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setTether(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getTether(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
+
+
+            restProbability = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getRestProbability(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setRestProbability(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setRestProbability(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getRestProbability(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
             lengthMethod = new JComboBox(Walk.LENGTH_METHOD_NAMES);
             lengthMethod.setSelectedIndex(walk.getPitchMethod());
@@ -323,73 +323,73 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
                     }
                 });
 
-			lengthWeight = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getLengthWeight(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setLengthWeight(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setLengthWeight(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getLengthWeight(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            lengthWeight = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getLengthWeight(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setLengthWeight(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setLengthWeight(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getLengthWeight(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
 
 
-			gate = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return walk.getGate(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { walk.setGate(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) walk.setGate(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = walk.getGate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            gate = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return walk.getGate(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { walk.setGate(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) walk.setGate(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = walk.getGate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
 
             velocity = new SmallDial(-1, defaults)
@@ -502,10 +502,10 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
         rate.setToolTipText(RATE_TOOLTIP);
 
         build(new String[] { "Pitch", "Scale", "Method", "Start Pitch", "Start Spread", "Weight", "Increment Probability", "Tether",
-        					 "Length", "Method", "Weight", "Gate",
-        					 "Rests", "Rest Probability",
-        					 "General", "Transpose", "Volume", "Rate"
-        					},
+                "Length", "Method", "Weight", "Gate",
+                "Rests", "Rest Probability",
+                "General", "Transpose", "Volume", "Rate"
+                },
             new JComponent[] 
                 {
                 null,

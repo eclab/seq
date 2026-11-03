@@ -126,7 +126,7 @@ public class FilterInspector extends WidgetList
                 }); 
             out.setToolTipText(OUT_TOOLTIP);       
                 
-             seed = new SmallDial(0)
+            seed = new SmallDial(0)
                 {
                 protected String map(double val) 
                     {
@@ -149,7 +149,7 @@ public class FilterInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
-           }
+            }
         finally { lock.unlock(); }
 
         name.setToolTipText(NAME_TOOLTIP);

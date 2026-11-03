@@ -652,8 +652,8 @@ public class Midi
     // assumes outDevs and inDevs are empty
     public static void saveTupleToJSON(Tuple tuple, JSONArray outDevs, JSONArray inDevs, JSONObject mainObj)
         {
-		mainObj.put("inclock", tuple.inClock);
-		
+        mainObj.put("inclock", tuple.inClock);
+                
         for(int i = 0; i < numOutDevices; i++)
             {
             JSONObject obj = new JSONObject();
@@ -895,7 +895,7 @@ public class Midi
                 inClockRadioGroup.add(inClockRadio[i]);
                 inClockRadio[i].getAccessibleContext().setAccessibleName("Input Clock");
                 if (old != null)
-                	inClockRadio[i].setSelected(old.inClock == i);
+                    inClockRadio[i].setSelected(old.inClock == i);
                 else inClockRadio[i].setSelected(inClock == i); 
 
                 inClockRadio[i].addActionListener(new ActionListener() 
@@ -907,9 +907,9 @@ public class Midi
                     });
                 }
 
-			if (old != null)
-				inClockRadio[old.inClock].setSelected(true);
-			else inClockRadio[Prefs.getLastTupleInClock()].setSelected(true);
+            if (old != null)
+                inClockRadio[old.inClock].setSelected(true);
+            else inClockRadio[Prefs.getLastTupleInClock()].setSelected(true);
                 
             StringField[] outNicknames = new StringField[numOutDevices];
             for(int i = 0; i < outNicknames.length; i++)
@@ -1106,8 +1106,8 @@ public class Midi
                     inNick[i] = (tuple.inName[i] == null ? "" : tuple.inName[i].trim());
                     Prefs.setLastTupleInName(i, inNick[i]);
                     }
-				inClock = tuple.inClock;
-				Prefs.setLastTupleInClock(inClock);
+                inClock = tuple.inClock;
+                Prefs.setLastTupleInClock(inClock);
 
                 Dialogs.enableMenuBar();
                 return tuple;

@@ -167,7 +167,7 @@ public class GeneratorInspector extends WidgetList
                     lock.lock();
                     try 
                         { 
-						Prefs.setLastInt("GeneratorAlgorithm", algorithm.getSelectedIndex());
+                        Prefs.setLastInt("GeneratorAlgorithm", algorithm.getSelectedIndex());
                         GeneratorClip clip = (GeneratorClip)(generator.getPlayingClip());
                         if (clip != null)
                             {

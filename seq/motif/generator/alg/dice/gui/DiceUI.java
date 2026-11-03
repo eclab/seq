@@ -17,13 +17,13 @@ import seq.motif.generator.gui.*;
 
 public class DiceUI extends AlgorithmUI
     {
-	SmallDial gate;
-	SmallDial transpose;
-	SmallDial velocity;
-	JComboBox rate;
+    SmallDial gate;
+    SmallDial transpose;
+    SmallDial velocity;
+    JComboBox rate;
 
-public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
-	    
+    public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
+            
     String[] defaults = new String[1 + Motif.NUM_PARAMETERS];
 
     public void buildDefaults(Motif parent)
@@ -49,44 +49,44 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
         final Dice dice = (Dice) algorithm;
                 
         setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-		buildDefaults(generator);
+        buildDefaults(generator);
                 
         ReentrantLock lock = seq.getLock();
         lock.lock();
         try
             {
-			gate = new SmallDial(-1, defaults)
-				{
-				public double getValue() 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { return dice.getGate(); }
-					finally { lock.unlock(); }
-					}
-				public void setValue(double val) 
-					{ 
-					if (seq == null) return;
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { dice.setGate(val); }
-					finally { lock.unlock(); }
-					}
-				public void setDefault(int val) 
-					{ 
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { if (val != SmallDial.NO_DEFAULT) dice.setGate(-(val + 1)); }
-					finally { lock.unlock(); }
-					}
-				public int getDefault()
-					{
-					ReentrantLock lock = seq.getLock();
-					lock.lock();
-					try { double val = dice.getGate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
-					finally { lock.unlock(); }
-					}
-				};
+            gate = new SmallDial(-1, defaults)
+                {
+                public double getValue() 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { return dice.getGate(); }
+                    finally { lock.unlock(); }
+                    }
+                public void setValue(double val) 
+                    { 
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { dice.setGate(val); }
+                    finally { lock.unlock(); }
+                    }
+                public void setDefault(int val) 
+                    { 
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { if (val != SmallDial.NO_DEFAULT) dice.setGate(-(val + 1)); }
+                    finally { lock.unlock(); }
+                    }
+                public int getDefault()
+                    {
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { double val = dice.getGate(); return (val < 0 ? -(int)(val + 1) : SmallDial.NO_DEFAULT); }
+                    finally { lock.unlock(); }
+                    }
+                };
 
 
             velocity = new SmallDial(-1, defaults)

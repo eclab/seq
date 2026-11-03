@@ -372,29 +372,29 @@ public class NotesInspector extends WidgetList
                 });
 
 
-                seqOuts = seq.getOuts();
-                 outs = new String[seqOuts.length + 1];
-                outs[0] = "<html><i>Default</i></html>";
-                for(int i = 0; i < seqOuts.length; i++)
-                    {
-                    outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
-                    }
+            seqOuts = seq.getOuts();
+            outs = new String[seqOuts.length + 1];
+            outs[0] = "<html><i>Default</i></html>";
+            for(int i = 0; i < seqOuts.length; i++)
+                {
+                outs[i + 1] = "" + (i + 1) + ": " + seqOuts[i].toString();
+                }
 
-			recordOut = new JComboBox(outs);
-                recordOut.setSelectedIndex(notes.getRecordOut() + 1);               // note:  +1
-                recordOut.setMaximumRowCount(outs.length);
-                recordOut.addActionListener(new ActionListener()
+            recordOut = new JComboBox(outs);
+            recordOut.setSelectedIndex(notes.getRecordOut() + 1);               // note:  +1
+            recordOut.setMaximumRowCount(outs.length);
+            recordOut.addActionListener(new ActionListener()
+                {
+                public void actionPerformed(ActionEvent e)
                     {
-                    public void actionPerformed(ActionEvent e)
-                        {
-                        if (seq == null) return;
-                        ReentrantLock lock = seq.getLock();
-                        lock.lock();
-                        try { notes.setRecordOut(out.getSelectedIndex() - 1); }       // note:  -1
-                        finally { lock.unlock(); }     
+                    if (seq == null) return;
+                    ReentrantLock lock = seq.getLock();
+                    lock.lock();
+                    try { notes.setRecordOut(out.getSelectedIndex() - 1); }       // note:  -1
+                    finally { lock.unlock(); }     
 //                        if (!revising) notesui.reload();                // we break the recursion here.  We don't break in reload() because that's always with a NEW EventInspector
-                        }
-                    });
+                    }
+                });
 
 /*
   quantize = new JCheckBox();
@@ -872,9 +872,9 @@ public class NotesInspector extends WidgetList
                 int type;
                 int eventParamMSB;
                 int eventParamLSB;
-        ReentrantLock lock;
-        if (oldLock != null) lock = oldLock;
-        else lock = seq.getLock();
+                ReentrantLock lock;
+                if (oldLock != null) lock = oldLock;
+                else lock = seq.getLock();
                 lock.lock();
                 try 
                     { 
@@ -1030,25 +1030,25 @@ public class NotesInspector extends WidgetList
             }
         }
 
-	// This is a hack.  By tradition we set seq to null when we revise, but
-	// NotesInspector needs to update its events, which need access to seq's lock.
-	// So we stash it here so the event updater can find it temporarily.  Yuck.
-	ReentrantLock oldLock;
-	
+    // This is a hack.  By tradition we set seq to null when we revise, but
+    // NotesInspector needs to update its events, which need access to seq's lock.
+    // So we stash it here so the event updater can find it temporarily.  Yuck.
+    ReentrantLock oldLock;
+        
     public void revise()
         {
         Seq old = seq;
         seq = null;
         ReentrantLock lock;
         if (oldLock != null) // use this instead
-        	lock = oldLock;
+            lock = oldLock;
         else lock = old.getLock();
         oldLock = lock;
         lock.lock();
         try 
             { 
             out.setSelectedIndex(notes.getOut()); 
-            recordOut.setSelectedIndex(notes.getRecordOut() + 1);		// notice + 1
+            recordOut.setSelectedIndex(notes.getRecordOut() + 1);               // notice + 1
             in.setSelectedIndex(notes.getIn()); 
             armed.setSelected(notes.isArmed()); 
             echo.setSelected(notes.getEcho()); 

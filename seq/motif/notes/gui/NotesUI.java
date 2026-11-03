@@ -455,7 +455,7 @@ public class NotesUI extends MotifUI
         move.add(right);
         right.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
-		move.addSeparator();
+        move.addSeparator();
 
         JMenuItem upOct = new JMenuItem("Up One Octave");
         upOct.addActionListener(new ActionListener()
@@ -710,11 +710,11 @@ public class NotesUI extends MotifUI
         lock.lock();
         try
             {
-        	if (byMeasure) 
-        		{
-        		snap = Seq.PPQ * seq.getBar();
-        		snapBy = true;
-        		}
+            if (byMeasure) 
+                {
+                snap = Seq.PPQ * seq.getBar();
+                snapBy = true;
+                }
                 
             for(Notes.Event event : selected)
                 {
@@ -757,11 +757,11 @@ public class NotesUI extends MotifUI
         lock.lock();
         try
             {
-        	if (byMeasure) 
-        		{
-        		snap = Seq.PPQ * seq.getBar();
-        		snapBy = true;
-        		}
+            if (byMeasure) 
+                {
+                snap = Seq.PPQ * seq.getBar();
+                snapBy = true;
+                }
                 
             for(Notes.Event event : selected)
                 {
@@ -834,47 +834,47 @@ public class NotesUI extends MotifUI
     
     /** Remove from the current selection any notes which have the default out */
     public void doDeselectDefaultOut()
-    	{
-		ArrayList<EventUI> selected = gridui.getSelectedEventUIs();
-		ReentrantLock lock = seq.getLock();
-		for(EventUI eventui : selected)
-			{
-			lock.lock();
-			try
-				{
-				if (eventui.event.getOut() == Notes.DEFAULT_OUT)
-					{
-					gridui.removeFromSelected(eventui);
-					}
-				}
-			finally
-				{
-				lock.unlock();
-				}
-			}
-		}
+        {
+        ArrayList<EventUI> selected = gridui.getSelectedEventUIs();
+        ReentrantLock lock = seq.getLock();
+        for(EventUI eventui : selected)
+            {
+            lock.lock();
+            try
+                {
+                if (eventui.event.getOut() == Notes.DEFAULT_OUT)
+                    {
+                    gridui.removeFromSelected(eventui);
+                    }
+                }
+            finally
+                {
+                lock.unlock();
+                }
+            }
+        }
  
     /** Remove from the current selection any notes which DO NOT have the default out */
     public void doDeselectOtherOuts()
-    	{
-		ArrayList<EventUI> selected = gridui.getSelectedEventUIs();
-		ReentrantLock lock = seq.getLock();
-		for(EventUI eventui : selected)
-			{
-			lock.lock();
-			try
-				{
-				if (eventui.event.getOut() != Notes.DEFAULT_OUT)
-					{
-					gridui.removeFromSelected(eventui);
-					}
-				}
-			finally
-				{
-				lock.unlock();
-				}
-			}
-		}
+        {
+        ArrayList<EventUI> selected = gridui.getSelectedEventUIs();
+        ReentrantLock lock = seq.getLock();
+        for(EventUI eventui : selected)
+            {
+            lock.lock();
+            try
+                {
+                if (eventui.event.getOut() != Notes.DEFAULT_OUT)
+                    {
+                    gridui.removeFromSelected(eventui);
+                    }
+                }
+            finally
+                {
+                lock.unlock();
+                }
+            }
+        }
 
     /** Scrolls to timestep 0 at roughly middle C. */
     public void doScrollToStart()
@@ -2045,11 +2045,11 @@ public class NotesUI extends MotifUI
         return console; 
         }
 
-	/** Revises the notes inspector to reflect the current Notes values. */
-	public void updateNotesInspector()
-		{
-		notesInspector.revise();
-		}
+    /** Revises the notes inspector to reflect the current Notes values. */
+    public void updateNotesInspector()
+        {
+        notesInspector.revise();
+        }
 
     /** Revises the child inspector's values to reflect the current Note values. */
     public void updateChildInspector(boolean forceRebuild)
@@ -2466,19 +2466,19 @@ public class NotesUI extends MotifUI
         { 
         // This is not presently working and is fact making things much worse
         /*
-        Point vp = null;
-        ReentrantLock lock = seq.getLock();
-        lock.lock();
-        try
-            {
-            vp = notes.getViewPosition();
-            }
-        finally { lock.unlock(); }
+          Point vp = null;
+          ReentrantLock lock = seq.getLock();
+          lock.lock();
+          try
+          {
+          vp = notes.getViewPosition();
+          }
+          finally { lock.unlock(); }
 
-        if (vp !=null) 
-            {
-            getPrimaryScroll().getViewport().setViewPosition(vp); 
-            }
+          if (vp !=null) 
+          {
+          getPrimaryScroll().getViewport().setViewPosition(vp); 
+          }
         */
         }
 

@@ -408,7 +408,7 @@ public class ArpeggioClip extends Clip
                     }
                 else 
                     {
-                    noteOff(note.out, note.pitch, 0x40, note.id);				// 64
+                    noteOff(note.out, note.pitch, 0x40, note.id);                               // 64
                     }
                 }
             else break;

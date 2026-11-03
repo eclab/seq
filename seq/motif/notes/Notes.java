@@ -341,14 +341,14 @@ public class Notes extends Motif
             }
             
 /*
-        public Note(int pitch, int velocity, int when, int length, int out)
-            {
-            super(when, out);
-            this.pitch = pitch;
-            this.velocity = velocity;
-            this.release = 64;
-            this.length = length;
-            }
+  public Note(int pitch, int velocity, int when, int length, int out)
+  {
+  super(when, out);
+  this.pitch = pitch;
+  this.velocity = velocity;
+  this.release = 64;
+  this.length = length;
+  }
 */
             
         public Note(JSONObject obj)

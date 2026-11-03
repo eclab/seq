@@ -193,7 +193,7 @@ public class ParallelInspector extends WidgetList
                     finally { lock.unlock(); }
                     }
                 };
-	        seed.setToolTipText(SEED_TOOLTIP);
+            seed.setToolTipText(SEED_TOOLTIP);
 
             }
         finally { lock.unlock(); }

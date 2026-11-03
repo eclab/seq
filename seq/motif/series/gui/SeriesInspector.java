@@ -99,7 +99,7 @@ public class SeriesInspector extends WidgetList
                     }
                 };
 
-        seed.setToolTipText(SEED_TOOLTIP);
+            seed.setToolTipText(SEED_TOOLTIP);
             }
         finally { lock.unlock(); }
 
@@ -114,7 +114,7 @@ public class SeriesInspector extends WidgetList
         add(result, BorderLayout.NORTH);               // re-add it as center
 
 
-		final JComboBox[] pouts = new JComboBox[Series.NUM_PARAMETERS];
+        final JComboBox[] pouts = new JComboBox[Series.NUM_PARAMETERS];
         final JComboBox[] types = new JComboBox[Series.NUM_PARAMETERS];
         final Box[] paramsBox = new Box[Series.NUM_PARAMETERS];
         final SmallDial[] params = new SmallDial[Series.NUM_PARAMETERS];

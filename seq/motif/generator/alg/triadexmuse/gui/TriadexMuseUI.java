@@ -65,7 +65,7 @@ public class TriadexMuseUI extends AlgorithmUI
         final TriadexMuse triadexmuse = (TriadexMuse) algorithm;
                 
         setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-		buildDefaults(generator);
+        buildDefaults(generator);
                 
         preset = new PushButton("Preset...", TriadexMuse.PRESET_NAMES)
             {

@@ -533,9 +533,9 @@ public class SeqUI extends JPanel
                 "<ul>" + 
                 "<li>One Notes motif (or several Notes grouped under a Parallel)" +
                 "<p><li>One single-track MIDI file, all Outputs on the same track (SMF type 0)<br>" +
-                	"(Note: if two Outputs have the same MIDI channel, they will not be distinguished)" +
+                "(Note: if two Outputs have the same MIDI channel, they will not be distinguished)" +
                 "<p><li>One multi-track MIDI file, each Output on a separate track (SMF type 1)<br>" +
-                	"(Note: Some DAWs, like older Ableton, cannot properly load a multi-track MIDI file)" +
+                "(Note: Some DAWs, like older Ableton, cannot properly load a multi-track MIDI file)" +
                 "<p><li><i>or</i>&nbsp;&nbsp;&nbsp;Many separate single-track MIDI files (SMF type 0), one per Output" +
                 "</ul>",
                 new String[] { "Notes", "One Single-Track", "One Multi-Track", "Many Single-Track", "Cancel" });
@@ -584,7 +584,7 @@ public class SeqUI extends JPanel
                     }
                 }
             else if (result == 1)
-            	{
+                {
                 FileDialog fd = new FileDialog(getFrame(), "Log MIDI to One Single-Track File...", FileDialog.SAVE);
                 disableMenuBar();
                 fd.setVisible(true);
@@ -594,14 +594,14 @@ public class SeqUI extends JPanel
                     {
                     try
                         {
-                    	logToNotes = false;
+                        logToNotes = false;
                         logFile = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), MIDI_EXTENSION));
                         
                         // make just one sequence, containing a single track
                         logs = new Sequence[1];
                         Track[] tracks = new Track[1];
-						logs[0] = new Sequence(Sequence.PPQ, Seq.PPQ);
-						tracks[0] = logs[0].createTrack();
+                        logs[0] = new Sequence(Sequence.PPQ, Seq.PPQ);
+                        tracks[0] = logs[0].createTrack();
                         ReentrantLock lock = seq.getLock();
                         lock.lock();
                         try 
@@ -629,9 +629,9 @@ public class SeqUI extends JPanel
                         finally { lock.unlock(); }
                         }
                     }
-            	}
+                }
             else if (result == 2)
-            	{
+                {
                 FileDialog fd = new FileDialog(getFrame(), "Log MIDI to One Multi-Track File ...", FileDialog.SAVE);
                 disableMenuBar();
                 fd.setVisible(true);
@@ -641,17 +641,17 @@ public class SeqUI extends JPanel
                     {
                     try
                         {
-                    	logToNotes = false;
+                        logToNotes = false;
                         logFile = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), MIDI_EXTENSION));
 
                         // make just one sequence, containing multiple tracks, one per out
                         logs = new Sequence[1];
-						logs[0] = new Sequence(Sequence.PPQ, Seq.PPQ);
+                        logs[0] = new Sequence(Sequence.PPQ, Seq.PPQ);
                         Track[] tracks = new Track[Seq.NUM_OUTS];
-						for(int i = 0; i < tracks.length; i++) 
-							{
-							tracks[i] = logs[0].createTrack();
-							}
+                        for(int i = 0; i < tracks.length; i++) 
+                            {
+                            tracks[i] = logs[0].createTrack();
+                            }
                         ReentrantLock lock = seq.getLock();
                         lock.lock();
                         try 
@@ -679,9 +679,9 @@ public class SeqUI extends JPanel
                         finally { lock.unlock(); }
                         }
                     }
-            	}
+                }
             else if (result == 3)
-            	{
+                {
                 FileDialog fd = new FileDialog(getFrame(), "Log MIDI to Many Single Track Files ...", FileDialog.SAVE);
                 disableMenuBar();
                 fd.setVisible(true);
@@ -691,17 +691,17 @@ public class SeqUI extends JPanel
                     {
                     try
                         {
-                    	logToNotes = false;
+                        logToNotes = false;
                         logFile = new File(fd.getDirectory(), ensureFileEndsWith(fd.getFile(), MIDI_EXTENSION));
 
                         // make multiple sequences, one per out, each containing a single track
                         logs = new Sequence[Seq.NUM_OUTS];
                         Track[] tracks = new Track[Seq.NUM_OUTS];
-						for(int i = 0; i < tracks.length; i++) 
-							{
-							logs[i] = new Sequence(Sequence.PPQ, Seq.PPQ);
-							tracks[i] = logs[i].createTrack();
-							}
+                        for(int i = 0; i < tracks.length; i++) 
+                            {
+                            logs[i] = new Sequence(Sequence.PPQ, Seq.PPQ);
+                            tracks[i] = logs[i].createTrack();
+                            }
                         ReentrantLock lock = seq.getLock();
                         lock.lock();
                         try 
@@ -729,21 +729,21 @@ public class SeqUI extends JPanel
                         finally { lock.unlock(); }
                         }
                     }
-            	}
-			else
-				{
-				// cancelled, clean up
-				logItem.setText("Log MIDI ...");
-				logFile = null;
-				logs = null;
-				ReentrantLock lock = seq.getLock();
-				lock.lock();
-				try 
-					{ 
-					seq.setTracks(null);
-					}
-				finally { lock.unlock(); }
-				}
+                }
+            else
+                {
+                // cancelled, clean up
+                logItem.setText("Log MIDI ...");
+                logFile = null;
+                logs = null;
+                ReentrantLock lock = seq.getLock();
+                lock.lock();
+                try 
+                    { 
+                    seq.setTracks(null);
+                    }
+                finally { lock.unlock(); }
+                }
             }
         }
 
@@ -1612,27 +1612,27 @@ public class SeqUI extends JPanel
                             }
                         }
                     else if (logs.length > 1)
-                    	{
-                    	// multiple sequences, each with one track
+                        {
+                        // multiple sequences, each with one track
                         for(int i = 0; i < logs.length; i++)
                             {
                             if (seq.isValidTrack(i))
                                 {
                                 File file = new File(logFile.getCanonicalPath() + "." + (i + 1) + MIDI_EXTENSION);
-                                javax.sound.midi.MidiSystem.write(logs[i], 0, file);		// Write out multiple MIDI SMF 0 Files
+                                javax.sound.midi.MidiSystem.write(logs[i], 0, file);            // Write out multiple MIDI SMF 0 Files
                                 }
                             }
-                    	}
+                        }
                     else
-                    	{
-                    	// one sequence, with multiple tracks
-						javax.sound.midi.MidiSystem.write(logs[0], 1, logFile);				// Write out one MIDI SMF 1 File
-                    	}
+                        {
+                        // one sequence, with multiple tracks
+                        javax.sound.midi.MidiSystem.write(logs[0], 1, logFile);                         // Write out one MIDI SMF 1 File
+                        }
                     }
                 else
                     {
                     // one sequence, only one track with all devices merged
-                    javax.sound.midi.MidiSystem.write(logs[0], 0, logFile);				// Write out one MIDI SMF 0 File
+                    javax.sound.midi.MidiSystem.write(logs[0], 0, logFile);                             // Write out one MIDI SMF 0 File
                     }
                 }
             catch (IOException ex)
@@ -2139,11 +2139,11 @@ public class SeqUI extends JPanel
                 tracks[channel].add(e);
                 }
             else if (message instanceof SysexMessage)
-            	{
+                {
                 int channel = 0;
                 if (tracks[channel] == null) tracks[channel] = new ArrayList();
                 tracks[channel].add(e);
-            	}
+                }
             else
                 {
                 if (tracks[16] == null) tracks[16] = new ArrayList();

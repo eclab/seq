@@ -443,12 +443,12 @@ public class Prefs
         }
         
     public static void setLastTupleInClock(int val)
-    	{
-    	setLastX("" + val, "LastTupleInClock");
-    	}
+        {
+        setLastX("" + val, "LastTupleInClock");
+        }
 
     public static int getLastTupleInClock()
-    	{
+        {
         String s = getLastX("LastTupleInClock");
         try
             {
@@ -459,15 +459,15 @@ public class Prefs
             {
             }
         return 0;
-    	}
+        }
 
     public static void setLastTupleOutClock(int index, boolean val)
-    	{
-    	setLastX("" + val, "LastTupleOutClock" + index);
-    	}
+        {
+        setLastX("" + val, "LastTupleOutClock" + index);
+        }
 
     public static boolean getLastTupleOutClock(int index)
-    	{
+        {
         String s = getLastX("LastTupleOutClock" + index);
         try
             {
@@ -478,7 +478,7 @@ public class Prefs
             {
             }
         return true;
-    	}
+        }
 
     }
 

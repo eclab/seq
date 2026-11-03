@@ -95,8 +95,8 @@ public class Seq
     int time = 0;
     // Which clips are playing RIGHT NOW?
 //    ArrayList<Clip> playingClips = new ArrayList<>();
-	// Do I display time instead of beats?
-	boolean showsTime = false;
+    // Do I display time instead of beats?
+    boolean showsTime = false;
     
 
     ///// MIDI ROUTING
@@ -852,15 +852,15 @@ public class Seq
     public int getBPM() { return bpm; } 
     
     public boolean getShowsTime() 
-    	{
-    	return showsTime; 
-    	}
+        {
+        return showsTime; 
+        }
     
     public void setShowsTime(boolean val)
-    	{
-    	showsTime = val;
-    	Prefs.setLastBoolean("seq.Seq.showstime", val);
-    	}
+        {
+        showsTime = val;
+        Prefs.setLastBoolean("seq.Seq.showstime", val);
+        }
     
     void setCountIn(final int val)
         {

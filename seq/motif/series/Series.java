@@ -19,7 +19,7 @@ public class Series extends Motif
     public static final int QUANTIZATION_QUARTER = 2;
     public static final int QUANTIZATION_FOUR_QUARTERS = 3;
 
-	public static final int DEFAULT_OUT = -1;
+    public static final int DEFAULT_OUT = -1;
 
     public static final int NONE = 0;
     public static final int CC7 = 1;
@@ -482,9 +482,9 @@ public class Series extends Motif
         {
         super(seq);
         for(int i = 0; i < NUM_PARAMETERS; i++) 
-        	{
-        	midiParameterOuts[i] = DEFAULT_OUT;
-        	}
+            {
+            midiParameterOuts[i] = DEFAULT_OUT;
+            }
         }
                 
                 
@@ -546,8 +546,8 @@ public class Series extends Motif
             {
             outArray.put(getMIDIParameterOut(i));
             }
-		to.put("outs", outArray);
-		
+        to.put("outs", outArray);
+                
         to.put("out", getMIDIParameterOut());
         to.put("rate", getMIDIParameterRate());
 /*

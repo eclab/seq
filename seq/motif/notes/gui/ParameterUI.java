@@ -299,7 +299,7 @@ public class ParameterUI extends JComponent
     /** Rebuilds the ParameterUI entirely.  This discards all the EventUIs and creates new ones. */
     public void rebuild()
         {
-		ArrayList<Notes.Event> events = null;
+        ArrayList<Notes.Event> events = null;
         ReentrantLock lock = getSeq().getLock();
         lock.lock();
         try 

@@ -189,9 +189,9 @@ public class Algorithm implements Cloneable
         {
         obj.put("class", getClass().getName());
         if (state != null)
-        	{
-        	obj.put("state", state);
-        	}
+            {
+            obj.put("state", state);
+            }
         }
 
     /** Returns a new AlgorithmNode associated with this Algorithm.  You should override this to return the appropriate AlgorithmNode subclass.  Don't call super.buildNode(...) */
@@ -214,21 +214,21 @@ public class Algorithm implements Cloneable
         }
         
     public void setState(JSONObject state)
-    	{
-    	this.state = state;
-    	}
+        {
+        this.state = state;
+        }
 
     /** If your AlgorithmNode is capable of saving its current runtime state to a JSONObject and
-    	loading the same later, return TRUE.  Otherwise return FALSE (the default behavior).  */
-	public boolean canSave()
-		{
-		return false;
-		}
+        loading the same later, return TRUE.  Otherwise return FALSE (the default behavior).  */
+    public boolean canSave()
+        {
+        return false;
+        }
 
     public JSONObject getState()
-    	{
-    	return state;
-    	}
+        {
+        return state;
+        }
                 
     /** Return, as an HTML String, a description of this Algorithm. */
     public String getHTMLDescription() { return "<html><h1>None</h1><p>Select an Algorithm at right.</html>"; }

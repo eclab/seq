@@ -271,7 +271,7 @@ public class NoteUI extends EventUI implements Comparable
                 mouseDown = false;
                 mouseDownEvent = null;
 
-				getGridUI().resetOriginalNoteLengths();		// so we store new ones on dragging next time
+                getGridUI().resetOriginalNoteLengths();         // so we store new ones on dragging next time
 
                 if (MotifUI.shiftOrRightMouseButton(e))
                     {

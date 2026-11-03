@@ -538,7 +538,7 @@ public class GridUI extends JComponent
         
     ArrayList<Integer> originalNoteLengths = null;
     int originalLength = 0;
-	public void resetOriginalNoteLengths() { originalNoteLengths = null; }
+    public void resetOriginalNoteLengths() { originalNoteLengths = null; }
 
     /** Resizes the selected notes to a length indicated by the difference from the old origin
         to the new event, quantized. */
@@ -557,17 +557,17 @@ public class GridUI extends JComponent
             currentLen = note.length;
 
             if (originalNoteLengths == null)
-            	{
-            	originalLength = currentLen;
-            	originalNoteLengths = new ArrayList<Integer>();
-            	for(EventUI eventui : selected)
-            		{
-            		if (eventui instanceof NoteUI)
-            			{
-            			originalNoteLengths.add(eventui.getNote().length);
-            			}
-            		}
-            	}
+                {
+                originalLength = currentLen;
+                originalNoteLengths = new ArrayList<Integer>();
+                for(EventUI eventui : selected)
+                    {
+                    if (eventui instanceof NoteUI)
+                        {
+                        originalNoteLengths.add(eventui.getNote().length);
+                        }
+                    }
+                }
             }
         finally
             {

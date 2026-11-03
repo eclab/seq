@@ -245,8 +245,8 @@ public abstract class Motif implements Cloneable
     // while the Motif is in use.
     int order;
     // the local random number seed if any
-	double localSeed;
-	
+    double localSeed;
+        
     public Motif(Seq seq)
         {
         this.seq = seq;
@@ -377,12 +377,12 @@ public abstract class Motif implements Cloneable
         
     ///// RANDOM NUMBER SEED
     
-	/** If the seed is 0, then we presume it is not set. */
-	// The seed is a DOUBLE from 0...1 so it can be stored in a SmallDial
+    /** If the seed is 0, then we presume it is not set. */
+    // The seed is a DOUBLE from 0...1 so it can be stored in a SmallDial
     public double getLocalRandomSeed() { return localSeed; }
 
-	/** If the seed is 0, then we presume it is not set. */
-	// The seed is a DOUBLE from 0...1 so it can be stored in a SmallDial
+    /** If the seed is 0, then we presume it is not set. */
+    // The seed is a DOUBLE from 0...1 so it can be stored in a SmallDial
     public void setLocalRandomSeed(double val) { localSeed = val; }
 
 
@@ -935,9 +935,9 @@ public abstract class Motif implements Cloneable
         
         // random
         if (getLocalRandomSeed() != 0)
-        	{
-        	obj.put("rnd", getLocalRandomSeed());
-        	}
+            {
+            obj.put("rnd", getLocalRandomSeed());
+            }
         
         // param names -- only save if they've been touched
         boolean pnameSet = false;

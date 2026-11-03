@@ -114,23 +114,23 @@ public class EventsUI extends JComponent
     public void rebuild()
         {
         /*
-        ArrayList<ArrayList<Notes.Event>> events = null;
-        ReentrantLock lock = seq.getLock();
-        lock.lock();
-        try 
-            {
-            events = getNotesUI().getNotes().getEventsOfTypes(types);
-            }
-        finally
-            {
-            lock.unlock();
-            }
+          ArrayList<ArrayList<Notes.Event>> events = null;
+          ReentrantLock lock = seq.getLock();
+          lock.lock();
+          try 
+          {
+          events = getNotesUI().getNotes().getEventsOfTypes(types);
+          }
+          finally
+          {
+          lock.unlock();
+          }
         
-        int size = events.size();
-        for(int i = 0; i < parameteruis.size(); i++)
-            {
-            parameteruis.get(i).rebuild(events.get(i));
-            }
+          int size = events.size();
+          for(int i = 0; i < parameteruis.size(); i++)
+          {
+          parameteruis.get(i).rebuild(events.get(i));
+          }
         */
         for(int i = 0; i < parameteruis.size(); i++)
             {

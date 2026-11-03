@@ -130,12 +130,12 @@ public class GeneratorClip extends Clip
             }
         node.reset();
         
-    	JSONObject state = generator.getAlgorithm().getState();
-    	if (state != null)
-    		{
-    		node.load(state);
-			}
-			
+        JSONObject state = generator.getAlgorithm().getState();
+        if (state != null)
+            {
+            node.load(state);
+            }
+                        
         loadRandomValue(clip, generator.getChildren().get(0));
         clip.reset();
         }
@@ -354,7 +354,7 @@ public class GeneratorClip extends Clip
                 
         loadParameterValues(clip, generator.getChildren().get(0));
         boolean clipdone = clip.advance();
-        if (clip instanceof seq.motif.blank.BlankClip) clipdone = false;				// blanks are never done, so we continue with the algorithm
+        if (clip instanceof seq.motif.blank.BlankClip) clipdone = false;                                // blanks are never done, so we continue with the algorithm
         
         if (node == null)
             {
@@ -375,12 +375,12 @@ public class GeneratorClip extends Clip
             {
             node = generator.getAlgorithm().buildNode(seq, this);
             }
-		
-		try
-			{
-	        return node.save(new JSONObject());
-	        }
-	    catch (JSONException ex) { return null; }
+                
+        try
+            {
+            return node.save(new JSONObject());
+            }
+        catch (JSONException ex) { return null; }
         }
 
     public void load(JSONObject obj)
@@ -393,12 +393,12 @@ public class GeneratorClip extends Clip
             {
             node = generator.getAlgorithm().buildNode(seq, this);
             }
-		
-		try
-			{
-			node.load(obj);
-			}
-		catch (JSONException ex) { } 
+                
+        try
+            {
+            node.load(obj);
+            }
+        catch (JSONException ex) { } 
         }
     }
 

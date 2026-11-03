@@ -294,7 +294,7 @@ public class NotesClip extends Clip
                             if (isNoteOn(shortmessage))
                                 {
                                 int pitch = shortmessage.getData1();
-       		 		            int vel = shortmessage.getData2();
+                                int vel = shortmessage.getData2();
                                 Notes.Note noteOn = new Notes.Note(pitch, shortmessage.getData2(), pos, 1, vel, Notes.DEFAULT_OUT);             // gotta have something for length, 64 default release velocity for the moment
                                 recording.add(noteOn);
                                 //if (notes.getEcho()) noteOn(out, pitch, noteOn.velocity, NO_NOTE_ID);

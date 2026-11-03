@@ -33,28 +33,28 @@ public class Walk extends Algorithm
     public static final String[] RATE_NAMES = { "Whole Note", "Half Note", "Quarter Note", "Eighth Note", "Triplet", "Sixteenth Note", "Triplet Sixteenth Note", "Thirty-Second Note" };
 
 /*
-	public static final int[][] SCALES = 
-		{
-		{ 0, 2, 4, 5, 7, 9, 11 },			// Major
-		{ 0, 2, 3, 5, 7, 9, 10 },			// Dorian
-		{ 0, 1, 3, 5, 7, 8, 10 },			// Phrygian
-		{ 0, 2, 4, 6, 7, 9, 10 },			// Lydian
-		{ 0, 2, 4, 5, 7, 9, 10 },			// Mixolydian
-		{ 0, 2, 3, 5, 7, 8, 10 },			// Natural Minor
-		{ 0, 1, 3, 5, 6, 8, 10 },			// Locrian
-		{ 0, 2, 3, 5, 7, 8, 11 },			// Harmonic Minor
-		{ 0, 2, 3, 5, 7, 9, 11 },			// Melodic Minor
-		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },			// Chromatic
-		{ 0, 7 },			// Fifths
-		{ 0, 4, 7 },		// Major
-		{ 0, 3, 7 },		// Minor
-		{ 0, 4, 8 },		// Aug
-		{ 0, 4, 7, 11 },	// Maj7
-		{ 0, 3, 7, 10 },	// Min7
-		{ 0, 4, 7, 10 },	// Dom7
-		{ 0, 3, 6, 9 },		// Dim7
-		{ 0, 2, 4, 7, 9 },	// Pentatonic
-		};
+  public static final int[][] SCALES = 
+  {
+  { 0, 2, 4, 5, 7, 9, 11 },                       // Major
+  { 0, 2, 3, 5, 7, 9, 10 },                       // Dorian
+  { 0, 1, 3, 5, 7, 8, 10 },                       // Phrygian
+  { 0, 2, 4, 6, 7, 9, 10 },                       // Lydian
+  { 0, 2, 4, 5, 7, 9, 10 },                       // Mixolydian
+  { 0, 2, 3, 5, 7, 8, 10 },                       // Natural Minor
+  { 0, 1, 3, 5, 6, 8, 10 },                       // Locrian
+  { 0, 2, 3, 5, 7, 8, 11 },                       // Harmonic Minor
+  { 0, 2, 3, 5, 7, 9, 11 },                       // Melodic Minor
+  { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },                       // Chromatic
+  { 0, 7 },                       // Fifths
+  { 0, 4, 7 },            // Major
+  { 0, 3, 7 },            // Minor
+  { 0, 4, 8 },            // Aug
+  { 0, 4, 7, 11 },        // Maj7
+  { 0, 3, 7, 10 },        // Min7
+  { 0, 4, 7, 10 },        // Dom7
+  { 0, 3, 6, 9 },         // Dim7
+  { 0, 2, 4, 7, 9 },      // Pentatonic
+  };
 */
     public static final int SCALES[][] = 
         {
@@ -106,15 +106,15 @@ public class Walk extends Algorithm
         
     public static final String[] PITCH_METHOD_NAMES = { "1/f (Pink Noise)", "Binomial" };
     public static final String[] LENGTH_METHOD_NAMES = { "1/f (Pink Noise)", "Binomial" };
-		
-	public static final String[] SCALE_NAMES = 
-		{
-		"Major", "Harmonic Minor", "Melodic Minor", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolean (Natural Minor)", "Locrian", "Blues Minor", 
-		"Pentatonic", "Minor Pentatonic", "Japanese Pentatonic", "Whole Tone", "Hungarian Gypsy", "Phrygian Dominant", "Persian", "Diminished Scale (Octatonic)", "Augmented Scale (Hexatonic)", "Chromatic", 
-		"M3 Interval", "m3 Interval", "4th Interval", "5th Interval", "4th + 5th", "Major Triad", "Minor Triad", "Major Triad + 6th", "Minor Triad + 6th", "Augmented Triad",
-		"Dominant 7", "Major 7", "Minor 7", "Major 7 + 2nd", "Minor 7 + 2nd", "Diminished 7", "Minor-Major 7"
-		};
-		
+                
+    public static final String[] SCALE_NAMES = 
+        {
+        "Major", "Harmonic Minor", "Melodic Minor", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolean (Natural Minor)", "Locrian", "Blues Minor", 
+        "Pentatonic", "Minor Pentatonic", "Japanese Pentatonic", "Whole Tone", "Hungarian Gypsy", "Phrygian Dominant", "Persian", "Diminished Scale (Octatonic)", "Augmented Scale (Hexatonic)", "Chromatic", 
+        "M3 Interval", "m3 Interval", "4th Interval", "5th Interval", "4th + 5th", "Major Triad", "Minor Triad", "Major Triad + 6th", "Minor Triad + 6th", "Augmented Triad",
+        "Dominant 7", "Major 7", "Minor 7", "Major 7 + 2nd", "Minor 7 + 2nd", "Diminished 7", "Minor-Major 7"
+        };
+                
     public int getRateIndex()
         { 
         for(int i = 0; i < RATES.length; i++) 
@@ -127,15 +127,15 @@ public class Walk extends Algorithm
     public static final int MAX_TRANSPOSE = 48;
     public static final int LOW_NOTE = 60 - 24;
 
-	public static final int PITCH_METHOD_PINK = 0;
-	public static final int PITCH_METHOD_BINOMIAL = 1;
-	public static final int LENGTH_METHOD_PINK = 0;
-	public static final int LENGTH_METHOD_BINOMIAL = 1;
+    public static final int PITCH_METHOD_PINK = 0;
+    public static final int PITCH_METHOD_BINOMIAL = 1;
+    public static final int LENGTH_METHOD_PINK = 0;
+    public static final int LENGTH_METHOD_BINOMIAL = 1;
 
-	int startPitch = 60;		// MIDDLE C
-	int pitchMethod = PITCH_METHOD_PINK;
-	int lengthMethod = LENGTH_METHOD_PINK;
-	int scale = 0;				// Major
+    int startPitch = 60;            // MIDDLE C
+    int pitchMethod = PITCH_METHOD_PINK;
+    int lengthMethod = LENGTH_METHOD_PINK;
+    int scale = 0;                          // Major
     int transpose = 24;
     int velocity = 64;
     int rate = RATE_EIGHTH_NOTES;
@@ -148,41 +148,41 @@ public class Walk extends Algorithm
     double tether = 0.25;
     
     /** Given a current note (in the scale), and a number of notes in the scale to shift up or down, and a scale,
-    	returns the resulting note.  If the shift would exceed note bounds, returns -1. */
+        returns the resulting note.  If the shift would exceed note bounds, returns -1. */
     public int shiftNotes(int currentNote, int shift)
-    	{
-    	if (shift == 0) return currentNote;
-    	else if (shift > 0) 
-    		{
-    		if (currentNote == 127) return -1;
-    		int count = 0;
-    		for(int i = currentNote + 1; i < 128; i++)
-    			{
-    			if (SCALES[scale][i % 12] == 1) { count++; }
-    			if (count == shift) return i;
-    			}
-    		return -1;
-    		}
-    	else
-    		{
-    		if (currentNote == 0) return -1;
-    		int last = currentNote;
-    		int count = 0;
-    		for(int i = currentNote - 1; i >= 0; i--)
-    			{
-    			if (SCALES[scale][i % 12] == 1) { count++; }
-    			if (count == 0 - shift) return i;
-    			}
-    		return -1;
-    		}
-    	}
+        {
+        if (shift == 0) return currentNote;
+        else if (shift > 0) 
+            {
+            if (currentNote == 127) return -1;
+            int count = 0;
+            for(int i = currentNote + 1; i < 128; i++)
+                {
+                if (SCALES[scale][i % 12] == 1) { count++; }
+                if (count == shift) return i;
+                }
+            return -1;
+            }
+        else
+            {
+            if (currentNote == 0) return -1;
+            int last = currentNote;
+            int count = 0;
+            for(int i = currentNote - 1; i >= 0; i--)
+                {
+                if (SCALES[scale][i % 12] == 1) { count++; }
+                if (count == 0 - shift) return i;
+                }
+            return -1;
+            }
+        }
     
     /*
-    public Walk copy()
-        {
-        Walk lm = (Walk)(super.copy());
-        return lm;
-        }
+      public Walk copy()
+      {
+      Walk lm = (Walk)(super.copy());
+      return lm;
+      }
     */
         
     public Walk(Generator generator)
