@@ -127,7 +127,6 @@ public class GeneratorClip extends Clip
         if (node == null)
             {
             node = generator.getAlgorithm().buildNode(seq, this);
-            System.err.println(node);
             }
         node.reset();
         
@@ -338,7 +337,6 @@ public class GeneratorClip extends Clip
             }
                         
         node = null; 
-        System.err.println("node cleared");
         }
 
     public boolean process()
@@ -361,11 +359,9 @@ public class GeneratorClip extends Clip
         if (node == null)
             {
             node = generator.getAlgorithm().buildNode(seq, this);
-            System.err.println("Node " + node);
             }
         boolean nodedone = node.process(notes);
-            System.err.println("Processed " + node);
-                
+            
         if (clipdone || nodedone) return true;
         else if (getPosition() >= generator.getEnd() - 1) return true;
         else return false;

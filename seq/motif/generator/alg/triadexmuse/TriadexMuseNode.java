@@ -18,37 +18,12 @@ public class TriadexMuseNode extends AlgorithmNode
     {
     private static final long serialVersionUID = 1;
 
+    public static final int RATE_DIVISOR = 2;
+
     boolean lfsrAdvance;
     int lfsr;
     int[] counter = new int[7];
     
-    /*
-    public JSONObject save(JSONObject obj) throws JSONException
-        {
-        JSONArray array = new JSONArray();
-        for(int i = 0; i < interval.length; i++)
-            {
-            array.put(interval[i]);
-            }
-        obj.put("int", array);
-        array = new JSONArray();
-        for(int i = 0; i < theme.length; i++)
-            {
-            array.put(theme[i]);
-            }
-        obj.put("thm", array);
-        obj.put("trans", transpose);
-        obj.put("vel", velocity);
-        obj.put("rest", rest);
-        obj.put("rate", rate);
-        obj.put("gate", gate);
-        obj.put("leg", legato);
-        obj.put("sca", scale);
-        }
-    */
-    
-//    int[] PITCHES = { 0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24 };
-//    String[] KEYS = { "C", "D", "E", "F", "G", "A", "B" };
     int getNote()
         {
         int note = 0;
@@ -66,22 +41,6 @@ public class TriadexMuseNode extends AlgorithmNode
             if (i == 3) multiplicand = 7;
             else multiplicand *= 2;
             }
-/*
-  System.err.print(" " + KEYS[note % 7] + (note / 7 + 1));
-
-  System.err.print(" -> 0 1 |");
-  for(int i = 0; i < 7; i++)
-  {
-  System.err.print(" " + (counter[i] >= 0 ? 1 : 0));
-  }
-  System.err.print(" |");
-  for(int i = 0; i < 31; i++)
-  {
-  System.err.print(" " + ((lfsr >>> i) & 0x1));
-  }
-  System.err.println();
-*/
-        // return PITCHES[note];
         return triadexmuse.getPitch(note);
         }
     
@@ -189,7 +148,7 @@ public class TriadexMuseNode extends AlgorithmNode
         {
         TriadexMuse triadexmuse = (TriadexMuse)getAlgorithm();
         
-        int rate = triadexmuse.getRate();
+        int rate = triadexmuse.getRate() / RATE_DIVISOR;
         if (getPosition() % rate != 0) return false;
         
         advanceCounter();
@@ -237,43 +196,6 @@ public class TriadexMuseNode extends AlgorithmNode
         
         return false;
         }
-
-
-
-    /** Writes the initial AlgorithmNode state to the the given JSONObject.  
-    	If your alorithm can save runtime state, implement this and OBJ.  Otherwise don't and return NULL. */
-/*
-    public JSONObject save(JSONObject obj) throws JSONException
-        {
-        obj.put("adv", lsfrAdvance);
-        obj.put("lfsr", lfsr);
-        JSONArray intArray = new JSONArray();
-        for(int i : counter)
-        	{
-        	intArray.put(i);
-        	}
-        obj.put("count", intArray);
-        return obj;
-        }
-*/
-
-    /** Reads the initial AlgorithmNode state from the given JSObject.  
-    	If your algorithm can save runtime state, implement this.  Otherwise don't. */
-/*    public void load(JSONObject obj) throws JSONException
-        {
-        if (obj != null)
-        	{
-        	JSONArray intArray = obj.optJSONArray("count", null);
-        	if (intArray != null)
-        		{
-        		for(int i = 0; i < counter.length; i++)
-        			{
-        			counter[i] = intArray.optInt(i, 0);
-        			}
-        	obj.optBoolean("adv", false);
-        	}
-        }
-*/
     }
         
         

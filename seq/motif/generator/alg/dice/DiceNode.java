@@ -18,7 +18,8 @@ public class DiceNode extends AlgorithmNode
     {
     private static final long serialVersionUID = 1;
     
-public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
+    public static final int RATE_MULTIPLIER = 2;
+	public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
 
 	class Note implements Comparable<Note>
 		{
@@ -56,7 +57,7 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
         int[][][] treble = dice.getTreble();
         int[][][] bass = dice.getBass();
         int velocity = dice.getVelocity();
-        int rate = dice.getRate();
+        int rate = dice.getRate() * RATE_MULTIPLIER;
         int treblePos = 0;
         int bassPos = 0;
         int transpose = dice.getTranspose();
@@ -80,7 +81,7 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
 									rand.nextInt(indices[song][measure].length) / 2;
 						fragment = indices[song][measure][num] - 1;			// offset
 						}
-					System.err.println("Measure " + (measure + 1) + " Fragment " + (fragment + 1));
+					//System.err.println("Measure " + (measure + 1) + " Fragment " + (fragment + 1));
 					
 					bassPos = treblePos;			// just to make sure we're in sync
 					
@@ -88,8 +89,7 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
 					for(int chord = 0; chord < treble[fragment].length; chord++)
 						{
 						int length = treble[fragment][chord][treble[fragment][chord].length - 1];
-						int interval = (length == 16 ? dice.getRate() / 2 :
-											(length == 8 ? dice.getRate() : dice.getRate() * 2));
+						int interval = (length == 16 ? rate / 2 : (length == 8 ? rate : rate * 2));
 
 						for(int note = 0; note < treble[fragment][chord].length - 1; note++)
 							{
@@ -107,8 +107,7 @@ public static final String[] KEYS = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G",
 					for(int chord = 0; chord < bass[fragment].length; chord++)
 						{
 						int length = bass[fragment][chord][bass[fragment][chord].length - 1];
-						int interval = (length == 16 ? dice.getRate() / 2 :
-											(length == 8 ? dice.getRate() : dice.getRate() * 2));
+						int interval = (length == 16 ? rate / 2 : (length == 8 ? rate : rate * 2));
 
 						for(int note = 0; note < bass[fragment][chord].length - 1; note++)
 							{
