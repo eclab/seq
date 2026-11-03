@@ -327,7 +327,7 @@ public class ArpeggioInspector extends WidgetList
         seed.setToolTipText(SEED_TOOLTIP);
 
         build(new String[] { "Name", "Out", "Omni Input", "Step Rate", "Arpeggio Type", "Octaves", "Pattern Length", "Velocity", "New Chord Reset", 
-                "Activity", "Always", "From", "To", "Seed"}, 
+                "Seed", "Activity", "Always", "From", "To"}, 
             new JComponent[] 
                 {
                 name,
@@ -339,11 +339,11 @@ public class ArpeggioInspector extends WidgetList
                 length.getLabelledDial(String.valueOf(Arpeggio.MAX_PATTERN_LENGTH)),
                 velocityPanel,
                 newChordReset,
+                seed.getLabelledDial("0.8888"),
                 null,                           // separator
                 activeAlways,
                 activeFrom,
                 activeTo,
-                seed.getLabelledDial("0.8888"),
                 });
 
         }

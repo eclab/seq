@@ -322,7 +322,7 @@ public class ModulationInspector extends WidgetList
 
         seed.setToolTipText(SEED_TOOLTIP);
 
-        build(new String[] { "Name", "Repeats", "Child MIDI", "Rate", "Transpose", "Gain", "Out", "Seed" }, 
+        build(new String[] { "Name", "Repeats", "Seed", "Child MIDI", "Rate", "Transpose", "Gain", "Out" }, 
             new JComponent[] 
                 {
                 name,
