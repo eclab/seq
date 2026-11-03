@@ -871,6 +871,14 @@ The Series Inspector has an expandable region called {\bf Parameter Names}, and 
 
 The Series Inspector also has an expandable region called {\bf MIDI Parameters}.  These are discussed later in Section~\ref{mididata} (\textbf{\textit{Parameterized Control of MIDI Data}}).
 
+Series Inspector has an expandable region called {\bf Parameter Names}, and each Child Inspector has an expandable region called {\bf Arguments}. Furthermore, many dials have Special Values called ``Rand'', ``Param 1'', etc.  These are explained in Section~\ref{parameters}.
+
+The Series Inspector also has an expandable region called {\bf MIDI Parameters}.  These are discussed later in Section~\ref{mididata} (\textbf{\textit{Parameterized Control of MIDI Data}}).
+
+\paragraph{The Seed}
+
+Normally random decisions in this Motif are made by drawing numbers from Seq's global random number generator.  However often you may want them to draw from a local private generator so draws from external Motifs don't interfere with their random values.  To set up this local generator and seed it, change the {\bf Seed} parameter away from {\bf Global}, and set it to some numerical value (which becomes the random number seed).  See ``Deterministic Per-Motif Seeds'' in Section~\ref{random} (Random Numbers) for more information.
+
 \clearpage
 
 \begin{figure}[t]
@@ -955,6 +963,10 @@ The Parallel Inspector has an expandable region called {\bf Parameter Names}, an
 
 One trick you can do with Probabilities: bind certain child probabilities to an argument.  Then in a parent you can mute the child at certain iterations by setting that argument to 0.0 versus 1.0.
 
+\paragraph{The Seed}
+
+Normally random decisions in this Motif are made by drawing numbers from Seq's global random number generator.  However often you may want them to draw from a local private generator so draws from external Motifs don't interfere with their random values.  To set up this local generator and seed it, change the {\bf Seed} parameter away from {\bf Global}, and set it to some numerical value (which becomes the random number seed).  See ``Deterministic Per-Motif Seeds'' in Section~\ref{random} (Random Numbers) for more information.
+
 
 
 \clearpage
@@ -1035,6 +1047,11 @@ Iterate normally updates its position in the loop regardless of which Thread is 
 As a (Motif node) Child of the Automaton emits MIDI, that MIDI is handed to the Automaton, which has a chance to modify it before it is passed on.  There are several available features for modification of a given Child's MIDI in its Inspector.  {\bf Transpose} transposes all notes by some number of semitones up or down.  {\bf Restrict} forces the notes to line up with notes in a given scale: notes that don't match are transposed down to the nearest note in the scale.  {\bf Gain} changes the overall volume (velocity) of notes.  And {\bf Out} changes the MIDI Out being used (by default it is set to {\it Don't Change}.
 
 Finally, {\bf Rate} changes the speed at which the child is played, faster or slower.  Keep in mind that Seq has a resolution of 192 ticks per beat (PPQ), so changing the speed\,---\,particularly faster\,---\,can quickly result in inaccuracies.    Some {\bf Presets} are provided, including a Custom Rate option.
+
+\paragraph{The Seed}
+
+Normally random decisions in this Motif are made by drawing numbers from Seq's global random number generator.  However often you may want them to draw from a local private generator so draws from external Motifs don't interfere with their random values.  To set up this local generator and seed it, change the {\bf Seed} parameter away from {\bf Global}, and set it to some numerical value (which becomes the random number seed).  See ``Deterministic Per-Motif Seeds'' in Section~\ref{random} (Random Numbers) for more information.
+
 
 \clearpage
 
@@ -1190,7 +1207,11 @@ Arpeggio is a filter: its main job is not to control how and when its child play
 
 When Arpeggio is {\it inactive} it just passes its child's MIDI straight through to its parent, rather than intercepting it to do arpeggios.
 
-\bump
+\paragraph{The Seed}
+
+Normally random decisions in this Motif are made by drawing numbers from Seq's global random number generator.  However often you may want them to draw from a local private generator so draws from external Motifs don't interfere with their random values.  To set up this local generator and seed it, change the {\bf Seed} parameter away from {\bf Global}, and set it to some numerical value (which becomes the random number seed).  See ``Deterministic Per-Motif Seeds'' in Section~\ref{random} (Random Numbers) for more information.
+
+\clearpage 
 
 \begin{figure}[t]
 \centering
@@ -1354,6 +1375,10 @@ This effect converts a note into a full chord or interval.  It is similar to the
 
 Many Effect features can be {\bf Parameterized} by double-clicking on the dials.  For more on parameterization, see Section~\ref{parameters}, (\textbf{\textit{Parameterized Control of MIDI Data}}).
 
+\paragraph{The Seed}
+
+Normally random decisions in this Motif are made by drawing numbers from Seq's global random number generator.  However often you may want them to draw from a local private generator so draws from external Motifs don't interfere with their random values.  To set up this local generator and seed it, change the {\bf Seed} parameter away from {\bf Global}, and set it to some numerical value (which becomes the random number seed).  See ``Deterministic Per-Motif Seeds'' in Section~\ref{random} (Random Numbers) for more information.
+
 
 
 \clearpage
@@ -1369,7 +1394,7 @@ Many Effect features can be {\bf Parameterized} by double-clicking on the dials.
 \subsection{Modulation}
 \label{modulation}
 
-Modulation doesn't make any sound on its own, but it's not a MIDI filter.  Rather, it take a single child and provides some ways for you to modify the child's {\bf parameters}.
+Modulation doesn't make any sound on its own, but it's not a MIDI Effect like Filter or Arpeggio.  Rather, it take a single child and provides some ways for you to modify the child's {\bf parameters}.
 
 Note that, like Filter and Arpeggio, Modulation requires a single child to operate on, or else it does nothing!
 
@@ -1377,6 +1402,25 @@ Before we go any further, it might be helpful for you to {\bf first read Section
 
 In most motifs you can directly set a child's arguments to values as you see fit, or to random values.  And Select lets you set its own parameters via big Dials, or via MIDI CC messages (Seq's root parameters can also be set via MIDI CC messages).  But {\bf Modulation} goes much further: it lets you change the parameters of a child via an automated modulation procedure such as a Low Frequency Oscillator (LFO), Envelope Generator, or a simple parameter Step Sequencer.  This gives you a way to change the parameters of a child automatically over time.
 
+
+
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}ccccc@{}}
+\includegraphics[width=1.15in]{by4}&
+\includegraphics[width=1.15in]{by3}&
+\includegraphics[width=1.15in]{by0}&
+\includegraphics[width=1.15in]{by1}&
+\includegraphics[width=1.15in]{by2}\\
+\(1-(1-X)^4\)&
+\(1-(1-X)^2\)&
+None (X)&
+\(X^2\)&
+\(X^4\)\\
+\end{tabular}
+\caption{Modulation Warping Functions}
+\label{mapping}
+\end{table}
 
 \paragraph{Mapping}
 
@@ -1392,9 +1436,9 @@ Your parameter value, output by the modulation function, has a range of 0.0 to 1
 \item \(1-(1-X)^4\)\qquad The argument is inverted, the squared twice, then inverted again.  This looks a little like subjecting it to a square root twice.
 \end{itemize}
 
-After warping, the parameter still has a range from 0.0 to 1.0.  We then scale it to a new range from {\bf Low} to {\bf High}.  Note that {\bf Low} can be {\it higher than} {\bf High}: in this case the parameter range is inverted.
+See Table~\ref{mapping} for illustrations.  The \(X\) axis is the original randomly drawn value, and the \(Y\) axis is the final warped value.  
 
-After all this mapping, the parameter is then passed to the Child.
+After warping, the parameter still has a range from 0.0 to 1.0.  We then scale it to a new range from {\bf Low} to {\bf High}.  Note that {\bf Low} can be {\it higher than} {\bf High}: in this case the parameter range is inverted.  After all this mapping, the parameter is then passed to the Child.
 
 \paragraph{Modulation Functions}
 
@@ -1509,6 +1553,11 @@ As is the case for Serial, you can specify the number of times the child will re
 
 Like a number of other motifs, Modulation lets you modulate the rate, transpose, gain, and out of your (sole) child.  There is a difference however.  If you set the rate, transpose, or gain to a {\it parameter}, keep in mind that the whole point of Modulation is to modulate {\it its own parameters}, which are normally passed down to the child.  However these parameters that Modulation is modulating will {\it also} affect your Child MIDI settings.  This is by design: if for example you set your Child's MIDI gain to Param 1, then if you set up an Envelope on Argument 1, it will modulate that gain!
 
+\paragraph{The Seed}
+
+Normally random decisions in this Motif are made by drawing numbers from Seq's global random number generator.  However often you may want them to draw from a local private generator so draws from external Motifs don't interfere with their random values.  To set up this local generator and seed it, change the {\bf Seed} parameter away from {\bf Global}, and set it to some numerical value (which becomes the random number seed).  See ``Deterministic Per-Motif Seeds'' in Section~\ref{random} (Random Numbers) for more information.
+
+
 
 \clearpage
 
@@ -1527,9 +1576,10 @@ Generator is where Seq runs various algorithms which perform generative music, t
 At present Generator has only a few algorithms:
 
 \begin{itemize}
-\item {\bf Triadex Muse}, from a 1969 music-generating device by Marvin Minsky and Edward Fredkin of MIT and Triadex Inc.  The Muse uses two logic devices (a binary counter and a linear feedback shift register or LSFR) to generate random melody patterns.
+\item {\bf Triadex Muse}, from a 1969 music-generating device by Marvin Minsky and Edward Fredkin of MIT and Triadex Inc.  The Muse uses two logic devices (a binary counter and a linear feedback shift register or LSFR) to generate melody patterns.
 \item {\bf Grids}, from a 2013 Eurorack module by {\'E}milie Gillet of Mutable Instruments.  Grids interpolates among a wide range of three-drum patterns in a two-dimensional space, plus additional parameters for complexity and randomness.
 \item {\bf Random Walk}, a small set of methods for generating melodies by randomly walking along scales or chords.
+\item {\bf Musical Dice Game}, a simulation of the 1792 dice-based melody-building game attributed to Mozart.
 \end{itemize}
 
 \noindent You select the algorithm from the {\bf Algorithms} popup menu at right.  The main part of the motif then has three parts:
@@ -1543,10 +1593,9 @@ At present Generator has only a few algorithms:
 \paragraph{Additional Parameters}
 
 \begin{itemize}
-\item {\bf Out}\quad Specifies the MIDI Device that the algorithm will use to emit its generated music.  This can be any device, or set to be the {\bf Same as Received}.
-\item {\bf Received}\quad  When the Child emits MIDI for the algorithm to accompany, the algorithm will expect MIDI sent to this device only.  Other MIDI will be ignored.
-\item {\bf Omni}\quad  If checked, then when the Child emits MIDI for the algorithm to accompany, the algorithm will respond to MIDI sent to any device (regardless of the setting of {\bf Received}).
-\item {\bf Pass}\quad  If checked, then when the Child emits MIDI, the algorithm will then pass this MIDI to its parent motif in addition to any MIDI it generates.  this MIDI the algorithm will respond to MIDI sent to any device (regardless of the setting of {\bf Received}).
+\item {\bf Out}\quad Specifies the MIDI Device that the algorithm will use to emit its generated music.
+\item {\bf Received}\quad  When the Child emits MIDI for the algorithm to accompany, the algorithm will expect MIDI sent to this device only.  Other MIDI will be ignored.  One option is for MIDI sent to {\bf All Devices} to be Received by the algorithm.
+\item {\bf Pass}\quad  Specifies whether MIDI from the Child is passed on to the Parent Motif irrespective of whether it's being Received by the Generator's algorithm.  There are three options:  {\bf None} (No MIDI is passed on), {\bf All} MIDI is passed on, or only MIDI {\bf Unused} by the algorithm is passed on (that is, MIDI whose device is different from {\bf Received}.
 \item {\bf Max End Time}\quad Specifies the time that the algorithm will stop playing.  The algorithm is free to play for a shorter period of time than this.
 \end{itemize}
 
@@ -1554,7 +1603,7 @@ Whenever the Generator motif is started, or restarted, it will reset the algorit
 
 \paragraph{When Algorithms Stop}
 
-Algorithms will generally play as long as they can.  There are thre
+Algorithms will generally play as long as they can.  There are three situations when an Algorithm will stop.
 
 \begin{itemize}
 \item The Algorithm has decided to stop playing.  At present none of the Algorithms will do this: they try to play as long as possible.
@@ -1563,6 +1612,17 @@ Algorithms will generally play as long as they can.  There are thre
 \end{itemize}
 
 By default there is no Child Clip and the Max End Time is very high, so all current Algorithms will keep playing as long as they can.
+
+\paragraph{Saving and Resetting State}
+
+Instead of always starting a melody from the start whenever the Motif is played, you can set it to start from some later point in its generative sequence.  To do this, play Seq, and when you get the Motif to the point where you'd like it to start, press {\bf Pause}.  Then select {\bf Save State} under the {\bf Generator} menu.  From then on, when the Motif starts playing, it will start playing at that point in the generative sequence.  If you'd like to undo all this, just select {\bf Reset State}.  This runtime state will be saved when you save the sequence.
+
+Only certain algorithms can save their runtime state (in fact at present none can, but we'll change that soon enough).
+
+\paragraph{The Seed}
+
+Normally random decisions in this Motif are made by drawing numbers from Seq's global random number generator.  However often you may want them to draw from a local private generator so draws from external Motifs don't interfere with their random values.  To set up this local generator and seed it, change the {\bf Seed} parameter away from {\bf Global}, and set it to some numerical value (which becomes the random number seed).  See ``Deterministic Per-Motif Seeds'' in Section~\ref{random} (Random Numbers) for more information.
+
 
 \clearpage
 
@@ -1657,19 +1717,19 @@ Consider the Series motif. Each of its children can have (for example) Initial R
 \paragraph{Triggers} The Series and Automaton motifs have special options to repeat children forever until receiving a {\bf trigger} on Parameter 8.  What is a trigger?  A trigger on Parameter 8 is, well, triggered, when Parameter 8 changes from a value \(< 0.5\) to a value \(\geq 0.5\). 
 
 
-\begin{wrapfigure}{r}{1.25in}
-\vspace{-1em}
-\includegraphics[width=1.25in]{rootarguments}
-%\vspace{-2em}
-\caption{Root Arguments with default settings.}
-\vspace{-4em}
-\label{rootarguments}
-\end{wrapfigure}
-
 A parameter is just a real-valued number between 0.0 and 1.0.  But of course many Seq dials don't go 0.0 to 1.0: they go 0...127 or 0...4 or whatnot.  These ranges are mapped  as appropriate.  This can make setting the parameter a pain, but you can tell what the appropriate mapping for a parameterizable dial is but double-clicking on it: at the bottom of the pop-up menu is a grayed-out value. That's the real-valued parameter value that would correspond to the current feature value.    
 
 
-\paragraph{The Root Arguments}  If the Root Motif has bound some dials to its parameters, where are those arguments set?  They're set in the Root Arguments, located below the Transport (the play and record buttons, etc.)  See Figure~\ref{rootarguments} at right.  This is also where you can change the {\bf Random Seed} of your sequence.  If you change the random seed, the random number generator will produce a different sequence of numbers next time.
+\paragraph{The Root Arguments}  If the Root Motif has bound some dials to its parameters, where are those arguments set?  They're set in the Root Arguments, located below the Transport (the play and record buttons, etc.)  See Figure~\ref{rootarguments}.  This is also where you can change the {\bf Random Seed} of your sequence.  If you change the random seed, the random number generator will produce a different sequence of numbers next time.
+
+\begin{wrapfigure}{r}{1.25in}
+%\vspace{-1em}
+\includegraphics[width=1.25in]{rootarguments}
+%\vspace{-2em}
+\caption{Root Arguments with default settings.}
+\vspace{-2em}
+\label{rootarguments}
+\end{wrapfigure}
 
 For each root argument, you can also set a {\bf Control Change} or {\bf CC} parameter to allow an external controller to change the argument in real-time as you see fit.  To do this, you'll need to specify the {\bf CC In} device from which these CC messages will come.  When you start playing a sequence, the root arguments will be set to the fixed values you specified: but if you afterwards send CC messages, they will be changed.  If you don't want to use this feature, set  {\bf CC In} to {\it None}: it's a bit more efficient.
 
@@ -1769,13 +1829,15 @@ Note that this isn't the only way you can map incoming MIDI CC data to a Seq par
 
 
 \clearpage\section{Random Numbers}
+\label{random}
 
 Randomness is important to many songs written in Seq, but it can be a tricky subject.  Sometimes you want something to be randomly different every time you press play.  Other times you want something to follow a random sequence, but to always have the {\it same} random sequence.  Seq provides some different options depending on your situation.
 
 \paragraph{The (Global) Rand Seed}
-The {\bf Rand Seed} option, under the {\bf Root Arguments} at left, below the {\bf Transport}, sets the random number seed for the Global random number generator for your entire Sequence.  Normally when you play a sequence, and various random things happen during the sequence, the random decisions that they make will be determined by this seed.  If you save your sequence with a given seed, then load it again, normally it will play exactly the same way, making the same decisions.  Those decisions were originally randomly determined by the seed you picked, but now are set in stone.  This is called a {\it deterministic random sequence}.  Most composers probably want things this way.
 
-The global Rand Seed is saved with your sequence.
+A  random number generator is a function which produces a stream of randomly chosen numbers.  The generator's {\it random number seed} is a number which is fed into the generator before it begins work and which dictates what those numbers are.  If you feed a generator the same seed, it will produce the same stream; and if you feed it a different seed, it will produce a different stream.
+
+Seq has a global random number generator that any object can draw numbers from as necessary.  You set the seed for this generator by changing the {\bf Rand Seed} value, located under the {\bf Root Arguments} at left, below the {\bf Transport}.  Each sequence can, and likely does, have a different seed value for this generator.  Typically when you play a sequence, and then various random things happen during the sequence, the random decisions that they make will be determined by drawing numbers from this generator, and so their particular random value, and their order, will ultimately be determined by this seed.  The global Rand Seed is saved with your sequence, so if you save your sequence with a given seed, then load it again, ordinarily it will play exactly the same way, making the same decisions, because the generator has the same seed.  This fixed series of random numbers is called a {\it deterministic random sequence}.  Most composers probably want things this way.
 
 \paragraph{Real-time Random Decisions}
 Typically when you play a sequence, you'd like it to be deterministic, that is, always making the same decisions and thus playing the same way each time, even if some of those decisions were originally randomly selected: changing the seed would make new decisions but they'd be set in stone after that again.  But perhaps you want the sequence to always make completely different, fully random decisions every time it plays.  To do this, select {\bf New Generator Each Play}.  This will cause Seq to create an entirely new random number generator each time it plays, with a new random number seed, regardless of the seed stored in {\bf Rand Seed}.
