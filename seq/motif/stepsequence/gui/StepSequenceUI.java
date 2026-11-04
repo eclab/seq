@@ -7,6 +7,7 @@ package seq.motif.stepsequence.gui;
 
 import seq.motif.stepsequence.*;
 import seq.engine.*;
+import seq.util.*;
 import seq.gui.*;
 import java.awt.*;
 import javax.swing.border.*;
@@ -592,6 +593,48 @@ public class StepSequenceUI extends MotifUI
         getPrimaryScroll().repaint();
         }
         
+    // Called after we have changed the number of tracks radically, such as
+    // loading drumsets
+    void doSynchronize() 
+        { 
+        // Synchronize number of tracks
+        ArrayList<TrackUI> tracks = getTracks();
+        int numDisplayed = tracks.size();
+        int numTracks = 0;
+        
+        seq.getLock().lock();
+        try
+            {
+            numTracks = ss.getNumTracks();
+            }
+        finally
+            {
+            seq.getLock().unlock();
+            }
+            
+        if (numTracks < tracks.size())
+        	{
+        	for(int i = numTracks; i < numDisplayed; i++)
+        		{
+        		tracks.remove(tracks.size() - 1);		// remove last one
+        		}
+        	}
+        else if (numTracks > numDisplayed)
+        	{
+        	for(int i = numDisplayed; i < numTracks; i++)
+        		{
+            	tracks.add(new TrackUI(seq, ss, StepSequenceUI.this, i));
+        		}
+        	}
+
+		setTrackInspector(null);
+		setStepInspector(null);
+		setSelectedTrackNum(Math.max(selectedTrackNum - 1, 0));
+        
+        rebuildTracks();                
+        }
+                
+
     public void doCopy()
         { 
         TrackUI track = null;
@@ -1129,6 +1172,14 @@ public class StepSequenceUI extends MotifUI
 
     boolean parseDrumset(Reader reader) throws IOException
         {
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            seq.push(ss);
+            }
+        finally { lock.unlock(); }
+
         BufferedReader buf = new BufferedReader(reader);
         String name = null;
         ArrayList<Integer> notes = new ArrayList<>();
@@ -1160,7 +1211,7 @@ public class StepSequenceUI extends MotifUI
                 }
             }
 
-        ReentrantLock lock = seq.getLock();
+        lock = seq.getLock();
         lock.lock();
         try 
             {
@@ -1173,12 +1224,21 @@ public class StepSequenceUI extends MotifUI
             ss.setName(name);
             }
         finally { lock.unlock(); }
+
+		doSynchronize();
+		
+//		sequi.setMotifUI(StepSequenceUI.this);
+		sequi.incrementRebuildInspectorsCount();
+        updateText();
         return true;
         }
 
+    public static final String LOAD_DRUMSET_DIRECTORY_KEY = "stepsequenceui.doloaddrumsetdirectory";
     public void doLoadDrumset()
         {
         FileDialog fd = new FileDialog((JFrame)sequi.getFrame(), "Load Drumset...", FileDialog.LOAD);
+        String dir = Prefs.getLastX(LOAD_DRUMSET_DIRECTORY_KEY);
+        if (dir != null) fd.setDirectory(dir);
         fd.setFilenameFilter(new FilenameFilter()
             {
             public boolean accept(File dir, String name)
@@ -1193,6 +1253,7 @@ public class StepSequenceUI extends MotifUI
                 
         if (fd.getFile() != null)
             {
+            Prefs.setLastX(fd.getDirectory(), LOAD_DRUMSET_DIRECTORY_KEY);
             try
                 {
                 File file = new File(fd.getDirectory(), fd.getFile());

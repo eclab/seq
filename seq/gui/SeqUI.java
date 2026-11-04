@@ -792,11 +792,16 @@ public class SeqUI extends JPanel
                 }
             }
         }
-                
+    
+    public static final String LOAD_DIRECTORY_KEY = "sequi.loaddir";
+          
     /* Pops up the open (load) dialog, returning a new Seq resulting from loading. */
     void doLoad()
         {
         FileDialog fd = new FileDialog((JFrame)getFrame(), "Load Sequence...", FileDialog.LOAD);
+        String dir = Prefs.getLastX(LOAD_DIRECTORY_KEY);
+        if (dir != null) fd.setDirectory(dir);
+        
         fd.setFilenameFilter(new FilenameFilter()
             {
             public boolean accept(File dir, String name)
@@ -811,6 +816,7 @@ public class SeqUI extends JPanel
                 
         if (fd.getFile() != null)
             {
+            Prefs.setLastX(fd.getDirectory(), LOAD_DIRECTORY_KEY);
             GZIPInputStream stream = null;
             try
                 {
@@ -2153,9 +2159,13 @@ public class SeqUI extends JPanel
         return tracks;
         }
 
+    public static final String LOAD_MIDIFILE_DIRECTORY_KEY = "sequi.loadmidifiledir";
     public void doLoadMIDIFile()
         {
         FileDialog fd = new FileDialog((JFrame)getFrame(), "Load MIDI File...", FileDialog.LOAD);
+        String dir = Prefs.getLastX(LOAD_MIDIFILE_DIRECTORY_KEY);
+        if (dir != null) fd.setDirectory(dir);
+
         fd.setFilenameFilter(new FilenameFilter()
             {
             public boolean accept(File dir, String name)
@@ -2170,6 +2180,7 @@ public class SeqUI extends JPanel
                 
         if (fd.getFile() != null)
             {
+            Prefs.setLastX(fd.getDirectory(), LOAD_MIDIFILE_DIRECTORY_KEY);
             try
                 {
                 File file = new File(fd.getDirectory(), fd.getFile());
@@ -2271,7 +2282,7 @@ public class SeqUI extends JPanel
     public static final String SEQ_ABOUT_TEXT = 
         "<html>A Modular and Hierarchical MIDI Sequencer<br>" + 
         "By Sean Luke<br>" + 
-        "With Help from Filippo Carnovalini<br>" + 
-        "<b><font color='#3498db'>Version 10</font></b>, January 2026<br>" + 
+        "With Help from Filippo Carnovalini and Cesar Liendo<br>" + 
+        "<b><font color='#3498db'>Version 11</font></b>, November 2026<br>" + 
         "https://github.com/eclab/seq</html>";
     }
