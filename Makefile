@@ -78,9 +78,13 @@ install8: jar
 	rm -rf install/bundles install/Seq.dmg.html install/Seq.dmg.jnlp 
 
 install: jar
-	rm -rf install/Seq.app install/bundles install/Seq.dmg.html install/Seq.dmg.jnlp
-	- jpackage --input install --name Seq --main-jar seq.jar --main-class seq.gui.SeqUI --type dmg --mac-package-name "Seq" --verbose --java-options '-XX:+UseZGC -XX:MaxGCPauseMillis=1'
-	open Seq-1.0.dmg
+	rm -rf install/jar install/Seq.app install/bundles install/Seq.dmg.html install/Seq.dmg.jnlp
+	mkdir install/jar
+	cp install/seq.jar install/jar/
+	# See https://alvinalexander.com/java/how-use-jpackage-command-java-14-jdk-sdk/
+	- jpackage --type dmg --verbose --name Seq --input install/jar --main-jar seq.jar --main-class seq.gui.SeqUI --type dmg --mac-package-name "Seq" --verbose --java-options '-XX:+UseZGC -XX:MaxGCPauseMillis=1'
+	rm -rf install/jar install/Seq.app install/bundles install/Seq.dmg.html install/Seq.dmg.jnlp
+
 
 
 # Indent to your preferred brace format using emacs.  Seq's default
