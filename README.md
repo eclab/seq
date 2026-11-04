@@ -1,7 +1,7 @@
 ![Seq Splash Banner](docs/web/seq.png)
 
 # Seq  
-A Modular, Hierarchical Music Sequencer (Version 10)
+A Modular, Hierarchical Music Sequencer (Version 11)
 
 By Sean Luke (sean@cs.gmu.edu)  
 With Help from Filippo Carnovalini (filippo.carnovalini@vub.be)  
@@ -33,7 +33,7 @@ Seq is written in pure Java.  It runs on MacOS, Linux, and Windows.
 
 ## Manual
 
-* Seq has an [initial manual](https://people.cs.gmu.edu/~eclab/projects/seq/seq.pdf) which explains the basics of using it.
+* Seq has a [manual](https://people.cs.gmu.edu/~eclab/projects/seq/seq.pdf).
 
 * Interested in helping out on Seq?  Get ahold of us! Sean's email address is on the front page of the manual.
 
