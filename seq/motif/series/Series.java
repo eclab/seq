@@ -571,7 +571,7 @@ public class Series extends Motif
             }
         else
             {
-            System.err.println("Modulation.save(): Internal error: no MIDI type array");
+            System.err.println("Series.load(): no MIDI type array");
             for(int i = 0; i < NUM_PARAMETERS; i++)
                 {
                 setMIDIType(i, NONE);
@@ -588,7 +588,7 @@ public class Series extends Motif
             }
         else
             {
-            System.err.println("Modulation.save(): Internal error: no MIDI parameter array");
+            System.err.println("Series.load(): no MIDI parameter array");
             for(int i = 0; i < NUM_PARAMETERS; i++)
                 {
                 setMIDIParameter(i, NONE);
@@ -605,7 +605,7 @@ public class Series extends Motif
             }
         else
             {
-            System.err.println("Modulation.save(): Internal error: no MIDI out array");
+            System.err.println("Series.load(): no MIDI out array");
             for(int i = 0; i < NUM_PARAMETERS; i++)
                 {
                 setMIDIParameterOut(i, DEFAULT_OUT);
