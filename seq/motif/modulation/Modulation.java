@@ -18,6 +18,7 @@ public class Modulation extends Motif
     private static final long serialVersionUID = 1;
     
     public static final String IDENTITY = "None";
+    public static final String OLD_IDENTITY = "Identity";	// for older sequences
     public static final String LFO = "LFO";
     public static final String ENVELOPE = "Envelope";
     public static final String STEP = "Step Seq";                           // Repeating Step Sequence
@@ -121,7 +122,7 @@ public class Modulation extends Motif
     public Function loadFunction(JSONObject obj)
         {
         String type = obj.optString("type", null);
-        if (IDENTITY.equals(type))
+        if (IDENTITY.equals(type) || OLD_IDENTITY.equals(type))
             {
             return new Function(obj);
             }
