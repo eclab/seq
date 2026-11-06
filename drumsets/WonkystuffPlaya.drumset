@@ -1,0 +1,16 @@
+Wonkystuff Playa
+60	Bass Drum
+61	Small Bongo
+62	Claves
+63	Cowbell
+64	Guiro
+65	Guijada
+66	Cymbal 1
+67	Tambourine
+
+# Note that in the Playa source code, it says "Maraca" rather than
+# Tambourine, but the Minipops 7 didn't have a Maraca sound.  It's
+# likely Tambourine.
+#
+# Thanks to John Tuffen (who made the Playa) for help identifying
+# the sounds
