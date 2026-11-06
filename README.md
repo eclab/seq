@@ -49,7 +49,7 @@ Sadly, it's a whopping 60MB because it includes the Java VM.  :-(
 
 MacOS has lately locked down the ability to run an application that's not from a commercial, paying Apple Developer.  And GMU is not one.  So you will have to instruct Sierra to permit Seq to run.
 
-Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
+Download some [drumsets](https://github.com/eclab/seq/tree/main/drumsets) for synths you own to use with Seq's stepsequencer. Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
 
 #### Installing under MacOS X Prior to Sequoia
 
@@ -89,7 +89,7 @@ The following should work (but has not been tested):
 
 4. See **Running from the command line** below for more glitch-free options.
 
-Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
+Download some [drumsets](https://github.com/eclab/seq/tree/main/drumsets) for synths you own to use with Seq's stepsequencer. Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
 
 
 #### Note
@@ -113,7 +113,7 @@ Seq should work fine if you have installed at least *Java 20*.
 
 6. See **Running from the command line** below for more glitch-free options.
 
-Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
+Download some [drumsets](https://github.com/eclab/seq/tree/main/drumsets) for synths you own to use with Seq's stepsequencer. Try out the [demo song](https://github.com/eclab/seq/tree/main/songs) in the Seq repository.  You might also download [Flow](https://github.com/eclab/flow), a synthesizer for that song (see the demo1.flow patch file).
 
 
 ### Running from the command line (MacOS, Windows, Linux)
