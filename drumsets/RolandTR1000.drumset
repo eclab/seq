@@ -1,0 +1,28 @@
+Roland TR-1000
+35	BD Layer A
+36	BD
+37	RS
+38	SD
+39	HC
+40	SD Layer A
+41	LT Layer A
+42	CH
+43	LT
+44	CH Layer B
+46	OH
+48	HT Layer A
+49	CC
+50	HT
+51	RC
+54	HC Layer B
+56	RS Layer B
+58	OH Layer B
+61	CC Layer B
+63	RC Layer B
+84	TRG
+99	BD Layer B
+104	SD Layer B
+105	LT Layer B
+112	HT Layer B
+
+# This data is from https://midi.guide/d/roland/tr-1000/#drum-map
