@@ -511,6 +511,7 @@ public class SelectInspector extends WidgetList
         panel.add(joystick, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createTitledBorder("<html><i>Joystick</i></html>"));
         DisclosurePanel disclosure = new DisclosurePanel("Joystick", panel);
+        disclosure.setParentComponent(selectui);
         disclosure.setToolTipText(JOYSTICK_TOOLTIP);
         return disclosure;
         }            
