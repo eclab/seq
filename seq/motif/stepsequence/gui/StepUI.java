@@ -16,7 +16,8 @@ import java.awt.geom.*;
 
 public class StepUI extends JComponent
     {
-    public static final Stroke BEAT_STROKE = new BasicStroke(3.0f);
+    public static final Stroke BAR_STROKE = new BasicStroke(3.0f);
+    public static final Stroke BEAT_STROKE = new BasicStroke(2.0f);
     public static final Stroke OFF_STROKE = new BasicStroke(1.0f);
     public static final Color STROKE_COLOR = Theme.isDark() ? Theme.GRAY_120 : new Color(64, 64, 64); 
     public static final Color STEP_COLOR = Theme.isDark() ? Theme.ELECTRIC_BLUE : Color.BLUE;       // for the moment
@@ -62,7 +63,8 @@ public class StepUI extends JComponent
         this.stepNum = stepNum;
         this.setFocusable(true);
         this.width = ssui.getZoom();    // for the moment
-                
+    	this.setLayout(null);
+    	
         addMouseListener(new MouseAdapter()
             {
             public void mouseEntered(MouseEvent e)
@@ -110,8 +112,7 @@ public class StepUI extends JComponent
                     }
                 if (oldStepNum != StepUI.this.stepNum || oldTrackNum != StepUI.this.trackNum)
                     {
-                    ssui.setSelectedTrackNum(StepUI.this.trackNum);
-                    ssui.setSelectedStepNum(StepUI.this.stepNum);
+                    ssui.setSelectedTrackAndStepNum(StepUI.this.trackNum, StepUI.this.stepNum);
                     }
                 }
             });
@@ -147,6 +148,7 @@ public class StepUI extends JComponent
     public Dimension getMinimumSize() { return new Dimension(width, 32); }
     public Dimension getPreferredSize() { return new Dimension(width, 32); }
     public Dimension getMaximumSize() { return new Dimension(3000, 3000); }
+    
     protected void paintComponent(Graphics _g)
         {
         // NOTE FROM JUNE 10 2025: Dirtying code works, but Java is erasing the entire background of the JScrollPane
@@ -188,7 +190,8 @@ public class StepUI extends JComponent
         Graphics2D g = (Graphics2D) _g;
         
         boolean selected = ssui.getSelectedTrackNum() == trackNum && ssui.getSelectedStepNum() == stepNum;
-        boolean beat = (selected || stepNum % 4 == 0);
+        boolean beat = (stepNum % 4 == 0);
+        boolean bar = (stepNum != 0 && stepNum % 16 == 0);			// it's annoying for step 0 to be thicker than the others
 
         g.setPaint(on ? 
             (finalVelocity < 0 ? DEFAULT_COLOR : ssui.getStepVelocityMap().getColor(finalVelocity))
@@ -199,7 +202,7 @@ public class StepUI extends JComponent
         //RoundRectangle2D.Double rect = new RoundRectangle2D.Double(2, 2, getBounds().width - 4, getBounds().height - 4, 8, 8);
         g.fill(rect);
         g.setPaint(selected ? ON_STROKE_COLOR : (mouseOver ? ON_SELECTED_STROKE_COLOR : STROKE_COLOR));
-        g.setStroke(beat ? BEAT_STROKE : OFF_STROKE);
+        g.setStroke(bar ? BAR_STROKE : (beat ? BEAT_STROKE : OFF_STROKE));
         g.draw(rect);
                 
         if (iAmCurrentStep)

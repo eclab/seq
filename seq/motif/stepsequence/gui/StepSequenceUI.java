@@ -131,6 +131,8 @@ public class StepSequenceUI extends MotifUI
                 }
             }
         }
+        
+        
     public static final Color VELOCITY_START_COLOR = Theme.isDark() ?  Theme.GRAY_70 : new Color(0,0,0,0); 
     public static final Color VELOCITY_MID_COLOR = Theme.isDark() ?  Theme.ORANGE : Color.RED; 
     public static final Color VELOCITY_END_COLOR = Theme.isDark() ?  Theme.RED : Color.YELLOW; 
@@ -167,14 +169,17 @@ public class StepSequenceUI extends MotifUI
         {
         for(TrackUI track : tracks)
             track.setSelected(false);
-        selectedTrackNum = val;
-        tracks.get(selectedTrackNum).setSelected(true);
-        setTrackInspector(tracks.get(selectedTrackNum).getInspector());
+            
+		// first revise step if need be
         if (tracks.get(selectedTrackNum).getSteps().size() <= selectedStepNum)  // uh oh
             {
             setSelectedStepNum(0);
             }
-        else setSelectedStepNum(selectedStepNum);
+    	else setSelectedStepNum(selectedStepNum);
+
+        selectedTrackNum = val;
+        tracks.get(selectedTrackNum).setSelected(true);
+        setTrackInspector(tracks.get(selectedTrackNum).getInspector());
         }
     public int getSelectedStepNum() { return selectedStepNum; }
     public void setSelectedStepNum(int val) 
@@ -183,6 +188,25 @@ public class StepSequenceUI extends MotifUI
         selectedStepNum = val; 
         setStepInspector(tracks.get(selectedTrackNum).getStep(selectedStepNum).getInspector());
         StepUI newStepUI = getTrack(getSelectedTrackNum()).getStep(getSelectedStepNum());
+        
+        oldStepUI.repaint();
+        newStepUI.repaint();
+        }
+
+    public void setSelectedTrackAndStepNum(int trackNum, int stepNum) 
+        { 
+        for(TrackUI track : tracks)
+            track.setSelected(false);
+
+        StepUI oldStepUI = getTrack(getSelectedTrackNum()).getStep(getSelectedStepNum());
+            
+        selectedTrackNum = trackNum;
+        selectedStepNum = stepNum; 
+        tracks.get(selectedTrackNum).setSelected(true);
+
+        StepUI newStepUI = getTrack(getSelectedTrackNum()).getStep(getSelectedStepNum());
+        setTrackInspector(tracks.get(selectedTrackNum).getInspector());
+        setStepInspector(tracks.get(selectedTrackNum).getStep(selectedStepNum).getInspector());
         
         oldStepUI.repaint();
         newStepUI.repaint();
@@ -397,7 +421,13 @@ public class StepSequenceUI extends MotifUI
                     {
                     for(int i = 0; i < numTracks; i++)
                         {
-                        if (lastSteps[i] != currentSteps[i]) // it's changed
+                        // it's possible that the current or last steps
+                        // are outside the bounds if someone changed lengths
+                        // or loaded drumsets
+                        int numSteps = ss.getNumSteps(i);
+                        	
+                        // now check for change
+                        if (lastSteps[i] != currentSteps[i] && lastSteps[i] >= numSteps || currentSteps[i] >= numSteps) // it's changed and in bounds
                             {
                             setDirty(i, lastSteps[i], true);
                             setDirty(i, currentSteps[i], true);
@@ -588,7 +618,21 @@ public class StepSequenceUI extends MotifUI
             trackHeaders.add(h);
             t.updateLength();
             }
+            
         updateSizes();
+
+		/*
+		for(TrackUI track : tracks)
+			{
+			ArrayList<StepUI> steps = track.getSteps();
+			for(StepUI step : steps)
+				{
+				step.revalidate();
+				}
+			}
+		primaryScroll.repaint();
+		*/
+
         getPrimaryScroll().revalidate();
         getPrimaryScroll().repaint();
         }
@@ -629,9 +673,9 @@ public class StepSequenceUI extends MotifUI
 
 		setTrackInspector(null);
 		setStepInspector(null);
-		setSelectedTrackNum(Math.max(selectedTrackNum - 1, 0));
-        
         rebuildTracks();                
+
+		setSelectedTrackNum(selectedTrackNum < numTracks ? selectedTrackNum : 0);
         }
                 
 
@@ -823,6 +867,35 @@ public class StepSequenceUI extends MotifUI
     public void buildMenu()
         {
         menu = new JMenu("Step Sequence");
+        JMenuItem fill8 = new JMenuItem("Fill from First 8 Steps");
+        fill8.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                fill(8);
+                }
+            });
+        menu.add(fill8);
+        JMenuItem fill16 = new JMenuItem("Fill from First 16 Steps");
+        fill16.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                fill(16);
+                }
+            });
+        fill16.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        menu.add(fill16);
+        JMenuItem fill32 = new JMenuItem("Fill from First 32 Steps");
+        fill32.addActionListener(new ActionListener()
+            {
+            public void actionPerformed(ActionEvent event)
+                {
+                fill(32);
+                }
+            });
+        menu.add(fill32);
+        menu.addSeparator();
         JMenuItem up = new JMenuItem("Up");
         up.addActionListener(new ActionListener()
             {
@@ -982,6 +1055,22 @@ public class StepSequenceUI extends MotifUI
             });
         menu.add(loadDrumset);
         }
+        
+    public void fill(int initial)
+    	{
+        ReentrantLock lock = seq.getLock();
+        lock.lock();
+        try 
+            {
+            sequi.push();
+            for(int i = initial; i < ss.getNumSteps(selectedTrackNum); i += initial)
+    			{        	
+				ss.copySteps(selectedTrackNum, selectedTrackNum, 0, i, initial);
+				}
+            }
+        finally { lock.unlock(); }
+		redraw(false);
+    	}
 
 /*
   void swapTracks(int x, int y)
@@ -1269,7 +1358,12 @@ public class StepSequenceUI extends MotifUI
                 ex.printStackTrace();
                 }
             }
-        buildPrimary();         // completely rebuild
+        else System.err.println("Canceled");
+        
+        // This appears to trigger a bug.  (1) Set track 0 to length 1, say (2) load a drumset, which calls
+        // the below to rebuild everything for no good reason.  Then (3) the length 1 track has its step truncated and drawing wrong
+        // until you drag and drop it, which triggers a doMove() that fixes things
+        //buildPrimary();         // completely rebuild
 
         setTrackInspector(null);
         setStepInspector(null);

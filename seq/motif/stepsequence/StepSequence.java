@@ -238,6 +238,21 @@ public class StepSequence extends Motif
         trackValueLSBs[y] = i;
         }
         
+	/** Copy at most LEN steps starting at position FROM on FROMTRACK over to position at TOTRACK. */
+	public void copySteps(int fromtrack, int totrack, int from, int to, int len)
+		{
+		len = Math.min(len, on[fromtrack].length - from);		// so we don't go over
+		len = Math.min(len, on[totrack].length - to);		// so we don't go over
+		
+		System.arraycopy(on[fromtrack], from, on[totrack], to, len);
+		System.arraycopy(notes[fromtrack], from, notes[totrack], to, len);
+		System.arraycopy(paramLSBs[fromtrack], from, paramLSBs[totrack], to, len);
+		System.arraycopy(velocities[fromtrack], from, velocities[totrack], to, len);
+		System.arraycopy(valueLSBs[fromtrack], from, valueLSBs[totrack], to, len);
+		System.arraycopy(flams[fromtrack], from, flams[totrack], to, len);
+		System.arraycopy(when[fromtrack], from, when[totrack], to, len);
+    	}
+
     public void addTrack(int after)         // after can be -1
         {
         setNumTracks(getNumTracks() + 1);
